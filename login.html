@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALUM-IL | התחברות למערכת</title>
+    <!-- Google Fonts: Heebo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body class="dark-theme">
+    <!-- Header: Minimalist -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="ph ph-hexagon-fill logo-icon"></i>
+                <span>ALUM-IL</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <!-- Abstract background styling -->
+        <div class="hero-abstract-bg">
+            <div class="glow-orb primary-orb" style="top: 20%; right: 10%;"></div>
+            <div class="glow-orb secondary-orb" style="bottom: 10%; left: 10%;"></div>
+        </div>
+
+        <div class="container">
+            <div class="auth-container" style="max-width: 450px;">
+                <div class="auth-header">
+                    <i class="ph ph-shield-check auth-icon"></i>
+                    <h1 class="auth-title">כניסה למערכת</h1>
+                    <p class="auth-subtitle">הזן את פרטי הגישה שלך</p>
+                </div>
+
+                <form action="#" method="POST">
+                    <!-- Google Login -->
+                    <button type="button" class="btn btn-google btn-large">
+                        <i class="ph-fill ph-google-logo"></i> התחברות מהירה עם Google
+                    </button>
+
+                    <div class="auth-divider">
+                        <span>או כניסה עם דוא"ל</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">כתובת דוא"ל / שם משתמש</label>
+                        <input type="email" id="email" class="form-control" required placeholder="name@company.co.il">
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 2rem;">
+                        <label class="form-label" for="password">סיסמה</label>
+                        <input type="password" id="password" class="form-control" required placeholder="••••••••">
+                        <div style="text-align: left; margin-top: 5px;">
+                            <a href="#" style="color: var(--silver-dark); font-size: 0.85rem;">שכחת סיסמה?</a>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-large btn-block">
+                        הכנס לחשבון <i class="ph ph-arrow-left"></i>
+                    </button>
+
+                    <div class="auth-footer">
+                        עדיין אין לך חשבון? <a href="register.html">הירשם עכשיו</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALUM-IL | אזור אישי</title>
+    <!-- Google Fonts: Heebo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+
+<body class="dark-theme">
+    <!-- Header: Minimalist but persistent for dashboard -->
+    <header class="header"
+        style="position: relative; border-bottom: 1px solid var(--surface-light); background-color: var(--surface-dark); padding: 1rem 0;">
+        <div class="container header-container" style="max-width: 100%; padding: 0 2rem;">
+            <a href="index.html" class="logo">
+                <i class="ph ph-hexagon-fill logo-icon"></i>
+                <span>ALUM-IL</span>
+            </a>
+            <!-- Simple user menu -->
+            <div style="color: var(--silver-dark); display: flex; align-items: center; gap: 10px;">
+                <span
+                    style="font-weight:500; color:var(--white); display: none; @media(min-width: 768px){display: block;}">משתמש
+                    מערכת</span>
+                <i class="ph ph-user-circle" style="font-size: 2rem; color:var(--electric-blue);"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar (RTL means it's natively on the right side) -->
+        <aside class="dashboard-sidebar">
+            <div
+                style="color:var(--silver-dark); font-size:0.85rem; font-weight:700; margin-bottom:1rem; padding-right:1rem;">
+                תפריט פעולות</div>
+            <ul class="dashboard-nav">
+                <li><a href="#" class="active"><i class="ph ph-house"></i> דף הבית</a></li>
+                <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
+                <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
+                <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
+                <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="dashboard-content">
+            <div class="dashboard-header">
+                <h1 class="dashboard-title">ברוך הבא לאזור האישי של ALUM-IL</h1>
+                <p style="color: var(--silver-dark);">בחר את הפעולה שברצונך לבצע מתוך האפשרויות המהירות.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <!-- Card A -->
+                <a href="procurement.html" class="dashboard-card">
+                    <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
+                    <h3>מרכז הרכש</h3>
+                </a>
+                <!-- Card B -->
+                <a href="configurator.html" class="dashboard-card">
+                    <div class="card-icon"><i class="ph ph-package"></i></div>
+                    <h3>קיטים למתקינים</h3>
+                </a>
+                <!-- Card C -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon"><i class="ph ph-briefcase"></i></div>
+                    <h3>מכרזים והזדמנויות</h3>
+                </a>
+                <!-- Card D -->
+                <a href="#" class="dashboard-card">
+                    <div class="card-icon"><i class="ph ph-graduation-cap"></i></div>
+                    <h3>מכללת ALUM-IL</h3>
+                </a>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

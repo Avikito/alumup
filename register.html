@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALUM-IL | פתיחת חשבון עסקי</title>
+    <!-- Google Fonts: Heebo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Phosphor Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <style>
+        .step-container {
+            display: none;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .step-container.active {
+            display: block;
+        }
+
+        .form-progress {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .form-progress::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--surface-light);
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .progress-step {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--surface-dark);
+            border: 2px solid var(--surface-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--silver-dark);
+            position: relative;
+            z-index: 2;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            border-color: var(--electric-blue);
+            background: var(--electric-blue);
+            color: var(--white);
+            box-shadow: 0 0 10px rgba(0, 102, 255, 0.4);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Multi-select Tag Cloud Styling */
+        .tag-cloud {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tag-checkbox input[type="checkbox"] {
+            display: none;
+        }
+
+        .tag-checkbox span {
+            display: inline-block;
+            padding: 8px 16px;
+            background-color: var(--surface-dark);
+            border: 1px solid var(--surface-light);
+            border-radius: 20px;
+            color: var(--silver-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .tag-checkbox input[type="checkbox"]:checked+span {
+            background-color: var(--electric-blue);
+            border-color: var(--electric-blue);
+            color: var(--white);
+            box-shadow: 0 0 10px rgba(0, 102, 255, 0.3);
+        }
+
+        .tag-checkbox span:hover {
+            border-color: var(--electric-blue);
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+    <!-- Header: Minimalist -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="index.html" class="logo">
+                <i class="ph ph-hexagon-fill logo-icon"></i>
+                <span>ALUM-IL</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="auth-page">
+        <!-- Abstract background styling -->
+        <div class="hero-abstract-bg">
+            <div class="glow-orb primary-orb" style="top: 20%; right: 10%;"></div>
+            <div class="glow-orb secondary-orb" style="bottom: 10%; left: 10%;"></div>
+        </div>
+
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-header">
+                    <i class="ph ph-user-plus auth-icon"></i>
+                    <h1 class="auth-title">הרשמה מקצועית</h1>
+                    <p class="auth-subtitle">הצטרפו לקהילת האלומיניום המובילה בישראל</p>
+                </div>
+
+                <div class="form-progress">
+                    <div class="progress-step active" id="indicator-1">1</div>
+                    <div class="progress-step" id="indicator-2">2</div>
+                    <div class="progress-step" id="indicator-3">3</div>
+                </div>
+
+                <form id="registrationForm" onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+
+                    <!-- STEP 1: Basic Contact -->
+                    <div class="step-container active" id="step-1">
+                        <div class="auth-divider">
+                            <span>פרטי התקשרות בסיסיים</span>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="fullName">שם מלא</label>
+                                <input type="text" id="fullName" class="form-control" required
+                                    placeholder="ישראל ישראלי">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="businessName">שם העסק</label>
+                                <input type="text" id="businessName" class="form-control" required
+                                    placeholder="אלומיניום הצפון">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label" for="phone">טלפון נייד</label>
+                                <input type="tel" id="phone" class="form-control" required placeholder="050-0000000"
+                                    dir="ltr">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="email">כתובת דוא"ל</label>
+                                <input type="email" id="email" class="form-control" required
+                                    placeholder="info@company.co.il" dir="ltr">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="businessAddress">כתובת העסק</label>
+                            <input type="text" id="businessAddress" class="form-control" required
+                                placeholder="עיר, רחוב ומספר">
+                        </div>
+                        <button type="button" class="btn btn-primary btn-large btn-block mt-4" onclick="nextStep(2)">
+                            המשך לשלב הבא <i class="ph ph-arrow-left"></i>
+                        </button>
+                    </div>
+
+                    <!-- STEP 2: Location & Service Areas -->
+                    <div class="step-container" id="step-2">
+                        <div class="auth-divider">
+                            <span>אזורי פעילות ושירות</span>
+                        </div>
+                        <p style="color:var(--silver-dark); font-size:0.9rem; margin-bottom:1rem;">סמן את כל אזורי
+                            הפעילות בהם אתה מעניק שירות (בחירה מרובה).</p>
+
+                        <div class="tag-cloud">
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="north">
+                                <span>צפון</span>
+                            </label>
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="haifa">
+                                <span>חיפה והסביבה</span>
+                            </label>
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="sharon">
+                                <span>שרון</span>
+                            </label>
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="center">
+                                <span>מרכז</span>
+                            </label>
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="jerusalem">
+                                <span>ירושלים והסביבה</span>
+                            </label>
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="south">
+                                <span>דרום</span>
+                            </label>
+                            <label class="tag-checkbox">
+                                <input type="checkbox" name="regions" value="eilat">
+                                <span>אילת והערבה</span>
+                            </label>
+                        </div>
+
+                        <div class="form-row" style="margin-top: 2rem;">
+                            <button type="button" class="btn btn-outline-silver btn-large" onclick="prevStep(1)">
+                                <i class="ph ph-arrow-right"></i> חזור
+                            </button>
+                            <button type="button" class="btn btn-primary btn-large" style="flex:1;"
+                                onclick="nextStep(3)">
+                                המשך לשלב האחרון <i class="ph ph-arrow-left"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- STEP 3: Professional Info (Tag Cloud Multi-selects) -->
+                    <div class="step-container" id="step-3">
+                        <div class="auth-divider">
+                            <span>סיווג מקצועי</span>
+                        </div>
+                        <p style="color:var(--silver-dark); font-size:0.9rem; margin-bottom:1rem;">בחר את הסיווגים
+                            וההתמחויות שמתאימים לך (ניתן לבחור יותר מאחד).</p>
+
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label class="form-label">סוג הגורם</label>
+                            <div class="tag-cloud">
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="installer"><span>מתקין</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="manufacturer"><span>יצרן אלומיניום</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="importer"><span>יבואן</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="metalworker"><span>מסגר</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="warehouse"><span>מחסן חומרי גלם</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="gardening"><span>גינון ופיתוח</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="contractor"><span>קבלן</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="architect"><span>אדריכל</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="userType"
+                                        value="entrepreneur"><span>יזם</span></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label class="form-label">תחומי התמחות</label>
+                            <div class="tag-cloud">
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="luxury"><span>וילות ויוקרה</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="buildings"><span>בנייה רוויה</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="renovations"><span>שיפוצים</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="curtain-walls"><span>קירות מסך</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="fences"><span>גדרות ושערים</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="alum-pergolas"><span>פרגולות אלומיניום</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="electric-pergolas"><span>פרגולות חשמליות</span></label>
+                                <label class="tag-checkbox"><input type="checkbox" name="specialty"
+                                        value="new-biz"><span>עסק בהקמה</span></label>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="margin-bottom: 2rem;">
+                            <label class="form-check" style="color: var(--silver-dark); font-size: 0.95rem;">
+                                <input type="checkbox" required class="form-check-input" id="acceptTerms">
+                                <span>אני מאשר את תנאי השימוש וקורא לתקנון השירות (Accept Terms)</span>
+                            </label>
+                        </div>
+
+                        <div class="form-row">
+                            <button type="button" class="btn btn-outline-silver btn-large" onclick="prevStep(2)">
+                                <i class="ph ph-arrow-right"></i> חזור
+                            </button>
+                            <button type="submit" class="btn btn-primary btn-large" style="flex:1;">
+                                אישור ופתיחת חשבון <i class="ph ph-check"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+                <div class="auth-footer" style="margin-top:2.5rem;">
+                    כבר יש לך חשבון? <a href="login.html">התחבר כאן</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function nextStep(step) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            updateIndicators(step);
+        }
+
+        function prevStep(step) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+            document.getElementById('step-' + step).classList.add('active');
+            updateIndicators(step);
+        }
+
+        function updateIndicators(step) {
+            for (let i = 1; i <= 3; i++) {
+                if (i <= step) {
+                    document.getElementById('indicator-' + i).classList.add('active');
+                } else {
+                    document.getElementById('indicator-' + i).classList.remove('active');
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
