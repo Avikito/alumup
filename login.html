@@ -41,9 +41,9 @@
                     <p class="auth-subtitle">הזן את פרטי הגישה שלך</p>
                 </div>
 
-                <form action="#" method="POST">
+                <form id="loginForm" novalidate onsubmit="handleLogin(event)">
                     <!-- Google Login -->
-                    <button type="button" class="btn btn-google btn-large">
+                    <button type="button" class="btn btn-google btn-large" onclick="handleGoogleLogin()">
                         <i class="ph-fill ph-google-logo"></i> התחברות מהירה עם Google
                     </button>
 
@@ -64,6 +64,10 @@
                         </div>
                     </div>
 
+                    <div id="loginError"
+                        style="color: #ff4d4d; margin-bottom: 1rem; text-align: center; display: none; font-weight: 500;">
+                    </div>
+
                     <button type="submit" class="btn btn-primary btn-large btn-block">
                         הכנס לחשבון <i class="ph ph-arrow-left"></i>
                     </button>
@@ -75,6 +79,78 @@
             </div>
         </div>
     </main>
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+        const SUPABASE_URL = 'https://exfdjelwyrspfspcevvm.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED';
+        const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value.trim();
+            const errorMessage = document.getElementById('loginError');
+
+            console.log('Attempting login with email:', email);
+
+            if (!email || !password) {
+                console.warn('Validation failed: Missing email or password.');
+                errorMessage.textContent = 'יש להזין דוא"ל וסיסמה.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+
+            try {
+                console.log('Sending signInWithPassword request to Supabase...');
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+
+                if (error) {
+                    console.error('Supabase authentication error:', error.message);
+                    errorMessage.textContent = 'שגיאה: ' + error.message;
+                    errorMessage.style.display = 'block';
+                } else {
+                    console.log('Login successful! Redirecting to dashboard...', data);
+                    window.location.href = 'dashboard.html';
+                }
+            } catch (err) {
+                console.error('Unexpected error during Supabase login:', err);
+                errorMessage.textContent = 'אירעה שגיאה. אנא נסה שוב מאוחר יותר.';
+                errorMessage.style.display = 'block';
+            }
+        }
+
+        async function handleGoogleLogin() {
+            try {
+                console.log('Initiating Google OAuth login flow...');
+                const { data, error } = await supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: {
+                        redirectTo: window.location.origin + '/dashboard.html'
+                    }
+                });
+
+                if (error) {
+                    console.error('Google OAuth initialization error:', error.message);
+                    const errorMessage = document.getElementById('loginError');
+                    errorMessage.textContent = 'שגיאת התחברות עם Google: ' + error.message;
+                    errorMessage.style.display = 'block';
+                } else {
+                    console.log('Google OAuth flow started successfully.', data);
+                }
+            } catch (err) {
+                console.error('Unexpected OAuth Error:', err);
+            }
+        }
+
+        // Attach purely to the window scope so inline ONCLICK/ONSUBMIT HTML bindings work within type="module"
+        window.handleLogin = handleLogin;
+        window.handleGoogleLogin = handleGoogleLogin;
+    </script>
 </body>
 
 </html>
