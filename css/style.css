@@ -1,16 +1,16 @@
 :root {
-    /* Color Palette - Dark Industrial Theme */
-    --bg-dark: #121418;
-    --surface-dark: #1C1F26;
-    --surface-light: #2D333E;
+    /* Color Palette - Light Industrial Theme */
+    --bg-dark: #f5f7fa;
+    --surface-dark: #ffffff;
+    --surface-light: #eef2f7;
     
-    --industrial-silver: #C0C5CE;
-    --silver-light: #E8ECEF;
-    --silver-dark: #8A94A6;
+    --industrial-silver: #1a2e4a;
+    --silver-light: #1a2e4a;
+    --silver-dark: #6b7a99;
     
-    --electric-blue: #0066FF;
-    --blue-hover: #3385ff;
-    --blue-glow: rgba(0, 102, 255, 0.4);
+    --electric-blue: #1a2e4a;
+    --blue-hover: #4a7fb5;
+    --blue-glow: rgba(74, 127, 181, 0.4);
     
     --white: #ffffff;
     --danger: #EF4444;
@@ -20,8 +20,8 @@
     --transition-normal: 0.3s ease;
     --border-radius: 8px;
     --border-radius-lg: 16px;
-    --box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    --box-shadow-hover: 0 10px 20px rgba(0, 102, 255, 0.15);
+    --box-shadow: 0 4px 6px rgba(0,0,0,0.06);
+    --box-shadow-hover: 0 10px 20px rgba(26, 46, 74, 0.1);
 }
 
 * {
@@ -114,7 +114,7 @@ a {
 }
 
 .btn-google:hover {
-    background-color: #f5f5f5;
+    background-color: var(--surface-light);
     transform: translateY(-1px);
 }
 
@@ -150,7 +150,7 @@ a {
     font-size: 1.5rem;
     font-weight: 800;
     letter-spacing: 1px;
-    color: var(--white);
+    color: var(--electric-blue);
 }
 
 .logo-icon {
@@ -193,10 +193,7 @@ a {
     font-weight: 800;
     line-height: 1.2;
     margin-bottom: 1.5rem;
-    background: linear-gradient(to right, #FFF, var(--industrial-silver));
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
+    color: var(--electric-blue);
 }
 
 .hero-subtitle {
@@ -261,7 +258,7 @@ a {
 .section-title {
     font-size: 2.5rem;
     font-weight: 800;
-    color: var(--white);
+    color: var(--electric-blue);
     margin-bottom: 2.5rem;
     position: relative;
     display: inline-block;
@@ -323,7 +320,7 @@ a {
 .auth-title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--white);
+    color: var(--electric-blue);
     margin-bottom: 0.5rem;
 }
 
@@ -353,9 +350,9 @@ a {
 
 .form-control {
     width: 100%;
-    background-color: rgba(255, 255, 255, 0.03);
+    background-color: var(--surface-dark);
     border: 1px solid var(--surface-light);
-    color: var(--white);
+    color: var(--silver-light);
     padding: 1rem 1.25rem;
     border-radius: var(--border-radius);
     font-family: inherit;
@@ -365,9 +362,9 @@ a {
 
 .form-control:focus {
     outline: none;
-    border-color: var(--electric-blue);
-    background-color: rgba(0, 102, 255, 0.05);
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+    border-color: var(--blue-hover);
+    background-color: var(--surface-dark);
+    box-shadow: 0 0 0 3px rgba(74, 127, 181, 0.1);
 }
 
 select.form-control {
@@ -429,10 +426,10 @@ select.form-control {
 
 /* Professional Footer */
 .footer-pro {
-    background-color: #0A0B0E;
+    background-color: var(--surface-dark);
     padding-top: 4rem;
     margin-top: auto;
-    border-top: 1px solid var(--surface-light);
+    border-top: 1px solid var(--border);
 }
 
 .footer-pro .footer-container {
@@ -444,7 +441,7 @@ select.form-control {
 }
 
 .footer-col h4 {
-    color: var(--white);
+    color: var(--electric-blue);
     font-size: 1.15rem;
     font-weight: 700;
     margin-bottom: 1.5rem;
@@ -525,12 +522,12 @@ select.form-control {
 }
 
 .footer-bottom {
-    background-color: #050608;
+    background-color: var(--surface-light);
     padding: 1.5rem 0;
     text-align: center;
     color: var(--silver-dark);
     font-size: 0.9rem;
-    border-top: 1px solid rgba(255,255,255,0.05);
+    border-top: 1px solid var(--border);
 }
 
 /* Dashboard Layout */
@@ -590,7 +587,7 @@ select.form-control {
 .dashboard-title {
     font-size: 2rem;
     font-weight: 700;
-    color: var(--white);
+    color: var(--electric-blue);
     margin-bottom: 0.5rem;
 }
 
@@ -642,7 +639,7 @@ select.form-control {
 
 .dashboard-card h3 {
     font-size: 1.25rem;
-    color: var(--white);
+    color: var(--electric-blue);
     font-weight: 700;
 }
 

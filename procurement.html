@@ -1,670 +1,1939 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>מרכז הרכש – פרופילי אלומיניום | ALUM-IL</title>
-<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root {
-  --bg: #0f1117;
-  --surface: #1a1d27;
-  --surface2: #222638;
-  --border: #2e3248;
-  --blue: #2563eb;
-  --blue-light: #3b82f6;
-  --text: #e8eaf0;
-  --muted: #7c84a0;
-  --green: #10b981;
-  --amber: #f59e0b;
-  --price-kg: 23;
-}
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Heebo', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מרכז הרכש | ALUM-IL</title>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f5f7fa;
+      --surface: #ffffff;
+      --surface2: #eef2f7;
+      --border: #d0d7e3;
+      --blue: #1a2e4a;
+      --blue-light: #4a7fb5;
+      --text: #1a2e4a;
+      --muted: #6b7a99;
+      --green: #16a34a;
+      --amber: #d97706;
+      --price-kg: 23;
+    }
 
-/* Header */
-.header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
-.header-logo { font-size: 18px; font-weight: 700; color: var(--blue-light); letter-spacing: 1px; }
-.header-title { font-size: 15px; font-weight: 500; color: var(--muted); }
-.cart-btn { background: var(--blue); color: #fff; border: none; padding: 8px 18px; border-radius: 8px; cursor: pointer; font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 600; display: flex; align-items: center; gap: 8px; transition: background 0.2s; }
-.cart-btn:hover { background: var(--blue-light); }
-.cart-badge { background: var(--amber); color: #000; border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
-/* Layout */
-.layout { display: grid; grid-template-columns: 1fr 360px; gap: 0; min-height: calc(100vh - 57px); }
+    body {
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
 
-/* Left panel */
-.catalog-panel { padding: 24px; border-left: 1px solid var(--border); overflow-y: auto; }
+    /* Header & Breadcrumb */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+      padding: 14px 24px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
 
-/* Order details bar */
-.order-bar { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px 20px; margin-bottom: 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-.order-field label { font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
-.order-field input, .order-field select { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 8px 12px; border-radius: 8px; font-family: 'Heebo', sans-serif; font-size: 14px; }
-.order-field input:focus, .order-field select:focus { outline: none; border-color: var(--blue); }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
 
-/* Search */
-.search-bar { position: relative; margin-bottom: 16px; }
-.search-bar input { width: 100%; background: var(--surface); border: 1px solid var(--border); color: var(--text); padding: 10px 16px 10px 40px; border-radius: 10px; font-family: 'Heebo', sans-serif; font-size: 14px; }
-.search-bar input:focus { outline: none; border-color: var(--blue); }
-.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 16px; }
+    .header-logo {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+      letter-spacing: 1px;
+    }
 
-/* Table */
-.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-.table-header { display: grid; grid-template-columns: 80px 1fr 80px 90px 100px 120px; gap: 0; background: var(--surface2); padding: 10px 16px; font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid var(--border); }
-.profile-row { display: grid; grid-template-columns: 80px 1fr 80px 90px 100px 120px; gap: 0; padding: 10px 16px; border-bottom: 1px solid var(--border); align-items: center; transition: background 0.15s; }
-.profile-row:last-child { border-bottom: none; }
-.profile-row:hover { background: var(--surface2); }
-.profile-row.in-cart { background: rgba(37,99,235,0.07); }
-.sku { font-size: 11px; color: var(--muted); font-weight: 500; }
-.pname { font-size: 13px; font-weight: 500; }
-.plen { font-size: 13px; color: var(--muted); }
-.pwpm { font-size: 13px; }
-.qty-ctrl { display: flex; align-items: center; gap: 6px; }
-.qty-btn { width: 26px; height: 26px; border: 1px solid var(--border); background: var(--bg); color: var(--text); border-radius: 6px; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.15s; }
-.qty-btn:hover { background: var(--blue); border-color: var(--blue); }
-.qty-input { width: 44px; text-align: center; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 4px; border-radius: 6px; font-family: 'Heebo', sans-serif; font-size: 13px; }
-.qty-input:focus { outline: none; border-color: var(--blue); }
-.add-btn { background: var(--blue); color: #fff; border: none; padding: 6px 12px; border-radius: 7px; cursor: pointer; font-family: 'Heebo', sans-serif; font-size: 12px; font-weight: 600; transition: background 0.15s; white-space: nowrap; }
-.add-btn:hover { background: var(--blue-light); }
-.added-btn { background: var(--green); color: #fff; border: none; padding: 6px 12px; border-radius: 7px; font-family: 'Heebo', sans-serif; font-size: 12px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+    .breadcrumb {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+    }
 
-/* Right panel - Cart */
-.cart-panel { background: var(--surface); padding: 24px; display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: calc(100vh - 57px); position: sticky; top: 57px; }
-.cart-title { font-size: 16px; font-weight: 700; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 12px; }
-.cart-empty { color: var(--muted); font-size: 13px; text-align: center; padding: 32px 0; }
-.cart-item { background: var(--surface2); border-radius: 10px; padding: 12px 14px; }
-.cart-item-name { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-.cart-item-sku { font-size: 11px; color: var(--muted); margin-bottom: 8px; }
-.cart-item-details { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
-.cart-item-weight { color: var(--blue-light); font-weight: 600; }
-.cart-remove { float: left; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 16px; line-height: 1; padding: 0; }
-.cart-remove:hover { color: #ef4444; }
+    .breadcrumb a {
+      color: var(--text);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
 
-/* Summary */
-.cart-summary { background: var(--surface2); border-radius: 12px; padding: 16px; margin-top: auto; }
-.summary-row { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 8px; color: var(--muted); }
-.summary-row.total { font-size: 15px; font-weight: 700; color: var(--text); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
-.summary-row.weight { color: var(--blue-light); font-weight: 600; }
-.note { font-size: 11px; color: var(--muted); background: rgba(245,158,11,0.1); border: 1px solid rgba(245,158,11,0.2); border-radius: 6px; padding: 8px 10px; }
+    .breadcrumb a:hover {
+      color: var(--blue-light);
+    }
 
-.export-btn { width: 100%; background: var(--green); color: #fff; border: none; padding: 12px; border-radius: 10px; font-family: 'Heebo', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: opacity 0.2s; }
-.export-btn:hover { opacity: 0.9; }
-.export-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .cart-btn {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      padding: 8px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.2s;
+    }
 
-/* RAL color picker */
-.ral-preview { width: 28px; height: 28px; border-radius: 6px; border: 2px solid var(--border); display: inline-block; vertical-align: middle; margin-right: 8px; }
+    .cart-btn:hover {
+      background: var(--blue-light);
+    }
 
-.price-notice { font-size: 11px; color: var(--muted); text-align: center; }
+    .cart-badge {
+      background: var(--amber);
+      color: #000;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+    }
 
-/* Modal */
-.modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 200; align-items: center; justify-content: center; }
-.modal-overlay.show { display: flex; }
-.modal { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 28px; max-width: 680px; width: 90%; max-height: 80vh; overflow-y: auto; }
-.modal h2 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-.modal-meta { font-size: 13px; color: var(--muted); margin-bottom: 20px; }
-.spec-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-.spec-table th { background: var(--surface2); padding: 10px 12px; text-align: right; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--border); }
-.spec-table td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-.spec-total { background: var(--surface2); font-weight: 700; }
-.modal-close { float: left; background: none; border: none; color: var(--muted); cursor: pointer; font-size: 22px; }
-.modal-print { background: var(--blue); color: #fff; border: none; padding: 10px 20px; border-radius: 8px; font-family: 'Heebo', sans-serif; font-size: 14px; cursor: pointer; margin-top: 16px; }
+    /* Main Views */
+    .view-section {
+      display: none;
+    }
 
-.pagination { display: flex; gap: 8px; justify-content: center; padding: 16px 0; flex-wrap: wrap; }
-.page-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 13px; }
-.page-btn.active { background: var(--blue); border-color: var(--blue); }
-.page-btn:hover:not(.active) { border-color: var(--blue-light); }
+    .view-section.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
 
-@media print {
-  body * { visibility: hidden; }
-  .modal, .modal * { visibility: visible; }
-  .modal { position: fixed; top: 0; left: 0; width: 100%; }
-  .modal-close, .modal-print { display: none; }
-}
-</style>
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Categories Grid */
+    .cats-container {
+      padding: 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+      flex: 1;
+    }
+
+    .cats-title {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    .cats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 24px;
+    }
+
+    .cat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px 24px;
+      text-align: center;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 240px;
+    }
+
+    .cat-card.active-cat {
+      cursor: pointer;
+    }
+
+    .cat-card.active-cat:hover {
+      transform: translateY(-4px);
+      border-color: var(--blue-light);
+      box-shadow: 0 10px 25px rgba(26, 46, 74, 0.1);
+    }
+
+    .cat-card.active-cat:hover .cat-icon {
+      color: var(--blue-light);
+      transform: scale(1.1);
+    }
+
+    .cat-icon {
+      font-size: 48px;
+      margin-bottom: 16px;
+      color: var(--blue-light);
+      transition: all 0.3s;
+    }
+
+    .cat-name {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .cat-desc {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 24px;
+      line-height: 1.5;
+    }
+
+    .cat-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-family: 'Heebo';
+      transition: all 0.2s;
+    }
+
+    .cat-card.active-cat .cat-btn {
+      background: var(--blue);
+      border-color: var(--blue);
+    }
+
+    .cat-card.coming-soon {
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .coming-badge {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: var(--surface2);
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+    }
+
+    /* Layout (Catalog + Cart) */
+    .layout {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 0;
+      min-height: calc(100vh - 120px);
+    }
+
+    @media (max-width: 992px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .cart-panel {
+        position: static;
+        max-height: none;
+        border-top: 1px solid var(--border);
+      }
+    }
+
+    /* Left panel */
+    .catalog-panel {
+      padding: 24px;
+      border-left: 1px solid var(--border);
+    }
+
+    /* Order details bar */
+    .order-bar {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+    }
+
+    .order-field label {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+      text-transform: uppercase;
+    }
+
+    .order-field input,
+    .order-field select {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+    }
+
+    .order-field input:focus,
+    .order-field select:focus {
+      outline: none;
+      border-color: var(--blue);
+    }
+
+    .ral-preview {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    /* Filter & Controls */
+    .controls-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .search-wrapper {
+      position: relative;
+      flex: 1;
+      min-width: 260px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--muted);
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 16px 10px 40px;
+      border-radius: 10px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 14px;
+      transition: border 0.2s;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(74, 127, 181, 0.15);
+    }
+
+    .clear-search {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 16px;
+      cursor: pointer;
+      display: none;
+    }
+
+    .clear-search:hover {
+      color: var(--text);
+    }
+
+    .view-toggles {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .view-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .view-btn.active {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    .view-btn:hover:not(.active) {
+      background: var(--surface2);
+      color: var(--text);
+    }
+
+    .chips {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+
+    .chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chip:hover {
+      border-color: var(--muted);
+      color: var(--text);
+    }
+
+    .chip.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #fff;
+    }
+
+    .results-count {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+
+    /* Grid View Catalog */
+    .catalog-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      display: none;
+    }
+
+    @media (max-width: 1200px) {
+      .catalog-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 600px) {
+      .catalog-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .catalog-grid.active {
+      display: grid;
+    }
+
+    .p-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      animation: slideUp 0.3s ease backwards;
+    }
+
+    .p-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(26, 46, 74, 0.1);
+      border-color: var(--blue-light);
+    }
+
+    .p-card-top {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .p-svg-wrap {
+      width: 60px;
+      height: 60px;
+      flex-shrink: 0;
+      background: var(--bg);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+    }
+
+    .p-info {
+      flex: 1;
+    }
+
+    .p-sku {
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .p-name {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin: 4px 0 8px;
+    }
+
+    .p-meta {
+      font-size: 12px;
+      color: var(--muted);
+      display: flex;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+
+    .p-meta span {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .p-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border);
+      padding-top: 12px;
+      margin-top: auto;
+    }
+
+    .qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qty-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: var(--surface2);
+      border-color: var(--blue-light);
+      color: var(--blue);
+    }
+
+    .qty-input {
+      width: 48px;
+      height: 32px;
+      text-align: center;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 4px;
+      border-radius: 6px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .qty-input:focus {
+      outline: none;
+      border-color: var(--blue-light);
+      box-shadow: 0 0 0 3px rgba(74, 127, 181, 0.15);
+    }
+
+    .add-btn {
+      background: var(--blue);
+      color: #ffffff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .add-btn:hover {
+      background: var(--blue-light);
+    }
+
+    .add-btn.in-cart {
+      background: var(--green);
+      color: #ffffff;
+    }
+
+    /* List View Catalog */
+    .catalog-list {
+      display: none;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .catalog-list.active {
+      display: block;
+    }
+
+    .list-header {
+      display: grid;
+      grid-template-columns: 60px 80px 1fr 80px 100px 120px 120px;
+      gap: 12px;
+      background: var(--surface2);
+      padding: 14px 20px;
+      font-size: 13px;
+      color: var(--blue);
+      font-weight: 600;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .l-row {
+      display: grid;
+      grid-template-columns: 60px 80px 1fr 80px 100px 120px 120px;
+      gap: 12px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+      transition: background 0.15s;
+      animation: slideUp 0.3s ease backwards;
+    }
+
+    .l-row:last-child {
+      border-bottom: none;
+    }
+
+    .l-row:hover {
+      background: var(--surface2);
+    }
+
+    @media (max-width: 900px) {
+      .list-header {
+        display: none;
+      }
+
+      .l-row {
+        grid-template-columns: 60px 1fr auto;
+        grid-template-rows: auto auto auto;
+        gap: 8px 12px;
+      }
+
+      .l-svg {
+        grid-row: 1 / 4;
+        grid-column: 1;
+      }
+
+      .l-sku {
+        grid-row: 1;
+        grid-column: 2;
+      }
+
+      .l-name {
+        grid-row: 2;
+        grid-column: 2;
+        grid-column-end: span 2;
+      }
+
+      .l-meta {
+        grid-row: 3;
+        grid-column: 2;
+        display: flex;
+        gap: 12px;
+      }
+
+      .l-qty {
+        grid-row: 1;
+        grid-column: 3;
+        justify-self: end;
+      }
+
+      .l-add {
+        grid-row: 3;
+        grid-column: 3;
+        justify-self: end;
+      }
+    }
+
+    mark {
+      background: rgba(37, 99, 235, 0.4);
+      color: #fff;
+      padding: 0 2px;
+      border-radius: 2px;
+    }
+
+    /* Right panel - Cart */
+    .cart-panel {
+      background: var(--surface2);
+      border-right: 2px solid var(--border);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      max-height: calc(100vh - 65px);
+      position: sticky;
+      top: 65px;
+    }
+
+    .cart-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--blue);
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-empty {
+      color: var(--muted);
+      font-size: 13px;
+      text-align: center;
+      padding: 32px 0;
+    }
+
+    .cart-item {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      position: relative;
+      animation: fadeIn 0.3s ease;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+    }
+
+    .cart-item-top {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      padding-left: 20px;
+    }
+
+    .cart-item-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--blue);
+      flex: 1;
+    }
+
+    .cart-remove {
+      position: absolute;
+      left: 12px;
+      top: 12px;
+      background: #ffeff0;
+      border: none;
+      color: #ef4444;
+      border-radius: 4px;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 14px;
+      transition: background 0.2s;
+    }
+
+    .cart-remove:hover {
+      background: #ef4444;
+      color: #ffffff;
+    }
+
+    .cart-item-sku {
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .cart-item-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-item-weight {
+      font-size: 12px;
+      color: var(--blue-light);
+      font-weight: 600;
+    }
+
+    .cart-item-qty .qty-btn {
+      width: 22px;
+      height: 22px;
+      font-size: 12px;
+    }
+
+    .cart-item-qty .qty-input {
+      width: 36px;
+      padding: 2px;
+      font-size: 12px;
+    }
+
+    /* Summary */
+    .cart-summary {
+      background: #eef2f7;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: auto;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      margin-bottom: 8px;
+      color: var(--muted);
+    }
+
+    .summary-row.total {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 2px solid var(--border);
+    }
+
+    .summary-row.weight {
+      color: var(--blue-light);
+      font-weight: 600;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #92400e;
+      background: #fffbeb;
+      border: 1px solid #fbbf24;
+      border-radius: 8px;
+      padding: 12px 14px;
+      font-weight: 500;
+    }
+
+    .export-btn {
+      width: 100%;
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      padding: 16px;
+      border-radius: 10px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .export-btn:hover {
+      background: var(--blue-light);
+    }
+
+    .export-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+
+    .price-notice {
+      font-size: 11px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Footer */
+    .footer {
+      padding: 16px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      margin-top: auto;
+    }
+
+    /* Modal */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      animation: fadeIn 0.2s;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 32px;
+      max-width: 720px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--blue);
+      margin-bottom: 8px;
+    }
+
+    .modal-meta {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .spec-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .spec-table th {
+      background: var(--surface2);
+      padding: 10px 12px;
+      text-align: right;
+      font-weight: 600;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .spec-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .spec-total {
+      background: var(--surface2);
+      font-weight: 700;
+    }
+
+    .modal-close {
+      float: left;
+      background: #f1f5f9;
+      border: none;
+      color: var(--muted);
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .modal-close:hover {
+      background: #e2e8f0;
+      color: var(--blue);
+    }
+
+    .modal-print {
+      background: var(--blue);
+      color: #fff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 24px;
+      transition: background 0.2s;
+    }
+
+    .modal-print:hover {
+      background: var(--blue-light);
+    }
+
+    .pagination {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      padding: 24px 0;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 8px 16px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      transition: all 0.2s;
+    }
+
+    .page-btn.active {
+      background: var(--blue);
+      border-color: var(--blue);
+      color: #ffffff;
+    }
+
+    .page-btn:hover:not(.active) {
+      border-color: var(--blue-light);
+      color: var(--blue);
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+
+      .modal,
+      .modal * {
+        visibility: visible;
+      }
+
+      .modal {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        max-width: 100%;
+        border: none;
+        box-shadow: none;
+        background: #fff;
+        color: #000;
+      }
+
+      .modal th,
+      .modal td {
+        border-color: #ddd;
+      }
+
+      .spec-total {
+        background: #f5f5f5;
+      }
+
+      .modal-close,
+      .modal-print {
+        display: none;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-<div class="header">
-  <div class="header-logo">ALUM-IL</div>
-  <div class="header-title">מרכז הרכש – פרופילי אלומיניום</div>
-  <button class="cart-btn" onclick="scrollToCart()">
-    🛒 סל הזמנה
-    <span class="cart-badge" id="cartCount">0</span>
-  </button>
-</div>
+  <div class="header">
+    <div class="header-left">
+      <div class="header-logo">ALUM-IL</div>
+      <div class="breadcrumb" id="breadcrumb">
+        <a onclick="showView('categories')">מרכז הרכש</a>
+      </div>
+    </div>
+    <button class="cart-btn" onclick="scrollToCart()">
+      🛒 סל הזמנה
+      <span class="cart-badge" id="cartCount">0</span>
+    </button>
+  </div>
 
-<div class="layout">
-  <!-- Catalog -->
-  <div class="catalog-panel">
-    <div class="order-bar">
-      <div class="order-field">
-        <label>מספר הזמנה</label>
-        <input type="text" id="orderNum" placeholder="לדוגמה: ORD-2026-001">
-      </div>
-      <div class="order-field">
-        <label>גוון RAL</label>
-        <select id="ralSelect" onchange="updateRalPreview()">
-          <option value="">בחר גוון...</option>
-        </select>
-      </div>
-      <div class="order-field">
-        <label>תצוגה מקדימה</label>
-        <div style="display:flex;align-items:center;margin-top:6px;">
-          <span class="ral-preview" id="ralPreview"></span>
-          <span id="ralLabel" style="font-size:13px;color:var(--muted)">לא נבחר</span>
+  <!-- Main Categories View -->
+  <div id="view-categories" class="view-section active">
+    <div class="cats-container">
+      <div class="cats-title">מרכז הרכש</div>
+      <div class="cats-grid">
+        <div class="cat-card active-cat" onclick="showView('catalog')">
+          <div class="cat-icon">🏗️</div>
+          <div class="cat-name">פרופילי אלומיניום</div>
+          <div class="cat-desc">מגוון רחב של עד 160 סוגי פרופילים מוכנים להזמנה במגוון אורכים ומידות.</div>
+          <button class="cat-btn">כניסה לקטגוריה</button>
+        </div>
+        <div class="cat-card coming-soon">
+          <div class="coming-badge">בקרוב</div>
+          <div class="cat-icon">🔩</div>
+          <div class="cat-name">עוגנים וברגים</div>
+          <div class="cat-desc">ברגי התקנה איכותיים, עוגנים סטטיים ודינמיים לחוזק מירבי.</div>
+          <button class="cat-btn">בקרוב</button>
+        </div>
+        <div class="cat-card coming-soon">
+          <div class="coming-badge">בקרוב</div>
+          <div class="cat-icon">💧</div>
+          <div class="cat-name">חומרי איטום</div>
+          <div class="cat-desc">סיליקון, דבקים ופתרונות איטום תקניים לתעשיית האלומיניום.</div>
+          <button class="cat-btn">בקרוב</button>
+        </div>
+        <div class="cat-card coming-soon">
+          <div class="coming-badge">בקרוב</div>
+          <div class="cat-icon">🏠</div>
+          <div class="cat-name">קירוי</div>
+          <div class="cat-desc">פנלים, פוליקרבונט, פרספקס ולינים תקניים.</div>
+          <button class="cat-btn">בקרוב</button>
+        </div>
+        <div class="cat-card coming-soon">
+          <div class="coming-badge">בקרוב</div>
+          <div class="cat-icon">🦺</div>
+          <div class="cat-name">אביזרים ובטיחות</div>
+          <div class="cat-desc">כפפות, משקפי מגן, רתמות וציוד עזר למתקינים.</div>
+          <button class="cat-btn">בקרוב</button>
+        </div>
+        <div class="cat-card coming-soon">
+          <div class="coming-badge">בקרוב</div>
+          <div class="cat-icon">🛠️</div>
+          <div class="cat-name">כלים ומוצרים</div>
+          <div class="cat-desc">כלי עבודה ייעודיים חשמליים וידניים לאלומיניום.</div>
+          <button class="cat-btn">בקרוב</button>
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="search-bar">
-      <span class="search-icon">🔍</span>
-      <input type="text" id="searchInput" placeholder="חיפוש פרופיל לפי שם או מק&quot;ט..." oninput="renderTable()">
-    </div>
+  <!-- Catalog View -->
+  <div id="view-catalog" class="view-section">
+    <div class="layout">
+      <!-- Left panel -->
+      <div class="catalog-panel">
+        <div class="order-bar">
+          <div class="order-field">
+            <label>מספר הזמנה</label>
+            <input type="text" id="orderNum" placeholder="לדוגמה: ORD-2026-001">
+          </div>
+          <div class="order-field">
+            <label>גוון RAL</label>
+            <select id="ralSelect" onchange="updateRalPreview()">
+              <option value="">בחר גוון...</option>
+            </select>
+          </div>
+          <div class="order-field">
+            <label>תצוגה מקדימה</label>
+            <div style="display:flex;align-items:center;margin-top:6px;">
+              <span class="ral-preview" id="ralPreview"></span>
+              <span id="ralLabel" style="font-size:13px;color:var(--muted)">לא נבחר</span>
+            </div>
+          </div>
+        </div>
 
-    <div class="table-wrap">
-      <div class="table-header">
-        <span>מק"ט</span>
-        <span>שם פרופיל</span>
-        <span>אורך</span>
-        <span>ק"ג/מ'</span>
-        <span>כמות (יח')</span>
-        <span>פעולה</span>
+        <div class="controls-bar">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" class="search-input" placeholder="חיפוש פרופיל לפי שם או מק&quot;ט...">
+            <button class="clear-search" id="clearSearch">✕</button>
+          </div>
+          <div class="view-toggles">
+            <button class="view-btn active" id="btnGrid" onclick="setDisplayMode('grid')" title="תצוגת כרטיסיות">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+            </button>
+            <button class="view-btn" id="btnList" onclick="setDisplayMode('list')" title="תצוגת רשימה">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
+                <line x1="8" y1="6" x2="21" y2="6"></line>
+                <line x1="8" y1="12" x2="21" y2="12"></line>
+                <line x1="8" y1="18" x2="21" y2="18"></line>
+                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="chips" id="catChips">
+          <div class="chip active" onclick="setCategory('')">הכל</div>
+          <!-- Will be populated dynamically -->
+        </div>
+
+        <div class="results-count" id="resultsCount">מציג 0 פרופילים</div>
+
+        <!-- Grid Catalog -->
+        <div id="catalogGrid" class="catalog-grid active"></div>
+
+        <!-- List Catalog -->
+        <div id="catalogList" class="catalog-list">
+          <div class="list-header">
+            <span>איור</span>
+            <span>מק"ט</span>
+            <span>שם פרופיל</span>
+            <span>אורך</span>
+            <span>ק"ג/מ'</span>
+            <span>כמות (יח')</span>
+            <span>פעולה</span>
+          </div>
+          <div id="profileListItems"></div>
+        </div>
+
+        <div class="pagination" id="pagination"></div>
       </div>
-      <div id="profileList"></div>
-    </div>
-    <div class="pagination" id="pagination"></div>
-  </div>
 
-  <!-- Cart -->
-  <div class="cart-panel" id="cartPanel">
-    <div class="cart-title">📋 סל ההזמנה</div>
-    <div id="cartItems"><div class="cart-empty">הסל ריק<br><span style="font-size:11px">הוסף פרופילים מהקטלוג</span></div></div>
-    <div class="cart-summary" id="cartSummary" style="display:none">
-      <div class="summary-row weight"><span>משקל כולל</span><span id="sumWeight">0 ק"ג</span></div>
-      <div class="summary-row weight"><span>טווח סטייה (±5%)</span><span id="sumRange">-</span></div>
-      <div class="summary-row"><span>מחיר לק"ג (לפני מע"מ)</span><span id="priceKg">₪23</span></div>
-      <div class="summary-row total"><span>סה"כ לפני מע"מ</span><span id="sumTotal">₪0</span></div>
-      <div class="summary-row total"><span>סה"כ כולל מע"מ</span><span id="sumVat">₪0</span></div>
-    </div>
-    <div class="note">⚠️ המשקלים הם לפני צבע. קיימת סטייה של עד 5% במשקל.</div>
-    <div class="price-notice">מחיר לק"ג מתעדכן שבועית</div>
-    <button class="export-btn" id="exportBtn" onclick="showSpec()" disabled>📄 הצג מפרט הזמנה</button>
-  </div>
-</div>
-
-<!-- Modal -->
-<div class="modal-overlay" id="specModal">
-  <div class="modal">
-    <button class="modal-close" onclick="closeModal()">✕</button>
-    <h2>מפרט הזמנה</h2>
-    <div class="modal-meta" id="specMeta"></div>
-    <table class="spec-table">
-      <thead>
-        <tr>
-          <th>מק"ט</th>
-          <th>שם פרופיל</th>
-          <th>כמות</th>
-          <th>אורך יח'</th>
-          <th>ק"ג/מ'</th>
-          <th>משקל כולל</th>
-        </tr>
-      </thead>
-      <tbody id="specBody"></tbody>
-    </table>
-    <button class="modal-print" onclick="window.print()">🖨️ הדפס מפרט</button>
-  </div>
-</div>
-
-<script>
-const PROFILES = [
-  {sku:"ALUM1000",name:"20/70/0.8 ZD1",wpm:0.4,wpu:2.4,len:"6",cat:"מילוי פרגולה/גדר/שער"},
-  {sku:"ALUM1001",name:"20/70/0.8 ZD2",wpm:0.4,wpu:2.4,len:"6",cat:"מילוי פרגולה/גדר/שער"},
-  {sku:"ALUM1002",name:"20/70/0.8 ZD3",wpm:0.4,wpu:2.4,len:"6",cat:"מילוי פרגולה/גדר/שער"},
-  {sku:"ALUM1003",name:"20/70/0.8 ZD4",wpm:0.4,wpu:2.4,len:"6",cat:"מילוי פרגולה/גדר/שער"},
-  {sku:"ALUM1004",name:"ZD 1 זד הצללה גוון עץ",wpm:0.33,wpu:1.98,len:"6",cat:"הצללה עבור פרגולה"},
-  {sku:"ALUM1005",name:"ZD 3 זד הצללה גוון עץ",wpm:0.33,wpu:1.98,len:"6",cat:"הצללה עבור פרגולה"},
-  {sku:"ALUM1006",name:"ZD 4 זד הצללה גוון עץ",wpm:0.33,wpu:1.98,len:"6",cat:"הצללה עבור פרגולה"},
-  {sku:"ALUM1007",name:"גדר 20/40",wpm:0.626,wpu:3.756,len:"6",cat:"פרופיל עבור גדר בריתוך"},
-  {sku:"ALUM1008",name:"גדר 40/40",wpm:0.761,wpu:4.568,len:"6",cat:"פרופיל עבור גדר/שער בריתוך"},
-  {sku:"ALUM1009",name:"גדר 40/60",wpm:0.987,wpu:5.922,len:"6",cat:"פרופיל עבור גדר/שער בריתוך"},
-  {sku:"ALUM1010",name:"גדר 50/40",wpm:0.89,wpu:6.23,len:"7",cat:""},
-  {sku:"ALUM1011",name:"דאבל טי 120",wpm:2.314,wpu:13.884,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1012",name:"דאבל טי 142/1.6",wpm:2.529,wpu:15.174,len:"6/6.5/7",cat:"מסגרת לפרגולה"},
-  {sku:"ALUM1013",name:"דאבל טי 165",wpm:3.12,wpu:18.72,len:"6/6.5/7",cat:"מסגרת לפרגולה"},
-  {sku:"ALUM1014",name:"דאבל טי מעוצב (הייטק) 120",wpm:2.704,wpu:16.224,len:"6/6.5/7",cat:"מסגרת לפרגולה"},
-  {sku:"ALUM1015",name:"הצללה חצי ירח",wpm:0.28,wpu:1.68,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1016",name:"הצללה/רפפה זד",wpm:0.413,wpu:2.478,len:"6/6.5/7",cat:"מילוי עבור פרגולה"},
-  {sku:"ALUM1017",name:"וואל לסוככים",wpm:1.29,wpu:7.74,len:"6",cat:"צינור עבור בד לסוככים"},
-  {sku:"ALUM1018",name:"זוית 10/10",wpm:0.731,wpu:4.386,len:"6",cat:""},
-  {sku:"ALUM1019",name:"זוית 14/120",wpm:0.865,wpu:5.19,len:"6",cat:""},
-  {sku:"ALUM1020",name:"זוית 15/20/1.5",wpm:1.141,wpu:6.846,len:"6",cat:""},
-  {sku:"ALUM1021",name:"זוית 18/100/1.5",wpm:0.507,wpu:3.042,len:"6",cat:""},
-  {sku:"ALUM1022",name:"זוית 18/30/1.5",wpm:0.202,wpu:1.212,len:"6",cat:""},
-  {sku:"ALUM1023",name:"זוית 18/40/1.5",wpm:0.238,wpu:1.428,len:"6",cat:""},
-  {sku:"ALUM1024",name:"זוית 18/50/1.5",wpm:0.292,wpu:1.752,len:"6",cat:""},
-  {sku:"ALUM1025",name:"זוית 18/60/1.5",wpm:0.334,wpu:2.004,len:"6",cat:""},
-  {sku:"ALUM1026",name:"זוית 18/70/1.5",wpm:0.378,wpu:2.268,len:"6",cat:""},
-  {sku:"ALUM1027",name:"זוית 18/80/1.5",wpm:0.421,wpu:2.526,len:"6",cat:""},
-  {sku:"ALUM1028",name:"זוית 20/20/1.5",wpm:0.162,wpu:0.972,len:"6",cat:""},
-  {sku:"ALUM1029",name:"זוית 30/30",wpm:0.353,wpu:2.118,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1030",name:"זוית 4/4/3",wpm:0.679,wpu:4.074,len:"6",cat:""},
-  {sku:"ALUM1031",name:"זוית 40/40/2",wpm:0.463,wpu:2.778,len:"6",cat:""},
-  {sku:"ALUM1032",name:"זוית 40/40/4",wpm:0.913,wpu:5.478,len:"6",cat:""},
-  {sku:"ALUM1033",name:"זוית 40/50/2.5",wpm:0.638,wpu:3.828,len:"6",cat:""},
-  {sku:"ALUM1034",name:"זוית 50/50/2.5",wpm:0.716,wpu:4.296,len:"6",cat:""},
-  {sku:"ALUM1035",name:"זוית 50/50/5",wpm:1.426,wpu:8.556,len:"6",cat:""},
-  {sku:"ALUM1036",name:"זוית 80/40",wpm:1.751,wpu:10.506,len:"6",cat:""},
-  {sku:"ALUM1037",name:"חיפוי בורג נסתר 15 ס\"מ",wpm:1.04,wpu:6.24,len:"6",cat:""},
-  {sku:"ALUM1038",name:"טי 100 (חוצץ לפרגולה)",wpm:1.73,wpu:10.38,len:"6/7",cat:""},
-  {sku:"ALUM1039",name:"טי 120 (חוצץ לפרגולה)",wpm:2.249,wpu:13.494,len:"6/6.5/7",cat:"חוצץ/אגד לפרגולה"},
-  {sku:"ALUM1040",name:"טי 80 חוצץ לפרגולה",wpm:1.297,wpu:7.782,len:"4/5/6/6.5/7",cat:"חוצץ/אגד לפרגולה"},
-  {sku:"ALUM1041",name:"טי תאורה 120/40",wpm:1.892,wpu:11.352,len:"6/6.5/7",cat:"חוצץ/אגד לפרגולה עם מקום לתאורה"},
-  {sku:"ALUM1042",name:"טי תאורה 40/100",wpm:1.862,wpu:11.172,len:"6/7",cat:""},
-  {sku:"ALUM1043",name:"יו + מכסה 20/40",wpm:0.634,wpu:3.804,len:"6",cat:""},
-  {sku:"ALUM1044",name:"יו 10/10",wpm:0.09,wpu:0.54,len:"6",cat:""},
-  {sku:"ALUM1045",name:"יו 20/20/1",wpm:0.167,wpu:1.002,len:"6",cat:""},
-  {sku:"ALUM1046",name:"יו 25/25/2",wpm:0.398,wpu:2.388,len:"6",cat:""},
-  {sku:"ALUM1047",name:"יו 30/36/2.2",wpm:0.558,wpu:3.348,len:"6",cat:""},
-  {sku:"ALUM1048",name:"יו 36/30/2.5",wpm:0.64,wpu:3.84,len:"6",cat:""},
-  {sku:"ALUM1049",name:"יו 95/50/3",wpm:1.632,wpu:9.792,len:"6",cat:""},
-  {sku:"ALUM1050",name:"יו הגבה למעקה",wpm:0.404,wpu:2.424,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1051",name:"יו הצללה 25/50",wpm:0.404,wpu:2.424,len:"6",cat:""},
-  {sku:"ALUM1052",name:"יו הצללה 44.5/14.5",wpm:0.235,wpu:1.41,len:"4/5/6/6.5/7",cat:""},
-  {sku:"ALUM1053",name:"יו לסורג שקוף",wpm:0.562,wpu:3.372,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1054",name:"יו סוככים 120/35",wpm:1.206,wpu:7.236,len:"6",cat:""},
-  {sku:"ALUM1055",name:"יו סוככים 120/45.4",wpm:1.778,wpu:8.179,len:"4.6/6",cat:""},
-  {sku:"ALUM1056",name:"יו תחתון למעקה",wpm:0.47,wpu:2.82,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1057",name:"יו תחתון למעקה 26/25",wpm:0.424,wpu:2.544,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1058",name:"מאחז יד מלבני",wpm:2.123,wpu:12.738,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1059",name:"מאחז מעוגל",wpm:1.878,wpu:11.268,len:"6/6.5/7",cat:"פרופיל למעקה"},
-  {sku:"ALUM1060",name:"מגש 130",wpm:0.69,wpu:4.14,len:"6",cat:""},
-  {sku:"ALUM1061",name:"מגש 18/150/1.5",wpm:0.838,wpu:5.028,len:"6",cat:""},
-  {sku:"ALUM1062",name:"מגש 200",wpm:1.059,wpu:6.354,len:"6",cat:""},
-  {sku:"ALUM1063",name:"מכסה לעמוד ALUM משולב",wpm:0.32,wpu:1.92,len:"6",cat:""},
-  {sku:"ALUM1064",name:"מכסה שטוח 2000",wpm:0.28,wpu:1.68,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1065",name:"מלבן 10/40",wpm:0.334,wpu:2.004,len:"6",cat:""},
-  {sku:"ALUM1066",name:"מלבן 120/40 עובי 4 ממ",wpm:3.42,wpu:20.52,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1067",name:"מלבן 135/53",wpm:1.93,wpu:11.58,len:"4/5/6/6.5/7",cat:""},
-  {sku:"ALUM1068",name:"מלבן 20/10",wpm:0.185,wpu:1.11,len:"6",cat:""},
-  {sku:"ALUM1069",name:"מלבן 20/100/0.9",wpm:0.608,wpu:3.648,len:"6",cat:""},
-  {sku:"ALUM1070",name:"מלבן 20/120",wpm:0.926,wpu:5.556,len:"6",cat:""},
-  {sku:"ALUM1071",name:"מלבן 20/130/1.2",wpm:1.102,wpu:6.612,len:"6",cat:""},
-  {sku:"ALUM1072",name:"מלבן 20/150/1.2",wpm:1.31,wpu:7.86,len:"6",cat:""},
-  {sku:"ALUM1073",name:"מלבן 20/200/1.8",wpm:2.4,wpu:14.4,len:"6",cat:""},
-  {sku:"ALUM1074",name:"מלבן 20/26 (הייטק)",wpm:0.357,wpu:2.142,len:"6",cat:""},
-  {sku:"ALUM1075",name:"מלבן 20/40 עובי דופן 1.3",wpm:0.496,wpu:2.976,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1076",name:"מלבן 20/40/0.9",wpm:0.305,wpu:1.83,len:"6",cat:""},
-  {sku:"ALUM1077",name:"מלבן 20/40/1.15",wpm:0.383,wpu:2.298,len:"4/5/6/6.5/7",cat:""},
-  {sku:"ALUM1078",name:"מלבן 20/40/2",wpm:0.73,wpu:4.38,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1079",name:"מלבן 20/50/1.1",wpm:0.499,wpu:2.994,len:"6",cat:""},
-  {sku:"ALUM1080",name:"מלבן 20/50/2",wpm:0.851,wpu:5.106,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1081",name:"מלבן 20/70/0.8",wpm:0.411,wpu:2.466,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1082",name:"מלבן 20/70/1.6",wpm:0.89,wpu:5.34,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1083",name:"מלבן 20/90/1",wpm:0.62,wpu:3.72,len:"6",cat:""},
-  {sku:"ALUM1084",name:"מלבן 300/100 צבע לבן",wpm:7.176,wpu:60.996,len:"8.5",cat:""},
-  {sku:"ALUM1085",name:"מלבן 300/100 צבע שחור",wpm:7.176,wpu:60.996,len:"8.5",cat:""},
-  {sku:"ALUM1086",name:"מלבן 40/100/1.8",wpm:1.372,wpu:8.232,len:"4/5/6/6.5/7",cat:""},
-  {sku:"ALUM1087",name:"מלבן 40/120/1.8",wpm:1.632,wpu:9.792,len:"4/5/6/6.5/7",cat:""},
-  {sku:"ALUM1088",name:"מלבן 40/60/1.2",wpm:0.709,wpu:4.254,len:"6",cat:""},
-  {sku:"ALUM1089",name:"מלבן 40/60/2",wpm:1.098,wpu:6.588,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1090",name:"מלבן 40/80/1.4",wpm:0.99,wpu:5.94,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1091",name:"מלבן 40/80/2",wpm:1.29,wpu:7.74,len:"6",cat:""},
-  {sku:"ALUM1092",name:"מלבן 50/100/2",wpm:1.64,wpu:9.84,len:"6",cat:""},
-  {sku:"ALUM1093",name:"מלבן 50/150 עובי דופן 4 ממ",wpm:4.326,wpu:25.956,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1094",name:"מלבן 50/200/3",wpm:4.248,wpu:25.488,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1095",name:"מלבן 50/40/3",wpm:1.415,wpu:8.49,len:"6",cat:""},
-  {sku:"ALUM1096",name:"מלבן 60/30",wpm:0.811,wpu:4.867,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1097",name:"מסגרת גדר עם קליפס",wpm:1.08,wpu:6.48,len:"6",cat:""},
-  {sku:"ALUM1098",name:"מסתור כביסה 5800",wpm:0.454,wpu:2.724,len:"6",cat:""},
-  {sku:"ALUM1099",name:"מעצור שער",wpm:0.197,wpu:1.182,len:"6",cat:""},
-  {sku:"ALUM1100",name:"מקבילית גדולה 78.5/20",wpm:0.387,wpu:2.322,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1101",name:"מקבילית קטנה 58.5/20",wpm:0.297,wpu:1.782,len:"6",cat:""},
-  {sku:"ALUM1102",name:"מרובע 100/100/2",wpm:2.242,wpu:13.452,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1103",name:"מרובע 130/130/2",wpm:2.932,wpu:17.592,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1104",name:"מרובע 15/15",wpm:0.208,wpu:1.248,len:"6",cat:""},
-  {sku:"ALUM1105",name:"מרובע 150/150",wpm:4.256,wpu:25.536,len:"6/7",cat:""},
-  {sku:"ALUM1106",name:"מרובע 20/20/1",wpm:0.301,wpu:1.806,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1107",name:"מרובע 200/200 ללא ציפוי",wpm:6.032,wpu:42.224,len:"7",cat:""},
-  {sku:"ALUM1108",name:"מרובע 200/200 צבע לבן",wpm:6.032,wpu:36.192,len:"6/7",cat:""},
-  {sku:"ALUM1109",name:"מרובע 200/200 צבע שחור",wpm:6.032,wpu:36.192,len:"6/7",cat:""},
-  {sku:"ALUM1110",name:"מרובע 27.5/27.5/1.2",wpm:0.36,wpu:2.16,len:"6",cat:""},
-  {sku:"ALUM1111",name:"מרובע 30/30/1.4",wpm:0.649,wpu:3.894,len:"6",cat:""},
-  {sku:"ALUM1112",name:"מרובע 30/30/2",wpm:0.829,wpu:4.974,len:"6",cat:""},
-  {sku:"ALUM1113",name:"מרובע 40/40/1.2",wpm:0.727,wpu:4.362,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1114",name:"מרובע 40/40/2",wpm:1.088,wpu:6.528,len:"6",cat:""},
-  {sku:"ALUM1115",name:"מרובע 50/50/1.8",wpm:0.954,wpu:5.724,len:"6",cat:""},
-  {sku:"ALUM1116",name:"מרובע 80/80",wpm:1.912,wpu:11.472,len:"6",cat:""},
-  {sku:"ALUM1117",name:"מרזב 120",wpm:2.6,wpu:15.6,len:"6/7",cat:"מלבן עם מרזב נסתר"},
-  {sku:"ALUM1118",name:"עכביש 120",wpm:2.39,wpu:14.34,len:"6",cat:""},
-  {sku:"ALUM1119",name:"עכביש 150",wpm:2.726,wpu:16.356,len:"6",cat:""},
-  {sku:"ALUM1120",name:"עכביש 40.8",wpm:2.256,wpu:13.536,len:"6",cat:""},
-  {sku:"ALUM1121",name:"עמוד 45/45 ALUM",wpm:1.139,wpu:6.834,len:"6",cat:""},
-  {sku:"ALUM1122",name:"עמוד 60/60 פלוס מכסה",wpm:1.726,wpu:10.356,len:"6",cat:""},
-  {sku:"ALUM1123",name:"עמוד ALUM משולב",wpm:1.664,wpu:9.984,len:"6",cat:""},
-  {sku:"ALUM1124",name:"עמוד ALUM קנט 1",wpm:1.545,wpu:9.27,len:"6",cat:"זוויות, פרגולות"},
-  {sku:"ALUM1125",name:"עמוד גדר 70/70",wpm:1.726,wpu:10.356,len:"6",cat:""},
-  {sku:"ALUM1126",name:"עמוד לגדר 40/70",wpm:1.82,wpu:10.92,len:"6",cat:""},
-  {sku:"ALUM1127",name:"ערבי קנט 1",wpm:0.462,wpu:2.772,len:"6",cat:""},
-  {sku:"ALUM1128",name:"פלח 30/3",wpm:0.26,wpu:1.56,len:"6",cat:""},
-  {sku:"ALUM1129",name:"פלח 40/1.5",wpm:0.172,wpu:1.032,len:"6",cat:""},
-  {sku:"ALUM1130",name:"פלח 40/5",wpm:0.686,wpu:4.116,len:"6",cat:""},
-  {sku:"ALUM1131",name:"פלח 50/2",wpm:0.27,wpu:1.62,len:"6",cat:""},
-  {sku:"ALUM1132",name:"פלח שטוח 20/1.5",wpm:0.863,wpu:5.178,len:"6",cat:""},
-  {sku:"ALUM1133",name:"פרופיל 2000 66/100",wpm:1.326,wpu:7.956,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1134",name:"פרופיל 2000 66/40",wpm:1.102,wpu:6.612,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1135",name:"פרופיל 2000 66/66",wpm:1.307,wpu:7.842,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1136",name:"פרופיל 2000 קליפס בידודי",wpm:1.476,wpu:8.856,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1137",name:"פרופיל 2000 קליפס משופע",wpm:0.27,wpu:1.62,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1138",name:"פרופיל 2000 רבע עגול",wpm:1.17,wpu:7.02,len:"6",cat:""},
-  {sku:"ALUM1139",name:"פרופיל גדר 2 קנטים",wpm:0.799,wpu:4.794,len:"6",cat:""},
-  {sku:"ALUM1140",name:"פרופיל גדר קנט אחד",wpm:0.785,wpu:4.71,len:"6",cat:""},
-  {sku:"ALUM1141",name:"פרופיל יו 40/40 עם מכסה",wpm:0.915,wpu:5.49,len:"6",cat:""},
-  {sku:"ALUM1142",name:"פרופיל לכרסום",wpm:0.832,wpu:4.992,len:"6",cat:""},
-  {sku:"ALUM1143",name:"פרופיל מדרגה דק (זיגזג)",wpm:0.712,wpu:4.272,len:"6",cat:""},
-  {sku:"ALUM1144",name:"פרופיל מדרגה עבה (זיגזג)",wpm:0.953,wpu:5.718,len:"6",cat:""},
-  {sku:"ALUM1145",name:"פרופיל מקור",wpm:0.421,wpu:2.526,len:"6",cat:""},
-  {sku:"ALUM1146",name:"פרופיל עוגן",wpm:1.399,wpu:8.394,len:"6",cat:""},
-  {sku:"ALUM1147",name:"פרופיל תריס 43.5/27.5/1",wpm:0.427,wpu:2.562,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1148",name:"צינור 30/2",wpm:0.498,wpu:2.988,len:"6",cat:""},
-  {sku:"ALUM1149",name:"צינור 35/2",wpm:0.586,wpu:3.516,len:"6",cat:""},
-  {sku:"ALUM1150",name:"צינור 40/2",wpm:0.669,wpu:4.014,len:"6",cat:""},
-  {sku:"ALUM1151",name:"קונסטרוקציה למסתור כביסה",wpm:0.693,wpu:4.158,len:"6",cat:""},
-  {sku:"ALUM1152",name:"קליפס למכורסם",wpm:0.176,wpu:1.056,len:"6",cat:""},
-  {sku:"ALUM1153",name:"קליק 20/25",wpm:0.28,wpu:1.68,len:"6",cat:""},
-  {sku:"ALUM1154",name:"קליק 20/45",wpm:0.469,wpu:2.814,len:"6",cat:""},
-  {sku:"ALUM1155",name:"קליק חיפוי בקליק",wpm:0.469,wpu:2.814,len:"6",cat:"סדרת קליק"},
-  {sku:"ALUM1156",name:"קליק מחבר משופע",wpm:1.04,wpu:6.24,len:"6",cat:""},
-  {sku:"ALUM1157",name:"קליק מכסה אחורי",wpm:0.062,wpu:0.372,len:"6",cat:""},
-  {sku:"ALUM1158",name:"קנט 1 100/40",wpm:1.516,wpu:9.096,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1159",name:"קנט 1 120/40",wpm:1.76,wpu:10.56,len:"6/6.5/7",cat:""},
-  {sku:"ALUM1160",name:"רבע עגול למסתור",wpm:1.0,wpu:6.0,len:"6",cat:""},
-  {sku:"ALUM1161",name:"שער - פרופיל עם מעצור",wpm:0.845,wpu:5.07,len:"6",cat:"עבור שער בריתוך"}
-];
-
-const RAL_COLORS = [
-  {code:"RAL1000",name:"ירוק-בז'",hex:"#BEBD7F"},{code:"RAL1001",name:"בז' צהוב",hex:"#C2B078"},{code:"RAL1002",name:"צהוב חול",hex:"#C6A664"},
-  {code:"RAL1003",name:"צהוב אות",hex:"#E5BE01"},{code:"RAL1004",name:"צהוב זהב",hex:"#CDA323"},{code:"RAL1005",name:"צהוב דבש",hex:"#A98307"},
-  {code:"RAL1006",name:"צהוב תירס",hex:"#E4A010"},{code:"RAL1007",name:"צהוב נרקיס",hex:"#DC9D00"},{code:"RAL1011",name:"בז' חום",hex:"#8A6642"},
-  {code:"RAL1012",name:"צהוב לימון",hex:"#C7B446"},{code:"RAL1013",name:"לבן אויסטר",hex:"#EAE6CA"},{code:"RAL1014",name:"שנהב",hex:"#E1CC4F"},
-  {code:"RAL1015",name:"שנהב בהיר",hex:"#E6D690"},{code:"RAL1016",name:"צהוב גופרית",hex:"#EDFF21"},{code:"RAL1017",name:"צהוב זעפרן",hex:"#F5D033"},
-  {code:"RAL1018",name:"צהוב אבץ",hex:"#F8F32B"},{code:"RAL1019",name:"אפור-בז'",hex:"#9E9764"},{code:"RAL1020",name:"צהוב-זית",hex:"#999950"},
-  {code:"RAL1021",name:"צהוב קולזה",hex:"#F3DA0B"},{code:"RAL1023",name:"צהוב תנועה",hex:"#FAD201"},{code:"RAL1024",name:"צהוב גוון",hex:"#AEA04B"},
-  {code:"RAL1026",name:"צהוב זוהר",hex:"#FFFF00"},{code:"RAL1027",name:"צהוב קארי",hex:"#9D9101"},{code:"RAL1028",name:"צהוב מלון",hex:"#F4A900"},
-  {code:"RAL1032",name:"צהוב רתם",hex:"#D6AE01"},{code:"RAL1033",name:"צהוב דהליה",hex:"#F3A505"},{code:"RAL1034",name:"צהוב פסטל",hex:"#EFA94A"},
-  {code:"RAL2000",name:"כתום-צהוב",hex:"#C93C20"},{code:"RAL2001",name:"כתום-אדום",hex:"#CB2821"},{code:"RAL2002",name:"כתום דם",hex:"#FF7514"},
-  {code:"RAL2003",name:"כתום פסטל",hex:"#F44611"},{code:"RAL2004",name:"כתום טהור",hex:"#FF2301"},{code:"RAL2008",name:"כתום-אדום בהיר",hex:"#F75E25"},
-  {code:"RAL2009",name:"כתום תנועה",hex:"#F54021"},{code:"RAL2010",name:"כתום אות",hex:"#D84B20"},{code:"RAL2011",name:"כתום עמוק",hex:"#EC7C26"},
-  {code:"RAL2012",name:"כתום סלמון",hex:"#E55137"},{code:"RAL3000",name:"אדום להבה",hex:"#AF2B1E"},{code:"RAL3001",name:"אדום אות",hex:"#A52019"},
-  {code:"RAL3002",name:"אדום קרמין",hex:"#A2231D"},{code:"RAL3003",name:"אדום רובין",hex:"#9B111E"},{code:"RAL3004",name:"אדום סגול",hex:"#75151E"},
-  {code:"RAL3005",name:"אדום יין",hex:"#5E2129"},{code:"RAL3007",name:"אדום-שחור",hex:"#412227"},{code:"RAL3009",name:"אדום חמצן",hex:"#642424"},
-  {code:"RAL3011",name:"אדום חום",hex:"#781F19"},{code:"RAL3012",name:"אדום בז'",hex:"#C1876B"},{code:"RAL3013",name:"אדום עגבניה",hex:"#A12312"},
-  {code:"RAL3014",name:"ורוד עתיק",hex:"#D36E70"},{code:"RAL3015",name:"ורוד בהיר",hex:"#EA899A"},{code:"RAL3016",name:"אדום קורל",hex:"#B32821"},
-  {code:"RAL3017",name:"ורוד",hex:"#E63244"},{code:"RAL3018",name:"ורוד-תות",hex:"#D53032"},{code:"RAL3020",name:"אדום תנועה",hex:"#CC0605"},
-  {code:"RAL3022",name:"כתום-סלמון",hex:"#D95030"},{code:"RAL3024",name:"אדום זוהר",hex:"#F80000"},{code:"RAL3026",name:"אדום זוהר",hex:"#FE0000"},
-  {code:"RAL4001",name:"סגול-אדום",hex:"#922B3E"},{code:"RAL4002",name:"סגול אדום",hex:"#A63437"},{code:"RAL4003",name:"ורוד ארה",hex:"#D15B8F"},
-  {code:"RAL4004",name:"בורגונדי",hex:"#6D1F5E"},{code:"RAL4005",name:"כחול-סגול",hex:"#6C4675"},{code:"RAL4006",name:"סגול תנועה",hex:"#A03472"},
-  {code:"RAL4007",name:"סגול-שחור",hex:"#4A192C"},{code:"RAL4008",name:"סגול אות",hex:"#924E7D"},{code:"RAL4009",name:"סגול פסטל",hex:"#A18594"},
-  {code:"RAL4010",name:"סגול טלקום",hex:"#CF3476"},{code:"RAL5000",name:"כחול סגול",hex:"#354D73"},{code:"RAL5001",name:"כחול-ירוק",hex:"#1F3438"},
-  {code:"RAL5002",name:"כחול אולטרה",hex:"#20214F"},{code:"RAL5003",name:"כחול ספיר",hex:"#1D1E33"},{code:"RAL5004",name:"כחול-שחור",hex:"#18171C"},
-  {code:"RAL5005",name:"כחול אות",hex:"#1E2460"},{code:"RAL5007",name:"כחול מבריק",hex:"#3E5F8A"},{code:"RAL5008",name:"כחול-אפור",hex:"#26252D"},
-  {code:"RAL5009",name:"כחול אזורי",hex:"#025669"},{code:"RAL5010",name:"כחול ג'נסיאן",hex:"#0E294B"},{code:"RAL5011",name:"כחול פלדה",hex:"#231A24"},
-  {code:"RAL5012",name:"כחול תאורה",hex:"#3B83BD"},{code:"RAL5013",name:"כחול קובלט",hex:"#1E213D"},{code:"RAL5014",name:"כחול יונה",hex:"#606E8C"},
-  {code:"RAL5015",name:"כחול שמיים",hex:"#2271B3"},{code:"RAL5017",name:"כחול תנועה",hex:"#063971"},{code:"RAL5018",name:"כחול-ירקרק",hex:"#3F888F"},
-  {code:"RAL5019",name:"כחול קפטן",hex:"#1B5583"},{code:"RAL5020",name:"כחול אוקיינוס",hex:"#1D334A"},{code:"RAL5021",name:"כחול מים",hex:"#256D7B"},
-  {code:"RAL5022",name:"כחול לילה",hex:"#252850"},{code:"RAL5023",name:"כחול מרוחק",hex:"#49678D"},{code:"RAL5024",name:"כחול פסטל",hex:"#5D9B9B"},
-  {code:"RAL6000",name:"ירוק פטינה",hex:"#327662"},{code:"RAL6001",name:"ירוק אמרלד",hex:"#287233"},{code:"RAL6002",name:"ירוק עלה",hex:"#2D572C"},
-  {code:"RAL6003",name:"ירוק זית",hex:"#424632"},{code:"RAL6004",name:"כחול-ירוק",hex:"#1F3A3D"},{code:"RAL6005",name:"ירוק אצה",hex:"#2F4538"},
-  {code:"RAL6006",name:"ירוק-אפור זית",hex:"#3E3B32"},{code:"RAL6007",name:"ירוק בקבוק",hex:"#343B29"},{code:"RAL6008",name:"ירוק חום",hex:"#39352A"},
-  {code:"RAL6009",name:"ירוק אשוח",hex:"#31372B"},{code:"RAL6010",name:"ירוק דשא",hex:"#35682D"},{code:"RAL6011",name:"ירוק תהום",hex:"#587246"},
-  {code:"RAL6012",name:"ירוק שחור",hex:"#343E40"},{code:"RAL6013",name:"ירוק קנה",hex:"#6C7156"},{code:"RAL6014",name:"ירוק צהוב",hex:"#47402E"},
-  {code:"RAL6015",name:"ירוק-שחור זית",hex:"#3B3C36"},{code:"RAL6016",name:"ירוק טורקיז",hex:"#1E5945"},{code:"RAL6017",name:"ירוק מאי",hex:"#4C9141"},
-  {code:"RAL6018",name:"ירוק צהוב",hex:"#57A639"},{code:"RAL6019",name:"ירוק לבן",hex:"#BDECB6"},{code:"RAL6020",name:"ירוק כרום",hex:"#2E3A23"},
-  {code:"RAL6021",name:"ירוק פסטל",hex:"#89AC76"},{code:"RAL6022",name:"ירוק זית-שחור",hex:"#25221B"},{code:"RAL6024",name:"ירוק תנועה",hex:"#308446"},
-  {code:"RAL6025",name:"ירוק שרך",hex:"#3D642D"},{code:"RAL6026",name:"ירוק אופל",hex:"#015D52"},{code:"RAL6027",name:"ירוק בהיר",hex:"#84C3BE"},
-  {code:"RAL6028",name:"ירוק אורן",hex:"#2C5545"},{code:"RAL6029",name:"ירוק מנטה",hex:"#20603D"},{code:"RAL6032",name:"ירוק אות",hex:"#317F43"},
-  {code:"RAL6033",name:"ירוק-טורקיז מנטה",hex:"#497E76"},{code:"RAL6034",name:"טורקיז פסטל",hex:"#7FB5B5"},{code:"RAL7000",name:"אפור-ירקרק",hex:"#78858B"},
-  {code:"RAL7001",name:"אפור כסף",hex:"#8A9597"},{code:"RAL7002",name:"אפור זית",hex:"#817F68"},{code:"RAL7003",name:"אפור אצה",hex:"#6C7059"},
-  {code:"RAL7004",name:"אפור אות",hex:"#969992"},{code:"RAL7005",name:"אפור עכבר",hex:"#646B63"},{code:"RAL7006",name:"אפור בז'",hex:"#6D6552"},
-  {code:"RAL7008",name:"אפור-חאקי",hex:"#6A5F31"},{code:"RAL7009",name:"אפור ירוק",hex:"#4D5645"},{code:"RAL7010",name:"אפור אוהל",hex:"#4C514A"},
-  {code:"RAL7011",name:"אפור ברזל",hex:"#434B4D"},{code:"RAL7012",name:"אפור בזלת",hex:"#4E5754"},{code:"RAL7013",name:"אפור-חום",hex:"#464531"},
-  {code:"RAL7015",name:"אפור פלדה",hex:"#434750"},{code:"RAL7016",name:"אפור-כחול אנתרציט",hex:"#293133"},{code:"RAL7021",name:"אפור-שחור",hex:"#23282B"},
-  {code:"RAL7022",name:"אפור צל",hex:"#332F2C"},{code:"RAL7023",name:"אפור קונקרט",hex:"#686C5E"},{code:"RAL7024",name:"אפור גרפיט",hex:"#474A51"},
-  {code:"RAL7026",name:"אפור גרניט",hex:"#2F353B"},{code:"RAL7030",name:"אפור אבן",hex:"#8B8C7A"},{code:"RAL7031",name:"אפור-כחול",hex:"#474B4E"},
-  {code:"RAL7032",name:"אפור חצץ",hex:"#B8B799"},{code:"RAL7033",name:"אפור צמנט",hex:"#7D8471"},{code:"RAL7034",name:"אפור-צהוב",hex:"#8F8B66"},
-  {code:"RAL7035",name:"אפור בהיר",hex:"#D7D7D7"},{code:"RAL7036",name:"אפור פלטינה",hex:"#7F7679"},{code:"RAL7037",name:"אפור אבק",hex:"#7D7F7D"},
-  {code:"RAL7038",name:"אפור גת",hex:"#B5B8B1"},{code:"RAL7039",name:"אפור קוורץ",hex:"#6C6960"},{code:"RAL7040",name:"אפור חלון",hex:"#9DA1AA"},
-  {code:"RAL7042",name:"אפור תנועה A",hex:"#8D948D"},{code:"RAL7043",name:"אפור תנועה B",hex:"#4E5452"},{code:"RAL7044",name:"אפור משי",hex:"#CAC4B0"},
-  {code:"RAL7045",name:"אפור טלגריי 1",hex:"#909090"},{code:"RAL7046",name:"אפור טלגריי 2",hex:"#82898F"},{code:"RAL7047",name:"אפור טלגריי 4",hex:"#D0D0D0"},
-  {code:"RAL7048",name:"אפור פרל מאוס",hex:"#898176"},{code:"RAL8000",name:"חום-ירוק",hex:"#826C34"},{code:"RAL8001",name:"חום גוון",hex:"#955F20"},
-  {code:"RAL8002",name:"חום אות",hex:"#6C3B2A"},{code:"RAL8003",name:"חום בוץ",hex:"#734222"},{code:"RAL8004",name:"חום נחושת",hex:"#8E402A"},
-  {code:"RAL8007",name:"חום צבי",hex:"#59351F"},{code:"RAL8008",name:"חום זית",hex:"#6F4F28"},{code:"RAL8009",name:"חום-אפור",hex:"#5B3A29"},
-  {code:"RAL8010",name:"חום עץ",hex:"#592321"},{code:"RAL8011",name:"חום עורב",hex:"#53160F"},{code:"RAL8012",name:"חום-אדום",hex:"#582D19"},
-  {code:"RAL8014",name:"חום ספייה",hex:"#49392D"},{code:"RAL8015",name:"חום ערמון",hex:"#633A34"},{code:"RAL8016",name:"חום מהגוני",hex:"#4C2F27"},
-  {code:"RAL8017",name:"חום שוקולד",hex:"#45322E"},{code:"RAL8019",name:"אפור-חום",hex:"#403A3A"},{code:"RAL8022",name:"שחור-חום",hex:"#212121"},
-  {code:"RAL8023",name:"כתום-חום",hex:"#A65E2E"},{code:"RAL8024",name:"בז' חום",hex:"#79553D"},{code:"RAL8025",name:"חום חיוור",hex:"#755C48"},
-  {code:"RAL8028",name:"חום ארץ",hex:"#4E3B31"},{code:"RAL9001",name:"לבן קרם",hex:"#FDF4E3"},{code:"RAL9002",name:"לבן-אפור",hex:"#E7EBDA"},
-  {code:"RAL9003",name:"לבן אות",hex:"#F4F4F4"},{code:"RAL9004",name:"שחור אות",hex:"#282828"},{code:"RAL9005",name:"שחור כבשן",hex:"#0A0A0A"},
-  {code:"RAL9006",name:"אלומיניום לבן",hex:"#A5A5A5"},{code:"RAL9007",name:"אלומיניום אפור",hex:"#8F8F8F"},{code:"RAL9010",name:"לבן טהור",hex:"#FFFFFF"},
-  {code:"RAL9011",name:"שחור גרפיט",hex:"#1C1C1C"},{code:"RAL9016",name:"לבן תנועה",hex:"#F6F6F6"},{code:"RAL9017",name:"שחור תנועה",hex:"#1E1E1E"},
-  {code:"RAL9018",name:"לבן פפירוס",hex:"#D7D7D7"},{code:"RAL9022",name:"אפור פרל 1",hex:"#9E9E9E"},{code:"RAL9023",name:"אפור פרל 2",hex:"#828282"}
-];
-
-const PRICE_PER_KG = 23;
-const VAT = 1.17;
-let cart = {};
-let currentPage = 1;
-const PAGE_SIZE = 30;
-
-// Populate RAL select
-const ralSel = document.getElementById('ralSelect');
-RAL_COLORS.forEach(r => {
-  const opt = document.createElement('option');
-  opt.value = r.code;
-  opt.textContent = r.code + ' – ' + r.name;
-  ralSel.appendChild(opt);
-});
-
-function updateRalPreview() {
-  const val = ralSel.value;
-  const ral = RAL_COLORS.find(r => r.code === val);
-  const prev = document.getElementById('ralPreview');
-  const label = document.getElementById('ralLabel');
-  if (ral) {
-    prev.style.background = ral.hex;
-    label.textContent = ral.code + ' ' + ral.name;
-  } else {
-    prev.style.background = '';
-    label.textContent = 'לא נבחר';
-  }
-}
-
-function getFiltered() {
-  const q = document.getElementById('searchInput').value.trim().toLowerCase();
-  if (!q) return PROFILES;
-  return PROFILES.filter(p => p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q));
-}
-
-function renderTable() {
-  currentPage = 1;
-  renderPage();
-}
-
-function renderPage() {
-  const filtered = getFiltered();
-  const total = filtered.length;
-  const pages = Math.ceil(total / PAGE_SIZE);
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const slice = filtered.slice(start, start + PAGE_SIZE);
-
-  const list = document.getElementById('profileList');
-  list.innerHTML = '';
-  slice.forEach(p => {
-    const inCart = cart[p.sku] && cart[p.sku].qty > 0;
-    const div = document.createElement('div');
-    div.className = 'profile-row' + (inCart ? ' in-cart' : '');
-    div.innerHTML = `
-      <span class="sku">${p.sku}</span>
-      <span class="pname">${p.name}</span>
-      <span class="plen">${p.len}מ'</span>
-      <span class="pwpm">${p.wpm}</span>
-      <div class="qty-ctrl">
-        <button class="qty-btn" onclick="changeQty('${p.sku}',-1)">−</button>
-        <input class="qty-input" type="number" min="1" value="${cart[p.sku]?.qty || 1}" id="qty_${p.sku}" onchange="setQty('${p.sku}',this.value)">
-        <button class="qty-btn" onclick="changeQty('${p.sku}',1)">+</button>
+      <!-- Right panel - Cart -->
+      <div class="cart-panel" id="cartPanel">
+        <div class="cart-title">
+          <span>📋 סל ההזמנה</span>
+          <button class="clear-search" style="display:inline-block;position:static;transform:none;"
+            onclick="clearCart()" title="רוקן סל">🗑️</button>
+        </div>
+        <div id="cartItems">
+          <div class="cart-empty">הסל ריק<br><span style="font-size:11px">הוסף פרופילים מהקטלוג</span></div>
+        </div>
+        <div class="cart-summary" id="cartSummary" style="display:none">
+          <div class="summary-row weight"><span>משקל כולל</span><span id="sumWeight">0 ק"ג</span></div>
+          <div class="summary-row weight"><span>טווח סטייה (±5%)</span><span id="sumRange">-</span></div>
+          <div class="summary-row"><span>מחיר לק"ג (לפני מע"מ)</span><span id="priceKg">₪23</span></div>
+          <div class="summary-row total"><span>סה"כ לפני מע"מ</span><span id="sumTotal">₪0</span></div>
+          <div class="summary-row total"><span>סה"כ כולל מע"מ</span><span id="sumVat">₪0</span></div>
+        </div>
+        <div class="note">⚠️ המשקלים הם לפני צבע. קיימת סטייה של עד 5% במשקל.</div>
+        <div class="price-notice">מחיר לק"ג מתעדכן שבועית</div>
+        <button class="export-btn" id="exportBtn" onclick="showSpec()" disabled>📄 הצג מפרט הזמנה</button>
       </div>
-      <button class="${inCart ? 'added-btn' : 'add-btn'}" onclick="addToCart('${p.sku}')">${inCart ? '✓ בסל' : '+ הוסף'}</button>
-    `;
-    list.appendChild(div);
-  });
+    </div>
+  </div>
 
-  // Pagination
-  const pag = document.getElementById('pagination');
-  pag.innerHTML = '';
-  if (pages > 1) {
-    for (let i = 1; i <= pages; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
-      btn.textContent = i;
-      btn.onclick = () => { currentPage = i; renderPage(); };
-      pag.appendChild(btn);
+  <!-- Footer -->
+  <div class="footer">מחיר לק"ג מתעדכן שבועית | ALUM-IL</div>
+
+  <!-- Modal -->
+  <div class="modal-overlay" id="specModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal()">✕</button>
+      <h2>מפרט הזמנה</h2>
+      <div class="modal-meta" id="specMeta"></div>
+      <table class="spec-table">
+        <thead>
+          <tr>
+            <th>מק"ט</th>
+            <th>שם פרופיל</th>
+            <th>כמות</th>
+            <th>אורך יח'</th>
+            <th>ק"ג/מ'</th>
+            <th>משקל כולל</th>
+          </tr>
+        </thead>
+        <tbody id="specBody"></tbody>
+      </table>
+      <button class="modal-print" onclick="window.print()">🖨️ הדפס מפרט</button>
+    </div>
+  </div>
+
+  <script>
+    const PROFILES = [
+      { sku: "ALUM1000", name: "20/70/0.8 ZD1", wpm: 0.4, wpu: 2.4, len: "6", cat: "מילוי פרגולה/גדר/שער" },
+      { sku: "ALUM1001", name: "20/70/0.8 ZD2", wpm: 0.4, wpu: 2.4, len: "6", cat: "מילוי פרגולה/גדר/שער" },
+      { sku: "ALUM1002", name: "20/70/0.8 ZD3", wpm: 0.4, wpu: 2.4, len: "6", cat: "מילוי פרגולה/גדר/שער" },
+      { sku: "ALUM1003", name: "20/70/0.8 ZD4", wpm: 0.4, wpu: 2.4, len: "6", cat: "מילוי פרגולה/גדר/שער" },
+      { sku: "ALUM1004", name: "ZD 1 זד הצללה גוון עץ", wpm: 0.33, wpu: 1.98, len: "6", cat: "הצללה עבור פרגולה" },
+      { sku: "ALUM1005", name: "ZD 3 זד הצללה גוון עץ", wpm: 0.33, wpu: 1.98, len: "6", cat: "הצללה עבור פרגולה" },
+      { sku: "ALUM1006", name: "ZD 4 זד הצללה גוון עץ", wpm: 0.33, wpu: 1.98, len: "6", cat: "הצללה עבור פרגולה" },
+      { sku: "ALUM1007", name: "גדר 20/40", wpm: 0.626, wpu: 3.756, len: "6", cat: "פרופיל עבור גדר בריתוך" },
+      { sku: "ALUM1008", name: "גדר 40/40", wpm: 0.761, wpu: 4.568, len: "6", cat: "פרופיל עבור גדר/שער בריתוך" },
+      { sku: "ALUM1009", name: "גדר 40/60", wpm: 0.987, wpu: 5.922, len: "6", cat: "פרופיל עבור גדר/שער בריתוך" },
+      { sku: "ALUM1010", name: "גדר 50/40", wpm: 0.89, wpu: 6.23, len: "7", cat: "" },
+      { sku: "ALUM1011", name: "דאבל טי 120", wpm: 2.314, wpu: 13.884, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1012", name: "דאבל טי 142/1.6", wpm: 2.529, wpu: 15.174, len: "6/6.5/7", cat: "מסגרת לפרגולה" },
+      { sku: "ALUM1013", name: "דאבל טי 165", wpm: 3.12, wpu: 18.72, len: "6/6.5/7", cat: "מסגרת לפרגולה" },
+      { sku: "ALUM1014", name: "דאבל טי מעוצב (הייטק) 120", wpm: 2.704, wpu: 16.224, len: "6/6.5/7", cat: "מסגרת לפרגולה" },
+      { sku: "ALUM1015", name: "הצללה חצי ירח", wpm: 0.28, wpu: 1.68, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1016", name: "הצללה/רפפה זד", wpm: 0.413, wpu: 2.478, len: "6/6.5/7", cat: "מילוי עבור פרגולה" },
+      { sku: "ALUM1017", name: "וואל לסוככים", wpm: 1.29, wpu: 7.74, len: "6", cat: "צינור עבור בד לסוככים" },
+      { sku: "ALUM1018", name: "זוית 10/10", wpm: 0.731, wpu: 4.386, len: "6", cat: "" },
+      { sku: "ALUM1019", name: "זוית 14/120", wpm: 0.865, wpu: 5.19, len: "6", cat: "" },
+      { sku: "ALUM1020", name: "זוית 15/20/1.5", wpm: 1.141, wpu: 6.846, len: "6", cat: "" },
+      { sku: "ALUM1021", name: "זוית 18/100/1.5", wpm: 0.507, wpu: 3.042, len: "6", cat: "" },
+      { sku: "ALUM1022", name: "זוית 18/30/1.5", wpm: 0.202, wpu: 1.212, len: "6", cat: "" },
+      { sku: "ALUM1023", name: "זוית 18/40/1.5", wpm: 0.238, wpu: 1.428, len: "6", cat: "" },
+      { sku: "ALUM1024", name: "זוית 18/50/1.5", wpm: 0.292, wpu: 1.752, len: "6", cat: "" },
+      { sku: "ALUM1025", name: "זוית 18/60/1.5", wpm: 0.334, wpu: 2.004, len: "6", cat: "" },
+      { sku: "ALUM1026", name: "זוית 18/70/1.5", wpm: 0.378, wpu: 2.268, len: "6", cat: "" },
+      { sku: "ALUM1027", name: "זוית 18/80/1.5", wpm: 0.421, wpu: 2.526, len: "6", cat: "" },
+      { sku: "ALUM1028", name: "זוית 20/20/1.5", wpm: 0.162, wpu: 0.972, len: "6", cat: "" },
+      { sku: "ALUM1029", name: "זוית 30/30", wpm: 0.353, wpu: 2.118, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1030", name: "זוית 4/4/3", wpm: 0.679, wpu: 4.074, len: "6", cat: "" },
+      { sku: "ALUM1031", name: "זוית 40/40/2", wpm: 0.463, wpu: 2.778, len: "6", cat: "" },
+      { sku: "ALUM1032", name: "זוית 40/40/4", wpm: 0.913, wpu: 5.478, len: "6", cat: "" },
+      { sku: "ALUM1033", name: "זוית 40/50/2.5", wpm: 0.638, wpu: 3.828, len: "6", cat: "" },
+      { sku: "ALUM1034", name: "זוית 50/50/2.5", wpm: 0.716, wpu: 4.296, len: "6", cat: "" },
+      { sku: "ALUM1035", name: "זוית 50/50/5", wpm: 1.426, wpu: 8.556, len: "6", cat: "" },
+      { sku: "ALUM1036", name: "זוית 80/40", wpm: 1.751, wpu: 10.506, len: "6", cat: "" },
+      { sku: "ALUM1037", name: "חיפוי בורג נסתר 15 ס\"מ", wpm: 1.04, wpu: 6.24, len: "6", cat: "" },
+      { sku: "ALUM1038", name: "טי 100 (חוצץ לפרגולה)", wpm: 1.73, wpu: 10.38, len: "6/7", cat: "" },
+      { sku: "ALUM1039", name: "טי 120 (חוצץ לפרגולה)", wpm: 2.249, wpu: 13.494, len: "6/6.5/7", cat: "חוצץ/אגד לפרגולה" },
+      { sku: "ALUM1040", name: "טי 80 חוצץ לפרגולה", wpm: 1.297, wpu: 7.782, len: "4/5/6/6.5/7", cat: "חוצץ/אגד לפרגולה" },
+      { sku: "ALUM1041", name: "טי תאורה 120/40", wpm: 1.892, wpu: 11.352, len: "6/6.5/7", cat: "חוצץ/אגד לפרגולה עם מקום לתאורה" },
+      { sku: "ALUM1042", name: "טי תאורה 40/100", wpm: 1.862, wpu: 11.172, len: "6/7", cat: "" },
+      { sku: "ALUM1043", name: "יו + מכסה 20/40", wpm: 0.634, wpu: 3.804, len: "6", cat: "" },
+      { sku: "ALUM1044", name: "יו 10/10", wpm: 0.09, wpu: 0.54, len: "6", cat: "" },
+      { sku: "ALUM1045", name: "יו 20/20/1", wpm: 0.167, wpu: 1.002, len: "6", cat: "" },
+      { sku: "ALUM1046", name: "יו 25/25/2", wpm: 0.398, wpu: 2.388, len: "6", cat: "" },
+      { sku: "ALUM1047", name: "יו 30/36/2.2", wpm: 0.558, wpu: 3.348, len: "6", cat: "" },
+      { sku: "ALUM1048", name: "יו 36/30/2.5", wpm: 0.64, wpu: 3.84, len: "6", cat: "" },
+      { sku: "ALUM1049", name: "יו 95/50/3", wpm: 1.632, wpu: 9.792, len: "6", cat: "" },
+      { sku: "ALUM1050", name: "יו הגבה למעקה", wpm: 0.404, wpu: 2.424, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1051", name: "יו הצללה 25/50", wpm: 0.404, wpu: 2.424, len: "6", cat: "" },
+      { sku: "ALUM1052", name: "יו הצללה 44.5/14.5", wpm: 0.235, wpu: 1.41, len: "4/5/6/6.5/7", cat: "" },
+      { sku: "ALUM1053", name: "יו לסורג שקוף", wpm: 0.562, wpu: 3.372, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1054", name: "יו סוככים 120/35", wpm: 1.206, wpu: 7.236, len: "6", cat: "" },
+      { sku: "ALUM1055", name: "יו סוככים 120/45.4", wpm: 1.778, wpu: 8.179, len: "4.6/6", cat: "" },
+      { sku: "ALUM1056", name: "יו תחתון למעקה", wpm: 0.47, wpu: 2.82, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1057", name: "יו תחתון למעקה 26/25", wpm: 0.424, wpu: 2.544, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1058", name: "מאחז יד מלבני", wpm: 2.123, wpu: 12.738, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1059", name: "מאחז מעוגל", wpm: 1.878, wpu: 11.268, len: "6/6.5/7", cat: "פרופיל למעקה" },
+      { sku: "ALUM1060", name: "מגש 130", wpm: 0.69, wpu: 4.14, len: "6", cat: "" },
+      { sku: "ALUM1061", name: "מגש 18/150/1.5", wpm: 0.838, wpu: 5.028, len: "6", cat: "" },
+      { sku: "ALUM1062", name: "מגש 200", wpm: 1.059, wpu: 6.354, len: "6", cat: "" },
+      { sku: "ALUM1063", name: "מכסה לעמוד ALUM משולב", wpm: 0.32, wpu: 1.92, len: "6", cat: "" },
+      { sku: "ALUM1064", name: "מכסה שטוח 2000", wpm: 0.28, wpu: 1.68, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1065", name: "מלבן 10/40", wpm: 0.334, wpu: 2.004, len: "6", cat: "" },
+      { sku: "ALUM1066", name: "מלבן 120/40 עובי 4 ממ", wpm: 3.42, wpu: 20.52, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1067", name: "מלבן 135/53", wpm: 1.93, wpu: 11.58, len: "4/5/6/6.5/7", cat: "" },
+      { sku: "ALUM1068", name: "מלבן 20/10", wpm: 0.185, wpu: 1.11, len: "6", cat: "" },
+      { sku: "ALUM1069", name: "מלבן 20/100/0.9", wpm: 0.608, wpu: 3.648, len: "6", cat: "" },
+      { sku: "ALUM1070", name: "מלבן 20/120", wpm: 0.926, wpu: 5.556, len: "6", cat: "" },
+      { sku: "ALUM1071", name: "מלבן 20/130/1.2", wpm: 1.102, wpu: 6.612, len: "6", cat: "" },
+      { sku: "ALUM1072", name: "מלבן 20/150/1.2", wpm: 1.31, wpu: 7.86, len: "6", cat: "" },
+      { sku: "ALUM1073", name: "מלבן 20/200/1.8", wpm: 2.4, wpu: 14.4, len: "6", cat: "" },
+      { sku: "ALUM1074", name: "מלבן 20/26 (הייטק)", wpm: 0.357, wpu: 2.142, len: "6", cat: "" },
+      { sku: "ALUM1075", name: "מלבן 20/40 עובי דופן 1.3", wpm: 0.496, wpu: 2.976, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1076", name: "מלבן 20/40/0.9", wpm: 0.305, wpu: 1.83, len: "6", cat: "" },
+      { sku: "ALUM1077", name: "מלבן 20/40/1.15", wpm: 0.383, wpu: 2.298, len: "4/5/6/6.5/7", cat: "" },
+      { sku: "ALUM1078", name: "מלבן 20/40/2", wpm: 0.73, wpu: 4.38, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1079", name: "מלבן 20/50/1.1", wpm: 0.499, wpu: 2.994, len: "6", cat: "" },
+      { sku: "ALUM1080", name: "מלבן 20/50/2", wpm: 0.851, wpu: 5.106, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1081", name: "מלבן 20/70/0.8", wpm: 0.411, wpu: 2.466, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1082", name: "מלבן 20/70/1.6", wpm: 0.89, wpu: 5.34, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1083", name: "מלבן 20/90/1", wpm: 0.62, wpu: 3.72, len: "6", cat: "" },
+      { sku: "ALUM1084", name: "מלבן 300/100 צבע לבן", wpm: 7.176, wpu: 60.996, len: "8.5", cat: "" },
+      { sku: "ALUM1085", name: "מלבן 300/100 צבע שחור", wpm: 7.176, wpu: 60.996, len: "8.5", cat: "" },
+      { sku: "ALUM1086", name: "מלבן 40/100/1.8", wpm: 1.372, wpu: 8.232, len: "4/5/6/6.5/7", cat: "" },
+      { sku: "ALUM1087", name: "מלבן 40/120/1.8", wpm: 1.632, wpu: 9.792, len: "4/5/6/6.5/7", cat: "" },
+      { sku: "ALUM1088", name: "מלבן 40/60/1.2", wpm: 0.709, wpu: 4.254, len: "6", cat: "" },
+      { sku: "ALUM1089", name: "מלבן 40/60/2", wpm: 1.098, wpu: 6.588, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1090", name: "מלבן 40/80/1.4", wpm: 0.99, wpu: 5.94, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1091", name: "מלבן 40/80/2", wpm: 1.29, wpu: 7.74, len: "6", cat: "" },
+      { sku: "ALUM1092", name: "מלבן 50/100/2", wpm: 1.64, wpu: 9.84, len: "6", cat: "" },
+      { sku: "ALUM1093", name: "מלבן 50/150 עובי דופן 4 ממ", wpm: 4.326, wpu: 25.956, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1094", name: "מלבן 50/200/3", wpm: 4.248, wpu: 25.488, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1095", name: "מלבן 50/40/3", wpm: 1.415, wpu: 8.49, len: "6", cat: "" },
+      { sku: "ALUM1096", name: "מלבן 60/30", wpm: 0.811, wpu: 4.867, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1097", name: "מסגרת גדר עם קליפס", wpm: 1.08, wpu: 6.48, len: "6", cat: "" },
+      { sku: "ALUM1098", name: "מסתור כביסה 5800", wpm: 0.454, wpu: 2.724, len: "6", cat: "" },
+      { sku: "ALUM1099", name: "מעצור שער", wpm: 0.197, wpu: 1.182, len: "6", cat: "" },
+      { sku: "ALUM1100", name: "מקבילית גדולה 78.5/20", wpm: 0.387, wpu: 2.322, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1101", name: "מקבילית קטנה 58.5/20", wpm: 0.297, wpu: 1.782, len: "6", cat: "" },
+      { sku: "ALUM1102", name: "מרובע 100/100/2", wpm: 2.242, wpu: 13.452, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1103", name: "מרובע 130/130/2", wpm: 2.932, wpu: 17.592, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1104", name: "מרובע 15/15", wpm: 0.208, wpu: 1.248, len: "6", cat: "" },
+      { sku: "ALUM1105", name: "מרובע 150/150", wpm: 4.256, wpu: 25.536, len: "6/7", cat: "" },
+      { sku: "ALUM1106", name: "מרובע 20/20/1", wpm: 0.301, wpu: 1.806, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1107", name: "מרובע 200/200 ללא ציפוי", wpm: 6.032, wpu: 42.224, len: "7", cat: "" },
+      { sku: "ALUM1108", name: "מרובע 200/200 צבע לבן", wpm: 6.032, wpu: 36.192, len: "6/7", cat: "" },
+      { sku: "ALUM1109", name: "מרובע 200/200 צבע שחור", wpm: 6.032, wpu: 36.192, len: "6/7", cat: "" },
+      { sku: "ALUM1110", name: "מרובע 27.5/27.5/1.2", wpm: 0.36, wpu: 2.16, len: "6", cat: "" },
+      { sku: "ALUM1111", name: "מרובע 30/30/1.4", wpm: 0.649, wpu: 3.894, len: "6", cat: "" },
+      { sku: "ALUM1112", name: "מרובע 30/30/2", wpm: 0.829, wpu: 4.974, len: "6", cat: "" },
+      { sku: "ALUM1113", name: "מרובע 40/40/1.2", wpm: 0.727, wpu: 4.362, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1114", name: "מרובע 40/40/2", wpm: 1.088, wpu: 6.528, len: "6", cat: "" },
+      { sku: "ALUM1115", name: "מרובע 50/50/1.8", wpm: 0.954, wpu: 5.724, len: "6", cat: "" },
+      { sku: "ALUM1116", name: "מרובע 80/80", wpm: 1.912, wpu: 11.472, len: "6", cat: "" },
+      { sku: "ALUM1117", name: "מרזב 120", wpm: 2.6, wpu: 15.6, len: "6/7", cat: "מלבן עם מרזב נסתר" },
+      { sku: "ALUM1118", name: "עכביש 120", wpm: 2.39, wpu: 14.34, len: "6", cat: "" },
+      { sku: "ALUM1119", name: "עכביש 150", wpm: 2.726, wpu: 16.356, len: "6", cat: "" },
+      { sku: "ALUM1120", name: "עכביש 40.8", wpm: 2.256, wpu: 13.536, len: "6", cat: "" },
+      { sku: "ALUM1121", name: "עמוד 45/45 ALUM", wpm: 1.139, wpu: 6.834, len: "6", cat: "" },
+      { sku: "ALUM1122", name: "עמוד 60/60 פלוס מכסה", wpm: 1.726, wpu: 10.356, len: "6", cat: "" },
+      { sku: "ALUM1123", name: "עמוד ALUM משולב", wpm: 1.664, wpu: 9.984, len: "6", cat: "" },
+      { sku: "ALUM1124", name: "עמוד ALUM קנט 1", wpm: 1.545, wpu: 9.27, len: "6", cat: "זוויות, פרגולות" },
+      { sku: "ALUM1125", name: "עמוד גדר 70/70", wpm: 1.726, wpu: 10.356, len: "6", cat: "" },
+      { sku: "ALUM1126", name: "עמוד לגדר 40/70", wpm: 1.82, wpu: 10.92, len: "6", cat: "" },
+      { sku: "ALUM1127", name: "ערבי קנט 1", wpm: 0.462, wpu: 2.772, len: "6", cat: "" },
+      { sku: "ALUM1128", name: "פלח 30/3", wpm: 0.26, wpu: 1.56, len: "6", cat: "" },
+      { sku: "ALUM1129", name: "פלח 40/1.5", wpm: 0.172, wpu: 1.032, len: "6", cat: "" },
+      { sku: "ALUM1130", name: "פלח 40/5", wpm: 0.686, wpu: 4.116, len: "6", cat: "" },
+      { sku: "ALUM1131", name: "פלח 50/2", wpm: 0.27, wpu: 1.62, len: "6", cat: "" },
+      { sku: "ALUM1132", name: "פלח שטוח 20/1.5", wpm: 0.863, wpu: 5.178, len: "6", cat: "" },
+      { sku: "ALUM1133", name: "פרופיל 2000 66/100", wpm: 1.326, wpu: 7.956, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1134", name: "פרופיל 2000 66/40", wpm: 1.102, wpu: 6.612, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1135", name: "פרופיל 2000 66/66", wpm: 1.307, wpu: 7.842, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1136", name: "פרופיל 2000 קליפס בידודי", wpm: 1.476, wpu: 8.856, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1137", name: "פרופיל 2000 קליפס משופע", wpm: 0.27, wpu: 1.62, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1138", name: "פרופיל 2000 רבע עגול", wpm: 1.17, wpu: 7.02, len: "6", cat: "" },
+      { sku: "ALUM1139", name: "פרופיל גדר 2 קנטים", wpm: 0.799, wpu: 4.794, len: "6", cat: "" },
+      { sku: "ALUM1140", name: "פרופיל גדר קנט אחד", wpm: 0.785, wpu: 4.71, len: "6", cat: "" },
+      { sku: "ALUM1141", name: "פרופיל יו 40/40 עם מכסה", wpm: 0.915, wpu: 5.49, len: "6", cat: "" },
+      { sku: "ALUM1142", name: "פרופיל לכרסום", wpm: 0.832, wpu: 4.992, len: "6", cat: "" },
+      { sku: "ALUM1143", name: "פרופיל מדרגה דק (זיגזג)", wpm: 0.712, wpu: 4.272, len: "6", cat: "" },
+      { sku: "ALUM1144", name: "פרופיל מדרגה עבה (זיגזג)", wpm: 0.953, wpu: 5.718, len: "6", cat: "" },
+      { sku: "ALUM1145", name: "פרופיל מקור", wpm: 0.421, wpu: 2.526, len: "6", cat: "" },
+      { sku: "ALUM1146", name: "פרופיל עוגן", wpm: 1.399, wpu: 8.394, len: "6", cat: "" },
+      { sku: "ALUM1147", name: "פרופיל תריס 43.5/27.5/1", wpm: 0.427, wpu: 2.562, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1148", name: "צינור 30/2", wpm: 0.498, wpu: 2.988, len: "6", cat: "" },
+      { sku: "ALUM1149", name: "צינור 35/2", wpm: 0.586, wpu: 3.516, len: "6", cat: "" },
+      { sku: "ALUM1150", name: "צינור 40/2", wpm: 0.669, wpu: 4.014, len: "6", cat: "" },
+      { sku: "ALUM1151", name: "קונסטרוקציה למסתור כביסה", wpm: 0.693, wpu: 4.158, len: "6", cat: "" },
+      { sku: "ALUM1152", name: "קליפס למכורסם", wpm: 0.176, wpu: 1.056, len: "6", cat: "" },
+      { sku: "ALUM1153", name: "קליק 20/25", wpm: 0.28, wpu: 1.68, len: "6", cat: "" },
+      { sku: "ALUM1154", name: "קליק 20/45", wpm: 0.469, wpu: 2.814, len: "6", cat: "" },
+      { sku: "ALUM1155", name: "קליק חיפוי בקליק", wpm: 0.469, wpu: 2.814, len: "6", cat: "סדרת קליק" },
+      { sku: "ALUM1156", name: "קליק מחבר משופע", wpm: 1.04, wpu: 6.24, len: "6", cat: "" },
+      { sku: "ALUM1157", name: "קליק מכסה אחורי", wpm: 0.062, wpu: 0.372, len: "6", cat: "" },
+      { sku: "ALUM1158", name: "קנט 1 100/40", wpm: 1.516, wpu: 9.096, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1159", name: "קנט 1 120/40", wpm: 1.76, wpu: 10.56, len: "6/6.5/7", cat: "" },
+      { sku: "ALUM1160", name: "רבע עגול למסתור", wpm: 1.0, wpu: 6.0, len: "6", cat: "" },
+      { sku: "ALUM1161", name: "שער - פרופיל עם מעצור", wpm: 0.845, wpu: 5.07, len: "6", cat: "עבור שער בריתוך" }
+    ];
+
+    const RAL_COLORS = [
+      { code: "RAL1000", name: "ירוק-בז'", hex: "#BEBD7F" }, { code: "RAL1001", name: "בז' צהוב", hex: "#C2B078" }, { code: "RAL1002", name: "צהוב חול", hex: "#C6A664" },
+      { code: "RAL1003", name: "צהוב אות", hex: "#E5BE01" }, { code: "RAL1004", name: "צהוב זהב", hex: "#CDA323" }, { code: "RAL1005", name: "צהוב דבש", hex: "#A98307" },
+      { code: "RAL1006", name: "צהוב תירס", hex: "#E4A010" }, { code: "RAL1007", name: "צהוב נרקיס", hex: "#DC9D00" }, { code: "RAL1011", name: "בז' חום", hex: "#8A6642" },
+      { code: "RAL1012", name: "צהוב לימון", hex: "#C7B446" }, { code: "RAL1013", name: "לבן אויסטר", hex: "#EAE6CA" }, { code: "RAL1014", name: "שנהב", hex: "#E1CC4F" },
+      { code: "RAL1015", name: "שנהב בהיר", hex: "#E6D690" }, { code: "RAL1016", name: "צהוב גופרית", hex: "#EDFF21" }, { code: "RAL1017", name: "צהוב זעפרן", hex: "#F5D033" },
+      { code: "RAL1018", name: "צהוב אבץ", hex: "#F8F32B" }, { code: "RAL1019", name: "אפור-בז'", hex: "#9E9764" }, { code: "RAL1020", name: "צהוב-זית", hex: "#999950" },
+      { code: "RAL1021", name: "צהוב קולזה", hex: "#F3DA0B" }, { code: "RAL1023", name: "צהוב תנועה", hex: "#FAD201" }, { code: "RAL1024", name: "צהוב גוון", hex: "#AEA04B" },
+      { code: "RAL1026", name: "צהוב זוהר", hex: "#FFFF00" }, { code: "RAL1027", name: "צהוב קארי", hex: "#9D9101" }, { code: "RAL1028", name: "צהוב מלון", hex: "#F4A900" },
+      { code: "RAL1032", name: "צהוב רתם", hex: "#D6AE01" }, { code: "RAL1033", name: "צהוב דהליה", hex: "#F3A505" }, { code: "RAL1034", name: "צהוב פסטל", hex: "#EFA94A" },
+      { code: "RAL2000", name: "כתום-צהוב", hex: "#C93C20" }, { code: "RAL2001", name: "כתום-אדום", hex: "#CB2821" }, { code: "RAL2002", name: "כתום דם", hex: "#FF7514" },
+      { code: "RAL2003", name: "כתום פסטל", hex: "#F44611" }, { code: "RAL2004", name: "כתום טהור", hex: "#FF2301" }, { code: "RAL2008", name: "כתום-אדום בהיר", hex: "#F75E25" },
+      { code: "RAL2009", name: "כתום תנועה", hex: "#F54021" }, { code: "RAL2010", name: "כתום אות", hex: "#D84B20" }, { code: "RAL2011", name: "כתום עמוק", hex: "#EC7C26" },
+      { code: "RAL2012", name: "כתום סלמון", hex: "#E55137" }, { code: "RAL3000", name: "אדום להבה", hex: "#AF2B1E" }, { code: "RAL3001", name: "אדום אות", hex: "#A52019" },
+      { code: "RAL3002", name: "אדום קרמין", hex: "#A2231D" }, { code: "RAL3003", name: "אדום רובין", hex: "#9B111E" }, { code: "RAL3004", name: "אדום סגול", hex: "#75151E" },
+      { code: "RAL3005", name: "אדום יין", hex: "#5E2129" }, { code: "RAL3007", name: "אדום-שחור", hex: "#412227" }, { code: "RAL3009", name: "אדום חמצן", hex: "#642424" },
+      { code: "RAL3011", name: "אדום חום", hex: "#781F19" }, { code: "RAL3012", name: "אדום בז'", hex: "#C1876B" }, { code: "RAL3013", name: "אדום עגבניה", hex: "#A12312" },
+      { code: "RAL3014", name: "ורוד עתיק", hex: "#D36E70" }, { code: "RAL3015", name: "ורוד בהיר", hex: "#EA899A" }, { code: "RAL3016", name: "אדום קורל", hex: "#B32821" },
+      { code: "RAL3017", name: "ורוד", hex: "#E63244" }, { code: "RAL3018", name: "ורוד-תות", hex: "#D53032" }, { code: "RAL3020", name: "אדום תנועה", hex: "#CC0605" },
+      { code: "RAL3022", name: "כתום-סלמון", hex: "#D95030" }, { code: "RAL3024", name: "אדום זוהר", hex: "#F80000" }, { code: "RAL3026", name: "אדום זוהר", hex: "#FE0000" },
+      { code: "RAL4001", name: "סגול-אדום", hex: "#922B3E" }, { code: "RAL4002", name: "סגול אדום", hex: "#A63437" }, { code: "RAL4003", name: "ורוד ארה", hex: "#D15B8F" },
+      { code: "RAL4004", name: "בורגונדי", hex: "#6D1F5E" }, { code: "RAL4005", name: "כחול-סגול", hex: "#6C4675" }, { code: "RAL4006", name: "סגול תנועה", hex: "#A03472" },
+      { code: "RAL4007", name: "סגול-שחור", hex: "#4A192C" }, { code: "RAL4008", name: "סגול אות", hex: "#924E7D" }, { code: "RAL4009", name: "סגול פסטל", hex: "#A18594" },
+      { code: "RAL4010", name: "סגול טלקום", hex: "#CF3476" }, { code: "RAL5000", name: "כחול סגול", hex: "#354D73" }, { code: "RAL5001", name: "כחול-ירוק", hex: "#1F3438" },
+      { code: "RAL5002", name: "כחול אולטרה", hex: "#20214F" }, { code: "RAL5003", name: "כחול ספיר", hex: "#1D1E33" }, { code: "RAL5004", name: "כחול-שחור", hex: "#18171C" },
+      { code: "RAL5005", name: "כחול אות", hex: "#1E2460" }, { code: "RAL5007", name: "כחול מבריק", hex: "#3E5F8A" }, { code: "RAL5008", name: "כחול-אפור", hex: "#26252D" },
+      { code: "RAL5009", name: "כחול אזורי", hex: "#025669" }, { code: "RAL5010", name: "כחול ג'נסיאן", hex: "#0E294B" }, { code: "RAL5011", name: "כחול פלדה", hex: "#231A24" },
+      { code: "RAL5012", name: "כחול תאורה", hex: "#3B83BD" }, { code: "RAL5013", name: "כחול קובלט", hex: "#1E213D" }, { code: "RAL5014", name: "כחול יונה", hex: "#606E8C" },
+      { code: "RAL5015", name: "כחול שמיים", hex: "#2271B3" }, { code: "RAL5017", name: "כחול תנועה", hex: "#063971" }, { code: "RAL5018", name: "כחול-ירקרק", hex: "#3F888F" },
+      { code: "RAL5019", name: "כחול קפטן", hex: "#1B5583" }, { code: "RAL5020", name: "כחול אוקיינוס", hex: "#1D334A" }, { code: "RAL5021", name: "כחול מים", hex: "#256D7B" },
+      { code: "RAL5022", name: "כחול לילה", hex: "#252850" }, { code: "RAL5023", name: "כחול מרוחק", hex: "#49678D" }, { code: "RAL5024", name: "כחול פסטל", hex: "#5D9B9B" },
+      { code: "RAL6000", name: "ירוק פטינה", hex: "#327662" }, { code: "RAL6001", name: "ירוק אמרלד", hex: "#287233" }, { code: "RAL6002", name: "ירוק עלה", hex: "#2D572C" },
+      { code: "RAL6003", name: "ירוק זית", hex: "#424632" }, { code: "RAL6004", name: "כחול-ירוק", hex: "#1F3A3D" }, { code: "RAL6005", name: "ירוק אצה", hex: "#2F4538" },
+      { code: "RAL6006", name: "ירוק-אפור זית", hex: "#3E3B32" }, { code: "RAL6007", name: "ירוק בקבוק", hex: "#343B29" }, { code: "RAL6008", name: "ירוק חום", hex: "#39352A" },
+      { code: "RAL6009", name: "ירוק אשוח", hex: "#31372B" }, { code: "RAL6010", name: "ירוק דשא", hex: "#35682D" }, { code: "RAL6011", name: "ירוק תהום", hex: "#587246" },
+      { code: "RAL6012", name: "ירוק שחור", hex: "#343E40" }, { code: "RAL6013", name: "ירוק קנה", hex: "#6C7156" }, { code: "RAL6014", name: "ירוק צהוב", hex: "#47402E" },
+      { code: "RAL6015", name: "ירוק-שחור זית", hex: "#3B3C36" }, { code: "RAL6016", name: "ירוק טורקיז", hex: "#1E5945" }, { code: "RAL6017", name: "ירוק מאי", hex: "#4C9141" },
+      { code: "RAL6018", name: "ירוק צהוב", hex: "#57A639" }, { code: "RAL6019", name: "ירוק לבן", hex: "#BDECB6" }, { code: "RAL6020", name: "ירוק כרום", hex: "#2E3A23" },
+      { code: "RAL6021", name: "ירוק פסטל", hex: "#89AC76" }, { code: "RAL6022", name: "ירוק זית-שחור", hex: "#25221B" }, { code: "RAL6024", name: "ירוק תנועה", hex: "#308446" },
+      { code: "RAL6025", name: "ירוק שרך", hex: "#3D642D" }, { code: "RAL6026", name: "ירוק אופל", hex: "#015D52" }, { code: "RAL6027", name: "ירוק בהיר", hex: "#84C3BE" },
+      { code: "RAL6028", name: "ירוק אורן", hex: "#2C5545" }, { code: "RAL6029", name: "ירוק מנטה", hex: "#20603D" }, { code: "RAL6032", name: "ירוק אות", hex: "#317F43" },
+      { code: "RAL6033", name: "ירוק-טורקיז מנטה", hex: "#497E76" }, { code: "RAL6034", name: "טורקיז פסטל", hex: "#7FB5B5" }, { code: "RAL7000", name: "אפור-ירקרק", hex: "#78858B" },
+      { code: "RAL7001", name: "אפור כסף", hex: "#8A9597" }, { code: "RAL7002", name: "אפור זית", hex: "#817F68" }, { code: "RAL7003", name: "אפור אצה", hex: "#6C7059" },
+      { code: "RAL7004", name: "אפור אות", hex: "#969992" }, { code: "RAL7005", name: "אפור עכבר", hex: "#646B63" }, { code: "RAL7006", name: "אפור בז'", hex: "#6D6552" },
+      { code: "RAL7008", name: "אפור-חאקי", hex: "#6A5F31" }, { code: "RAL7009", name: "אפור ירוק", hex: "#4D5645" }, { code: "RAL7010", name: "אפור אוהל", hex: "#4C514A" },
+      { code: "RAL7011", name: "אפור ברזל", hex: "#434B4D" }, { code: "RAL7012", name: "אפור בזלת", hex: "#4E5754" }, { code: "RAL7013", name: "אפור-חום", hex: "#464531" },
+      { code: "RAL7015", name: "אפור פלדה", hex: "#434750" }, { code: "RAL7016", name: "אפור-כחול אנתרציט", hex: "#293133" }, { code: "RAL7021", name: "אפור-שחור", hex: "#23282B" },
+      { code: "RAL7022", name: "אפור צל", hex: "#332F2C" }, { code: "RAL7023", name: "אפור קונקרט", hex: "#686C5E" }, { code: "RAL7024", name: "אפור גרפיט", hex: "#474A51" },
+      { code: "RAL7026", name: "אפור גרניט", hex: "#2F353B" }, { code: "RAL7030", name: "אפור אבן", hex: "#8B8C7A" }, { code: "RAL7031", name: "אפור-כחול", hex: "#474B4E" },
+      { code: "RAL7032", name: "אפור חצץ", hex: "#B8B799" }, { code: "RAL7033", name: "אפור צמנט", hex: "#7D8471" }, { code: "RAL7034", name: "אפור-צהוב", hex: "#8F8B66" },
+      { code: "RAL7035", name: "אפור בהיר", hex: "#D7D7D7" }, { code: "RAL7036", name: "אפור פלטינה", hex: "#7F7679" }, { code: "RAL7037", name: "אפור אבק", hex: "#7D7F7D" },
+      { code: "RAL7038", name: "אפור גת", hex: "#B5B8B1" }, { code: "RAL7039", name: "אפור קוורץ", hex: "#6C6960" }, { code: "RAL7040", name: "אפור חלון", hex: "#9DA1AA" },
+      { code: "RAL7042", name: "אפור תנועה A", hex: "#8D948D" }, { code: "RAL7043", name: "אפור תנועה B", hex: "#4E5452" }, { code: "RAL7044", name: "אפור משי", hex: "#CAC4B0" },
+      { code: "RAL7045", name: "אפור טלגריי 1", hex: "#909090" }, { code: "RAL7046", name: "אפור טלגריי 2", hex: "#82898F" }, { code: "RAL7047", name: "אפור טלגריי 4", hex: "#D0D0D0" },
+      { code: "RAL7048", name: "אפור פרל מאוס", hex: "#898176" }, { code: "RAL8000", name: "חום-ירוק", hex: "#826C34" }, { code: "RAL8001", name: "חום גוון", hex: "#955F20" },
+      { code: "RAL8002", name: "חום אות", hex: "#6C3B2A" }, { code: "RAL8003", name: "חום בוץ", hex: "#734222" }, { code: "RAL8004", name: "חום נחושת", hex: "#8E402A" },
+      { code: "RAL8007", name: "חום צבי", hex: "#59351F" }, { code: "RAL8008", name: "חום זית", hex: "#6F4F28" }, { code: "RAL8009", name: "חום-אפור", hex: "#5B3A29" },
+      { code: "RAL8010", name: "חום עץ", hex: "#592321" }, { code: "RAL8011", name: "חום עורב", hex: "#53160F" }, { code: "RAL8012", name: "חום-אדום", hex: "#582D19" },
+      { code: "RAL8014", name: "חום ספייה", hex: "#49392D" }, { code: "RAL8015", name: "חום ערמון", hex: "#633A34" }, { code: "RAL8016", name: "חום מהגוני", hex: "#4C2F27" },
+      { code: "RAL8017", name: "חום שוקולד", hex: "#45322E" }, { code: "RAL8019", name: "אפור-חום", hex: "#403A3A" }, { code: "RAL8022", name: "שחור-חום", hex: "#212121" },
+      { code: "RAL8023", name: "כתום-חום", hex: "#A65E2E" }, { code: "RAL8024", name: "בז' חום", hex: "#79553D" }, { code: "RAL8025", name: "חום חיוור", hex: "#755C48" },
+      { code: "RAL8028", name: "חום ארץ", hex: "#4E3B31" }, { code: "RAL9001", name: "לבן קרם", hex: "#FDF4E3" }, { code: "RAL9002", name: "לבן-אפור", hex: "#E7EBDA" },
+      { code: "RAL9003", name: "לבן אות", hex: "#F4F4F4" }, { code: "RAL9004", name: "שחור אות", hex: "#282828" }, { code: "RAL9005", name: "שחור כבשן", hex: "#0A0A0A" },
+      { code: "RAL9006", name: "אלומיניום לבן", hex: "#A5A5A5" }, { code: "RAL9007", name: "אלומיניום אפור", hex: "#8F8F8F" }, { code: "RAL9010", name: "לבן טהור", hex: "#FFFFFF" },
+      { code: "RAL9011", name: "שחור גרפיט", hex: "#1C1C1C" }, { code: "RAL9016", name: "לבן תנועה", hex: "#F6F6F6" }, { code: "RAL9017", name: "שחור תנועה", hex: "#1E1E1E" },
+      { code: "RAL9018", name: "לבן פפירוס", hex: "#D7D7D7" }, { code: "RAL9022", name: "אפור פרל 1", hex: "#9E9E9E" }, { code: "RAL9023", name: "אפור פרל 2", hex: "#828282" }
+    ];
+
+
+    let cart = JSON.parse(localStorage.getItem('alumCart')) || {};
+    let currentPage = 1;
+    const PAGE_SIZE = 30;
+    let displayMode = 'grid'; // 'grid' | 'list'
+    let currentCategory = '';
+    let searchQuery = '';
+
+    // Populate RAL
+    const ralSel = document.getElementById('ralSelect');
+    RAL_COLORS.forEach(r => {
+      const opt = document.createElement('option');
+      opt.value = r.code;
+      opt.textContent = `${r.code} – ${r.name}`;
+      ralSel.appendChild(opt);
+    });
+
+    function updateRalPreview() {
+      const ral = RAL_COLORS.find(r => r.code === ralSel.value);
+      const prev = document.getElementById('ralPreview');
+      const label = document.getElementById('ralLabel');
+      if (ral) {
+        prev.style.background = ral.hex;
+        label.textContent = `${ral.code} ${ral.name}`;
+      } else {
+        prev.style.background = '';
+        label.textContent = 'לא נבחר';
+      }
     }
-  }
-}
 
-function changeQty(sku, delta) {
-  const input = document.getElementById('qty_' + sku);
-  if (!input) return;
-  let val = parseInt(input.value) || 1;
-  val = Math.max(1, val + delta);
-  input.value = val;
-  if (cart[sku]) { cart[sku].qty = val; updateCart(); }
-}
+    // Navigation
+    function showView(view) {
+      document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+      document.getElementById('view-' + view).classList.add('active');
+      const bcrumb = document.getElementById('breadcrumb');
+      if (view === 'categories') {
+        bcrumb.innerHTML = `<a onclick="showView('categories')">מרכז הרכש</a>`;
+      } else if (view === 'catalog') {
+        bcrumb.innerHTML = `<a onclick="showView('categories')">מרכז הרכש</a> &gt; <span>פרופילי אלומיניום</span>`;
+        renderChips();
+        renderPage();
+      }
+    }
 
-function setQty(sku, val) {
-  val = Math.max(1, parseInt(val) || 1);
-  if (cart[sku]) { cart[sku].qty = val; updateCart(); }
-}
+    function setDisplayMode(mode) {
+      displayMode = mode;
+      document.getElementById('btnGrid').classList.toggle('active', mode === 'grid');
+      document.getElementById('btnList').classList.toggle('active', mode === 'list');
+      document.getElementById('catalogGrid').classList.toggle('active', mode === 'grid');
+      document.getElementById('catalogList').classList.toggle('active', mode === 'list');
+    }
 
-function addToCart(sku) {
-  const p = PROFILES.find(x => x.sku === sku);
-  if (!p) return;
-  const qtyInput = document.getElementById('qty_' + sku);
-  const qty = Math.max(1, parseInt(qtyInput?.value) || 1);
-  const len = parseFloat(p.len.split('/')[0]) || 6;
-  cart[sku] = { ...p, qty, len };
-  updateCart();
-  renderPage();
-}
+    // SVG Generation
+    function generateProfileSVG(name) {
+      const n = name;
+      let s = `<svg width="40" height="40" viewBox="0 0 100 100" fill="none" stroke="#3b82f6" stroke-width="6" opacity="0.9">`;
+      const f = `#94a3b8`;
+      if (n.includes('מלבן')) s += `<rect x="15" y="30" width="70" height="40" fill="${f}" opacity="0.3" rx="2" />`;
+      else if (n.includes('מרובע')) s += `<rect x="25" y="25" width="50" height="50" fill="${f}" opacity="0.3" rx="2" />`;
+      else if (n.includes('זווית') || n.includes('זוית')) s += `<path d="M25 20 L25 80 L80 80 L80 65 L40 65 L40 20 Z" fill="${f}" opacity="0.3" stroke-linejoin="round" />`;
+      else if (n.includes('יו ') || n.includes('יו')) s += `<path d="M20 20 L20 80 L80 80 L80 20 L65 20 L65 65 L35 65 L35 20 Z" fill="${f}" opacity="0.3" stroke-linejoin="round" />`;
+      else if (n.includes('דאבל טי')) s += `<path d="M30 20 L70 20 L70 30 L55 30 L55 70 L70 70 L70 80 L30 80 L30 70 L45 70 L45 30 L30 30 Z" fill="${f}" opacity="0.3" stroke-linejoin="round" />`;
+      else if (n.includes('טי ')) s += `<path d="M20 20 L80 20 L80 35 L57.5 35 L57.5 80 L42.5 80 L42.5 35 L20 35 Z" fill="${f}" opacity="0.3" stroke-linejoin="round" />`;
+      else if (n.includes('צינור') || n.includes('עגול')) s += `<circle cx="50" cy="50" r="30" fill="${f}" opacity="0.3" /><circle cx="50" cy="50" r="20" stroke="#3b82f6" stroke-width="6" />`;
+      else if (n.includes('פלח')) s += `<rect x="10" y="45" width="80" height="10" fill="${f}" opacity="0.3" rx="2" />`;
+      else if (n.includes('עמוד')) s += `<rect x="35" y="10" width="30" height="80" fill="${f}" opacity="0.3" rx="4" />`;
+      else if (n.includes('קנט')) s += `<path d="M20 30 L50 30 L50 70 L80 70 L80 85 L35 85 L35 45 L20 45 Z" fill="${f}" opacity="0.3" stroke-linejoin="round" />`;
+      else if (n.includes('הצללה') || n.includes('ZD')) s += `<path d="M15 45 L85 45 M15 55 L85 55" stroke-width="8" stroke-linecap="round" />`;
+      else s += `<circle cx="50" cy="50" r="25" fill="${f}" opacity="0.3"/><rect x="40" y="40" width="20" height="20" stroke="#3b82f6" stroke-width="4"/>`;
+      s += `</svg>`;
+      return s;
+    }
 
-function removeFromCart(sku) {
-  delete cart[sku];
-  updateCart();
-  renderPage();
-}
+    // Data & Search
+    function getCategories() {
+      const cats = new Set(PROFILES.map(p => p.cat).filter(c => c));
+      return Array.from(cats);
+    }
 
-function updateCart() {
-  const items = Object.values(cart);
-  const cartEl = document.getElementById('cartItems');
-  const summary = document.getElementById('cartSummary');
-  const exportBtn = document.getElementById('exportBtn');
-  const countEl = document.getElementById('cartCount');
+    function renderChips() {
+      const chips = document.getElementById('catChips');
+      const cats = getCategories();
+      chips.innerHTML = `<div class="chip ${currentCategory === '' ? 'active' : ''}" onclick="setCategory('')">הכל</div>`;
+      cats.forEach(c => {
+        chips.innerHTML += `<div class="chip ${currentCategory === c ? 'active' : ''}" onclick="setCategory('${c}')">${c}</div>`;
+      });
+    }
 
-  countEl.textContent = items.length;
+    function setCategory(cat) {
+      currentCategory = cat;
+      currentPage = 1;
+      renderChips();
+      renderPage();
+    }
 
-  if (items.length === 0) {
-    cartEl.innerHTML = '<div class="cart-empty">הסל ריק<br><span style="font-size:11px">הוסף פרופילים מהקטלוג</span></div>';
-    summary.style.display = 'none';
-    exportBtn.disabled = true;
-    return;
-  }
+    function debounce(func, wait) {
+      let timeout;
+      return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func(...args), wait);
+      };
+    }
 
-  exportBtn.disabled = false;
-  summary.style.display = 'block';
+    const searchInput = document.getElementById('searchInput');
+    const clearBtn = document.getElementById('clearSearch');
 
-  let totalWeight = 0;
-  cartEl.innerHTML = '';
-  items.forEach(item => {
-    const itemWeight = item.wpm * item.len * item.qty;
-    totalWeight += itemWeight;
-    const div = document.createElement('div');
-    div.className = 'cart-item';
-    div.innerHTML = `
-      <button class="cart-remove" onclick="removeFromCart('${item.sku}')">✕</button>
-      <div class="cart-item-name">${item.name}</div>
-      <div class="cart-item-sku">${item.sku}</div>
-      <div class="cart-item-details">
-        <span>${item.qty} יח' × ${item.len}מ'</span>
+    searchInput.addEventListener('input', debounce((e) => {
+      searchQuery = e.target.value.trim().toLowerCase();
+      clearBtn.style.display = searchQuery ? 'block' : 'none';
+      currentPage = 1;
+      renderPage();
+    }, 300));
+
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchQuery = '';
+      clearBtn.style.display = 'none';
+      currentPage = 1;
+      renderPage();
+    });
+
+    function highlightText(text, query) {
+      if (!query) return text;
+      const regex = new RegExp(`(${query})`, 'gi');
+      return text.replace(regex, '<mark>$1</mark>');
+    }
+
+    function getFiltered() {
+      return PROFILES.filter(p => {
+        const matchCat = currentCategory === '' || p.cat === currentCategory;
+        const matchSearch = p.name.toLowerCase().includes(searchQuery) || p.sku.toLowerCase().includes(searchQuery);
+        return matchCat && matchSearch;
+      });
+    }
+
+    // Render Engine
+    function renderPage() {
+      const filtered = getFiltered();
+      const total = filtered.length;
+      document.getElementById('resultsCount').textContent = `מציג ${total} פרופילים מוכנים להזמנה`;
+
+      const pages = Math.ceil(total / PAGE_SIZE);
+      const start = (currentPage - 1) * PAGE_SIZE;
+      const slice = filtered.slice(start, start + PAGE_SIZE);
+
+      const grid = document.getElementById('catalogGrid');
+      const list = document.getElementById('profileListItems');
+      grid.innerHTML = '';
+      list.innerHTML = '';
+
+      slice.forEach((p, idx) => {
+        const inCart = cart[p.sku] && cart[p.sku].qty > 0;
+        const val = inCart ? cart[p.sku].qty : 1;
+        const svg = generateProfileSVG(p.name);
+        const hlName = highlightText(p.name, searchQuery);
+        const hlSku = highlightText(p.sku, searchQuery);
+        const delay = `${idx * 0.02}s`;
+
+        // Grid Card
+        const card = document.createElement('div');
+        card.className = 'p-card';
+        card.style.animationDelay = delay;
+        card.innerHTML = `
+      <div class="p-card-top" title="${p.name}">
+        <div class="p-svg-wrap">${svg}</div>
+        <div class="p-info">
+          <div class="p-sku">${hlSku}</div>
+          <div class="p-name">${hlName}</div>
+          <div class="p-meta">
+            <span>📏 ${p.len}מ'</span>
+            <span>⚖️ ${p.wpm} ק"ג/מ'</span>
+          </div>
+        </div>
+      </div>
+      <div class="p-actions">
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty('${p.sku}', -1)">−</button>
+          <input class="qty-input" type="number" min="1" value="${val}" id="qty_g_${p.sku}" onchange="setQty('${p.sku}', this.value)">
+          <button class="qty-btn" onclick="changeQty('${p.sku}', 1)">+</button>
+        </div>
+        <button class="add-btn ${inCart ? 'in-cart' : ''}" onclick="toggleCart('${p.sku}')">
+          ${inCart ? '✓ בסל' : '+ הוסף'}
+        </button>
+      </div>
+    `;
+        grid.appendChild(card);
+
+        // List Row
+        const row = document.createElement('div');
+        row.className = 'l-row';
+        row.style.animationDelay = delay;
+        row.innerHTML = `
+      <div class="l-svg"><div class="p-svg-wrap" style="width:40px;height:40px">${svg}</div></div>
+      <div class="l-sku p-sku">${hlSku}</div>
+      <div class="l-name p-name" style="margin:0">${hlName}</div>
+      <div class="l-meta" style="font-size:12px;color:var(--muted)">${p.len}מ'</div>
+      <div class="l-meta" style="font-size:12px;color:var(--muted)">${p.wpm}</div>
+      <div class="l-qty qty-ctrl">
+        <button class="qty-btn" onclick="changeQty('${p.sku}', -1)">−</button>
+        <input class="qty-input" type="number" min="1" value="${val}" id="qty_l_${p.sku}" onchange="setQty('${p.sku}', this.value)">
+        <button class="qty-btn" onclick="changeQty('${p.sku}', 1)">+</button>
+      </div>
+      <div class="l-add">
+        <button class="add-btn ${inCart ? 'in-cart' : ''}" onclick="toggleCart('${p.sku}')">
+          ${inCart ? '✓ בסל' : '+'}
+        </button>
+      </div>
+    `;
+        list.appendChild(row);
+      });
+
+      // Pagination
+      const pag = document.getElementById('pagination');
+      pag.innerHTML = '';
+      if (pages > 1) {
+        for (let i = 1; i <= pages; i++) {
+          // Display up to 5 items around current + edges
+          if (i === 1 || i === pages || Math.abs(currentPage - i) <= 2) {
+            const btn = document.createElement('button');
+            btn.className = 'page-btn' + (i === currentPage ? ' active' : '');
+            btn.textContent = i;
+            btn.onclick = () => { currentPage = i; renderPage(); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+            pag.appendChild(btn);
+          } else if (i === currentPage - 3 || i === currentPage + 3) {
+            const dot = document.createElement('span');
+            dot.textContent = '...';
+            dot.style.color = 'var(--muted)';
+            pag.appendChild(dot);
+          }
+        }
+      }
+    }
+
+    // Cart Logic
+    function getInputs(sku) {
+      return [document.getElementById('qty_g_' + sku), document.getElementById('qty_l_' + sku)];
+    }
+
+    function changeQty(sku, delta) {
+      const inputs = getInputs(sku);
+      let val = 1;
+      inputs.forEach(inp => { if (inp) val = parseInt(inp.value) || 1; });
+      val = Math.max(1, val + delta);
+      inputs.forEach(inp => { if (inp) inp.value = val; });
+      if (cart[sku]) { cart[sku].qty = val; saveCart(); updateCart(); }
+    }
+
+    function setQty(sku, val) {
+      val = Math.max(1, parseInt(val) || 1);
+      const inputs = getInputs(sku);
+      inputs.forEach(inp => { if (inp) inp.value = val; });
+      if (cart[sku]) { cart[sku].qty = val; saveCart(); updateCart(); }
+    }
+
+    function toggleCart(sku) {
+      if (cart[sku]) {
+        delete cart[sku];
+      } else {
+        const p = PROFILES.find(x => x.sku === sku);
+        if (!p) return;
+        let qty = 1;
+        const inputs = getInputs(sku);
+        inputs.forEach(inp => { if (inp) qty = Math.max(1, parseInt(inp.value) || 1); });
+        const len = parseFloat(p.len.split('/')[0]) || 6;
+        cart[sku] = { ...p, qty, len };
+      }
+      saveCart();
+      updateCart();
+      renderPage();
+    }
+
+    function saveCart() {
+      localStorage.setItem('alumCart', JSON.stringify(cart));
+    }
+
+    function removeFromCart(sku) {
+      delete cart[sku];
+      saveCart();
+      updateCart();
+      renderPage();
+    }
+
+    function clearCart() {
+      if (!confirm('האם אתה בטוח שברצונך לרוקן את הסל?')) return;
+      cart = {};
+      saveCart();
+      updateCart();
+      renderPage();
+    }
+
+    function setCartItemQty(sku, delta) {
+      if (!cart[sku]) return;
+      cart[sku].qty = Math.max(1, cart[sku].qty + delta);
+      saveCart();
+      updateCart();
+      renderPage(); // update visible inputs
+    }
+
+    function updateCart() {
+      const items = Object.values(cart);
+      const cartEl = document.getElementById('cartItems');
+      const summary = document.getElementById('cartSummary');
+      const exportBtn = document.getElementById('exportBtn');
+      const countEl = document.getElementById('cartCount');
+
+      countEl.textContent = items.length;
+
+      if (items.length === 0) {
+        cartEl.innerHTML = '<div class="cart-empty">הסל ריק<br><span style="font-size:11px">הוסף פרופילים מהקטלוג</span></div>';
+        summary.style.display = 'none';
+        exportBtn.disabled = true;
+        return;
+      }
+
+      exportBtn.disabled = false;
+      summary.style.display = 'block';
+
+      let totalWeight = 0;
+      cartEl.innerHTML = '';
+      items.forEach(item => {
+        const itemWeight = item.wpm * item.len * item.qty;
+        totalWeight += itemWeight;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+      <div class="cart-item-top">
+        <div class="cart-item-name">${item.name}</div>
+        <button class="cart-remove" onclick="removeFromCart('${item.sku}')" title="הסר">✕</button>
+      </div>
+      <div class="cart-item-sku">מק"ט: ${item.sku} | ${item.len}מ' | ${item.wpm} ק"ג/מ'</div>
+      <div class="cart-item-bottom">
+        <div class="qty-ctrl cart-item-qty">
+          <button class="qty-btn" onclick="setCartItemQty('${item.sku}', -1)">−</button>
+          <span class="qty-input" style="display:inline-block;text-align:center;">${item.qty}</span>
+          <button class="qty-btn" onclick="setCartItemQty('${item.sku}', 1)">+</button>
+        </div>
         <span class="cart-item-weight">${itemWeight.toFixed(2)} ק"ג</span>
       </div>
     `;
-    cartEl.appendChild(div);
-  });
+        cartEl.appendChild(div);
+      });
 
-  const low = (totalWeight * 0.95).toFixed(1);
-  const high = (totalWeight * 1.05).toFixed(1);
-  const total = totalWeight * PRICE_PER_KG;
-  const vat = total * VAT;
+      const low = (totalWeight * 0.95).toFixed(1);
+      const high = (totalWeight * 1.05).toFixed(1);
+      const total = totalWeight * PRICE_PER_KG;
+      const vat = total * VAT;
 
-  document.getElementById('sumWeight').textContent = totalWeight.toFixed(2) + ' ק"ג';
-  document.getElementById('sumRange').textContent = low + '–' + high + ' ק"ג';
-  document.getElementById('sumTotal').textContent = '₪' + total.toFixed(0);
-  document.getElementById('sumVat').textContent = '₪' + vat.toFixed(0);
-}
+      document.getElementById('sumWeight').textContent = totalWeight.toFixed(2) + ' ק"ג';
+      document.getElementById('sumRange').textContent = low + '–' + high + ' ק"ג';
+      document.getElementById('sumTotal').textContent = '₪' + total.toFixed(0);
+      document.getElementById('sumVat').textContent = '₪' + vat.toFixed(0);
+    }
 
-function showSpec() {
-  const items = Object.values(cart);
-  const orderNum = document.getElementById('orderNum').value || '—';
-  const ralVal = document.getElementById('ralSelect').value;
-  const ral = RAL_COLORS.find(r => r.code === ralVal);
-  const ralText = ral ? ral.code + ' – ' + ral.name : 'לא נבחר';
+    // Modal handling
+    function showSpec() {
+      const items = Object.values(cart);
+      const orderNum = document.getElementById('orderNum').value || '—';
+      const ralVal = document.getElementById('ralSelect').value;
+      const ral = RAL_COLORS.find(r => r.code === ralVal);
+      const ralText = ral ? ral.code + ' – ' + ral.name : 'לא נבחר';
 
-  document.getElementById('specMeta').innerHTML = `
+      document.getElementById('specMeta').innerHTML = `
     מספר הזמנה: <strong>${orderNum}</strong> &nbsp;|&nbsp;
     גוון: <strong>${ralText}</strong> &nbsp;|&nbsp;
     תאריך: <strong>${new Date().toLocaleDateString('he-IL')}</strong>
   `;
 
-  let totalWeight = 0;
-  const tbody = document.getElementById('specBody');
-  tbody.innerHTML = '';
-  items.forEach(item => {
-    const w = item.wpm * item.len * item.qty;
-    totalWeight += w;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${item.sku}</td><td>${item.name}</td><td>${item.qty}</td><td>${item.len}מ'</td><td>${item.wpm}</td><td>${w.toFixed(2)} ק"ג</td>`;
-    tbody.appendChild(tr);
-  });
+      let totalWeight = 0;
+      const tbody = document.getElementById('specBody');
+      tbody.innerHTML = '';
+      items.forEach(item => {
+        const w = item.wpm * item.len * item.qty;
+        totalWeight += w;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${item.sku}</td><td>${item.name}</td><td>${item.qty}</td><td>${item.len}מ'</td><td>${item.wpm}</td><td>${w.toFixed(2)} ק"ג</td>`;
+        tbody.appendChild(tr);
+      });
 
-  const low = (totalWeight * 0.95).toFixed(1);
-  const high = (totalWeight * 1.05).toFixed(1);
-  const total = (totalWeight * PRICE_PER_KG).toFixed(0);
-  const vat = (totalWeight * PRICE_PER_KG * VAT).toFixed(0);
+      const low = (totalWeight * 0.95).toFixed(1);
+      const high = (totalWeight * 1.05).toFixed(1);
+      const total = (totalWeight * PRICE_PER_KG).toFixed(0);
+      const vat = (totalWeight * PRICE_PER_KG * VAT).toFixed(0);
 
-  const tr = document.createElement('tr');
-  tr.className = 'spec-total';
-  tr.innerHTML = `<td colspan="5"><strong>סה"כ משקל (±5%)</strong></td><td><strong>${totalWeight.toFixed(2)} ק"ג (${low}–${high})</strong></td>`;
-  tbody.appendChild(tr);
-  const tr2 = document.createElement('tr');
-  tr2.className = 'spec-total';
-  tr2.innerHTML = `<td colspan="5"><strong>סה"כ לפני מע"מ</strong></td><td><strong>₪${total}</strong></td>`;
-  tbody.appendChild(tr2);
-  const tr3 = document.createElement('tr');
-  tr3.className = 'spec-total';
-  tr3.innerHTML = `<td colspan="5"><strong>סה"כ כולל מע"מ</strong></td><td><strong>₪${vat}</strong></td>`;
-  tbody.appendChild(tr3);
+      const tr = document.createElement('tr');
+      tr.className = 'spec-total';
+      tr.innerHTML = `<td colspan="5"><strong>סה"כ משקל (±5%)</strong></td><td><strong>${totalWeight.toFixed(2)} ק"ג (${low}–${high})</strong></td>`;
+      tbody.appendChild(tr);
+      const tr2 = document.createElement('tr');
+      tr2.className = 'spec-total';
+      tr2.innerHTML = `<td colspan="5"><strong>סה"כ לפני מע"מ</strong></td><td><strong>₪${total}</strong></td>`;
+      tbody.appendChild(tr2);
+      const tr3 = document.createElement('tr');
+      tr3.className = 'spec-total';
+      tr3.innerHTML = `<td colspan="5"><strong>סה"כ כולל מע"מ</strong></td><td><strong>₪${vat}</strong></td>`;
+      tbody.appendChild(tr3);
 
-  document.getElementById('specModal').classList.add('show');
-}
+      document.getElementById('specModal').classList.add('show');
+    }
 
-function closeModal() {
-  document.getElementById('specModal').classList.remove('show');
-}
+    function closeModal() {
+      document.getElementById('specModal').classList.remove('show');
+    }
 
-function scrollToCart() {
-  document.getElementById('cartPanel').scrollIntoView({ behavior: 'smooth' });
-}
+    function scrollToCart() {
+      if (!document.getElementById('view-catalog').classList.contains('active')) {
+        showView('catalog');
+      }
+      document.getElementById('cartPanel').scrollIntoView({ behavior: 'smooth' });
+    }
 
-renderTable();
-</script>
+    // Initial Boot
+    updateCart();
+    showView('categories');
+  </script>
 </body>
-</html>
