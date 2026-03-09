@@ -4,146 +4,878 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALUM-IL | קונפיגורטור פרגולה חשמלית</title>
+    <title>ALUM-IL | קונפיגורטור קיטים למתקינים</title>
+    <!-- Google Fonts: Heebo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Phosphor Icons -->
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        :root {
-            --bg: #0a0c0f;
-            --surface: #111418;
-            --surface2: #181c22;
-            --surface3: #1e2430;
-            --border: #2a3040;
-            --border2: #3a4558;
-            --blue: #00c3ff;
-            --blue-dim: rgba(0, 195, 255, 0.12);
-            --blue-mid: rgba(0, 195, 255, 0.25);
-            --white: #f0f4f8;
-            --silver: #8899aa;
-            --silver2: #aabbc8;
-            --green: #00e5a0;
-            --red: #ff4d6a;
-            --gold: #ffd166;
+        .configurator-wizard {
+            background-color: var(--surface-light);
+            border-radius: 12px;
+            padding: 2rem;
+            border: 1px solid var(--gray-medium);
         }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--white);
-            font-family: 'Heebo', sans-serif;
-            min-height: 100vh;
-        }
-
-        .header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
+        .wizard-steps {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--white);
-            font-weight: 800;
-            font-size: 1.3rem;
-            letter-spacing: 1px;
-        }
-
-        .logo i {
-            color: var(--blue);
-            font-size: 1.6rem;
-        }
-
-        .page-wrapper {
-            display: flex;
-            min-height: calc(100vh - 64px);
-        }
-
-        .sidebar {
-            width: 220px;
-            background: var(--surface);
-            border-left: 1px solid var(--border);
-            padding: 2rem 1rem;
-            flex-shrink: 0;
-        }
-
-        .sidebar-label {
-            color: var(--silver);
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            padding-right: 0.5rem;
-        }
-
-        .sidebar-nav {
-            list-style: none;
-        }
-
-        .sidebar-nav li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0.6rem 0.8rem;
-            border-radius: 8px;
-            color: var(--silver2);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
-
-        .sidebar-nav li a:hover {
-            background: var(--surface2);
-            color: var(--white);
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            overflow-x: hidden;
-        }
-
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 0.3rem;
-        }
-
-        .page-sub {
-            color: var(--silver);
-            font-size: 0.9rem;
             margin-bottom: 2rem;
+            position: relative;
         }
 
-        .section {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.8rem;
-            margin-bottom: 1.5rem;
+        .wizard-steps::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: var(--gray-medium);
+            z-index: 0;
+            transform: translateY(-50%);
         }
 
-        .section-header {
+        .step-indicator {
+            position: relative;
+            z-index: 1;
+            background-color: var(--surface-light);
+            padding: 0 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--silver-dark);
+            font-weight: 500;
+        }
+
+        .step-indicator.active {
+            color: var(--electric-blue);
+        }
+
+        .step-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--surface-dark);
+            border: 2px solid var(--gray-medium);
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--
+            justify-content: center;
+            font-weight: 700;
+            transition: all 0.3s ease;
+        }
+
+        .step-indicator.active .step-circle {
+            border-color: var(--electric-blue);
+            background-color: rgba(0, 195, 255, 0.1);
+            color: var(--electric-blue);
+        }
+
+        .step-indicator.completed .step-circle {
+            background-color: var(--electric-blue);
+            border-color: var(--electric-blue);
+            color: var(--white);
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .wizard-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--gray-medium);
+        }
+
+        /* Form Controls for Configurator */
+        .config-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        @media (max-width: 900px) {
+            .config-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .system-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .system-tab {
+            padding: 8px 16px;
+            background-color: var(--surface-dark);
+            border: 1px solid var(--gray-medium);
+            border-radius: 6px;
+            color: var(--silver-light);
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .system-tab.active {
+            background-color: var(--electric-blue);
+            border-color: var(--electric-blue);
+            color: var(--white);
+        }
+
+        .svg-container {
+            background-color: var(--surface-dark);
+            border: 1px solid var(--gray-medium);
+            border-radius: 8px;
+            padding: 1rem;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+
+        .svg-title {
+            text-align: center;
+            color: var(--silver-dark);
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .summary-card {
+            background-color: var(--surface-dark);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border: 1px solid var(--electric-blue);
+            margin-bottom: 1rem;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed var(--gray-medium);
+        }
+
+        .summary-row.total {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--electric-blue);
+            border-bottom: none;
+            padding-top: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+    </style>
+</head>
+
+<body class="dark-theme">
+    <!-- Header -->
+    <header class="header"
+        style="position: relative; border-bottom: 1px solid var(--surface-light); background-color: var(--surface-dark); padding: 1rem 0;">
+        <div class="container header-container" style="max-width: 100%; padding: 0 2rem;">
+            <a href="index.html" class="logo">
+                <i class="ph ph-hexagon-fill logo-icon"></i>
+                <span>ALUM-IL</span>
+            </a>
+            <div style="color: var(--silver-dark); display: flex; align-items: center; gap: 10px;">
+                <span
+                    style="font-weight:500; color:var(--white); display: none; @media(min-width: 768px){display: block;}">משתמש
+                    מערכת</span>
+                <i class="ph ph-user-circle" style="font-size: 2rem; color:var(--electric-blue);"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="dashboard-wrapper">
+        <!-- Sidebar -->
+        <aside class="dashboard-sidebar">
+            <div
+                style="color:var(--silver-dark); font-size:0.85rem; font-weight:700; margin-bottom:1rem; padding-right:1rem;">
+                תפריט פעולות</div>
+            <ul class="dashboard-nav">
+                <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
+                <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
+                <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
+                <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
+                <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="dashboard-content">
+            <div class="dashboard-header" style="justify-content: space-between; display: flex; align-items: center;">
+                <div>
+                    <h1 class="dashboard-title">קונפיגורטור קיטים למתקינים</h1>
+                    <p style="color: var(--silver-dark);">הגדר את פרטי הפרגולה החשמלית לחישוב מחיר והזמנה.</p>
+                </div>
+                <a href="dashboard.html" class="btn btn-outline">חזור לדאשבורד <i class="ph ph-arrow-right"></i></a>
+            </div>
+
+            <div class="configurator-wizard">
+                <!-- Progress Steps -->
+                <div class="wizard-steps">
+                    <div class="step-indicator active" id="step-nav-1">
+                        <div class="step-circle">1</div>
+                        <span>מידות והדמיה</span>
+                    </div>
+                    <div class="step-indicator" id="step-nav-2">
+                        <div class="step-circle">2</div>
+                        <span>מבנה הקיט</span>
+                    </div>
+                    <div class="step-indicator" id="step-nav-3">
+                        <div class="step-circle">3</div>
+                        <span>צבעים</span>
+                    </div>
+                    <div class="step-indicator" id="step-nav-4">
+                        <div class="step-circle">4</div>
+                        <span>תוספות</span>
+                    </div>
+                    <div class="step-indicator" id="step-nav-5">
+                        <div class="step-circle">5</div>
+                        <span>סיכום</span>
+                    </div>
+                </div>
+
+                <!-- Step 1: Dimensions -->
+                <div class="step-content active" id="step-1">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 1: מידות המערכת</h2>
+
+                    <div class="form-group" style="max-width: 300px;">
+                        <label class="form-label" for="systemCount">מספר מערכות חופפות</label>
+                        <input type="number" id="systemCount" class="form-control" min="1" max="10" value="1"
+                            onchange="updateSystemTabs()">
+                    </div>
+
+                    <div class="system-tabs" id="systemTabsContainer">
+                        <div class="system-tab active" onclick="switchSystemTab(0)">מערכת 1</div>
+                    </div>
+
+                    <div class="config-grid">
+                        <div class="config-inputs" id="dimensionsContainer">
+                            <!-- Dimensions inputs will be generated here -->
+                        </div>
+
+                        <div class="config-visuals">
+                            <div>
+                                <div class="svg-title">הדמיה איזומטרית</div>
+                                <div class="svg-container" id="svgIsometric"></div>
+                            </div>
+                            <div>
+                                <div class="svg-title">שרטוט טכני - חזית וצד</div>
+                                <div class="svg-container" id="svgTechnical"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2: Structure -->
+                <div class="step-content" id="step-2">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 2: מבנה הקיט</h2>
+
+                    <div
+                        style="margin-bottom: 2rem; padding: 1rem; background: var(--surface-dark); border-radius: 8px; border-right: 4px solid var(--electric-blue);">
+                        <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
+                            <i class="ph-fill ph-check-circle" style="color: var(--electric-blue);"></i> הקיט הבסיסי
+                            כולל:
+                        </h3>
+                        <ul style="list-style: none; padding-right: 0; color: var(--silver-light);">
+                            <li>• שלד אלומיניום מלא לפרגולה חשמלית</li>
+                            <li>• יריעת גג PVC איכותית</li>
+                            <li>• מנוע Somfy מקורי</li>
+                            <li>• שלט רחוק רגיל Somfy</li>
+                        </ul>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">סוג תמיכה קדמית / תלייה</label>
+                        <div style="display: flex; gap: 2rem;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="supportType" value="legs" checked
+                                    onchange="toggleLegHeight(true); renderSVGs()">
+                                רגליים קדמיות
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="radio" name="supportType" value="hangers"
+                                    onchange="toggleLegHeight(false); renderSVGs()">
+                                מותחנים לתלייה (בלי רגליים)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group" id="legHeightGroup" style="max-width: 300px;">
+                        <label class="form-label" for="legHeight">גובה רגליים (ס"מ)</label>
+                        <input type="number" id="legHeight" class="form-control" oninput="debounceRenderSVGs()">
+                        <small style="color: var(--silver-dark);">ברירת מחדל: גובה המרזב התחתון (ניתן לעריכה)</small>
+                    </div>
+                </div>
+
+                <!-- Step 3: Colors -->
+                <div class="step-content" id="step-3">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 3: בחירת צבעים</h2>
+                    <p style="color: var(--silver-dark); margin-bottom: 1.5rem;">צבעים אלו יחולו על כל המערכות שהגדרת.
+                    </p>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="colorAlum">צבע שלד אלומיניום (RAL)</label>
+                            <input type="text" id="colorAlum" class="form-control" placeholder="לדוגמה: RAL 9005">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="colorPvc">צבע יריעת PVC</label>
+                            <input type="text" id="colorPvc" class="form-control"
+                                placeholder="לדוגמה: קרם / לבן / אפור">
+                        </div>
+                    </div>
+                    <div class="form-group" style="max-width: calc(50% - 0.5rem);">
+                        <label class="form-label" for="colorLightProfile">צבע פרופילי תאורה</label>
+                        <input type="text" id="colorLightProfile" class="form-control" placeholder="כצבע האלומיניום">
+                        <small style="color: var(--silver-dark);">השאר ריק כדי להשתמש בצבע השלד הראשי</small>
+                    </div>
+                </div>
+
+                <!-- Step 4: Additions -->
+                <div class="step-content" id="step-4">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 4: תוספות למערכות</h2>
+
+                    <div id="additionsContainer">
+                        <!-- Additions per system will be generated here -->
+                    </div>
+
+                    <div style="margin-top: 2rem; padding: 1rem; background: var(--surface-dark); border-radius: 8px;">
+                        <h4 style="margin-bottom: 0.5rem; color: var(--silver-light);">מנוע Somfy</h4>
+                        <div style="display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: var(--silver-dark);">מנוע אלחוטי Somfy רגיל</span>
+                            <span style="color: var(--electric-blue); font-weight: bold;">כלול במחיר הקיט</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5: Summary -->
+                <div class="step-content" id="step-5">
+                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 5: סיכום והזמנה</h2>
+
+                    <div id="summaryContainer">
+                        <!-- Summary calculated here -->
+                    </div>
+
+                    <div class="payment-options">
+                        <button class="btn btn-outline btn-large" onclick="showBankDetails()">
+                            <i class="ph ph-bank"></i> העברה בנקאית
+                        </button>
+                        <button class="btn btn-primary btn-large" onclick="alert('חיבור למערכת סליקה בפיתוח...')">
+                            <i class="ph ph-credit-card"></i> תשלום באשראי
+                        </button>
+                    </div>
+
+                    <div id="bankDetails"
+                        style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-dark); border: 1px dashed var(--silver-dark); border-radius: 8px;">
+                        <h4 style="margin-bottom: 1rem; color: var(--white);">פרטי חשבון להעברה בנקאית</h4>
+                        <p style="color: var(--silver-light); line-height: 1.6;">
+                            בנק הפועלים (12)<br>
+                            סניף: 123<br>
+                            חשבון: 123456<br>
+                            ע"ש: אלום-איל בע"מ
+                        </p>
+                        <p style="margin-top: 1rem; color: var(--silver-dark); font-size: 0.9rem;">
+                            אנא ציין את מספר ההזמנה שיתקבל לאחר האישור בהערות ההעברה.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Wizard Actions -->
+                <div class="wizard-actions">
+                    <button type="button" class="btn btn-outline" id="btnPrev" onclick="prevStep()" disabled>
+                        <i class="ph ph-arrow-right"></i> שלב קודם
+                    </button>
+                    <button type="button" class="btn btn-primary" id="btnNext" onclick="nextStep()">
+                        שלב הבא <i class="ph ph-arrow-left"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // State
+        let currentStep = 1;
+        const totalSteps = 5;
+        let activeSystem = 0;
+
+        let systems = [
+            { width: 300, depth: 400, installHeight: 300, gutterHeight: 230, hasLed: false }
+        ];
+
+        let renderTimeout;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            renderDimensionsInputs();
+            renderAdditionsInputs();
+            renderSVGs();
+        });
+
+        // Configurator Logic
+        function updateSystemTabs() {
+            const count = parseInt(document.getElementById('systemCount').value) || 1;
+            const validCount = Math.max(1, Math.min(10, count));
+            document.getElementById('systemCount').value = validCount;
+
+            // Add new systems if needed
+            while (systems.length < validCount) {
+                systems.push({ width: 300, depth: 400, installHeight: 300, gutterHeight: 230, hasLed: false });
+            }
+            // Remove excess systems if needed
+            if (systems.length > validCount) {
+                systems = systems.slice(0, validCount);
+                if (activeSystem >= validCount) activeSystem = validCount - 1;
+            }
+
+            renderTabsHTML();
+            renderDimensionsInputs();
+            renderAdditionsInputs();
+            renderSVGs();
+        }
+
+        function renderTabsHTML() {
+            const container = document.getElementById('systemTabsContainer');
+            container.innerHTML = systems.map((_, index) => `
+                <div class="system-tab ${index === activeSystem ? 'active' : ''}" onclick="switchSystemTab(${index})">
+                    מערכת ${index + 1}
+                </div>
+            `).join('');
+        }
+
+        function switchSystemTab(index) {
+            activeSystem = index;
+            renderTabsHTML();
+            renderDimensionsInputs();
+            renderSVGs();
+        }
+
+        function renderDimensionsInputs() {
+            const sys = systems[activeSystem];
+            const container = document.getElementById('dimensionsContainer');
+
+            container.innerHTML = `
+                <div class="form-group">
+                    <label class="form-label" for="sysWidth">רוחב מערכת (ס"מ)</label>
+                    <input type="number" id="sysWidth" class="form-control" min="100" max="1200" value="${sys.width}" oninput="updateSystemParams()">
+                    <small style="color: var(--silver-dark);">בין 100 ל-1200 ס"מ</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sysDepth">יציאה (עומק) (ס"מ)</label>
+                    <input type="number" id="sysDepth" class="form-control" min="100" max="800" value="${sys.depth}" oninput="updateSystemParams()">
+                    <small style="color: var(--silver-dark);">בין 100 ל-800 ס"מ</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sysInstallHeight">גובה התקנה אחורי (ס"מ)</label>
+                    <input type="number" id="sysInstallHeight" class="form-control" min="200" max="500" value="${sys.installHeight}" oninput="updateSystemParams()">
+                    <small style="color: var(--silver-dark);">בין 200 ל-500 ס"מ | מינימום שפוע: 10%</small>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="sysGutterHeight">גובה מרזב תחתון / רגליים (ס"מ)</label>
+                    <input type="number" id="sysGutterHeight" class="form-control" value="${sys.gutterHeight}" oninput="updateSystemParams(true)">
+                    <small style="color: var(--silver-dark);">מחושב אוטומטית לפי שיפוע 10% + 30 ס"מ קסטה, ניתן לעריכה ידנית</small>
+                </div>
+            `;
+
+            // Sync leg height on step 2
+            document.getElementById('legHeight').value = sys.gutterHeight;
+        }
+
+        function updateSystemParams(isManualGutter = false) {
+            const width = parseInt(document.getElementById('sysWidth').value) || 300;
+            const depth = parseInt(document.getElementById('sysDepth').value) || 400;
+            const installHeight = parseInt(document.getElementById('sysInstallHeight').value) || 300;
+
+            let gutterHeight;
+            if (isManualGutter) {
+                gutterHeight = parseInt(document.getElementById('sysGutterHeight').value) || 200;
+                // Validation: gutter must be strictly lower than install
+                if (gutterHeight >= installHeight) {
+                    gutterHeight = installHeight - 10;
+                    document.getElementById('sysGutterHeight').value = gutterHeight;
+                }
+            } else {
+                // Formula: Install Height - (Depth * 10% + 30cm for cassette)
+                gutterHeight = Math.round(installHeight - (depth * 0.1) - 30);
+                document.getElementById('sysGutterHeight').value = gutterHeight;
+            }
+
+            systems[activeSystem].width = width;
+            systems[activeSystem].depth = depth;
+            systems[activeSystem].installHeight = installHeight;
+            systems[activeSystem].gutterHeight = gutterHeight;
+
+            // Sync with step 2
+            if (activeSystem === 0) {
+                document.getElementById('legHeight').value = gutterHeight;
+            }
+
+            debounceRenderSVGs();
+        }
+
+        function renderAdditionsInputs() {
+            const container = document.getElementById('additionsContainer');
+            container.innerHTML = systems.map((sys, index) => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--surface-dark); border-radius: 8px; margin-bottom: 0.5rem;">
+                    <span style="color: var(--white); font-weight: 500;">מערכת ${index + 1} (${sys.width}x${sys.depth} ס"מ)</span>
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" ${sys.hasLed ? 'checked' : ''} onchange="toggleLed(${index}, this.checked)" style="transform: scale(1.2);">
+                        <span>תאורת LED בילט-אין (תוספת ₪30 למ"ר)</span>
+                    </label>
+                </div>
+            `).join('');
+        }
+
+        function toggleLed(index, isChecked) {
+            systems[index].hasLed = isChecked;
+            generateSummary(); // If already on step 5, update live
+        }
+
+        function toggleLegHeight(show) {
+            const group = document.getElementById('legHeightGroup');
+            group.style.display = show ? 'block' : 'none';
+        }
+
+        // --- SVG Rendering with Debounce ---
+        function debounceRenderSVGs() {
+            clearTimeout(renderTimeout);
+            renderTimeout = setTimeout(renderSVGs, 300);
+        }
+
+        function renderSVGs() {
+            const sys = systems[activeSystem];
+            const supportType = document.querySelector('input[name="supportType"]:checked').value;
+
+            // Render Isometric
+            const isoHtml = generateIsometricSVG(sys, supportType);
+            document.getElementById('svgIsometric').innerHTML = isoHtml;
+
+            // Render Technical
+            const techHtml = generateTechnicalSVG(sys, supportType);
+            document.getElementById('svgTechnical').innerHTML = techHtml;
+        }
+
+        function generateIsometricSVG(sys, supportType) {
+            // Very simplified isometric representation for conceptual visualization
+            const w = 400; const h = 250;
+            const scale = 0.3; // Scale dimensions down for SVG viewBox
+
+            // Normalized dimensions
+            const pW = sys.width * scale;
+            const pD = sys.depth * scale;
+            const pH_b = sys.installHeight * scale;
+            const pH_f = sys.gutterHeight * scale;
+
+            // Iso Projection Angles (approx 30 deg)
+            const dx1 = pW * 0.866; const dy1 = pW * 0.5;
+            const dx2 = -pD * 0.866; const dy2 = pD * 0.5;
+
+            // Origin bottom center
+            const ox = w / 2;
+            const oy = h * 0.8;
+
+            // Points
+            // Back Wall Corners (Base)
+            const bB_R = { x: ox + dx1, y: oy - dy1 };
+            const bB_L = { x: ox, y: oy };
+            // Front Corners (Base)
+            const fB_L = { x: ox + dx2, y: oy - dy2 };
+            const fB_R = { x: ox + dx1 + dx2, y: oy - dy1 - dy2 };
+
+            // Top Corners
+            const tB_R = { x: bB_R.x, y: bB_R.y - pH_b };
+            const tB_L = { x: bB_L.x, y: bB_L.y - pH_b };
+            const tF_L = { x: fB_L.x, y: fB_L.y - pH_f };
+            const tF_R = { x: fB_R.x, y: fB_R.y - pH_f };
+
+            let elements = ``;
+
+            // Back Wall Line (conceptual)
+            elements += `<polygon points="${bB_L.x},${bB_L.y} ${bB_R.x},${bB_R.y} ${tB_R.x},${tB_R.y} ${tB_L.x},${tB_L.y}" fill="rgba(80,80,80,0.3)" stroke="var(--silver-dark)"/>`;
+
+            if (supportType === 'legs') {
+                // Left Leg
+                elements += `<line x1="${fB_L.x}" y1="${fB_L.y}" x2="${tF_L.x}" y2="${tF_L.y}" stroke="var(--white)" stroke-width="4"/>`;
+                // Right Leg
+                elements += `<line x1="${fB_R.x}" y1="${fB_R.y}" x2="${tF_R.x}" y2="${tF_R.y}" stroke="var(--white)" stroke-width="4"/>`;
+            } else {
+                // Hangers
+                const hangL = { x: tB_L.x, y: tB_L.y - 30 };
+                const hangR = { x: tB_R.x, y: tB_R.y - 30 };
+                elements += `<line x1="${tF_L.x}" y1="${tF_L.y}" x2="${hangL.x}" y2="${hangL.y}" stroke="var(--electric-blue)" stroke-width="2" stroke-dasharray="4"/>`;
+                elements += `<line x1="${tF_R.x}" y1="${tF_R.y}" x2="${hangR.x}" y2="${hangR.y}" stroke="var(--electric-blue)" stroke-width="2" stroke-dasharray="4"/>`;
+            }
+
+            // Roof Polygon
+            elements += `<polygon points="${tB_L.x},${tB_L.y} ${tB_R.x},${tB_R.y} ${tF_R.x},${tF_R.y} ${tF_L.x},${tF_L.y}" fill="rgba(0, 195, 255, 0.2)" stroke="var(--electric-blue)" stroke-width="2"/>`;
+
+            // Guidelines
+            elements += `<line x1="${tB_L.x}" y1="${tB_L.y}" x2="${tF_L.x}" y2="${tF_L.y}" stroke="var(--white)" stroke-width="3"/>`;
+            elements += `<line x1="${tB_R.x}" y1="${tB_R.y}" x2="${tF_R.x}" y2="${tF_R.y}" stroke="var(--white)" stroke-width="3"/>`;
+
+            return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">${elements}</svg>`;
+        }
+
+        function generateTechnicalSVG(sys, supportType) {
+            const w = 400; const h = 250;
+            const margin = 40;
+            const drawW = w - margin * 2;
+            const drawH = h - margin * 2;
+
+            // Dynamic scaling to fit bounds
+            const maxRealW = Math.max(sys.width, sys.depth);
+            const maxRealH = sys.installHeight;
+            const scaleX = (drawW / 2 - 20) / maxRealW;
+            const scaleY = drawH / maxRealH;
+            const s = Math.min(scaleX, scaleY);
+
+            // Calculate SVG coordinates
+            const sW = sys.width * s;
+            const sD = sys.depth * s;
+            const sHb = sys.installHeight * s;
+            const sHf = sys.gutterHeight * s;
+
+            const baseLine = h - margin;
+
+            // Left side -> Front View
+            const frontX = margin + 10;
+            const frontY = baseLine;
+
+            // Right side -> Side View
+            const sideX = margin + drawW / 2 + 10;
+            const sideY = baseLine;
+
+            let elements = ``;
+
+            // --- Front View ---
+            elements += `<text x="${frontX + sW / 2}" y="${frontY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">חזית</text>`;
+
+            if (supportType === 'legs') {
+                // Legs
+                elements += `<line x1="${frontX}" y1="${frontY}" x2="${frontX}" y2="${frontY - sHf}" stroke="var(--white)" stroke-width="3"/>`;
+                elements += `<line x1="${frontX + sW}" y1="${frontY}" x2="${frontX + sW}" y2="${frontY - sHf}" stroke="var(--white)" stroke-width="3"/>`;
+            }
+            // Roof / Gutter front line
+            elements += `<rect x="${frontX}" y="${frontY - sHf - 5}" width="${sW}" height="5" fill="var(--electric-blue)"/>`;
+
+            // Front View Dimensions
+            elements += `<line x1="${frontX}" y1="${frontY + 5}" x2="${frontX + sW}" y2="${frontY + 5}" stroke="var(--silver-dark)" marker-start="url(#arrow)" marker-end="url(#arrow)"/>`;
+            elements += `<text x="${frontX + sW / 2}" y="${frontY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.width}</text>`;
+
+            // --- Side View ---
+            elements += `<text x="${sideX + sD / 2}" y="${sideY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">צד</text>`;
+
+            // Wall
+            elements += `<line x1="${sideX + sD}" y1="${sideY}" x2="${sideX + sD}" y2="${sideY - sHb}" stroke="rgba(255,255,255,0.3)" stroke-width="4"/>`;
+
+            if (supportType === 'legs') {
+                // Leg
+                elements += `<line x1="${sideX}" y1="${sideY}" x2="${sideX}" y2="${sideY - sHf}" stroke="var(--white)" stroke-width="3"/>`;
+            } else {
+                // Hanger
+                elements += `<line x1="${sideX}" y1="${sideY - sHf}" x2="${sideX + sD}" y2="${sideY - sHb - 10}" stroke="var(--electric-blue)" stroke-width="1.5" stroke-dasharray="3"/>`;
+            }
+            // Roof Line
+            elements += `<line x1="${sideX}" y1="${sideY - sHf}" x2="${sideX + sD}" y2="${sideY - sHb}" stroke="var(--electric-blue)" stroke-width="4"/>`;
+
+            // Side View Dimensions (Depth)
+            elements += `<line x1="${sideX}" y1="${sideY + 5}" x2="${sideX + sD}" y2="${sideY + 5}" stroke="var(--silver-dark)"/>`;
+            elements += `<text x="${sideX + sD / 2}" y="${sideY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.depth}</text>`;
+
+            // Side View Dimensions (Heights - approximated placement)
+            elements += `<text x="${sideX + sD + 5}" y="${sideY - sHb / 2}" fill="var(--electric-blue)" font-size="10" text-anchor="start">${sys.installHeight}</text>`;
+            elements += `<text x="${sideX - 5}" y="${sideY - sHf / 2}" fill="var(--electric-blue)" font-size="10" text-anchor="end">${sys.gutterHeight}</text>`;
+
+            return `
+                <svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
+                            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--silver-dark)" />
+                        </marker>
+                    </defs>
+                    ${elements}
+                </svg>
+            `;
+        }
+
+        // --- Wizard Navigation ---
+        function updateWizardUI() {
+            // Update nav indicators
+            for (let i = 1; i <= totalSteps; i++) {
+                const indicator = document.getElementById(`step-nav-${i}`);
+                if (i < currentStep) {
+                    indicator.className = 'step-indicator completed';
+                } else if (i === currentStep) {
+                    indicator.className = 'step-indicator active';
+                } else {
+                    indicator.className = 'step-indicator';
+                }
+
+                // Show hide content
+                const content = document.getElementById(`step-${i}`);
+                if (i === currentStep) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            }
+
+            // Buttons
+            document.getElementById('btnPrev').disabled = currentStep === 1;
+
+            const btnNext = document.getElementById('btnNext');
+            if (currentStep === totalSteps) {
+                btnNext.style.display = 'none'; // Summary has its own buttons
+            } else {
+                btnNext.style.display = 'inline-flex';
+                btnNext.innerHTML = currentStep === totalSteps - 1 ? 'צפה בסיכום מחירון <i class="ph ph-check"></i>' : 'שלב הבא <i class="ph ph-arrow-left"></i>';
+            }
+
+            // Render additions if moving to step 4
+            if (currentStep === 4) {
+                renderAdditionsInputs();
+            }
+
+            // Generate summary data when hitting step 5
+            if (currentStep === totalSteps) {
+                generateSummary();
+            }
+        }
+
+        function nextStep() {
+            // Validation before moving
+            if (currentStep === 1) {
+                const w = parseInt(document.getElementById('sysWidth').value);
+                const d = parseInt(document.getElementById('sysDepth').value);
+                const h = parseInt(document.getElementById('sysInstallHeight').value);
+                if (w < 100 || w > 1200 || d < 100 || d > 800 || h < 200 || h > 500) {
+                    alert('חלק מהמידות שהזנת חורגות מהתקן המותר.');
+                    return;
+                }
+            }
+
+            if (currentStep < totalSteps) {
+                currentStep++;
+                updateWizardUI();
+            }
+        }
+
+        function prevStep() {
+            if (currentStep > 1) {
+                currentStep--;
+                updateWizardUI();
+            }
+        }
+
+        // --- Pricing Calculation ---
+        function generateSummary() {
+            let totalOverall = 0;
+            let summaryHTML = '';
+
+            systems.forEach((sys, idx) => {
+                // Calc Area in m^2
+                const area = (sys.width / 100) * (sys.depth / 100);
+
+                // Base Price
+                let basePrice = 0;
+                if (area < 12) {
+                    basePrice = 5460;
+                } else {
+                    basePrice = area * 455;
+                }
+
+                // LED Price
+                let ledPrice = 0;
+                if (sys.hasLed) {
+                    ledPrice = area * 30;
+                }
+
+                const sysTotal = basePrice + ledPrice;
+                totalOverall += sysTotal;
+
+                summaryHTML += `
+                    <div class="summary-card">
+                        <h3 style="color: var(--white); margin-bottom: 1rem;">מערכת ${idx + 1} (${sys.width}x${sys.depth} ס"מ)</h3>
+                        <div class="summary-row">
+                            <span style="color: var(--silver-light);">שטח הפרגולה</span>
+                            <span>${area.toFixed(2)} מ"ר</span>
+                        </div>
+                        <div class="summary-row">
+                            <span style="color: var(--silver-light);">מבנה הקיט (אלומיניום + PVC + מנוע Somfy)</span>
+                            <span>₪${Math.round(basePrice).toLocaleString()}</span>
+                        </div>
+                        ${sys.hasLed ? `
+                        <div class="summary-row">
+                            <span style="color: var(--silver-light);">תוספת חיווט LED (${Math.round(area)} מ"ר * ₪30)</span>
+                            <span>₪${Math.round(ledPrice).toLocaleString()}</span>
+                        </div>
+                        ` : ''}
+                        <div class="summary-row" style="font-weight: bold; border-top: 1px solid var(--gray-medium); padding-top: 0.5rem; margin-top: 0.5rem;">
+                            <span>סה"כ למערכת ${idx + 1}</span>
+                            <span>₪${Math.round(sysTotal).toLocaleString()}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            summaryHTML += `
+                <div class="summary-card" style="border-color: var(--electric-blue); background-color: rgba(0, 195, 255, 0.05); margin-top: 2rem;">
+                    <div class="summary-row total">
+                        <span>סה"כ לתשלום (לפני מע"מ)</span>
+                        <span>₪${Math.round(totalOverall).toLocaleString()}</span>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('summaryContainer').innerHTML = summaryHTML;
+        }
+
+        function showBankDetails() {
+            document.getElementById('bankDetails').style.display = 'block';
+        }
+
+    </script>
+</body>
+
+</html>
