@@ -92,8 +92,15 @@
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .wizard-actions {
@@ -152,7 +159,7 @@
             justify-content: center;
             margin-bottom: 1rem;
         }
-        
+
         .svg-title {
             text-align: center;
             color: var(--silver-dark);
@@ -191,7 +198,7 @@
             gap: 1rem;
             margin-top: 2rem;
         }
-        
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -210,7 +217,9 @@
                 <span>ALUM-IL</span>
             </a>
             <div style="color: var(--silver-dark); display: flex; align-items: center; gap: 10px;">
-                <span style="font-weight:500; color:var(--white); display: none; @media(min-width: 768px){display: block;}">משתמש מערכת</span>
+                <span
+                    style="font-weight:500; color:var(--white); display: none; @media(min-width: 768px){display: block;}">משתמש
+                    מערכת</span>
                 <i class="ph ph-user-circle" style="font-size: 2rem; color:var(--electric-blue);"></i>
             </div>
         </div>
@@ -219,7 +228,8 @@
     <div class="dashboard-wrapper">
         <!-- Sidebar -->
         <aside class="dashboard-sidebar">
-            <div style="color:var(--silver-dark); font-size:0.85rem; font-weight:700; margin-bottom:1rem; padding-right:1rem;">
+            <div
+                style="color:var(--silver-dark); font-size:0.85rem; font-weight:700; margin-bottom:1rem; padding-right:1rem;">
                 תפריט פעולות</div>
             <ul class="dashboard-nav">
                 <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
@@ -268,10 +278,11 @@
                 <!-- Step 1: Dimensions -->
                 <div class="step-content active" id="step-1">
                     <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 1: מידות המערכת</h2>
-                    
+
                     <div class="form-group" style="max-width: 300px;">
                         <label class="form-label" for="systemCount">מספר מערכות חופפות</label>
-                        <input type="number" id="systemCount" class="form-control" min="1" max="10" value="1" onchange="updateSystemTabs()">
+                        <input type="number" id="systemCount" class="form-control" min="1" max="10" value="1"
+                            onchange="updateSystemTabs()">
                     </div>
 
                     <div class="system-tabs" id="systemTabsContainer">
@@ -282,7 +293,7 @@
                         <div class="config-inputs" id="dimensionsContainer">
                             <!-- Dimensions inputs will be generated here -->
                         </div>
-                        
+
                         <div class="config-visuals">
                             <div>
                                 <div class="svg-title">הדמיה איזומטרית</div>
@@ -299,10 +310,12 @@
                 <!-- Step 2: Structure -->
                 <div class="step-content" id="step-2">
                     <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 2: מבנה הקיט</h2>
-                    
-                    <div style="margin-bottom: 2rem; padding: 1rem; background: var(--surface-dark); border-radius: 8px; border-right: 4px solid var(--electric-blue);">
+
+                    <div
+                        style="margin-bottom: 2rem; padding: 1rem; background: var(--surface-dark); border-radius: 8px; border-right: 4px solid var(--electric-blue);">
                         <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
-                            <i class="ph-fill ph-check-circle" style="color: var(--electric-blue);"></i> הקיט הבסיסי כולל:
+                            <i class="ph-fill ph-check-circle" style="color: var(--electric-blue);"></i> הקיט הבסיסי
+                            כולל:
                         </h3>
                         <ul style="list-style: none; padding-right: 0; color: var(--silver-light);">
                             <li>• שלד אלומיניום מלא לפרגולה חשמלית</li>
@@ -316,11 +329,13 @@
                         <label class="form-label">סוג תמיכה קדמית / תלייה</label>
                         <div style="display: flex; gap: 2rem;">
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="radio" name="supportType" value="legs" checked onchange="toggleLegHeight(true); renderSVGs()">
+                                <input type="radio" name="supportType" value="legs" checked
+                                    onchange="toggleLegHeight(true); renderSVGs()">
                                 רגליים קדמיות
                             </label>
                             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="radio" name="supportType" value="hangers" onchange="toggleLegHeight(false); renderSVGs()">
+                                <input type="radio" name="supportType" value="hangers"
+                                    onchange="toggleLegHeight(false); renderSVGs()">
                                 מותחנים לתלייה (בלי רגליים)
                             </label>
                         </div>
@@ -336,7 +351,8 @@
                 <!-- Step 3: Colors -->
                 <div class="step-content" id="step-3">
                     <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 3: בחירת צבעים</h2>
-                    <p style="color: var(--silver-dark); margin-bottom: 1.5rem;">צבעים אלו יחולו על כל המערכות שהגדרת.</p>
+                    <p style="color: var(--silver-dark); margin-bottom: 1.5rem;">צבעים אלו יחולו על כל המערכות שהגדרת.
+                    </p>
 
                     <div class="form-row">
                         <div class="form-group">
@@ -345,7 +361,8 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="colorPvc">צבע יריעת PVC</label>
-                            <input type="text" id="colorPvc" class="form-control" placeholder="לדוגמה: קרם / לבן / אפור">
+                            <input type="text" id="colorPvc" class="form-control"
+                                placeholder="לדוגמה: קרם / לבן / אפור">
                         </div>
                     </div>
                     <div class="form-group" style="max-width: calc(50% - 0.5rem);">
@@ -358,7 +375,7 @@
                 <!-- Step 4: Additions -->
                 <div class="step-content" id="step-4">
                     <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 4: תוספות למערכות</h2>
-                    
+
                     <div id="additionsContainer">
                         <!-- Additions per system will be generated here -->
                     </div>
@@ -375,7 +392,7 @@
                 <!-- Step 5: Summary -->
                 <div class="step-content" id="step-5">
                     <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 5: סיכום והזמנה</h2>
-                    
+
                     <div id="summaryContainer">
                         <!-- Summary calculated here -->
                     </div>
@@ -389,7 +406,8 @@
                         </button>
                     </div>
 
-                    <div id="bankDetails" style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-dark); border: 1px dashed var(--silver-dark); border-radius: 8px;">
+                    <div id="bankDetails"
+                        style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-dark); border: 1px dashed var(--silver-dark); border-radius: 8px;">
                         <h4 style="margin-bottom: 1rem; color: var(--white);">פרטי חשבון להעברה בנקאית</h4>
                         <p style="color: var(--silver-light); line-height: 1.6;">
                             בנק הפועלים (12)<br>
@@ -421,7 +439,7 @@
         let currentStep = 1;
         const totalSteps = 5;
         let activeSystem = 0;
-        
+
         let systems = [
             { width: 300, depth: 400, installHeight: 300, gutterHeight: 230, hasLed: false }
         ];
@@ -476,7 +494,7 @@
         function renderDimensionsInputs() {
             const sys = systems[activeSystem];
             const container = document.getElementById('dimensionsContainer');
-            
+
             container.innerHTML = `
                 <div class="form-group">
                     <label class="form-label" for="sysWidth">רוחב מערכת (ס"מ)</label>
@@ -499,7 +517,7 @@
                     <small style="color: var(--silver-dark);">מחושב אוטומטית לפי שיפוע 10% + 30 ס"מ קסטה, ניתן לעריכה ידנית</small>
                 </div>
             `;
-            
+
             // Sync leg height on step 2
             document.getElementById('legHeight').value = sys.gutterHeight;
         }
@@ -508,7 +526,7 @@
             const width = parseInt(document.getElementById('sysWidth').value) || 300;
             const depth = parseInt(document.getElementById('sysDepth').value) || 400;
             const installHeight = parseInt(document.getElementById('sysInstallHeight').value) || 300;
-            
+
             let gutterHeight;
             if (isManualGutter) {
                 gutterHeight = parseInt(document.getElementById('sysGutterHeight').value) || 200;
@@ -529,8 +547,8 @@
             systems[activeSystem].gutterHeight = gutterHeight;
 
             // Sync with step 2
-            if(activeSystem === 0) {
-               document.getElementById('legHeight').value = gutterHeight;
+            if (activeSystem === 0) {
+                document.getElementById('legHeight').value = gutterHeight;
             }
 
             debounceRenderSVGs();
@@ -568,7 +586,7 @@
         function renderSVGs() {
             const sys = systems[activeSystem];
             const supportType = document.querySelector('input[name="supportType"]:checked').value;
-            
+
             // Render Isometric
             const isoHtml = generateIsometricSVG(sys, supportType);
             document.getElementById('svgIsometric').innerHTML = isoHtml;
@@ -582,34 +600,34 @@
             // Very simplified isometric representation for conceptual visualization
             const w = 400; const h = 250;
             const scale = 0.3; // Scale dimensions down for SVG viewBox
-            
+
             // Normalized dimensions
             const pW = sys.width * scale;
             const pD = sys.depth * scale;
             const pH_b = sys.installHeight * scale;
             const pH_f = sys.gutterHeight * scale;
-            
+
             // Iso Projection Angles (approx 30 deg)
             const dx1 = pW * 0.866; const dy1 = pW * 0.5;
             const dx2 = -pD * 0.866; const dy2 = pD * 0.5;
 
             // Origin bottom center
-            const ox = w/2; 
+            const ox = w / 2;
             const oy = h * 0.8;
 
             // Points
             // Back Wall Corners (Base)
-            const bB_R = {x: ox + dx1, y: oy - dy1};
-            const bB_L = {x: ox, y: oy};
+            const bB_R = { x: ox + dx1, y: oy - dy1 };
+            const bB_L = { x: ox, y: oy };
             // Front Corners (Base)
-            const fB_L = {x: ox + dx2, y: oy - dy2};
-            const fB_R = {x: ox + dx1 + dx2, y: oy - dy1 - dy2};
+            const fB_L = { x: ox + dx2, y: oy - dy2 };
+            const fB_R = { x: ox + dx1 + dx2, y: oy - dy1 - dy2 };
 
             // Top Corners
-            const tB_R = {x: bB_R.x, y: bB_R.y - pH_b};
-            const tB_L = {x: bB_L.x, y: bB_L.y - pH_b};
-            const tF_L = {x: fB_L.x, y: fB_L.y - pH_f};
-            const tF_R = {x: fB_R.x, y: fB_R.y - pH_f};
+            const tB_R = { x: bB_R.x, y: bB_R.y - pH_b };
+            const tB_L = { x: bB_L.x, y: bB_L.y - pH_b };
+            const tF_L = { x: fB_L.x, y: fB_L.y - pH_f };
+            const tF_R = { x: fB_R.x, y: fB_R.y - pH_f };
 
             let elements = ``;
 
@@ -623,8 +641,8 @@
                 elements += `<line x1="${fB_R.x}" y1="${fB_R.y}" x2="${tF_R.x}" y2="${tF_R.y}" stroke="var(--white)" stroke-width="4"/>`;
             } else {
                 // Hangers
-                const hangL = {x: tB_L.x, y: tB_L.y - 30};
-                const hangR = {x: tB_R.x, y: tB_R.y - 30};
+                const hangL = { x: tB_L.x, y: tB_L.y - 30 };
+                const hangR = { x: tB_R.x, y: tB_R.y - 30 };
                 elements += `<line x1="${tF_L.x}" y1="${tF_L.y}" x2="${hangL.x}" y2="${hangL.y}" stroke="var(--electric-blue)" stroke-width="2" stroke-dasharray="4"/>`;
                 elements += `<line x1="${tF_R.x}" y1="${tF_R.y}" x2="${hangR.x}" y2="${hangR.y}" stroke="var(--electric-blue)" stroke-width="2" stroke-dasharray="4"/>`;
             }
@@ -642,13 +660,13 @@
         function generateTechnicalSVG(sys, supportType) {
             const w = 400; const h = 250;
             const margin = 40;
-            const drawW = w - margin*2;
-            const drawH = h - margin*2;
+            const drawW = w - margin * 2;
+            const drawH = h - margin * 2;
 
             // Dynamic scaling to fit bounds
             const maxRealW = Math.max(sys.width, sys.depth);
             const maxRealH = sys.installHeight;
-            const scaleX = (drawW/2 - 20) / maxRealW; 
+            const scaleX = (drawW / 2 - 20) / maxRealW;
             const scaleY = drawH / maxRealH;
             const s = Math.min(scaleX, scaleY);
 
@@ -665,14 +683,14 @@
             const frontY = baseLine;
 
             // Right side -> Side View
-            const sideX = margin + drawW/2 + 10;
+            const sideX = margin + drawW / 2 + 10;
             const sideY = baseLine;
 
             let elements = ``;
 
             // --- Front View ---
-            elements += `<text x="${frontX + sW/2}" y="${frontY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">חזית</text>`;
-            
+            elements += `<text x="${frontX + sW / 2}" y="${frontY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">חזית</text>`;
+
             if (supportType === 'legs') {
                 // Legs
                 elements += `<line x1="${frontX}" y1="${frontY}" x2="${frontX}" y2="${frontY - sHf}" stroke="var(--white)" stroke-width="3"/>`;
@@ -680,17 +698,17 @@
             }
             // Roof / Gutter front line
             elements += `<rect x="${frontX}" y="${frontY - sHf - 5}" width="${sW}" height="5" fill="var(--electric-blue)"/>`;
-            
+
             // Front View Dimensions
             elements += `<line x1="${frontX}" y1="${frontY + 5}" x2="${frontX + sW}" y2="${frontY + 5}" stroke="var(--silver-dark)" marker-start="url(#arrow)" marker-end="url(#arrow)"/>`;
-            elements += `<text x="${frontX + sW/2}" y="${frontY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.width}</text>`;
+            elements += `<text x="${frontX + sW / 2}" y="${frontY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.width}</text>`;
 
             // --- Side View ---
-            elements += `<text x="${sideX + sD/2}" y="${sideY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">צד</text>`;
-            
+            elements += `<text x="${sideX + sD / 2}" y="${sideY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">צד</text>`;
+
             // Wall
             elements += `<line x1="${sideX + sD}" y1="${sideY}" x2="${sideX + sD}" y2="${sideY - sHb}" stroke="rgba(255,255,255,0.3)" stroke-width="4"/>`;
-            
+
             if (supportType === 'legs') {
                 // Leg
                 elements += `<line x1="${sideX}" y1="${sideY}" x2="${sideX}" y2="${sideY - sHf}" stroke="var(--white)" stroke-width="3"/>`;
@@ -700,14 +718,14 @@
             }
             // Roof Line
             elements += `<line x1="${sideX}" y1="${sideY - sHf}" x2="${sideX + sD}" y2="${sideY - sHb}" stroke="var(--electric-blue)" stroke-width="4"/>`;
-            
+
             // Side View Dimensions (Depth)
             elements += `<line x1="${sideX}" y1="${sideY + 5}" x2="${sideX + sD}" y2="${sideY + 5}" stroke="var(--silver-dark)"/>`;
-            elements += `<text x="${sideX + sD/2}" y="${sideY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.depth}</text>`;
-            
+            elements += `<text x="${sideX + sD / 2}" y="${sideY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.depth}</text>`;
+
             // Side View Dimensions (Heights - approximated placement)
-            elements += `<text x="${sideX + sD + 5}" y="${sideY - sHb/2}" fill="var(--electric-blue)" font-size="10" text-anchor="start">${sys.installHeight}</text>`;
-            elements += `<text x="${sideX - 5}" y="${sideY - sHf/2}" fill="var(--electric-blue)" font-size="10" text-anchor="end">${sys.gutterHeight}</text>`;
+            elements += `<text x="${sideX + sD + 5}" y="${sideY - sHb / 2}" fill="var(--electric-blue)" font-size="10" text-anchor="start">${sys.installHeight}</text>`;
+            elements += `<text x="${sideX - 5}" y="${sideY - sHf / 2}" fill="var(--electric-blue)" font-size="10" text-anchor="end">${sys.gutterHeight}</text>`;
 
             return `
                 <svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">
@@ -745,7 +763,7 @@
 
             // Buttons
             document.getElementById('btnPrev').disabled = currentStep === 1;
-            
+
             const btnNext = document.getElementById('btnNext');
             if (currentStep === totalSteps) {
                 btnNext.style.display = 'none'; // Summary has its own buttons
@@ -755,8 +773,8 @@
             }
 
             // Render additions if moving to step 4
-            if(currentStep === 4) {
-               renderAdditionsInputs();
+            if (currentStep === 4) {
+                renderAdditionsInputs();
             }
 
             // Generate summary data when hitting step 5
@@ -798,7 +816,7 @@
             systems.forEach((sys, idx) => {
                 // Calc Area in m^2
                 const area = (sys.width / 100) * (sys.depth / 100);
-                
+
                 // Base Price
                 let basePrice = 0;
                 if (area < 12) {
