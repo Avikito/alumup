@@ -4,84 +4,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALUM-IL | קונפיגורטור קיטים למתקינים</title>
-    <!-- Google Fonts: Heebo -->
+    <title>ALUM-IL | קונפיגורטור פרגולה חשמלית</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <!-- Main Style -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Phosphor Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
-        .configurator-wizard {
-            background-color: var(--surface-light);
-            border-radius: 12px;
-            padding: 2rem;
-            border: 1px solid var(--gray-medium);
+        :root {
+            --bg: #0a0c0f;
+            --surface: #111418;
+            --surface2: #181c22;
+            --surface3: #1e2430;
+            --border: #2a3040;
+            --border2: #3a4558;
+            --blue: #00c3ff;
+            --blue-dim: rgba(0, 195, 255, 0.12);
+            --blue-mid: rgba(0, 195, 255, 0.25);
+            --white: #f0f4f8;
+            --silver: #8899aa;
+            --silver2: #aabbc8;
+            --green: #00e5a0;
+            --red: #ff4d6a;
+            --gold: #ffd166;
         }
 
-        .wizard-steps {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 2rem;
-            position: relative;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
 
-        .wizard-steps::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: var(--gray-medium);
-            z-index: 0;
-            transform: translateY(-50%);
-        }
-
-        .step-indicator {
-            position: relative;
-            z-index: 1;
-            background-color: var(--surface-light);
-            padding: 0 10px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 8px;
-            color: var(--silver-dark);
-            font-weight: 500;
-        }
-
-        .step-indicator.active {
-            color: var(--electric-blue);
-        }
-
-        .step-circle {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--surface-dark);
-            border: 2px solid var(--gray-medium);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            transition: all 0.3s ease;
-        }
-
-        .step-indicator.active .step-circle {
-            border-color: var(--electric-blue);
-            background-color: rgba(0, 195, 255, 0.1);
-            color: var(--electric-blue);
-        }
-
-        .step-indicator.completed .step-circle {
-            background-color: var(--electric-blue);
-            border-color: var(--electric-blue);
+        body {
+            background: var(--bg);
             color: var(--white);
+            font-family: 'Heebo', sans-serif;
+            min-height: 100vh;
         }
 
+<<<<<<< HEAD
         .step-content {
             display: none;
             animation: fadeIn 0.3s ease;
@@ -104,58 +65,110 @@
         }
 
         .wizard-actions {
+=======
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+>>>>>>> 021ac1f8f4c4d6663ea639f4368c494f59de83e1
             display: flex;
             justify-content: space-between;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--gray-medium);
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
 
-        /* Form Controls for Configurator */
-        .config-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-
-        @media (max-width: 900px) {
-            .config-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .system-tabs {
+        .logo {
             display: flex;
+            align-items: center;
             gap: 10px;
-            margin-bottom: 2rem;
-            overflow-x: auto;
-            padding-bottom: 5px;
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.3rem;
+            letter-spacing: 1px;
         }
 
-        .system-tab {
-            padding: 8px 16px;
-            background-color: var(--surface-dark);
-            border: 1px solid var(--gray-medium);
-            border-radius: 6px;
-            color: var(--silver-light);
-            cursor: pointer;
-            white-space: nowrap;
+        .logo i {
+            color: var(--blue);
+            font-size: 1.6rem;
         }
 
-        .system-tab.active {
-            background-color: var(--electric-blue);
-            border-color: var(--electric-blue);
+        .page-wrapper {
+            display: flex;
+            min-height: calc(100vh - 64px);
+        }
+
+        .sidebar {
+            width: 220px;
+            background: var(--surface);
+            border-left: 1px solid var(--border);
+            padding: 2rem 1rem;
+            flex-shrink: 0;
+        }
+
+        .sidebar-label {
+            color: var(--silver);
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 1rem;
+            padding-right: 0.5rem;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 0.6rem 0.8rem;
+            border-radius: 8px;
+            color: var(--silver2);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .sidebar-nav li a:hover {
+            background: var(--surface2);
             color: var(--white);
         }
 
-        .svg-container {
-            background-color: var(--surface-dark);
-            border: 1px solid var(--gray-medium);
-            border-radius: 8px;
-            padding: 1rem;
-            height: 300px;
+        .main-content {
+            flex: 1;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 0.3rem;
+        }
+
+        .page-sub {
+            color: var(--silver);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        .section {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.8rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header {
             display: flex;
             align-items: center;
+<<<<<<< HEAD
             justify-content: center;
             margin-bottom: 1rem;
         }
@@ -879,3 +892,9 @@
 </body>
 
 </html>
+=======
+            gap: 12px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--
+>>>>>>> 021ac1f8f4c4d6663ea639f4368c494f59de83e1
