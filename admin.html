@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | פאנל ניהול הזמנות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .admin-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
+
+    .admin-sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--surface-dark);
+      border-left: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+    }
+    .sidebar-label { font-size:0.72rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;padding:0 0.75rem;margin-bottom:0.75rem; }
+    .admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+    .admin-nav a {
+      display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;
+      font-size:0.9rem;font-weight:500;color:var(--silver-dark);cursor:pointer;
+      transition:all 0.18s ease;text-decoration:none;
+    }
+    .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+
+    .admin-content { flex:1;padding:2rem;overflow-y:auto; }
+    .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
+    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.5rem; }
+
+    /* ── FILTERS ── */
+    .filter-bar { display:flex;align-items:center;gap:0.75rem;margin-bottom:1.5rem;flex-wrap:wrap; }
+    .filter-btn {
+      padding:0.4rem 1rem;border-radius:20px;border:1.5px solid var(--border);
+      background:var(--surface-dark);font-size:0.82rem;font-weight:600;
+      color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;
+      font-family:'Heebo',sans-serif;
+    }
+    .filter-btn:hover { border-color:var(--electric-blue);color:var(--electric-blue); }
+    .filter-btn.active { border-color:var(--electric-blue);background:var(--blue-dim);color:var(--electric-blue); }
+    .search-input {
+      padding:0.4rem 0.9rem;border:1.5px solid var(--border);border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--industrial-silver);
+      background:var(--surface-dark);min-width:220px;
+    }
+    .search-input:focus { outline:none;border-color:var(--electric-blue); }
+
+    /* ── TABLE ── */
+    .orders-table-wrap { overflow-x:auto;border-radius:12px;border:1px solid var(--border); }
+    .orders-table { width:100%;border-collapse:collapse;font-size:0.88rem; }
+    .orders-table th {
+      background:var(--surface-elevated,#f7f9fd);padding:0.75rem 1rem;
+      text-align:right;font-size:0.75rem;font-weight:700;color:var(--silver-dark);
+      text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);
+    }
+    .orders-table td { padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle; }
+    .orders-table tr:last-child td { border-bottom:none; }
+    .orders-table tr:hover td { background:var(--blue-dim); }
+
+    .status-badge {
+      display:inline-flex;align-items:center;gap:0.3rem;padding:0.22rem 0.65rem;
+      border-radius:20px;font-size:0.75rem;font-weight:700;white-space:nowrap;
+    }
+    .status-draft      { background:rgba(196,124,0,0.1); color:#a06000;border:1px solid rgba(196,124,0,0.25); }
+    .status-production { background:rgba(26,95,170,0.1); color:var(--electric-blue);border:1px solid rgba(26,95,170,0.25); }
+    .status-delivered  { background:rgba(22,163,74,0.1); color:#16a34a;border:1px solid rgba(22,163,74,0.25); }
+
+    .status-select {
+      padding:0.3rem 0.65rem;border:1.5px solid var(--border);border-radius:7px;
+      font-family:'Heebo',sans-serif;font-size:0.82rem;color:var(--industrial-silver);
+      background:var(--surface-dark);cursor:pointer;transition:border-color 0.18s;
+    }
+    .status-select:focus { outline:none;border-color:var(--electric-blue); }
+    .status-select.saving { opacity:0.5;pointer-events:none; }
+
+    .order-code-cell { font-weight:700;color:var(--electric-blue);font-size:0.82rem; }
+    .price-cell { font-weight:700; }
+    .systems-cell { color:var(--silver-dark); }
+
+    .empty-state { text-align:center;padding:3rem;color:var(--silver-dark); }
+    .empty-state i { font-size:2.5rem;display:block;margin-bottom:0.5rem;opacity:0.3; }
+
+    .orders-count { font-size:0.82rem;color:var(--silver-dark);margin-bottom:0.75rem; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite;display:inline-block; }
+
+    .save-indicator {
+      font-size:0.75rem;color:var(--silver-dark);margin-top:0.2rem;height:14px;
+    }
+    .save-ok { color:#16a34a; }
+    .save-err { color:#dc2626; }
+
+    /* ── DETAIL PANEL (slide-in from right) ── */
+    .detail-panel-overlay {
+      position:fixed;inset:0;background:rgba(10,20,40,0.35);
+      z-index:1000;opacity:0;pointer-events:none;transition:opacity 0.2s ease;
+    }
+    .detail-panel-overlay.open { opacity:1;pointer-events:all; }
+    .detail-panel {
+      position:fixed;top:0;left:0;height:100%;width:100%;max-width:500px;
+      background:var(--surface-dark);box-shadow:-8px 0 40px rgba(10,20,60,0.15);
+      overflow-y:auto;transform:translateX(-100%);transition:transform 0.25s ease;
+      padding:1.5rem;
+    }
+    .detail-panel-overlay.open .detail-panel { transform:translateX(0); }
+    .detail-hdr { display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem; }
+    .detail-title { font-size:1rem;font-weight:800;color:var(--industrial-silver); }
+    .btn-close-panel { background:none;border:none;cursor:pointer;font-size:1.25rem;color:var(--silver-dark); }
+
+    .detail-sys-card { background:var(--surface-elevated,#f7f9fd);border:1px solid var(--border);border-radius:10px;padding:1rem 1.25rem;margin-bottom:0.75rem; }
+    .detail-sys-title { font-size:0.82rem;font-weight:700;color:var(--electric-blue);margin-bottom:0.5rem; }
+    .detail-grid { display:grid;grid-template-columns:1fr 1fr;gap:0.35rem 1rem; }
+    .detail-item { display:flex;flex-direction:column; }
+    .detail-key { font-size:0.7rem;color:var(--silver-dark); }
+    .detail-val { font-size:0.85rem;font-weight:600;color:var(--industrial-silver); }
+    .detail-totals { border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.75rem; }
+    .detail-total-row { display:flex;justify-content:space-between;font-size:0.85rem;padding:0.25rem 0; }
+    .detail-total-row.grand { font-weight:800;color:var(--electric-blue);font-size:0.95rem;border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.2rem; }
+  </style>
+</head>
+<body>
+  <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+        <i class="ph ph-shield-star"></i> פאנל ניהול
+      </span>
+      <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
+        <i class="ph ph-arrow-right"></i> אזור אישי
+      </a>
+    </div>
+  </header>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <div class="sidebar-label">ניהול</div>
+      <ul class="admin-nav">
+        <li><a class="active"><i class="ph ph-list-bullets"></i> כל ההזמנות</a></li>
+      </ul>
+    </aside>
+
+    <main class="admin-content">
+      <div class="page-title">ניהול הזמנות</div>
+      <div class="page-subtitle" id="adminSubtitle">טוען...</div>
+
+      <div class="filter-bar">
+        <button class="filter-btn active" onclick="setFilter('all')">הכל</button>
+        <button class="filter-btn" onclick="setFilter('draft')">טיוטה</button>
+        <button class="filter-btn" onclick="setFilter('in_production')">בתהליך ייצור</button>
+        <button class="filter-btn" onclick="setFilter('delivered')">נמסר</button>
+        <input class="search-input" type="text" placeholder="חיפוש קוד / פרויקט..." id="searchInput" oninput="renderTable()">
+      </div>
+
+      <div class="orders-count" id="ordersCount"></div>
+      <div class="orders-table-wrap">
+        <table class="orders-table">
+          <thead>
+            <tr>
+              <th>קוד הזמנה</th>
+              <th>פרויקט</th>
+              <th>מערכות</th>
+              <th>סה"כ כולל מע"מ</th>
+              <th>תאריך שמירה</th>
+              <th>סטטוס</th>
+              <th>פרטים</th>
+            </tr>
+          </thead>
+          <tbody id="ordersTableBody">
+            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+              <i class="ph ph-circle-notch spin"></i> טוען הזמנות...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <!-- Detail Panel -->
+  <div class="detail-panel-overlay" id="detailOverlay" onclick="closeDetail(event)">
+    <div class="detail-panel" onclick="event.stopPropagation()">
+      <div class="detail-hdr">
+        <div class="detail-title" id="detailTitle">פירוט הזמנה</div>
+        <button class="btn-close-panel" onclick="closeDetail()"><i class="ph ph-x"></i></button>
+      </div>
+      <div id="detailBody"></div>
+    </div>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+const PVC_NAMES = { white:'לבן',black:'שחור',gray46:'אפור 7046',gray16:'אפור כהה 7016',green:'ירוק',red:'אדום',cream:'שמנת 1013' };
+const PNAMES = { '20/20':'זווית 20×20','30/30':'זווית 30×30','20/40':'זווית 20×40','100/100':'פרופיל 100×100','100/40':'פרופיל 100×40','120/80':'פרופיל 120×80' };
+
+let allOrders = [];
+let currentFilter = 'all';
+
+/* ── AUTH + ADMIN CHECK ── */
+async function init() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+
+  const { data: adminRow } = await supabase.from('admin_users').select('user_id').eq('user_id', user.id).single();
+  if (!adminRow) { window.location.href = 'dashboard.html'; return; }
+
+  document.getElementById('adminSubtitle').textContent = `מחובר כ-${user.email}`;
+  await loadOrders();
+}
+
+async function loadOrders() {
+  const { data, error } = await supabase
+    .from('orders').select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  allOrders = data || [];
+  renderTable();
+}
+
+/* ── FILTER ── */
+window.setFilter = function(f) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  renderTable();
+};
+
+/* ── RENDER TABLE ── */
+function renderTable() {
+  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+  let rows = allOrders.filter(o => {
+    if (currentFilter !== 'all' && o.status !== currentFilter) return false;
+    if (search && !o.order_code.toLowerCase().includes(search) && !(o.project_name||'').toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  document.getElementById('ordersCount').textContent = `מציג ${rows.length} מתוך ${allOrders.length} הזמנות`;
+
+  const tbody = document.getElementById('ordersTableBody');
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(o => {
+    const sys = (o.order_data?.systems || []).length;
+    const date = new Date(o.created_at).toLocaleDateString('he-IL');
+    const statusClass = { draft:'status-draft', in_production:'status-production', delivered:'status-delivered' }[o.status] || '';
+    const statusLabel = { draft:'טיוטה', in_production:'בייצור', delivered:'נמסר' }[o.status] || o.status;
+
+    return `<tr>
+      <td class="order-code-cell">${o.order_code}</td>
+      <td>${o.project_name || '—'}</td>
+      <td class="systems-cell">${sys} מערכת${sys > 1 ? 'ות' : ''}</td>
+      <td class="price-cell">₪${(o.grand_total||0).toLocaleString()}</td>
+      <td>${date}</td>
+      <td>
+        <div>
+          <select class="status-select" data-id="${o.id}" onchange="updateStatus(this)">
+            <option value="draft"         ${o.status==='draft'         ?'selected':''}>טיוטה</option>
+            <option value="in_production" ${o.status==='in_production' ?'selected':''}>בתהליך ייצור</option>
+            <option value="delivered"     ${o.status==='delivered'     ?'selected':''}>נמסר</option>
+          </select>
+          <div class="save-indicator" id="si-${o.id}"></div>
+        </div>
+      </td>
+      <td>
+        <button class="filter-btn" style="padding:0.3rem 0.7rem;font-size:0.78rem;" onclick="openDetail('${o.id}')">
+          <i class="ph ph-eye"></i> פרטים
+        </button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+/* ── UPDATE STATUS ── */
+window.updateStatus = async function(sel) {
+  const id = sel.dataset.id;
+  const newStatus = sel.value;
+  const si = document.getElementById(`si-${id}`);
+  sel.classList.add('saving');
+  si.innerHTML = '<i class="ph ph-circle-notch spin"></i>';
+
+  const { error } = await supabase.from('orders')
+    .update({ status: newStatus, updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  sel.classList.remove('saving');
+  if (error) {
+    si.innerHTML = '<span class="save-err"><i class="ph ph-warning"></i> שגיאה</span>';
+  } else {
+    si.innerHTML = '<span class="save-ok"><i class="ph ph-check"></i> נשמר</span>';
+    // update local cache
+    const o = allOrders.find(x => x.id === id);
+    if (o) o.status = newStatus;
+    setTimeout(() => { if(si) si.innerHTML = ''; }, 2000);
+  }
+};
+
+/* ── DETAIL PANEL ── */
+window.openDetail = function(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o) return;
+  const d = o.order_data || {};
+
+  document.getElementById('detailTitle').textContent = `הזמנה ${o.order_code}`;
+  let html = '';
+
+  (d.systems || []).forEach(s => {
+    const area = ((s.width/100)*(s.depth/100)).toFixed(2);
+    const pvcName = PVC_NAMES[s.pvcColor] || s.pvcColor;
+    html += `<div class="detail-sys-card">
+      <div class="detail-sys-title">מערכת ${s.id}${s.name?' – '+s.name:''}</div>
+      <div class="detail-grid">
+        <div class="detail-item"><span class="detail-key">מידות</span><span class="detail-val">${s.width}×${s.depth} ס"מ</span></div>
+        <div class="detail-item"><span class="detail-key">שטח</span><span class="detail-val">${area} מ"ר</span></div>
+        <div class="detail-item"><span class="detail-key">גובה</span><span class="detail-val">${s.installHeight} / ${s.gutterHeight} ס"מ</span></div>
+        <div class="detail-item"><span class="detail-key">צבע אל.</span><span class="detail-val">RAL ${s.aluminumColorCustom||s.aluminumColor}</span></div>
+        <div class="detail-item"><span class="detail-key">PVC</span><span class="detail-val">${pvcName}</span></div>
+        <div class="detail-item"><span class="detail-key">פרופיל תאורה</span><span class="detail-val">RAL ${s.ledColorCustom||s.ledColor||'—'}</span></div>
+        ${(d.addons||{}).led?`<div class="detail-item"><span class="detail-key">גוון LED</span><span class="detail-val">${s.ledTone==='warm'?'צהוב 3000K':'לבן 6000K'}</span></div>`:''}
+      </div>
+    </div>`;
+  });
+
+  const addons = d.addons || {};
+  const addList = [
+    addons.led?'תאורת LED':'', addons.remote?'שלט Somfy':'',
+    addons.tahoma?'TaHoma':'', addons.dimmer?'דימר':'',
+    d.measureService?'שירות מדידה':''
+  ].filter(Boolean);
+  if (addList.length) html += `<div style="font-size:0.85rem;margin-bottom:0.75rem;"><strong>תוספות:</strong> ${addList.join(', ')}</div>`;
+
+  const pq = d.profileQtys || {};
+  const profList = Object.entries(pq).filter(([,q])=>q>0).map(([k,q])=>`${PNAMES[k]} ×${q}`).join(', ');
+  if (profList) html += `<div style="font-size:0.85rem;margin-bottom:0.75rem;"><strong>פרופילים:</strong> ${profList}</div>`;
+
+  html += `<div class="detail-totals">
+    <div class="detail-total-row"><span>לפני מע"מ</span><span>₪${(o.subtotal||0).toLocaleString()}</span></div>
+    <div class="detail-total-row"><span>מע"מ 18%</span><span>₪${(o.vat||0).toLocaleString()}</span></div>
+    <div class="detail-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(o.grand_total||0).toLocaleString()}</span></div>
+  </div>`;
+
+  document.getElementById('detailBody').innerHTML = html;
+  document.getElementById('detailOverlay').classList.add('open');
+};
+
+window.closeDetail = function(e) {
+  if (!e || e.target === document.getElementById('detailOverlay')) {
+    document.getElementById('detailOverlay').classList.remove('open');
+  }
+};
+
+init();
+</script>
+</body>
+</html>

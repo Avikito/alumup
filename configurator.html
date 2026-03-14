@@ -575,6 +575,31 @@ a { text-decoration: none; color: inherit; }
 .total-row .val { font-weight: 700; color: var(--blue); }
 .total-row.grand .label { color: var(--white); font-weight: 700; font-size: 1rem; }
 .total-row.grand .val { color: var(--green); font-size: 1.3rem; }
+.total-row.subtotal-row .label { font-weight: 600; color: var(--white); }
+.total-row.subtotal-row .val { font-weight: 600; color: var(--white); }
+.total-row.vat-row { background: var(--surface2); }
+.total-row.vat-row .label { color: var(--silver); font-style: italic; }
+.total-row.vat-row .val { color: var(--silver); }
+
+/* ── SAVE ORDER ── */
+.btn-save-order {
+  width: 100%; padding: 0.9rem;
+  background: var(--surface2); color: var(--blue);
+  border: 2px solid var(--blue); border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif; font-size: 1rem; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center;
+  justify-content: center; gap: 0.5rem;
+  transition: all var(--trans); margin-bottom: 0.75rem;
+}
+.btn-save-order:hover { background: var(--blue-dim); }
+.btn-save-order:disabled { opacity: 0.6; cursor: default; }
+.save-order-msg {
+  padding: 0.85rem 1.1rem; border-radius: var(--radius);
+  font-size: 0.9rem; font-weight: 600;
+  align-items: center; gap: 0.5rem; margin-bottom: 1rem;
+}
+.save-order-msg.success { background: var(--green-dim); color: var(--green); border: 1px solid rgba(22,163,74,0.25); }
+.save-order-msg.error { background: rgba(220,38,38,0.08); color: var(--red); border: 1px solid rgba(220,38,38,0.25); }
 
 /* ── PAYMENT ── */
 .payment-buttons {
@@ -775,6 +800,179 @@ a { text-decoration: none; color: inherit; }
   background: var(--border);
   margin: 2.5rem 0;
 }
+
+/* ── MEASURE MODAL ── */
+.measure-modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  z-index: 500;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+.measure-modal-overlay.show { display: flex; }
+.measure-modal {
+  background: var(--surface);
+  border-radius: var(--radius-lg);
+  padding: 2rem;
+  width: 500px;
+  max-width: 94vw;
+  animation: fadeIn 0.2s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+}
+.measure-modal-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1rem;
+}
+.measure-modal-title { font-size: 1.15rem; font-weight: 800; color: var(--white); display:flex; align-items:center; gap:0.5rem; }
+.btn-close-modal {
+  background: none; border: none; cursor: pointer;
+  color: var(--silver); font-size: 1.3rem;
+  display: flex; align-items: center;
+  transition: color var(--trans);
+}
+.btn-close-modal:hover { color: var(--white); }
+.measure-field { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+.measure-field label { font-size: 0.82rem; font-weight: 600; color: var(--silver); }
+.measure-field input,
+.measure-field select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.85rem;
+  color: var(--white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.95rem;
+  width: 100%;
+  transition: border-color var(--trans);
+}
+.measure-field input:focus,
+.measure-field select:focus { outline: none; border-color: var(--gold); }
+.measure-radio-row { display: flex; gap: 1rem; flex-wrap: wrap; }
+.measure-radio {
+  display: flex; align-items: center; gap: 0.4rem;
+  cursor: pointer; font-size: 0.9rem; color: var(--white);
+}
+.measure-radio input[type=radio] { accent-color: var(--gold); cursor:pointer; }
+.measure-file-note { font-size: 0.78rem; color: var(--silver); margin-top: 0.25rem; }
+.btn-confirm-measure {
+  width: 100%; padding: 0.9rem;
+  background: var(--gold); color: #ffffff;
+  border: none; border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 1rem; font-weight: 800;
+  cursor: pointer; margin-top: 0.75rem;
+  transition: opacity var(--trans);
+  display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+}
+.btn-confirm-measure:hover { opacity: 0.88; }
+
+/* ── LED TONE ── */
+#led-tone-systems {
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.led-tone-sys-row { display: flex; flex-direction: column; gap: 0.35rem; }
+.led-tone-sys-label { font-size: 0.75rem; font-weight: 700; color: var(--silver); }
+.led-tone-row { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 0.5rem; }
+.tone-btn {
+  display: flex; align-items: center; gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  color: var(--silver);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.88rem; font-weight: 600;
+  cursor: pointer;
+  transition: all var(--trans);
+}
+.tone-btn:hover { border-color: var(--silver); color: var(--white); }
+.tone-btn.warm-active { border-color: #e8920a; color: #b06800; background: rgba(232,146,10,0.08); }
+.tone-btn.cool-active { border-color: #4da8ff; color: #1a80e0; background: rgba(77,168,255,0.08); }
+.tone-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; border: 1px solid rgba(0,0,0,0.08); }
+.warm-dot { background: radial-gradient(circle, #ffd580, #f59e0b); }
+.cool-dot { background: radial-gradient(circle, #e0f0ff, #93c5fd); }
+
+/* ── PROFILES & ANGLES ── */
+.profiles-note {
+  font-size: 0.85rem; color: var(--silver);
+  margin-bottom: 1.25rem; line-height: 1.6;
+}
+.profiles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.75rem;
+}
+.profile-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.85rem 1rem;
+  gap: 1rem;
+}
+.profile-info { flex: 1; min-width: 0; }
+.profile-name { font-size: 0.9rem; font-weight: 700; color: var(--white); }
+.profile-price { font-size: 0.78rem; color: var(--silver); margin-top: 0.15rem; }
+.profile-stepper {
+  display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;
+}
+.profile-stepper button {
+  width: 30px; height: 30px;
+  border: 1.5px solid var(--border);
+  background: var(--surface);
+  border-radius: 6px;
+  font-size: 1.1rem; font-weight: 700;
+  cursor: pointer; color: var(--blue);
+  display: flex; align-items: center; justify-content: center;
+  transition: background var(--trans), border-color var(--trans);
+}
+.profile-stepper button:hover { background: var(--blue-dim); border-color: var(--blue); }
+.profile-stepper .qty {
+  min-width: 28px; text-align: center;
+  font-size: 1rem; font-weight: 700; color: var(--white);
+}
+.profile-item.has-qty {
+  border-color: var(--blue);
+  background: var(--blue-dim);
+}
+
+/* ── CONFIRM ORDER ── */
+.confirm-order-block {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+.confirm-block-title {
+  font-size: 0.95rem; font-weight: 700; color: var(--white);
+  margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.confirm-checkbox-row {
+  display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 1.25rem;
+}
+.confirm-checkbox-row input[type=checkbox] {
+  width: 18px; height: 18px; margin-top: 3px;
+  accent-color: var(--blue); flex-shrink: 0; cursor: pointer;
+}
+.confirm-checkbox-text {
+  font-size: 0.88rem; color: var(--silver); line-height: 1.7;
+}
+.confirm-checkbox-text strong { color: var(--white); }
 </style>
 </head>
 <body>
@@ -846,7 +1044,7 @@ a { text-decoration: none; color: inherit; }
           זקוק לעזרה במדידות? <strong>שירות מדידה מקצועית בשטח — ₪350</strong><br>
           <span style="font-size:0.82rem; color:var(--silver);">טכנאי מוסמך יגיע אליך, ימדוד ויסכם הכל.</span>
         </div>
-        <button class="btn-banner" onclick="openMeasureWA()">תיאום מדידה <i class="ph ph-whatsapp-logo"></i></button>
+        <button class="btn-banner" onclick="openMeasureModal()">תיאום מדידה <i class="ph ph-ruler"></i></button>
       </div>
 
       <!-- Systems Container -->
@@ -908,6 +1106,7 @@ a { text-decoration: none; color: inherit; }
           </div>
           <div class="addon-price" id="led-price-display">₪30 למ"ר</div>
           <div class="addon-desc">רצועות LED משולבות בפרופיל, תאורה אחידה ועדינה</div>
+          <div id="led-tone-systems" style="display:none" onclick="event.stopPropagation()"></div>
         </div>
         <div class="addon-card" id="addon-remote" onclick="toggleAddon('remote')">
           <div class="addon-card-header">
@@ -938,6 +1137,18 @@ a { text-decoration: none; color: inherit; }
 
     <div class="section-divider"></div>
 
+    <!-- ══ SECTION 4b: Profiles & Angles ══ -->
+    <section class="section" id="sec4b">
+      <div class="section-header">
+        <div class="section-num" style="background:var(--gold);color:#fff;">P</div>
+        <h2 class="section-title">פרופילים וזוויות</h2>
+      </div>
+      <p class="profiles-note">כל הפרופילים והזוויות באורך 6 מ'. עם הזמנת פרופילים תתווסף אריזה של ₪120 למערכת.</p>
+      <div class="profiles-grid" id="profilesGrid"></div>
+    </section>
+
+    <div class="section-divider"></div>
+
     <!-- ══ SECTION 5: Summary & Order ══ -->
     <section class="section" id="sec5">
       <div class="section-header">
@@ -954,6 +1165,7 @@ a { text-decoration: none; color: inherit; }
             <th>שטח (מ"ר)</th>
             <th>צבע אלומיניום</th>
             <th>גוון PVC</th>
+            <th>צבע תאורה</th>
             <th>מחיר קיט</th>
             <th>LED</th>
             <th>סה"כ</th>
@@ -964,6 +1176,12 @@ a { text-decoration: none; color: inherit; }
 
       <!-- Totals -->
       <div class="summary-totals" id="summaryTotals"></div>
+
+      <!-- Save Quote -->
+      <button class="btn-save-order" id="btnSaveOrder" onclick="saveOrder()">
+        <i class="ph ph-floppy-disk"></i> שמור הצעת מחיר
+      </button>
+      <div id="saveOrderMsg" class="save-order-msg" style="display:none"></div>
 
       <!-- Payment Buttons -->
       <div class="payment-buttons">
@@ -1037,6 +1255,19 @@ a { text-decoration: none; color: inherit; }
         </div>
       </div>
 
+      <!-- Confirm checkbox -->
+      <div class="confirm-order-block" id="confirmOrderBlock">
+        <div class="confirm-block-title"><i class="ph ph-seal-check"></i> אישור קריאה ותנאים</div>
+        <div class="confirm-checkbox-row">
+          <input type="checkbox" id="confirmCheckbox">
+          <label for="confirmCheckbox" class="confirm-checkbox-text">
+            <strong>קראתי ואישרתי את כל המידות, הצבעים והתוספות שנבחרו.</strong><br>
+            אני מבין כי לאחר האישור לא ניתן לבצע שינויים בהזמנה.<br>
+            האישור מהווה הסכמה ל<a onclick="return false;">תקנון ותנאי השירות</a> של ALUM-IL.
+          </label>
+        </div>
+      </div>
+
     </section>
 
   </main>
@@ -1045,16 +1276,73 @@ a { text-decoration: none; color: inherit; }
 <!-- STICKY BAR -->
 <div class="sticky-bar">
   <div class="sticky-price-block">
-    <span class="sticky-price-label">סה"כ לפני מע"מ:</span>
+    <span class="sticky-price-label">סה"כ כולל מע"מ:</span>
     <span class="sticky-price-val" id="stickyTotal">₪0</span>
-    <span class="sticky-price-tax">(+ מע"מ)</span>
   </div>
   <button class="btn-to-summary" onclick="document.getElementById('sec5').scrollIntoView({behavior:'smooth'})">
     לסיכום והזמנה <i class="ph ph-arrow-left"></i>
   </button>
 </div>
 
-<script>
+<!-- MEASURE MODAL -->
+<div class="measure-modal-overlay" id="measureModalOverlay" onclick="closeMeasureModal(event)">
+  <div class="measure-modal" onclick="event.stopPropagation()">
+    <div class="measure-modal-hdr">
+      <div class="measure-modal-title"><i class="ph ph-ruler" style="color:var(--gold)"></i> תיאום שירות מדידה מקצועית</div>
+      <button class="btn-close-modal" onclick="closeMeasureModal()"><i class="ph ph-x"></i></button>
+    </div>
+
+    <div class="measure-field">
+      <label>מה רוצים למדוד?</label>
+      <select id="m-what">
+        <option value="">בחר...</option>
+        <option value="פרגולה חשמלית PVC">פרגולה חשמלית PVC</option>
+        <option value="פרגולה ביוקלימטית">פרגולה ביוקלימטית</option>
+        <option value="חלונות ודלתות">חלונות ודלתות</option>
+        <option value="גדרות ומעקות">גדרות ומעקות</option>
+        <option value="אחר">אחר</option>
+      </select>
+    </div>
+
+    <div class="measure-field">
+      <label>הערכת שטח (מ"ר)</label>
+      <input type="number" id="m-sqm" placeholder="לדוגמה: 20" min="1">
+    </div>
+
+    <div class="measure-field">
+      <label>סוג הנכס</label>
+      <div class="measure-radio-row">
+        <label class="measure-radio"><input type="radio" name="m-type" value="בית פרטי"> בית פרטי</label>
+        <label class="measure-radio"><input type="radio" name="m-type" value="דירה"> דירה</label>
+        <label class="measure-radio"><input type="radio" name="m-type" value="מסחרי"> מסחרי</label>
+        <label class="measure-radio"><input type="radio" name="m-type" value="אחר"> אחר</label>
+      </div>
+    </div>
+
+    <div class="measure-field">
+      <label>כתובת הנכס</label>
+      <input type="text" id="m-address" placeholder="רחוב, מספר, עיר">
+    </div>
+
+    <div class="measure-field">
+      <label>צירוף תמונה (אופציונלי)</label>
+      <input type="file" id="m-photo" accept="image/*">
+      <span class="measure-file-note">תמונת המקום תעזור לטכנאי להגיע מוכן. הקובץ לא נשלח אוטומטית.</span>
+    </div>
+
+    <button class="btn-confirm-measure" onclick="confirmMeasure()">
+      <i class="ph ph-check-circle"></i> אשר הזמנה — ₪350
+    </button>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
 /* ══════════════════════════════════════
    STATE
 ══════════════════════════════════════ */
@@ -1083,12 +1371,17 @@ const PVC_COLORS = [
   { id:'cream',   name:'שמנת RAL1013',  hex:'#eae6ca' },
 ];
 
+const PROFILE_PRICES = { '20/20': 50, '30/30': 65, '20/40': 55, '100/100': 310, '100/40': 210, '120/80': 450 };
+const PROFILE_NAMES  = { '20/20': 'זווית 20×20', '30/30': 'זווית 30×30', '20/40': 'זווית 20×40', '100/100': 'פרופיל 100×100', '100/40': 'פרופיל 100×40', '120/80': 'פרופיל 120×80 (זכוכית)' };
+
 let nextId = 2;
 const state = {
   projectName: '',
   projectNumber: '',
   supportType: 'legs',
   addons: { led: false, remote: false, tahoma: false, dimmer: false },
+  measureService: false,
+  profileQtys: { '20/20': 0, '30/30': 0, '20/40': 0, '100/100': 0, '100/40': 0, '120/80': 0 },
   systems: [
     newSystemObj(1)
   ]
@@ -1106,8 +1399,11 @@ function newSystemObj(id) {
     aluminumColor: '9005',
     aluminumColorCustom: '',
     pvcColor: 'white',
-    ledColor: '9005',
-    ledColorCustom: ''
+    ledColor: '9016',
+    ledColorCustom: '',
+    lightingColor: '9016',
+    lightingColorCustom: '',
+    ledTone: 'warm'
   };
 }
 
@@ -1124,16 +1420,25 @@ function calcKitPrice(area) {
   return area < 12 ? 5460 : Math.round(area * 455);
 }
 function calcTotal() {
-  let total = 0;
+  let subtotal = 0;
   for (const s of state.systems) {
     const area = calcArea(s.width, s.depth);
-    total += calcKitPrice(area);
-    if (state.addons.led) total += Math.round(area * 30);
+    subtotal += calcKitPrice(area);
+    if (state.addons.led) subtotal += Math.round(area * 30);
   }
-  if (state.addons.remote) total += 400;
-  if (state.addons.tahoma) total += 600;
-  if (state.addons.dimmer) total += 100;
-  return total;
+  if (state.addons.remote) subtotal += 400;
+  if (state.addons.tahoma) subtotal += 600;
+  if (state.addons.dimmer) subtotal += 100;
+  if (state.measureService) subtotal += 350;
+  // Profiles & angles
+  Object.entries(state.profileQtys).forEach(([k, q]) => {
+    if (q > 0) subtotal += q * PROFILE_PRICES[k];
+  });
+  const hasProfiles = Object.values(state.profileQtys).some(q => q > 0);
+  if (hasProfiles) subtotal += 120 * state.systems.length;
+  const vat = Math.round(subtotal * 0.18);
+  const grandTotal = subtotal + vat;
+  return { subtotal, vat, grandTotal };
 }
 
 /* ══════════════════════════════════════
@@ -1141,8 +1446,50 @@ function calcTotal() {
 ══════════════════════════════════════ */
 function renderAll() {
   renderSystems();
+  renderProfiles();
+  renderLedTone();
   renderSummary();
   updateStickyPrice();
+}
+
+function renderLedTone() {
+  const container = document.getElementById('led-tone-systems');
+  if (!container) return;
+  if (!state.addons.led) { container.style.display = 'none'; return; }
+  container.style.display = 'block';
+  container.innerHTML = state.systems.map(s => `
+    <div class="led-tone-sys-row">
+      ${state.systems.length > 1 ? `<span class="led-tone-sys-label">מערכת ${s.id}${s.name ? ' – ' + s.name : ''}</span>` : ''}
+      <div class="led-tone-row">
+        <button class="tone-btn ${s.ledTone === 'warm' ? 'warm-active' : ''}" onclick="setLedTone(${s.id},'warm')">
+          <span class="tone-dot warm-dot"></span> אור צהוב (3000K)
+        </button>
+        <button class="tone-btn ${s.ledTone === 'cool' ? 'cool-active' : ''}" onclick="setLedTone(${s.id},'cool')">
+          <span class="tone-dot cool-dot"></span> אור לבן (6000K)
+        </button>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderProfiles() {
+  const grid = document.getElementById('profilesGrid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(PROFILE_PRICES).map(([key, price]) => {
+    const qty = state.profileQtys[key] || 0;
+    const hasQty = qty > 0;
+    return `<div class="profile-item${hasQty ? ' has-qty' : ''}">
+      <div class="profile-info">
+        <div class="profile-name">${PROFILE_NAMES[key]}</div>
+        <div class="profile-price">₪${price} ליחידה (6 מ')</div>
+      </div>
+      <div class="profile-stepper">
+        <button onclick="setProfileQty('${key}',-1)">−</button>
+        <span class="qty">${qty}</span>
+        <button onclick="setProfileQty('${key}',1)">+</button>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function renderSystems() {
@@ -1228,8 +1575,8 @@ function buildSystemCard(s) {
         </div>
       </div>
 
-      <!-- LED PROFILE COLOR (only if LED addon active) -->
-      <div class="color-section" id="led-color-section-${s.id}" style="display:${state.addons.led ? 'block' : 'none'}">
+      <!-- LIGHTING PROFILE COLOR (always visible) -->
+      <div class="color-section">
         <div class="color-section-title"><i class="ph ph-lightbulb"></i> צבע פרופילי תאורה</div>
         <div class="ral-swatches" id="led-swatches-${s.id}">
           ${RAL_COLORS.map(r => `
@@ -1258,6 +1605,7 @@ function buildSystemCard(s) {
           ${svgTechnical(s)}
         </div>
       </div>
+
     </div>
     <div class="system-card-footer">
       <div class="system-price-preview">
@@ -1379,51 +1727,91 @@ function svgIsometric(s) {
   const mpt = pt(w/2 - 9, d - 1, hB + bm + 3);
 
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
-    <rect width="${W}" height="${H}" fill="#f2f5f9"/>
+    <defs>
+      <linearGradient id="skyGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#daeaf8"/>
+        <stop offset="100%" stop-color="#f2f5f9"/>
+      </linearGradient>
+      <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#e2e8f2"/>
+        <stop offset="100%" stop-color="#cdd5e0"/>
+      </linearGradient>
+      <linearGradient id="wallGrad" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0%" stop-color="#c8cfd9"/>
+        <stop offset="100%" stop-color="#dde3eb"/>
+      </linearGradient>
+      <linearGradient id="alTopGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${lighten(alHex,30)}"/>
+        <stop offset="100%" stop-color="${alHex}"/>
+      </linearGradient>
+      <linearGradient id="pvcGrad" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="${lighten(pvcHex,22)}"/>
+        <stop offset="60%" stop-color="${pvcHex}"/>
+        <stop offset="100%" stop-color="${darken(pvcHex,12)}"/>
+      </linearGradient>
+    </defs>
+
+    <!-- Sky background -->
+    <rect width="${W}" height="${H}" fill="url(#skyGrad)"/>
 
     <!-- Ground -->
-    <polygon points="${P([gL,gR,gBR,gBL])}" fill="#dde3ec" opacity="0.85"/>
+    <polygon points="${P([gL,gR,gBR,gBL])}" fill="url(#groundGrad)"/>
+    <!-- Ground shadow under pergola -->
+    <ellipse cx="${((pt(0,d/2,0).x)).toFixed(1)}" cy="${((pt(0,d/2,0).y)+2).toFixed(1)}"
+      rx="${(w*0.55).toFixed(1)}" ry="${(w*0.12).toFixed(1)}"
+      fill="rgba(0,20,60,0.07)"/>
 
     <!-- Wall face -->
-    <polygon points="${P([wBL,wBR,wTR,wTL])}" fill="#cdd3de"/>
+    <polygon points="${P([wBL,wBR,wTR,wTL])}" fill="url(#wallGrad)"/>
     <!-- Wall horizontal lines (texture) -->
-    ${Array.from({length: Math.floor(hW/12)}, (_,i) => {
-      const yLine = i * 12;
+    ${Array.from({length: Math.floor(hW/10)}, (_,i) => {
+      const yLine = i * 10 + 5;
       const p1 = pt(-w/2, d, yLine), p2 = pt(w/2, d, yLine);
-      return `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="#b8c0cc" stroke-width="0.5" opacity="0.5"/>`;
+      return `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="#b0bac8" stroke-width="0.4" opacity="0.45"/>`;
     }).join('')}
-    <!-- Wall right side -->
-    <polygon points="${P([wBR,wBRb,wTRb,wTR])}" fill="#b8c0cc"/>
+    <!-- Wall right side (darker) -->
+    <polygon points="${P([wBR,wBRb,wTRb,wTR])}" fill="#a8b2be"/>
     <!-- Wall top -->
-    <polygon points="${P([wTL,wTR,wTRb,wTLb])}" fill="#d8dde8"/>
+    <polygon points="${P([wTL,wTR,wTRb,wTLb])}" fill="#c8d0da"/>
 
-    <!-- Left side beam (back) -->
-    <polygon points="${P([sbLBB,sbLBF,sbLTF,sbLTB])}" fill="${alDk}" opacity="0.75"/>
+    <!-- Left side beam (back shadow face) -->
+    <polygon points="${P([sbLBB,sbLBF,sbLTF,sbLTB])}" fill="${alDk}" opacity="0.7"/>
 
     <!-- PVC Slats -->
     ${slats.join('')}
+    <!-- Slat sheen overlay -->
+    <polygon points="${P([pt(-w/2+1,0,hF+bm+1), pt(w/2*0.3,0,hF+bm+1), pt(w/2*0.3,d,hB+bm+1), pt(-w/2+1,d,hB+bm+1)])}"
+      fill="rgba(255,255,255,0.07)" pointer-events="none"/>
 
-    <!-- Right side beam top -->
-    <polygon points="${P([sbRTB,sbRTF,sbRTFr,sbRTBr])}" fill="${alHex}" opacity="0.88"/>
+    <!-- Right side beam top face -->
+    <polygon points="${P([sbRTB,sbRTF,sbRTFr,sbRTBr])}" fill="url(#alTopGrad)" opacity="0.92"/>
     <!-- Right side beam right face -->
-    <polygon points="${P([sbRBB,sbRBF,sbRTFr,sbRTBr])}" fill="${alDk}" opacity="0.75"/>
+    <polygon points="${P([sbRBB,sbRBF,sbRTFr,sbRTBr])}" fill="${alDk}" opacity="0.78"/>
 
     <!-- Back beam (wall bracket) -->
-    <polygon points="${P([bbBL,bbBR,bbTR,bbTL])}" fill="${alHex}" opacity="0.9"/>
+    <polygon points="${P([bbBL,bbBR,bbTR,bbTL])}" fill="${alHex}" opacity="0.92"/>
+    <!-- Back beam highlight -->
+    <polygon points="${P([bbBL,bbBR,pt(w/2,d-1,hB+1),pt(-w/2,d-1,hB+1)])}" fill="rgba(255,255,255,0.12)"/>
 
     <!-- Front beam top -->
-    <polygon points="${P([fbTL,fbTR,fbFTR,fbFTL])}" fill="${alHex}" opacity="0.92"/>
+    <polygon points="${P([fbTL,fbTR,fbFTR,fbFTL])}" fill="url(#alTopGrad)" opacity="0.95"/>
     <!-- Front beam front face -->
-    <polygon points="${P([fbFL,fbFR,fbFTR,fbFTL])}" fill="${alDk}" opacity="0.85"/>
+    <polygon points="${P([fbFL,fbFR,fbFTR,fbFTL])}" fill="${alDk}" opacity="0.88"/>
+    <!-- Front beam edge highlight -->
+    <line x1="${fbTL.x.toFixed(1)}" y1="${fbTL.y.toFixed(1)}" x2="${fbTR.x.toFixed(1)}" y2="${fbTR.y.toFixed(1)}"
+      stroke="rgba(255,255,255,0.35)" stroke-width="0.8"/>
 
     <!-- Legs / cables -->
     ${support}
 
     <!-- Motor indicator -->
-    <rect x="${(mpt.x - 5).toFixed(1)}" y="${(mpt.y - 4).toFixed(1)}" width="10" height="8" rx="2"
-          fill="#0077cc" opacity="0.9"/>
-    <rect x="${(mpt.x - 3).toFixed(1)}" y="${(mpt.y - 2).toFixed(1)}" width="6" height="4" rx="1"
-          fill="#ffffff" opacity="0.6"/>
+    <rect x="${(mpt.x - 6).toFixed(1)}" y="${(mpt.y - 5).toFixed(1)}" width="12" height="9" rx="2.5"
+          fill="#0077cc" opacity="0.95"/>
+    <rect x="${(mpt.x - 4).toFixed(1)}" y="${(mpt.y - 3).toFixed(1)}" width="8" height="5" rx="1.5"
+          fill="#4fb3ff" opacity="0.55"/>
+    <!-- Motor label -->
+    <text x="${(mpt.x).toFixed(1)}" y="${(mpt.y + 10).toFixed(1)}" fill="#5a7a9a" font-size="6.5"
+      text-anchor="middle" font-family="Heebo">מנוע</text>
 
     <!-- Label -->
     <text x="${W/2}" y="${H - 4}" fill="#8899aa" font-size="8" text-anchor="middle" font-family="Heebo">פרגולה חשמלית PVC – מקיר מבנה</text>
@@ -1534,10 +1922,19 @@ function svgTechnical(s) {
 }
 
 function darken(hex, pct) {
+  if(!hex || hex.length < 7) return '#888888';
   let r = parseInt(hex.slice(1,3),16);
   let g = parseInt(hex.slice(3,5),16);
   let b = parseInt(hex.slice(5,7),16);
   r = Math.max(0, r - pct); g = Math.max(0, g - pct); b = Math.max(0, b - pct);
+  return '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+function lighten(hex, pct) {
+  if(!hex || hex.length < 7) return '#cccccc';
+  let r = parseInt(hex.slice(1,3),16);
+  let g = parseInt(hex.slice(3,5),16);
+  let b = parseInt(hex.slice(5,7),16);
+  r = Math.min(255, r + pct); g = Math.min(255, g + pct); b = Math.min(255, b + pct);
   return '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
 }
 
@@ -1559,6 +1956,8 @@ function renderSummary() {
     const alColor = RAL_COLORS.find(r=>r.code===s.aluminumColor);
     const alLabel = s.aluminumColorCustom ? `RAL ${s.aluminumColorCustom}` : (alColor ? `RAL ${alColor.code}` : '—');
     const pvc = PVC_COLORS.find(p=>p.id===s.pvcColor);
+    const ltColor = RAL_COLORS.find(r=>r.code===s.ledColor);
+    const ltLabel = s.ledColorCustom ? `RAL ${s.ledColorCustom}` : (ltColor ? `RAL ${ltColor.code}` : '—');
 
     const tr = document.createElement('tr');
     tr.innerHTML = `
@@ -1567,6 +1966,7 @@ function renderSummary() {
       <td class="num">${area.toFixed(2)}</td>
       <td>${alLabel}</td>
       <td>${pvc ? pvc.name : '—'}</td>
+      <td>${ltLabel}</td>
       <td class="num">₪${kit.toLocaleString()}</td>
       <td class="num">${led > 0 ? '₪'+led.toLocaleString() : '—'}</td>
       <td class="num">₪${tot.toLocaleString()}</td>
@@ -1580,13 +1980,22 @@ function renderSummary() {
   if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪400</span></div>`;
   if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪600</span></div>`;
   if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪100</span></div>`;
-  const total = calcTotal();
-  rows += `<div class="total-row grand"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${total.toLocaleString()}</span></div>`;
+  if(state.measureService) rows += `<div class="total-row"><span class="label">שירות מדידה בשטח</span><span class="val">₪350</span></div>`;
+  // Profiles & angles rows
+  Object.entries(state.profileQtys).forEach(([k, q]) => {
+    if (q > 0) rows += `<div class="total-row"><span class="label">פרופיל/זווית ${k} (${q} יח')</span><span class="val">₪${(q * PROFILE_PRICES[k]).toLocaleString()}</span></div>`;
+  });
+  const hasProfiles = Object.values(state.profileQtys).some(q => q > 0);
+  if (hasProfiles) rows += `<div class="total-row"><span class="label">אריזה (${state.systems.length} מערכות)</span><span class="val">₪${(120 * state.systems.length).toLocaleString()}</span></div>`;
+  const { subtotal, vat, grandTotal } = calcTotal();
+  rows += `<div class="total-row subtotal-row"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${subtotal.toLocaleString()}</span></div>`;
+  rows += `<div class="total-row vat-row"><span class="label">מע"מ (18%)</span><span class="val">₪${vat.toLocaleString()}</span></div>`;
+  rows += `<div class="total-row grand"><span class="label">סה"כ כולל מע"מ</span><span class="val">₪${grandTotal.toLocaleString()}</span></div>`;
   totalsDiv.innerHTML = rows;
 }
 
 function updateStickyPrice() {
-  document.getElementById('stickyTotal').textContent = '₪' + calcTotal().toLocaleString();
+  document.getElementById('stickyTotal').textContent = '₪' + calcTotal().grandTotal.toLocaleString();
 }
 
 /* ══════════════════════════════════════
@@ -1702,12 +2111,9 @@ function setSupportType(type) {
 function toggleAddon(key) {
   state.addons[key] = !state.addons[key];
   document.getElementById(`addon-${key}`).classList.toggle('active', state.addons[key]);
-  // show/hide LED color sections
   if(key === 'led') {
-    state.systems.forEach(s => {
-      const el = document.getElementById(`led-color-section-${s.id}`);
-      if(el) el.style.display = state.addons.led ? 'block' : 'none';
-    });
+    renderLedTone();
+    state.systems.forEach(s => refreshPreviews(s.id));
   }
   renderSummary();
   updateStickyPrice();
@@ -1756,7 +2162,7 @@ function showPayment(type) {
 
 function sendProofWA() {
   const code = getOrderCode();
-  const total = calcTotal().toLocaleString();
+  const total = calcTotal().grandTotal.toLocaleString();
   const msg = encodeURIComponent(`שלום, שלחתי העברה בנקאית להזמנה קוד ${code}, סכום ₪${total}. מצורפת האסמכתא.`);
   window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
 }
@@ -1775,11 +2181,56 @@ function submitCredit() {
 }
 
 /* ══════════════════════════════════════
-   WHATSAPP
+   MEASURE MODAL
 ══════════════════════════════════════ */
-function openMeasureWA() {
-  const msg = encodeURIComponent('שלום, אני מעוניין לתאם שירות מדידה מקצועית בשטח לפרגולה חשמלית PVC.');
-  window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
+function openMeasureModal() {
+  document.getElementById('measureModalOverlay').classList.add('show');
+}
+function closeMeasureModal(e) {
+  if(!e || e.target === document.getElementById('measureModalOverlay')) {
+    document.getElementById('measureModalOverlay').classList.remove('show');
+  }
+}
+function confirmMeasure() {
+  const what    = document.getElementById('m-what').value || 'לא צוין';
+  const sqm     = document.getElementById('m-sqm').value  || 'לא צוין';
+  const address = document.getElementById('m-address').value || 'לא צוינה';
+  const typeEl  = document.querySelector('input[name="m-type"]:checked');
+  const propType = typeEl ? typeEl.value : 'לא צוין';
+  const code = getOrderCode();
+
+  const body = encodeURIComponent(
+    `שלום, אני מעוניין בשירות מדידה מקצועית בשטח.\n\n` +
+    `קוד הזמנה: ${code}\n` +
+    `מה למדוד: ${what}\n` +
+    `הערכת שטח: ${sqm} מ"ר\n` +
+    `סוג נכס: ${propType}\n` +
+    `כתובת: ${address}\n\n` +
+    `מחיר שירות: ₪350`
+  );
+  const subject = encodeURIComponent(`בקשת מדידה – ${code}`);
+  window.open(`mailto:info@alum-il.co.il?subject=${subject}&body=${body}`, '_blank');
+
+  state.measureService = true;
+  document.getElementById('measureModalOverlay').classList.remove('show');
+  renderSummary();
+  updateStickyPrice();
+}
+
+/* ══════════════════════════════════════
+   LED TONE
+══════════════════════════════════════ */
+function setLedTone(id, tone) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.ledTone = tone;
+  renderLedTone();
+  refreshPreviews(id);
+}
+
+function setProfileQty(key, delta) {
+  state.profileQtys[key] = Math.max(0, (state.profileQtys[key] || 0) + delta);
+  renderAll();
 }
 
 /* ══════════════════════════════════════
@@ -1794,6 +2245,49 @@ function matchInstaller() {
 }
 function dismissInstaller() {
   document.getElementById('installerBanner').classList.add('hidden');
+}
+
+/* ══════════════════════════════════════
+   SAVE ORDER
+══════════════════════════════════════ */
+async function saveOrder() {
+  const btn = document.getElementById('btnSaveOrder');
+  const msg = document.getElementById('saveOrderMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ph ph-circle-notch"></i> שומר...';
+  msg.style.display = 'none';
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const { subtotal, vat, grandTotal } = calcTotal();
+  const code = getOrderCode();
+
+  const { error } = await supabase.from('orders').insert({
+    user_id: user.id,
+    order_code: code,
+    status: 'draft',
+    project_name: state.projectName || null,
+    project_number: state.projectNumber || null,
+    order_data: JSON.parse(JSON.stringify(state)),
+    subtotal,
+    vat,
+    grand_total: grandTotal
+  });
+
+  if (error) {
+    msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשמירה: ${error.message}`;
+    msg.className = 'save-order-msg error';
+  } else {
+    msg.innerHTML = `<i class="ph ph-check-circle"></i> ההצעה נשמרה! קוד: <strong>${code}</strong> — ניתן לצפות בה <a href="dashboard.html" style="color:var(--green);text-decoration:underline;">באזור האישי</a>.`;
+    msg.className = 'save-order-msg success';
+  }
+  msg.style.display = 'flex';
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור הצעת מחיר';
 }
 
 /* ══════════════════════════════════════

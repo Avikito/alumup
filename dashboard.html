@@ -1,85 +1,407 @@
 <!DOCTYPE html>
-
 <html lang="he" dir="rtl">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALUM-IL | אזור אישי</title>
-    <!-- Google Fonts: Heebo -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <!-- Main Style -->
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Phosphor Icons -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | אזור אישי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    /* ── DASHBOARD LAYOUT ── */
+    .dashboard-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
+
+    .dashboard-sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--surface-dark);
+      border-left: 1px solid var(--border);
+      padding: 1.5rem 1rem;
+      display: flex; flex-direction: column; gap: 0.2rem;
+    }
+    .sidebar-label {
+      font-size: 0.72rem; font-weight: 700; color: var(--silver-dark);
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 0 0.75rem; margin-bottom: 0.75rem;
+    }
+    .dashboard-nav { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+    .dashboard-nav a {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.6rem 0.75rem; border-radius: 8px;
+      font-size: 0.9rem; font-weight: 500; color: var(--silver-dark);
+      cursor: pointer; transition: all 0.18s ease; text-decoration: none;
+    }
+    .dashboard-nav a:hover { background: var(--blue-dim); color: var(--electric-blue); }
+    .dashboard-nav a.active { background: var(--blue-dim); color: var(--electric-blue); font-weight: 700; }
+    .dashboard-nav a i { font-size: 1.1rem; }
+    .nav-admin-link { margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+
+    .dashboard-content { flex: 1; padding: 2rem; overflow-y: auto; }
+    .dashboard-title { font-size: 1.5rem; font-weight: 800; color: var(--industrial-silver); margin-bottom: 0.4rem; }
+    .dashboard-subtitle { color: var(--silver-dark); font-size: 0.9rem; margin-bottom: 2rem; }
+
+    /* ── SECTIONS ── */
+    .dash-section { display: none; }
+    .dash-section.active { display: block; }
+
+    /* ── HOME GRID ── */
+    .dashboard-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem;
+    }
+    .dashboard-card {
+      background: var(--surface-dark); border: 1px solid var(--border);
+      border-radius: 14px; padding: 1.75rem 1.25rem;
+      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
+      text-align: center; transition: all 0.2s ease; cursor: pointer;
+    }
+    .dashboard-card:hover { border-color: var(--electric-blue); box-shadow: 0 4px 20px rgba(26,95,170,0.12); transform: translateY(-2px); }
+    .card-icon { font-size: 2rem; color: var(--electric-blue); }
+    .dashboard-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--industrial-silver); }
+
+    /* ── ORDER CARDS ── */
+    .orders-loading { display: flex; align-items: center; gap: 0.75rem; color: var(--silver-dark); padding: 2rem 0; }
+    .orders-empty { text-align: center; padding: 3rem 1rem; color: var(--silver-dark); }
+    .orders-empty i { font-size: 3rem; margin-bottom: 0.75rem; display: block; opacity: 0.35; }
+
+    .orders-list { display: flex; flex-direction: column; gap: 1rem; }
+
+    .order-card {
+      background: var(--surface-dark); border: 1px solid var(--border);
+      border-radius: 12px; padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; gap: 1.25rem;
+      cursor: pointer; transition: all 0.18s ease;
+    }
+    .order-card:hover { border-color: var(--electric-blue); box-shadow: 0 2px 14px rgba(26,95,170,0.1); }
+    .order-card-info { flex: 1; min-width: 0; }
+    .order-card-top { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.4rem; flex-wrap: wrap; }
+    .order-code { font-size: 0.8rem; font-weight: 700; color: var(--silver-dark); letter-spacing: 0.5px; }
+    .order-desc { font-size: 0.9rem; color: var(--industrial-silver); font-weight: 600; margin-bottom: 0.25rem; }
+    .order-meta { font-size: 0.78rem; color: var(--silver-dark); }
+
+    .status-badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      padding: 0.25rem 0.7rem; border-radius: 20px;
+      font-size: 0.75rem; font-weight: 700; white-space: nowrap;
+    }
+    .status-draft    { background: rgba(196,124,0,0.1);  color: #a06000; border: 1px solid rgba(196,124,0,0.25); }
+    .status-production { background: rgba(26,95,170,0.1); color: var(--electric-blue); border: 1px solid rgba(26,95,170,0.25); }
+    .status-delivered  { background: rgba(22,163,74,0.1);  color: #16a34a; border: 1px solid rgba(22,163,74,0.25); }
+
+    .order-price { font-size: 1.05rem; font-weight: 800; color: var(--electric-blue); white-space: nowrap; }
+    .btn-order-detail {
+      padding: 0.45rem 1rem; border: 1.5px solid var(--border);
+      border-radius: 8px; font-size: 0.82rem; font-weight: 600;
+      color: var(--electric-blue); background: transparent;
+      cursor: pointer; white-space: nowrap; transition: all 0.18s ease;
+      font-family: 'Heebo', sans-serif;
+    }
+    .btn-order-detail:hover { background: var(--blue-dim); border-color: var(--electric-blue); }
+
+    .section-divider-title {
+      font-size: 0.75rem; font-weight: 700; color: var(--silver-dark);
+      text-transform: uppercase; letter-spacing: 1px;
+      margin: 1.5rem 0 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+    }
+    .section-divider-title::before {
+      content: ''; flex: 1; height: 1px; background: var(--border);
+    }
+
+    /* ── ORDER DETAIL MODAL ── */
+    .order-modal-overlay {
+      position: fixed; inset: 0; background: rgba(10,20,40,0.45);
+      z-index: 1000; display: flex; align-items: center; justify-content: center;
+      padding: 1rem; opacity: 0; pointer-events: none; transition: opacity 0.2s ease;
+    }
+    .order-modal-overlay.open { opacity: 1; pointer-events: all; }
+    .order-modal {
+      background: var(--surface-dark); border-radius: 16px;
+      width: 100%; max-width: 640px; max-height: 85vh;
+      overflow-y: auto; box-shadow: 0 20px 60px rgba(10,20,60,0.2);
+      transform: translateY(16px); transition: transform 0.2s ease;
+    }
+    .order-modal-overlay.open .order-modal { transform: translateY(0); }
+    .order-modal-hdr {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    }
+    .order-modal-title { font-size: 1rem; font-weight: 800; color: var(--industrial-silver); }
+    .btn-close-modal {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.25rem; color: var(--silver-dark); padding: 0.2rem;
+      transition: color 0.18s ease;
+    }
+    .btn-close-modal:hover { color: var(--industrial-silver); }
+    .order-modal-body { padding: 1.5rem; }
+
+    .modal-sys-card {
+      background: var(--surface-elevated, #f7f9fd); border: 1px solid var(--border);
+      border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem;
+    }
+    .modal-sys-title { font-size: 0.85rem; font-weight: 700; color: var(--electric-blue); margin-bottom: 0.75rem; }
+    .modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1.5rem; }
+    .modal-item { display: flex; flex-direction: column; gap: 0.1rem; }
+    .modal-key { font-size: 0.72rem; color: var(--silver-dark); }
+    .modal-val { font-size: 0.88rem; font-weight: 600; color: var(--industrial-silver); }
+
+    .modal-addons { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 1rem; }
+    .modal-addon-chip {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.22rem 0.6rem; border-radius: 20px;
+      background: var(--blue-dim); border: 1px solid rgba(26,95,170,0.2);
+      font-size: 0.78rem; color: var(--electric-blue); font-weight: 600;
+    }
+
+    .modal-totals { border-top: 1px solid var(--border); padding-top: 1rem; }
+    .modal-total-row { display: flex; justify-content: space-between; padding: 0.35rem 0; font-size: 0.88rem; }
+    .modal-total-row.grand { font-size: 1rem; font-weight: 800; color: var(--electric-blue); padding-top: 0.5rem; border-top: 1px solid var(--border); margin-top: 0.25rem; }
+
+    /* ── SPINNER ── */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spin { animation: spin 0.8s linear infinite; display: inline-block; }
+  </style>
 </head>
-
 <body>
-    <!-- Header: Minimalist but persistent for dashboard -->
-    <header class="header"
-        style="position: relative; border-bottom: 1px solid var(--surface-light); background-color: var(--surface-dark); padding: 1rem 0;">
-        <div class="container header-container" style="max-width: 100%; padding: 0 2rem;">
-            <a href="index.html" class="logo">
-                <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
-            </a>
-            <!-- Simple user menu -->
-            <div style="color: var(--silver-dark); display: flex; align-items: center; gap: 10px;">
-                <span
-                    style="font-weight:500; color:var(--electric-blue); display: none; @media(min-width: 768px){display: block;}">משתמש
-                    מערכת</span>
-                <i class="ph ph-user-circle" style="font-size: 2rem; color:var(--electric-blue);"></i>
-            </div>
-        </div>
-    </header>
-
-    <div class="dashboard-wrapper">
-        <!-- Sidebar (RTL means it's natively on the right side) -->
-        <aside class="dashboard-sidebar">
-            <div
-                style="color:var(--silver-dark); font-size:0.85rem; font-weight:700; margin-bottom:1rem; padding-right:1rem;">
-                תפריט פעולות</div>
-            <ul class="dashboard-nav">
-                <li><a href="#" class="active"><i class="ph ph-house"></i> דף הבית</a></li>
-                <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
-                <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
-                <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
-                <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
-            </ul>
-        </aside>
-
-        <!-- Main Content Area -->
-        <main class="dashboard-content">
-            <div class="dashboard-header">
-                <h1 class="dashboard-title">ברוך הבא לאזור האישי של ALUM-IL</h1>
-                <p style="color: var(--silver-dark);">בחר את הפעולה שברצונך לבצע מתוך האפשרויות המהירות.</p>
-            </div>
-
-            <div class="dashboard-grid">
-                <!-- Card A -->
-                <a href="procurement.html" class="dashboard-card">
-                    <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
-                    <h3>מרכז הרכש</h3>
-                </a>
-                <!-- Card B -->
-                <a href="kits.html" class="dashboard-card">
-                    <div class="card-icon"><i class="ph ph-toolbox"></i></div>
-                    <h3>קיטים למתקינים</h3>
-                </a>
-                <!-- Card C -->
-                <a href="tenders.html" class="dashboard-card">
-                    <div class="card-icon"><i class="ph ph-briefcase"></i></div>
-                    <h3>מכרזים והזדמנויות</h3>
-                </a>
-                <!-- Card D -->
-                <a href="academy.html" class="dashboard-card">
-                    <div class="card-icon"><i class="ph ph-graduation-cap"></i></div>
-                    <h3>מכללת ALUM-IL</h3>
-                </a>
-            </div>
-        </main>
+  <header class="header" style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" class="logo" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;display:block;">
+    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span id="userEmail" style="font-size:0.85rem;color:var(--silver-dark);"></span>
+      <i class="ph ph-user-circle" style="font-size:2rem;color:var(--electric-blue);"></i>
     </div>
-</body>
+  </header>
 
+  <div class="dashboard-wrapper">
+    <aside class="dashboard-sidebar">
+      <div class="sidebar-label">תפריט</div>
+      <ul class="dashboard-nav">
+        <li><a class="active" onclick="showSection('home')" id="nav-home"><i class="ph ph-house"></i> דף הבית</a></li>
+        <li><a onclick="showSection('new-orders')" id="nav-new-orders"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
+        <li><a onclick="showSection('history')" id="nav-history"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
+        <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
+        <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+        <li class="nav-admin-link" id="adminNavItem" style="display:none;">
+          <a href="admin.html"><i class="ph ph-shield-star"></i> פאנל ניהול</a>
+        </li>
+      </ul>
+    </aside>
+
+    <main class="dashboard-content">
+
+      <!-- ── HOME ── -->
+      <section class="dash-section active" id="sec-home">
+        <div class="dashboard-title">ברוך הבא לאזור האישי</div>
+        <div class="dashboard-subtitle">בחר את הפעולה שברצונך לבצע.</div>
+        <div class="dashboard-grid">
+          <a href="procurement.html" class="dashboard-card">
+            <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
+            <h3>מרכז הרכש</h3>
+          </a>
+          <a href="kits.html" class="dashboard-card">
+            <div class="card-icon"><i class="ph ph-toolbox"></i></div>
+            <h3>קיטים למתקינים</h3>
+          </a>
+          <a href="tenders.html" class="dashboard-card">
+            <div class="card-icon"><i class="ph ph-briefcase"></i></div>
+            <h3>מכרזים והזדמנויות</h3>
+          </a>
+          <a href="academy.html" class="dashboard-card">
+            <div class="card-icon"><i class="ph ph-graduation-cap"></i></div>
+            <h3>מכללת ALUM-IL</h3>
+          </a>
+        </div>
+      </section>
+
+      <!-- ── NEW ORDERS ── -->
+      <section class="dash-section" id="sec-new-orders">
+        <div class="dashboard-title">הזמנות חדשות</div>
+        <div class="dashboard-subtitle">הצעות מחיר שנשמרו והזמנות בתהליך</div>
+
+        <div class="section-divider-title">טיוטה — ממתין לאישור</div>
+        <div id="orders-draft"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
+
+        <div class="section-divider-title">בתהליך ייצור</div>
+        <div id="orders-production"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
+      </section>
+
+      <!-- ── HISTORY ── -->
+      <section class="dash-section" id="sec-history">
+        <div class="dashboard-title">היסטוריית הזמנות</div>
+        <div class="dashboard-subtitle">הזמנות שנמסרו</div>
+        <div id="orders-delivered"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ── ORDER DETAIL MODAL ── -->
+  <div class="order-modal-overlay" id="orderModalOverlay" onclick="closeOrderModal(event)">
+    <div class="order-modal" onclick="event.stopPropagation()">
+      <div class="order-modal-hdr">
+        <div class="order-modal-title" id="modalTitle">פירוט הזמנה</div>
+        <button class="btn-close-modal" onclick="closeOrderModal()"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="order-modal-body" id="modalBody"></div>
+    </div>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+const PVC_NAMES = { white:'לבן', black:'שחור', gray46:'אפור 7046', gray16:'אפור כהה 7016', green:'ירוק', red:'אדום', cream:'שמנת 1013' };
+const STATUS_LABEL = { draft:'טיוטה', in_production:'בתהליך ייצור', delivered:'נמסר' };
+
+/* ── AUTH ── */
+async function init() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+
+  document.getElementById('userEmail').textContent = user.email;
+
+  // Check admin
+  const { data: adminRow } = await supabase.from('admin_users').select('user_id').eq('user_id', user.id).single();
+  if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
+
+  loadAllOrders();
+}
+
+/* ── NAVIGATION ── */
+window.showSection = function(id) {
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.dashboard-nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.getElementById('nav-' + id).classList.add('active');
+  if (id === 'new-orders' || id === 'history') loadAllOrders();
+};
+
+/* ── LOAD ORDERS ── */
+let allOrders = [];
+
+async function loadAllOrders() {
+  const { data, error } = await supabase
+    .from('orders').select('*').order('created_at', { ascending: false });
+
+  if (error) { console.error(error); return; }
+  allOrders = data || [];
+  renderOrderSection('orders-draft',      allOrders.filter(o => o.status === 'draft'));
+  renderOrderSection('orders-production', allOrders.filter(o => o.status === 'in_production'));
+  renderOrderSection('orders-delivered',  allOrders.filter(o => o.status === 'delivered'));
+}
+
+function renderOrderSection(containerId, orders) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  if (orders.length === 0) {
+    el.innerHTML = `<div class="orders-empty"><i class="ph ph-inbox"></i><p>אין הזמנות להצגה</p></div>`;
+    return;
+  }
+  el.innerHTML = `<div class="orders-list">${orders.map(orderCard).join('')}</div>`;
+}
+
+function orderCard(o) {
+  const d = o.order_data || {};
+  const systemCount = (d.systems || []).length;
+  const dateStr = new Date(o.created_at).toLocaleDateString('he-IL');
+  const name = o.project_name || `פרגולה חשמלית`;
+  const statusClass = { draft:'status-draft', in_production:'status-production', delivered:'status-delivered' }[o.status] || 'status-draft';
+  const statusLabel = { draft:'טיוטה — ממתין לאישור', in_production:'בתהליך ייצור', delivered:'נמסר' }[o.status] || o.status;
+
+  return `<div class="order-card" onclick="openOrderModal('${o.id}')">
+    <div class="order-card-info">
+      <div class="order-card-top">
+        <span class="status-badge ${statusClass}">${statusLabel}</span>
+        <span class="order-code">${o.order_code}</span>
+      </div>
+      <div class="order-desc">${name} · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}</div>
+      <div class="order-meta">נשמר: ${dateStr}</div>
+    </div>
+    <div class="order-price">₪${(o.grand_total || 0).toLocaleString()}</div>
+    <button class="btn-order-detail" onclick="event.stopPropagation();openOrderModal('${o.id}')">
+      <i class="ph ph-eye"></i> פרטים
+    </button>
+  </div>`;
+}
+
+/* ── MODAL ── */
+window.openOrderModal = function(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o) return;
+  const d = o.order_data || {};
+
+  document.getElementById('modalTitle').innerHTML =
+    `פירוט הזמנה &nbsp;<span style="font-weight:400;color:var(--silver-dark);font-size:0.85rem;">${o.order_code}</span>`;
+
+  let html = '';
+
+  // Systems
+  (d.systems || []).forEach((s, i) => {
+    const area = ((s.width / 100) * (s.depth / 100)).toFixed(2);
+    const pvcName = PVC_NAMES[s.pvcColor] || s.pvcColor || '—';
+    html += `<div class="modal-sys-card">
+      <div class="modal-sys-title"><i class="ph ph-stack"></i> מערכת ${s.id}${s.name ? ' – ' + s.name : ''}</div>
+      <div class="modal-grid">
+        <div class="modal-item"><span class="modal-key">רוחב × עומק</span><span class="modal-val">${s.width} × ${s.depth} ס"מ</span></div>
+        <div class="modal-item"><span class="modal-key">שטח</span><span class="modal-val">${area} מ"ר</span></div>
+        <div class="modal-item"><span class="modal-key">גובה התקנה</span><span class="modal-val">${s.installHeight} ס"מ</span></div>
+        <div class="modal-item"><span class="modal-key">גובה מרזב</span><span class="modal-val">${s.gutterHeight} ס"מ</span></div>
+        <div class="modal-item"><span class="modal-key">צבע אלומיניום</span><span class="modal-val">RAL ${s.aluminumColorCustom || s.aluminumColor}</span></div>
+        <div class="modal-item"><span class="modal-key">גוון PVC</span><span class="modal-val">${pvcName}</span></div>
+        <div class="modal-item"><span class="modal-key">צבע פרופילי תאורה</span><span class="modal-val">RAL ${s.ledColorCustom || s.ledColor || '—'}</span></div>
+        ${(d.addons || {}).led ? `<div class="modal-item"><span class="modal-key">גוון LED</span><span class="modal-val">${s.ledTone === 'warm' ? 'אור צהוב (3000K)' : 'אור לבן (6000K)'}</span></div>` : ''}
+      </div>
+    </div>`;
+  });
+
+  // Addons
+  const addons = d.addons || {};
+  const addonChips = [
+    addons.led     ? '<span class="modal-addon-chip"><i class="ph ph-lightbulb"></i> תאורת LED</span>' : '',
+    addons.remote  ? '<span class="modal-addon-chip"><i class="ph ph-radio-button"></i> שלט Somfy</span>' : '',
+    addons.tahoma  ? '<span class="modal-addon-chip"><i class="ph ph-wifi-high"></i> TaHoma</span>' : '',
+    addons.dimmer  ? '<span class="modal-addon-chip"><i class="ph ph-sliders"></i> דימר</span>' : '',
+    d.measureService ? '<span class="modal-addon-chip"><i class="ph ph-ruler"></i> שירות מדידה</span>' : '',
+  ].filter(Boolean).join('');
+
+  if (addonChips) {
+    html += `<div style="margin-bottom:1rem;">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--silver-dark);margin-bottom:0.5rem;">תוספות</div>
+      <div class="modal-addons">${addonChips}</div>
+    </div>`;
+  }
+
+  // Profiles
+  const pq = d.profileQtys || {};
+  const PNAMES = { '20/20':'זווית 20×20', '30/30':'זווית 30×30', '20/40':'זווית 20×40', '100/100':'פרופיל 100×100', '100/40':'פרופיל 100×40', '120/80':'פרופיל 120×80' };
+  const profileItems = Object.entries(pq).filter(([,q]) => q > 0).map(([k,q]) => `${PNAMES[k]} ×${q}`).join(', ');
+  if (profileItems) {
+    html += `<div style="margin-bottom:1rem;font-size:0.85rem;color:var(--industrial-silver);">
+      <strong>פרופילים וזוויות:</strong> ${profileItems}
+    </div>`;
+  }
+
+  // Totals
+  html += `<div class="modal-totals">
+    <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${(o.subtotal || 0).toLocaleString()}</span></div>
+    <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${(o.vat || 0).toLocaleString()}</span></div>
+    <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(o.grand_total || 0).toLocaleString()}</span></div>
+  </div>`;
+
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('orderModalOverlay').classList.add('open');
+};
+
+window.closeOrderModal = function(e) {
+  if (!e || e.target === document.getElementById('orderModalOverlay')) {
+    document.getElementById('orderModalOverlay').classList.remove('open');
+  }
+};
+
+init();
+</script>
+</body>
 </html>
