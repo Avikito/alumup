@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUM-IL | מכרזים והזדמנויות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+
+.tenders-wrapper { display: flex; min-height: calc(100vh - 65px); }
+.tenders-main   { flex: 1; background-color: var(--bg-dark); overflow-y: auto; }
+
+/* ════════════════════════════
+   HERO
+════════════════════════════ */
+.t-hero {
+  background-color: var(--electric-blue);
+  padding: 3rem 4rem;
+  color: #ffffff;
+  border-bottom: 3px solid var(--blue-hover);
+}
+.t-hero-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7aabdc;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.t-hero-title {
+  font-size: 2.5rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+.t-hero-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.65);
+  margin-bottom: 2.5rem;
+  max-width: 580px;
+  line-height: 1.6;
+}
+.t-hero-stats {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid rgba(255,255,255,0.12);
+  padding-top: 1.75rem;
+}
+.t-stat {
+  flex: 1;
+  padding-left: 2rem;
+  border-left: 1px solid rgba(255,255,255,0.12);
+}
+.t-stat:first-child { padding-left: 0; border-left: none; }
+.t-stat-num {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #7aabdc;
+  line-height: 1;
+  margin-bottom: 0.2rem;
+}
+.t-stat-label {
+  font-size: 0.82rem;
+  color: rgba(255,255,255,0.55);
+  font-weight: 500;
+}
+
+/* ════════════════════════════
+   FILTER BAR
+════════════════════════════ */
+.filter-bar {
+  position: sticky;
+  top: 65px;
+  z-index: 50;
+  background-color: var(--surface-dark);
+  border-bottom: 1px solid var(--surface-light);
+  padding: 0.85rem 4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.filter-bar::-webkit-scrollbar { display: none; }
+.filter-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--silver-dark);
+  white-space: nowrap;
+  margin-left: 0.5rem;
+}
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 1rem;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--silver-dark);
+  background: transparent;
+  border: 1px solid var(--surface-light);
+  border-radius: 50px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all var(--transition-fast);
+}
+.filter-chip:hover {
+  border-color: var(--blue-hover);
+  color: var(--blue-hover);
+}
+.filter-chip.active {
+  background-color: var(--electric-blue);
+  color: #ffffff;
+  border-color: var(--electric-blue);
+}
+.filter-chip i { font-size: 0.9rem; }
+
+/* ════════════════════════════
+   TENDERS LIST
+════════════════════════════ */
+.tenders-section {
+  padding: 2rem 4rem 1.5rem;
+}
+.tenders-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--electric-blue);
+}
+.tenders-header-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+}
+.tenders-count {
+  font-size: 0.82rem;
+  color: var(--silver-dark);
+  font-weight: 500;
+}
+
+.tender-card {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--surface-light);
+  border-radius: var(--border-radius);
+  margin-bottom: 0.6rem;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+.tender-card:hover {
+  border-color: var(--blue-hover);
+  box-shadow: var(--box-shadow-hover);
+}
+.tender-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: stretch;
+}
+
+/* Info side */
+.tender-info {
+  padding: 1.5rem 2rem;
+  border-left: 1px solid var(--surface-light);
+}
+.tender-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+  flex-wrap: wrap;
+}
+.tender-badge {
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 0.18rem 0.65rem;
+  border-radius: 50px;
+  color: #ffffff;
+  white-space: nowrap;
+}
+.badge-gov     { background-color: #1a2e4a; }
+.badge-public  { background-color: #2d6a4f; }
+.badge-arch    { background-color: #6b3fa0; }
+.badge-biz     { background-color: #c47c00; }
+.badge-private { background-color: #4a7fb5; }
+
+.tender-status {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.18rem 0.65rem;
+  border-radius: 50px;
+  white-space: nowrap;
+}
+.status-open   { background-color: #dcfce7; color: #16a34a; }
+.status-soon   { background-color: #fef3c7; color: #d97706; }
+
+.tender-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+  margin-bottom: 0.35rem;
+}
+.tender-desc {
+  font-size: 0.88rem;
+  color: var(--silver-dark);
+  line-height: 1.6;
+  margin-bottom: 0.85rem;
+}
+.tender-specs {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.85rem;
+}
+.tender-spec {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  color: var(--electric-blue);
+  font-weight: 500;
+  opacity: 0.7;
+}
+.tender-spec i { font-size: 0.9rem; }
+
+.tender-threshold {
+  background-color: var(--bg-dark);
+  border-right: 3px solid var(--surface-light);
+  padding: 0.65rem 0.85rem;
+  border-radius: var(--border-radius);
+}
+.threshold-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--silver-dark);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.threshold-label i { font-size: 0.85rem; color: var(--blue-hover); }
+.threshold-list {
+  list-style: none;
+  display: flex;
+  gap: 0.85rem;
+  flex-wrap: wrap;
+}
+.threshold-list li {
+  font-size: 0.78rem;
+  color: var(--silver-dark);
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.threshold-list li::before {
+  content: '·';
+  color: var(--blue-hover);
+  font-weight: 900;
+  font-size: 1rem;
+}
+
+/* Actions side */
+.tender-actions {
+  display: flex;
+  flex-direction: column;
+  min-width: 170px;
+  border-right: 1px solid var(--surface-light);
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem 1.25rem;
+  gap: 0.75rem;
+}
+.btn-tender-detail {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  background-color: var(--electric-blue);
+  color: #ffffff;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+  text-align: center;
+}
+.btn-tender-detail:hover { background-color: var(--blue-hover); }
+.tender-deadline-chip {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--silver-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.tender-deadline-chip i { font-size: 0.85rem; color: var(--blue-hover); }
+
+/* ════════════════════════════
+   PUBLISH CTA SECTION
+════════════════════════════ */
+.publish-section {
+  margin: 1rem 4rem 3rem;
+  background-color: var(--surface-light);
+  border: 1px solid var(--surface-light);
+  border-radius: var(--border-radius);
+  border-right: 4px solid var(--blue-hover);
+  padding: 2.5rem 2.5rem;
+}
+.publish-header {
+  margin-bottom: 2rem;
+}
+.publish-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+  margin-bottom: 0.4rem;
+}
+.publish-desc {
+  font-size: 0.9rem;
+  color: var(--silver-dark);
+  line-height: 1.6;
+}
+.publish-steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+.publish-step {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--surface-light);
+  border-radius: var(--border-radius);
+  padding: 1.25rem 1.25rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.step-icon {
+  width: 40px;
+  height: 40px;
+  background-color: var(--electric-blue);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.step-icon i { font-size: 1.1rem; color: #7aabdc; }
+.step-num {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--blue-hover);
+  margin-bottom: 0.2rem;
+}
+.step-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+}
+.btn-publish {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.85rem 2rem;
+  background-color: var(--blue-hover);
+  color: #ffffff;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+.btn-publish:hover { background-color: #3a6fa5; }
+
+/* hidden state for filter */
+.tender-card.hidden { display: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .t-hero { padding: 2.5rem 2rem; }
+  .filter-bar { padding: 0.75rem 2rem; }
+  .tenders-section { padding: 2rem 2rem; }
+  .publish-section { margin: 1rem 2rem 2rem; }
+  .tender-inner { grid-template-columns: 1fr; }
+  .tender-actions {
+    flex-direction: row;
+    border-right: none;
+    border-top: 1px solid var(--surface-light);
+    min-width: unset;
+    justify-content: flex-start;
+    padding: 1rem 1.5rem;
+  }
+  .btn-tender-detail { width: auto; }
+  .tender-info { border-left: none; }
+  .publish-steps { grid-template-columns: 1fr; }
+}
+@media (max-width: 768px) {
+  .dashboard-sidebar { display: none; }
+  .t-hero { padding: 2rem 1.25rem; }
+  .t-hero-title { font-size: 1.85rem; }
+  .t-hero-stats { flex-direction: column; gap: 1rem; padding-top: 1.25rem; }
+  .t-stat { border-left: none; padding-left: 0; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+  .t-stat:first-child { border-top: none; padding-top: 0; }
+  .filter-bar { padding: 0.75rem 1.25rem; top: 60px; }
+  .tenders-section { padding: 1.5rem 1.25rem; }
+  .publish-section { margin: 1rem 1.25rem 2rem; padding: 1.5rem 1.25rem; }
+  .tender-info { padding: 1.25rem; }
+}
+</style>
+</head>
+<body class="light-theme">
+
+<!-- HEADER -->
+<header class="header" style="position:sticky;top:0;z-index:100;border-bottom:1px solid var(--surface-light);background-color:var(--surface-dark);padding:1rem 0;">
+  <div class="container header-container" style="max-width:100%;padding:0 2rem;">
+    <a href="index.html" class="logo">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
+    </a>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:0.82rem;font-weight:500;color:var(--silver-dark);border:1px solid var(--surface-light);padding:0.25rem 0.75rem;border-radius:var(--border-radius);">
+        <i class="ph ph-medal" style="color:var(--blue-hover);"></i> Pro-Score: <strong style="color:var(--electric-blue);">74</strong>
+      </span>
+      <i class="ph ph-user-circle" style="font-size:2rem;color:var(--electric-blue);cursor:pointer;"></i>
+    </div>
+  </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="dashboard-sidebar">
+    <div style="color:var(--silver-dark);font-size:0.85rem;font-weight:700;margin-bottom:1rem;padding-right:1rem;">תפריט פעולות</div>
+    <ul class="dashboard-nav">
+      <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
+      <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
+      <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
+      <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
+      <li><a href="tenders.html" class="active"><i class="ph ph-briefcase"></i> מכרזים והזדמנויות</a></li>
+      <li><a href="academy.html"><i class="ph ph-graduation-cap"></i> מכללת ALUM-IL</a></li>
+      <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+    </ul>
+  </aside>
+
+  <main class="tenders-main">
+
+    <!-- ════ HERO ════ -->
+    <section class="t-hero">
+      <div class="t-hero-label"><i class="ph ph-briefcase"></i> מכרזים והזדמנויות</div>
+      <h1 class="t-hero-title">הזדמנויות עסקיות — כולן במקום אחד</h1>
+      <p class="t-hero-sub">גישה למכרזים ממשלתיים, ציבוריים, אדריכליים, עסקיים ופרטיים — מותאמת לפרופיל המקצועי שלך. אנחנו מספקים את המידע בלבד; ההגשה היא שלך.</p>
+      <div class="t-hero-stats">
+        <div class="t-stat">
+          <div class="t-stat-num">47</div>
+          <div class="t-stat-label">מכרזים פעילים</div>
+        </div>
+        <div class="t-stat">
+          <div class="t-stat-num">5</div>
+          <div class="t-stat-label">קטגוריות</div>
+        </div>
+        <div class="t-stat">
+          <div class="t-stat-num">₪85K</div>
+          <div class="t-stat-label">ממוצע ערך עסקה</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ════ FILTER BAR ════ -->
+    <div class="filter-bar">
+      <span class="filter-label"><i class="ph ph-funnel"></i> סנן:</span>
+      <button class="filter-chip active" onclick="filterTenders('all', this)">
+        <i class="ph ph-squares-four"></i> הכל
+      </button>
+      <button class="filter-chip" onclick="filterTenders('gov', this)">
+        <i class="ph ph-bank"></i> ממשלתי
+      </button>
+      <button class="filter-chip" onclick="filterTenders('public', this)">
+        <i class="ph ph-buildings"></i> ציבורי
+      </button>
+      <button class="filter-chip" onclick="filterTenders('arch', this)">
+        <i class="ph ph-compass"></i> אדריכלים
+      </button>
+      <button class="filter-chip" onclick="filterTenders('biz', this)">
+        <i class="ph ph-briefcase"></i> עסקי
+      </button>
+      <button class="filter-chip" onclick="filterTenders('private', this)">
+        <i class="ph ph-house"></i> פרטי
+      </button>
+    </div>
+
+    <!-- ════ TENDERS ════ -->
+    <section class="tenders-section">
+      <div class="tenders-header">
+        <h2 class="tenders-header-title">מכרזים פתוחים</h2>
+        <span class="tenders-count" id="tenders-count">8 הזדמנויות</span>
+      </div>
+
+      <!-- ── מכרז 1 ── -->
+      <div class="tender-card" data-category="gov">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-gov">ממשלתי</span>
+              <span class="tender-status status-open"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> פתוח להגשה</span>
+            </div>
+            <h3 class="tender-title">שיפוץ והחלפת חלונות בניין ממשלתי — ירושלים</h3>
+            <p class="tender-desc">החלפת 120 חלונות אלומיניום במשרד ממשלתי, כולל איטום, צביעה ופינוי פסולת.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> ירושלים</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 30 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪180,000–₪240,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>רישום קבלן פעיל</li>
+                <li>Pro-Score 70+</li>
+                <li>ניסיון בפרויקטים ממשלתיים</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 30 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 2 ── -->
+      <div class="tender-card" data-category="public">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-public">ציבורי</span>
+              <span class="tender-status status-open"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> פתוח להגשה</span>
+            </div>
+            <h3 class="tender-title">פרגולות ביוקלימטיות לפארק ציבורי — תל אביב</h3>
+            <p class="tender-desc">התקנת 6 פרגולות ביוקלימטיות עם מערכת שליטה אוטומטית בפארק עירוני.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> תל אביב</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 45 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪320,000–₪420,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>3+ שנות ניסיון בפרגולות</li>
+                <li>הסמכת ALUM-IL</li>
+                <li>אחריות 5 שנים</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 45 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 3 ── -->
+      <div class="tender-card" data-category="biz">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-biz">עסקי</span>
+              <span class="tender-status status-open"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> פתוח להגשה</span>
+            </div>
+            <h3 class="tender-title">ויטרינות אלומיניום — קניון חדש בראשון לציון</h3>
+            <p class="tender-desc">ייצור והתקנת 40 ויטרינות חנויות, כולל שלד אלומיניום, זכוכית ומנעולים.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> ראשון לציון</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 20 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪500,000–₪700,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>ערבות ביצוע 5%</li>
+                <li>רישיון קבלן</li>
+                <li>ניסיון בפרויקטי מסחר</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 20 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 4 ── -->
+      <div class="tender-card" data-category="arch">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-arch">אדריכלים</span>
+              <span class="tender-status status-soon"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> בקרוב</span>
+            </div>
+            <h3 class="tender-title">גדרות אלומיניום אדריכליות — בניין מגורים בחיפה</h3>
+            <p class="tender-desc">גדרות ומעקות מעוצבים לפי תוכנית אדריכלית, כולל הגנות אנטי-קורוזיה לאזור הים.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> חיפה</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 60 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪90,000–₪130,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>Pro-Score 60+</li>
+                <li>פורטפוליו עבודות</li>
+                <li>תיאום עם אדריכל</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 60 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 5 ── -->
+      <div class="tender-card" data-category="private">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-private">פרטי</span>
+              <span class="tender-status status-open"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> פתוח להגשה</span>
+            </div>
+            <h3 class="tender-title">חלונות ודלתות אלומיניום — וילה פרטית בהרצליה</h3>
+            <p class="tender-desc">אספקה והתקנה של חלונות ודלתות אלומיניום לבית פרטי 400 מ"ר, כולל זיגוג כפול.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> הרצליה</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 14 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪60,000–₪90,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>ביטוח צד ג'</li>
+                <li>אחריות 3 שנים</li>
+                <li>ניסיון בוילות</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 14 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 6 ── -->
+      <div class="tender-card" data-category="biz">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-biz">עסקי</span>
+              <span class="tender-status status-open"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> פתוח להגשה</span>
+            </div>
+            <h3 class="tender-title">מחיצות זכוכית ואלומיניום — בניין משרדים בפתח תקווה</h3>
+            <p class="tender-desc">התקנת 800 מ"ר מחיצות פנים מזכוכית ואלומיניום בבניין משרדים חדש.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> פתח תקווה</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 30 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪400,000–₪550,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>Pro-Score 65+</li>
+                <li>הסמכת זכוכית ALUM-IL</li>
+                <li>רישיון קבלן</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 30 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 7 ── -->
+      <div class="tender-card" data-category="public">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-public">ציבורי</span>
+              <span class="tender-status status-soon"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> בקרוב</span>
+            </div>
+            <h3 class="tender-title">פרגולה ביוקלימטית — קמפוס אוניברסיטאי בבאר שבע</h3>
+            <p class="tender-desc">פרגולה ביוקלימטית גדולה לחצר פנימית של קמפוס, 200 מ"ר, כולל מערכת בקרה חכמה.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> באר שבע</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 45 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪280,000–₪380,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>הסמכת ALUM-IL</li>
+                <li>ניסיון קמפוסים/ציבורי</li>
+                <li>אחריות 5 שנים</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 45 יום</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── מכרז 8 ── -->
+      <div class="tender-card" data-category="gov">
+        <div class="tender-inner">
+          <div class="tender-info">
+            <div class="tender-top">
+              <span class="tender-badge badge-gov">ממשלתי</span>
+              <span class="tender-status status-open"><i class="ph ph-circle-fill" style="font-size:0.5rem;"></i> פתוח להגשה</span>
+            </div>
+            <h3 class="tender-title">שערים ועמודי כניסה — מתחם ממשלתי בתל אביב</h3>
+            <p class="tender-desc">ייצור, אספקה והתקנת שערים חשמליים ועמודים לכניסת מתחם ממשלתי מאובטח.</p>
+            <div class="tender-specs">
+              <span class="tender-spec"><i class="ph ph-map-pin"></i> תל אביב</span>
+              <span class="tender-spec"><i class="ph ph-calendar"></i> הגשה תוך 30 יום</span>
+              <span class="tender-spec"><i class="ph ph-currency-dollar-simple"></i> ₪120,000–₪180,000</span>
+            </div>
+            <div class="tender-threshold">
+              <div class="threshold-label"><i class="ph ph-check-square"></i> תנאי סף</div>
+              <ul class="threshold-list">
+                <li>רישום קבלן פעיל</li>
+                <li>אישור ביטחוני</li>
+                <li>ניסיון מתחמים מאובטחים</li>
+              </ul>
+            </div>
+          </div>
+          <div class="tender-actions">
+            <a href="#" class="btn-tender-detail"><i class="ph ph-arrow-left"></i> לפרטי המכרז</a>
+            <span class="tender-deadline-chip"><i class="ph ph-clock"></i> 30 יום</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ════ PUBLISH CTA ════ -->
+    <div class="publish-section">
+      <div class="publish-header">
+        <h2 class="publish-title">יש לך פרויקט שמחפש מתקין?</h2>
+        <p class="publish-desc">פרסם מכרז בפלטפורמה — כל ההגשות עוברות בדיקה ואישור לפני פרסום. אנחנו מוודאים שהמכרז עומד בקריטריונים ושהמידע מדויק.</p>
+      </div>
+      <div class="publish-steps">
+        <div class="publish-step">
+          <div class="step-icon"><i class="ph ph-pencil"></i></div>
+          <div>
+            <div class="step-num">שלב 1</div>
+            <div class="step-title">מלא את פרטי המכרז</div>
+          </div>
+        </div>
+        <div class="publish-step">
+          <div class="step-icon"><i class="ph ph-magnifying-glass"></i></div>
+          <div>
+            <div class="step-num">שלב 2</div>
+            <div class="step-title">המערכת בודקת את הפרטים</div>
+          </div>
+        </div>
+        <div class="publish-step">
+          <div class="step-icon"><i class="ph ph-check-circle"></i></div>
+          <div>
+            <div class="step-num">שלב 3</div>
+            <div class="step-title">המכרז מתפרסם לכלל החברים</div>
+          </div>
+        </div>
+      </div>
+      <a href="#" class="btn-publish"><i class="ph ph-plus-circle"></i> הגש בקשה לפרסום מכרז</a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function filterTenders(category, btn) {
+  // update chip styles
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+  btn.classList.add('active');
+
+  const cards = document.querySelectorAll('.tender-card');
+  let visible = 0;
+  cards.forEach(card => {
+    if (category === 'all' || card.dataset.category === category) {
+      card.classList.remove('hidden');
+      visible++;
+    } else {
+      card.classList.add('hidden');
+    }
+  });
+
+  const labels = { all: 'הזדמנויות', gov: 'מכרזים ממשלתיים', public: 'מכרזים ציבוריים', arch: 'מכרזי אדריכלים', biz: 'מכרזים עסקיים', private: 'מכרזים פרטיים' };
+  document.getElementById('tenders-count').textContent = visible + ' ' + (labels[category] || 'הזדמנויות');
+}
+</script>
+</body>
+</html>

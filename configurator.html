@@ -1,900 +1,1805 @@
 <!DOCTYPE html>
 <html lang="he" dir="rtl">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ALUM-IL | קונפיגורטור פרגולה חשמלית</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <style>
-        :root {
-            --bg: #0a0c0f;
-            --surface: #111418;
-            --surface2: #181c22;
-            --surface3: #1e2430;
-            --border: #2a3040;
-            --border2: #3a4558;
-            --blue: #00c3ff;
-            --blue-dim: rgba(0, 195, 255, 0.12);
-            --blue-mid: rgba(0, 195, 255, 0.25);
-            --white: #f0f4f8;
-            --silver: #8899aa;
-            --silver2: #aabbc8;
-            --green: #00e5a0;
-            --red: #ff4d6a;
-            --gold: #ffd166;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUM-IL | קונפיגרטור פרגולה חשמלית PVC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+:root {
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --surface2: #f0f4f8;
+  --surface3: #e5eaf2;
+  --border: #d6dde8;
+  --blue: #0077cc;
+  --blue-dim: rgba(0,119,204,0.08);
+  --blue-glow: rgba(0,119,204,0.2);
+  --white: #1a2535;
+  --silver: #5a6a7a;
+  --green: #00956e;
+  --green-dim: rgba(0,149,110,0.08);
+  --gold: #c47c00;
+  --gold-dim: rgba(196,124,0,0.08);
+  --red: #d63050;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --trans: 0.2s ease;
+}
 
-        body {
-            background: var(--bg);
-            color: var(--white);
-            font-family: 'Heebo', sans-serif;
-            min-height: 100vh;
-        }
+html { scroll-behavior: smooth; }
 
-<<<<<<< HEAD
-        .step-content {
-            display: none;
-            animation: fadeIn 0.3s ease;
-        }
+body {
+  font-family: 'Heebo', sans-serif;
+  background: var(--bg);
+  color: var(--white);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 80px;
+}
 
-        .step-content.active {
-            display: block;
-        }
+a { text-decoration: none; color: inherit; }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+/* ── HEADER ── */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.85rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--blue);
+  letter-spacing: 1px;
+}
+.logo i { font-size: 1.5rem; }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+/* ── LAYOUT ── */
+.wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
 
-        .wizard-actions {
-=======
-        .header {
-            background: var(--surface);
-            border-bottom: 1px solid var(--border);
-            padding: 1rem 2rem;
->>>>>>> 021ac1f8f4c4d6663ea639f4368c494f59de83e1
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.sidebar-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--silver);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.sidebar a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--silver);
+  transition: all var(--trans);
+}
+.sidebar a:hover { background: var(--surface2); color: var(--white); }
+.sidebar a.active { background: var(--blue-dim); color: var(--blue); }
+.sidebar a i { font-size: 1.1rem; }
 
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-decoration: none;
-            color: var(--white);
-            font-weight: 800;
-            font-size: 1.3rem;
-            letter-spacing: 1px;
-        }
+/* ── MAIN ── */
+.main {
+  flex: 1;
+  padding: 2rem 3rem 3rem;
+  overflow-y: auto;
+}
 
-        .logo i {
-            color: var(--blue);
-            font-size: 1.6rem;
-        }
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--silver);
+  margin-bottom: 1.75rem;
+}
+.breadcrumb a:hover { color: var(--blue); }
+.breadcrumb i { font-size: 0.75rem; }
 
-        .page-wrapper {
-            display: flex;
-            min-height: calc(100vh - 64px);
-        }
+/* ── SECTION ── */
+.section {
+  margin-bottom: 2.5rem;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+.section-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--blue-dim);
+  border: 1px solid var(--blue);
+  color: var(--blue);
+  font-size: 0.85rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.section-title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--white);
+}
 
-        .sidebar {
-            width: 220px;
-            background: var(--surface);
-            border-left: 1px solid var(--border);
-            padding: 2rem 1rem;
-            flex-shrink: 0;
-        }
+/* ── FORM FIELDS ── */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.field label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--silver);
+}
+.field input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.65rem 0.85rem;
+  color: var(--white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.95rem;
+  transition: border-color var(--trans);
+  width: 100%;
+}
+.field input:focus {
+  outline: none;
+  border-color: var(--blue);
+}
+.field input::placeholder { color: var(--silver); opacity: 0.6; }
 
-        .sidebar-label {
-            color: var(--silver);
-            font-size: 0.75rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            padding-right: 0.5rem;
-        }
+/* ── BANNER ── */
+.banner-measure {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background: var(--gold-dim);
+  border: 1px solid rgba(255,209,102,0.3);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+}
+.banner-measure i { font-size: 1.4rem; color: var(--gold); flex-shrink: 0; }
+.banner-measure-text { flex: 1; font-size: 0.9rem; color: var(--white); line-height: 1.5; }
+.banner-measure-text strong { color: var(--gold); }
+.btn-banner {
+  padding: 0.5rem 1rem;
+  background: var(--gold);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: opacity var(--trans);
+}
+.btn-banner:hover { opacity: 0.85; }
 
-        .sidebar-nav {
-            list-style: none;
-        }
+/* ── SYSTEM CARD ── */
+.system-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+}
+.system-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: var(--surface2);
+  border-bottom: 1px solid var(--border);
+}
+.system-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--blue-dim);
+  border: 1px solid rgba(0,195,255,0.25);
+  color: var(--blue);
+  font-size: 0.8rem;
+  font-weight: 700;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+.btn-remove {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  background: rgba(255,77,106,0.1);
+  border: 1px solid rgba(255,77,106,0.3);
+  border-radius: var(--radius);
+  color: var(--red);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--trans);
+}
+.btn-remove:hover { background: rgba(255,77,106,0.2); }
 
-        .sidebar-nav li a {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 0.6rem 0.8rem;
-            border-radius: 8px;
-            color: var(--silver2);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s;
-        }
+.system-card-body { padding: 1.5rem; }
 
-        .sidebar-nav li a:hover {
-            background: var(--surface2);
-            color: var(--white);
-        }
+.dims-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
 
-        .main-content {
-            flex: 1;
-            padding: 2rem;
-            overflow-x: hidden;
-        }
+/* ── COLORS ── */
+.color-section { margin-bottom: 1.5rem; }
+.color-section-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--silver);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.color-section-title i { font-size: 0.9rem; }
 
-        .page-title {
-            font-size: 1.5rem;
-            font-weight: 800;
-            margin-bottom: 0.3rem;
-        }
+.ral-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+.ral-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all var(--trans);
+  position: relative;
+}
+.ral-swatch:hover { transform: scale(1.15); }
+.ral-swatch.active {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 2px var(--blue-glow);
+}
+/* Tooltip */
+.ral-swatch::after {
+  content: attr(data-label);
+  position: absolute;
+  bottom: calc(100% + 6px);
+  right: 50%;
+  transform: translateX(50%);
+  background: var(--surface3);
+  border: 1px solid var(--border);
+  color: var(--white);
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  padding: 0.25rem 0.5rem;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity var(--trans);
+  z-index: 10;
+}
+.ral-swatch:hover::after { opacity: 1; }
 
-        .page-sub {
-            color: var(--silver);
-            font-size: 0.9rem;
-            margin-bottom: 2rem;
-        }
+.color-custom-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.color-custom-row label {
+  font-size: 0.8rem;
+  color: var(--silver);
+  white-space: nowrap;
+}
+.color-custom-row input {
+  flex: 1;
+  max-width: 200px;
+}
 
-        .section {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 1.8rem;
-            margin-bottom: 1.5rem;
-        }
+.pvc-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.pvc-dot {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  cursor: pointer;
+  padding: 0.35rem 0.65rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  transition: all var(--trans);
+  font-size: 0.82rem;
+  color: var(--silver);
+}
+.pvc-dot:hover { border-color: var(--silver); color: var(--white); }
+.pvc-dot.active { border-color: var(--blue); color: var(--blue); background: var(--blue-dim); }
+.pvc-dot-circle {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
 
-        .section-header {
-            display: flex;
-            align-items: center;
-<<<<<<< HEAD
-            justify-content: center;
-            margin-bottom: 1rem;
-        }
+/* ── SVG PREVIEWS ── */
+.preview-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+.preview-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.preview-box-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--silver);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface3);
+}
+.preview-box svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
 
-        .svg-title {
-            text-align: center;
-            color: var(--silver-dark);
-            margin-bottom: 0.5rem;
-            font-size: 0.9rem;
-        }
+.system-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  background: var(--surface2);
+}
+.system-price-preview {
+  font-size: 0.85rem;
+  color: var(--silver);
+}
+.system-price-preview strong { color: var(--blue); font-size: 1.05rem; }
 
-        .summary-card {
-            background-color: var(--surface-dark);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid var(--electric-blue);
-            margin-bottom: 1rem;
-        }
+.btn-add-system {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: transparent;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  color: var(--silver);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--trans);
+  margin-top: 0.5rem;
+}
+.btn-add-system:hover {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: var(--blue-dim);
+}
 
-        .summary-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 0.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 1px dashed var(--gray-medium);
-        }
+/* ── KIT CONTENTS ── */
+.kit-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+.kit-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 0.92rem;
+  color: var(--white);
+}
+.kit-list li i { color: var(--green); font-size: 1rem; flex-shrink: 0; }
 
-        .summary-row.total {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--electric-blue);
-            border-bottom: none;
-            padding-top: 0.5rem;
-            margin-top: 0.5rem;
-        }
+.support-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.support-card {
+  padding: 1.25rem;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--trans);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+}
+.support-card:hover { border-color: var(--silver); }
+.support-card.active { border-color: var(--blue); background: var(--blue-dim); }
+.support-card .icon { font-size: 2rem; }
+.support-card .title { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+.support-card .desc { font-size: 0.8rem; color: var(--silver); }
 
-        .payment-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 2rem;
-        }
+/* ── ADDONS ── */
+.addons-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.addon-card {
+  padding: 1.25rem;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  transition: all var(--trans);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+.addon-card:hover { border-color: var(--silver); }
+.addon-card.active { border-color: var(--blue); background: var(--blue-dim); }
+.addon-card-header { display: flex; align-items: center; gap: 0.75rem; }
+.addon-check {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--trans);
+  background: transparent;
+}
+.addon-card.active .addon-check {
+  background: var(--blue);
+  border-color: var(--blue);
+}
+.addon-check i { font-size: 0.7rem; color: #ffffff; display: none; }
+.addon-card.active .addon-check i { display: block; }
+.addon-name { font-size: 0.95rem; font-weight: 700; color: var(--white); }
+.addon-price { font-size: 0.85rem; color: var(--blue); font-weight: 600; }
+.addon-desc { font-size: 0.8rem; color: var(--silver); }
 
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-    </style>
+/* ── SUMMARY ── */
+.summary-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-bottom: 1.5rem;
+  font-size: 0.9rem;
+}
+.summary-table th {
+  background: var(--surface3);
+  color: var(--silver);
+  font-weight: 700;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid var(--border);
+  text-align: right;
+}
+.summary-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--white);
+  background: var(--surface2);
+}
+.summary-table tr:last-child td { border-bottom: none; }
+.summary-table td.num { color: var(--blue); font-weight: 700; }
+
+.summary-totals {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.total-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.92rem;
+}
+.total-row:last-child { border-bottom: none; }
+.total-row .label { color: var(--silver); }
+.total-row .val { font-weight: 700; color: var(--blue); }
+.total-row.grand .label { color: var(--white); font-weight: 700; font-size: 1rem; }
+.total-row.grand .val { color: var(--green); font-size: 1.3rem; }
+
+/* ── PAYMENT ── */
+.payment-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+.btn-payment {
+  padding: 1rem;
+  border-radius: var(--radius);
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  color: var(--white);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--trans);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.btn-payment i { font-size: 1.5rem; }
+.btn-payment:hover { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
+.btn-payment.active-pay { border-color: var(--blue); background: var(--blue-dim); color: var(--blue); }
+
+.payment-panel {
+  display: none;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.2s ease;
+}
+.payment-panel.show { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+
+.bank-details { display: flex; flex-direction: column; gap: 0.75rem; }
+.bank-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.9rem;
+}
+.bank-row:last-child { border-bottom: none; }
+.bank-row .key { color: var(--silver); }
+.bank-row .val { font-weight: 700; color: var(--white); }
+.order-code-box {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--surface3);
+  border: 1.5px solid var(--blue);
+  border-radius: var(--radius);
+  text-align: center;
+}
+.order-code-label { font-size: 0.8rem; color: var(--silver); margin-bottom: 0.35rem; }
+.order-code-val { font-size: 1.4rem; font-weight: 800; color: var(--blue); letter-spacing: 2px; }
+.order-code-hint { font-size: 0.8rem; color: var(--silver); margin-top: 0.5rem; }
+.btn-wa-proof {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #25d366;
+  color: #fff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity var(--trans);
+}
+.btn-wa-proof:hover { opacity: 0.88; }
+
+.credit-form { display: flex; flex-direction: column; gap: 1rem; }
+.credit-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.btn-submit-credit {
+  padding: 0.85rem;
+  background: var(--blue);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+  transition: opacity var(--trans);
+}
+.btn-submit-credit:hover { opacity: 0.88; }
+
+/* ── INSTALLER BANNER ── */
+.installer-banner {
+  background: var(--green-dim);
+  border: 1.5px solid rgba(0,229,160,0.25);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.installer-banner.hidden { display: none; }
+.installer-banner-icon { font-size: 1.75rem; color: var(--green); flex-shrink: 0; }
+.installer-banner-text { flex: 1; }
+.installer-banner-text strong { color: var(--white); font-size: 0.95rem; }
+.installer-banner-text p { font-size: 0.82rem; color: var(--silver); margin-top: 0.2rem; }
+.installer-buttons { display: flex; flex-direction: column; gap: 0.5rem; }
+.btn-installer-yes {
+  padding: 0.5rem 1rem;
+  background: var(--green);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity var(--trans);
+  white-space: nowrap;
+}
+.btn-installer-yes:hover { opacity: 0.85; }
+.btn-installer-no {
+  padding: 0.5rem 1rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--silver);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--trans);
+  white-space: nowrap;
+  text-align: center;
+}
+.btn-installer-no:hover { border-color: var(--silver); color: var(--white); }
+.installer-confirm {
+  color: var(--green);
+  font-size: 0.88rem;
+  font-weight: 600;
+  display: none;
+  align-items: center;
+  gap: 0.4rem;
+}
+.installer-confirm.show { display: flex; }
+
+/* ── STICKY BAR ── */
+.sticky-bar {
+  position: fixed;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  z-index: 200;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 -1px 0 var(--border);
+  border-top: 1px solid var(--border);
+  padding: 0.85rem 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.sticky-price-block { display: flex; align-items: baseline; gap: 0.5rem; }
+.sticky-price-label { font-size: 0.85rem; color: var(--silver); }
+.sticky-price-val { font-size: 1.5rem; font-weight: 800; color: var(--green); }
+.sticky-price-tax { font-size: 0.8rem; color: var(--silver); }
+.btn-to-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.75rem;
+  background: var(--blue);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius);
+  font-family: 'Heebo', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: opacity var(--trans);
+}
+.btn-to-summary:hover { opacity: 0.88; }
+
+/* divider */
+.section-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2.5rem 0;
+}
+</style>
 </head>
+<body>
 
-<body class="dark-theme">
-    <!-- Header -->
-    <header class="header"
-        style="position: relative; border-bottom: 1px solid var(--surface-light); background-color: var(--surface-dark); padding: 1rem 0;">
-        <div class="container header-container" style="max-width: 100%; padding: 0 2rem;">
-            <a href="index.html" class="logo">
-                <i class="ph ph-hexagon-fill logo-icon"></i>
-                <span>ALUM-IL</span>
-            </a>
-            <div style="color: var(--silver-dark); display: flex; align-items: center; gap: 10px;">
-                <span
-                    style="font-weight:500; color:var(--electric-blue); display: none; @media(min-width: 768px){display: block;}">משתמש
-                    מערכת</span>
-                <i class="ph ph-user-circle" style="font-size: 2rem; color:var(--electric-blue);"></i>
-            </div>
+<!-- HEADER -->
+<header class="header">
+  <a href="index.html" class="logo">
+    <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
+  </a>
+  <div>
+    <i class="ph ph-user-circle" style="font-size:2rem; color:var(--blue);"></i>
+  </div>
+</header>
+
+<div class="wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-label">תפריט פעולות</div>
+    <a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a>
+    <a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a>
+    <a href="#" class="active"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a>
+    <a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a>
+    <a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <nav class="breadcrumb">
+      <a href="dashboard.html">אזור אישי</a>
+      <i class="ph ph-caret-left"></i>
+      <a href="kits.html">קיטים למתקינים</a>
+      <i class="ph ph-caret-left"></i>
+      <span>פרגולה חשמלית PVC</span>
+    </nav>
+
+    <!-- ══ SECTION 1: Project Details ══ -->
+    <section class="section" id="sec1">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <h2 class="section-title">פרטי פרויקט</h2>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label for="projectName">שם פרויקט / לקוח</label>
+          <input type="text" id="projectName" placeholder="לדוגמה: דירת כהן, רמת גן" oninput="state.projectName=this.value; updateOrderCode();">
         </div>
-    </header>
+        <div class="field">
+          <label for="projectNumber">מספר פרויקט / מזהה פנימי</label>
+          <input type="text" id="projectNumber" placeholder="לדוגמה: 2024-045" oninput="state.projectNumber=this.value; updateOrderCode();">
+        </div>
+      </div>
+    </section>
 
-    <div class="dashboard-wrapper">
-        <!-- Sidebar -->
-        <aside class="dashboard-sidebar">
-            <div
-                style="color:var(--silver-dark); font-size:0.85rem; font-weight:700; margin-bottom:1rem; padding-right:1rem;">
-                תפריט פעולות</div>
-            <ul class="dashboard-nav">
-                <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
-                <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
-                <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
-                <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
-                <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
-            </ul>
-        </aside>
+    <div class="section-divider"></div>
 
-        <!-- Main Content -->
-        <main class="dashboard-content">
-            <div class="dashboard-header" style="justify-content: space-between; display: flex; align-items: center;">
-                <div>
-                    <h1 class="dashboard-title">קונפיגורטור קיטים למתקינים</h1>
-                    <p style="color: var(--silver-dark);">הגדר את פרטי הפרגולה החשמלית לחישוב מחיר והזמנה.</p>
-                </div>
-                <a href="dashboard.html" class="btn btn-outline">חזור לדאשבורד <i class="ph ph-arrow-right"></i></a>
+    <!-- ══ SECTION 2: Systems ══ -->
+    <section class="section" id="sec2">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <h2 class="section-title">מידות מערכות</h2>
+      </div>
+
+      <!-- Measurement Banner -->
+      <div class="banner-measure">
+        <i class="ph ph-ruler"></i>
+        <div class="banner-measure-text">
+          זקוק לעזרה במדידות? <strong>שירות מדידה מקצועית בשטח — ₪350</strong><br>
+          <span style="font-size:0.82rem; color:var(--silver);">טכנאי מוסמך יגיע אליך, ימדוד ויסכם הכל.</span>
+        </div>
+        <button class="btn-banner" onclick="openMeasureWA()">תיאום מדידה <i class="ph ph-whatsapp-logo"></i></button>
+      </div>
+
+      <!-- Systems Container -->
+      <div id="systemsContainer"></div>
+
+      <button class="btn-add-system" onclick="addSystem()">
+        <i class="ph ph-plus-circle"></i>
+        הוסף מערכת חופפת
+      </button>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ══ SECTION 3: Kit Structure ══ -->
+    <section class="section" id="sec3">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <h2 class="section-title">מבנה הקיט</h2>
+      </div>
+
+      <ul class="kit-list">
+        <li><i class="ph ph-check-circle-fill"></i> שלד אלומיניום מלא לפרגולה חשמלית</li>
+        <li><i class="ph ph-check-circle-fill"></i> יריעת גג PVC איכותית (צרפתי)</li>
+        <li><i class="ph ph-check-circle-fill"></i> מנוע Somfy מקורי</li>
+        <li><i class="ph ph-check-circle-fill"></i> שלט רחוק רגיל Somfy</li>
+        <li><i class="ph ph-check-circle-fill"></i> כל אביזרי ההרכבה</li>
+      </ul>
+
+      <div class="section-header" style="margin-bottom:1rem;">
+        <h3 style="font-size:1rem; font-weight:700; color:var(--silver);">סוג תמיכה קדמית</h3>
+      </div>
+      <div class="support-grid">
+        <div class="support-card active" id="support-legs" onclick="setSupportType('legs')">
+          <div class="title">רגליים קדמיות</div>
+          <div class="desc">פרופיל 100/100 מ"מ | תמיכה סטנדרטית</div>
+        </div>
+        <div class="support-card" id="support-tension" onclick="setSupportType('tension')">
+          <span class="icon">🔗</span>
+          <div class="title">מותחנים לתלייה</div>
+          <div class="desc">תלייה מהמבנה, ללא רגליים קדמיות</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ══ SECTION 4: Addons ══ -->
+    <section class="section" id="sec4">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <h2 class="section-title">תוספות</h2>
+      </div>
+
+      <div class="addons-grid">
+        <div class="addon-card" id="addon-led" onclick="toggleAddon('led')">
+          <div class="addon-card-header">
+            <div class="addon-check"><i class="ph ph-check-bold"></i></div>
+            <span class="addon-name">תאורת LED בילט-אין</span>
+          </div>
+          <div class="addon-price" id="led-price-display">₪30 למ"ר</div>
+          <div class="addon-desc">רצועות LED משולבות בפרופיל, תאורה אחידה ועדינה</div>
+        </div>
+        <div class="addon-card" id="addon-remote" onclick="toggleAddon('remote')">
+          <div class="addon-card-header">
+            <div class="addon-check"><i class="ph ph-check-bold"></i></div>
+            <span class="addon-name">שלט רב ערוצי Somfy</span>
+          </div>
+          <div class="addon-price">₪400</div>
+          <div class="addon-desc">שלט 16 ערוצים, שליטה על מספר מנועים</div>
+        </div>
+        <div class="addon-card" id="addon-tahoma" onclick="toggleAddon('tahoma')">
+          <div class="addon-card-header">
+            <div class="addon-check"><i class="ph ph-check-bold"></i></div>
+            <span class="addon-name">בית חכם TaHoma</span>
+          </div>
+          <div class="addon-price">₪600</div>
+          <div class="addon-desc">חיבור לאפליקציית Somfy TaHoma, שליטה מהנייד</div>
+        </div>
+        <div class="addon-card" id="addon-dimmer" onclick="toggleAddon('dimmer')">
+          <div class="addon-card-header">
+            <div class="addon-check"><i class="ph ph-check-bold"></i></div>
+            <span class="addon-name">שלט תאורה / דימר</span>
+          </div>
+          <div class="addon-price">₪100</div>
+          <div class="addon-desc">שלט ייעודי לשליטה בתאורת LED עם עמעום</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-divider"></div>
+
+    <!-- ══ SECTION 5: Summary & Order ══ -->
+    <section class="section" id="sec5">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <h2 class="section-title">סיכום והזמנה</h2>
+      </div>
+
+      <!-- Systems summary table -->
+      <table class="summary-table" id="summaryTable">
+        <thead>
+          <tr>
+            <th>מערכת</th>
+            <th>מידות (ר×ע ס"מ)</th>
+            <th>שטח (מ"ר)</th>
+            <th>צבע אלומיניום</th>
+            <th>גוון PVC</th>
+            <th>מחיר קיט</th>
+            <th>LED</th>
+            <th>סה"כ</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+
+      <!-- Totals -->
+      <div class="summary-totals" id="summaryTotals"></div>
+
+      <!-- Payment Buttons -->
+      <div class="payment-buttons">
+        <button class="btn-payment" id="btn-bank" onclick="showPayment('bank')">
+          <i class="ph ph-bank"></i>
+          העברה בנקאית
+        </button>
+        <button class="btn-payment" id="btn-credit" onclick="showPayment('credit')">
+          <i class="ph ph-credit-card"></i>
+          תשלום באשראי
+        </button>
+      </div>
+
+      <!-- Bank Transfer Panel -->
+      <div class="payment-panel" id="panel-bank">
+        <div class="bank-details">
+          <div class="bank-row"><span class="key">בנק</span><span class="val">הפועלים (12)</span></div>
+          <div class="bank-row"><span class="key">סניף</span><span class="val">123</span></div>
+          <div class="bank-row"><span class="key">מספר חשבון</span><span class="val">123456</span></div>
+          <div class="bank-row"><span class="key">על שם</span><span class="val">אלום-איל בע"מ</span></div>
+        </div>
+        <div class="order-code-box">
+          <div class="order-code-label">קוד הזמנה</div>
+          <div class="order-code-val" id="orderCodeDisplay">—</div>
+          <div class="order-code-hint">יש לציין קוד זה בביצוע ההעברה</div>
+        </div>
+        <button class="btn-wa-proof" onclick="sendProofWA()">
+          <i class="ph ph-whatsapp-logo"></i>
+          שלח אסמכתא ב-WhatsApp
+        </button>
+      </div>
+
+      <!-- Credit Card Panel -->
+      <div class="payment-panel" id="panel-credit">
+        <div class="credit-form">
+          <div class="field">
+            <label>מספר כרטיס</label>
+            <input type="text" id="ccNum" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCC(this)">
+          </div>
+          <div class="credit-row">
+            <div class="field">
+              <label>תוקף</label>
+              <input type="text" id="ccExp" placeholder="MM/YY" maxlength="5" oninput="formatExp(this)">
             </div>
-
-            <div class="configurator-wizard">
-                <!-- Progress Steps -->
-                <div class="wizard-steps">
-                    <div class="step-indicator active" id="step-nav-1">
-                        <div class="step-circle">1</div>
-                        <span>מידות והדמיה</span>
-                    </div>
-                    <div class="step-indicator" id="step-nav-2">
-                        <div class="step-circle">2</div>
-                        <span>מבנה הקיט</span>
-                    </div>
-                    <div class="step-indicator" id="step-nav-3">
-                        <div class="step-circle">3</div>
-                        <span>צבעים</span>
-                    </div>
-                    <div class="step-indicator" id="step-nav-4">
-                        <div class="step-circle">4</div>
-                        <span>תוספות</span>
-                    </div>
-                    <div class="step-indicator" id="step-nav-5">
-                        <div class="step-circle">5</div>
-                        <span>סיכום</span>
-                    </div>
-                </div>
-
-                <!-- Step 1: Dimensions -->
-                <div class="step-content active" id="step-1">
-                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 1: מידות המערכת</h2>
-
-                    <div class="form-group" style="max-width: 300px;">
-                        <label class="form-label" for="systemCount">מספר מערכות חופפות</label>
-                        <input type="number" id="systemCount" class="form-control" min="1" max="10" value="1"
-                            onchange="updateSystemTabs()">
-                    </div>
-
-                    <div class="system-tabs" id="systemTabsContainer">
-                        <div class="system-tab active" onclick="switchSystemTab(0)">מערכת 1</div>
-                    </div>
-
-                    <div class="config-grid">
-                        <div class="config-inputs" id="dimensionsContainer">
-                            <!-- Dimensions inputs will be generated here -->
-                        </div>
-
-                        <div class="config-visuals">
-                            <div>
-                                <div class="svg-title">הדמיה איזומטרית</div>
-                                <div class="svg-container" id="svgIsometric"></div>
-                            </div>
-                            <div>
-                                <div class="svg-title">שרטוט טכני - חזית וצד</div>
-                                <div class="svg-container" id="svgTechnical"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 2: Structure -->
-                <div class="step-content" id="step-2">
-                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 2: מבנה הקיט</h2>
-
-                    <div
-                        style="margin-bottom: 2rem; padding: 1rem; background: var(--surface-dark); border-radius: 8px; border-right: 4px solid var(--electric-blue);">
-                        <h3 style="margin-bottom: 0.5rem; display: flex; align-items: center; gap: 8px;">
-                            <i class="ph-fill ph-check-circle" style="color: var(--electric-blue);"></i> הקיט הבסיסי
-                            כולל:
-                        </h3>
-                        <ul style="list-style: none; padding-right: 0; color: var(--silver-light);">
-                            <li>• שלד אלומיניום מלא לפרגולה חשמלית</li>
-                            <li>• יריעת גג PVC איכותית</li>
-                            <li>• מנוע Somfy מקורי</li>
-                            <li>• שלט רחוק רגיל Somfy</li>
-                        </ul>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label">סוג תמיכה קדמית / תלייה</label>
-                        <div style="display: flex; gap: 2rem;">
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="radio" name="supportType" value="legs" checked
-                                    onchange="toggleLegHeight(true); renderSVGs()">
-                                רגליים קדמיות
-                            </label>
-                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
-                                <input type="radio" name="supportType" value="hangers"
-                                    onchange="toggleLegHeight(false); renderSVGs()">
-                                מותחנים לתלייה (בלי רגליים)
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group" id="legHeightGroup" style="max-width: 300px;">
-                        <label class="form-label" for="legHeight">גובה רגליים (ס"מ)</label>
-                        <input type="number" id="legHeight" class="form-control" oninput="debounceRenderSVGs()">
-                        <small style="color: var(--silver-dark);">ברירת מחדל: גובה המרזב התחתון (ניתן לעריכה)</small>
-                    </div>
-                </div>
-
-                <!-- Step 3: Colors -->
-                <div class="step-content" id="step-3">
-                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 3: בחירת צבעים</h2>
-                    <p style="color: var(--silver-dark); margin-bottom: 1.5rem;">צבעים אלו יחולו על כל המערכות שהגדרת.
-                    </p>
-
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label class="form-label" for="colorAlum">צבע שלד אלומיניום (RAL)</label>
-                            <input type="text" id="colorAlum" class="form-control" placeholder="לדוגמה: RAL 9005">
-                        </div>
-                        <div class="form-group">
-                            <label class="form-label" for="colorPvc">צבע יריעת PVC</label>
-                            <input type="text" id="colorPvc" class="form-control"
-                                placeholder="לדוגמה: קרם / לבן / אפור">
-                        </div>
-                    </div>
-                    <div class="form-group" style="max-width: calc(50% - 0.5rem);">
-                        <label class="form-label" for="colorLightProfile">צבע פרופילי תאורה</label>
-                        <input type="text" id="colorLightProfile" class="form-control" placeholder="כצבע האלומיניום">
-                        <small style="color: var(--silver-dark);">השאר ריק כדי להשתמש בצבע השלד הראשי</small>
-                    </div>
-                </div>
-
-                <!-- Step 4: Additions -->
-                <div class="step-content" id="step-4">
-                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 4: תוספות למערכות</h2>
-
-                    <div id="additionsContainer">
-                        <!-- Additions per system will be generated here -->
-                    </div>
-
-                    <div style="margin-top: 2rem; padding: 1rem; background: var(--surface-dark); border-radius: 8px;">
-                        <h4 style="margin-bottom: 0.5rem; color: var(--silver-light);">מנוע Somfy</h4>
-                        <div style="display: flex; align-items: center; justify-content: space-between;">
-                            <span style="color: var(--silver-dark);">מנוע אלחוטי Somfy רגיל</span>
-                            <span style="color: var(--electric-blue); font-weight: bold;">כלול במחיר הקיט</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Step 5: Summary -->
-                <div class="step-content" id="step-5">
-                    <h2 style="margin-bottom: 1.5rem; color: var(--electric-blue);">שלב 5: סיכום והזמנה</h2>
-
-                    <div id="summaryContainer">
-                        <!-- Summary calculated here -->
-                    </div>
-
-                    <div class="payment-options">
-                        <button class="btn btn-outline btn-large" onclick="showBankDetails()">
-                            <i class="ph ph-bank"></i> העברה בנקאית
-                        </button>
-                        <button class="btn btn-primary btn-large" onclick="alert('חיבור למערכת סליקה בפיתוח...')">
-                            <i class="ph ph-credit-card"></i> תשלום באשראי
-                        </button>
-                    </div>
-
-                    <div id="bankDetails"
-                        style="display: none; margin-top: 1.5rem; padding: 1.5rem; background: var(--surface-dark); border: 1px dashed var(--silver-dark); border-radius: 8px;">
-                        <h4 style="margin-bottom: 1rem; color: var(--electric-blue);">פרטי חשבון להעברה בנקאית</h4>
-                        <p style="color: var(--silver-dark); line-height: 1.6;">
-                            בנק הפועלים (12)<br>
-                            סניף: 123<br>
-                            חשבון: 123456<br>
-                            ע"ש: אלום-איל בע"מ
-                        </p>
-                        <p style="margin-top: 1rem; color: var(--silver-dark); font-size: 0.9rem;">
-                            אנא ציין את מספר ההזמנה שיתקבל לאחר האישור בהערות ההעברה.
-                        </p>
-                    </div>
-                </div>
-
-                <!-- Wizard Actions -->
-                <div class="wizard-actions">
-                    <button type="button" class="btn btn-outline" id="btnPrev" onclick="prevStep()" disabled>
-                        <i class="ph ph-arrow-right"></i> שלב קודם
-                    </button>
-                    <button type="button" class="btn btn-primary" id="btnNext" onclick="nextStep()">
-                        שלב הבא <i class="ph ph-arrow-left"></i>
-                    </button>
-                </div>
+            <div class="field">
+              <label>CVV</label>
+              <input type="text" id="ccCvv" placeholder="CVV" maxlength="4">
             </div>
-        </main>
+          </div>
+          <div class="field">
+            <label>שם על הכרטיס</label>
+            <input type="text" id="ccName" placeholder="שם מלא">
+          </div>
+          <button class="btn-submit-credit" onclick="submitCredit()">
+            <i class="ph ph-lock-key"></i> אישור תשלום מאובטח
+          </button>
+        </div>
+      </div>
+
+      <!-- Installer Matchmaking Banner -->
+      <div class="installer-banner" id="installerBanner" style="margin-top:1.5rem;">
+        <div class="installer-banner-icon"><i class="ph ph-wrench"></i></div>
+        <div class="installer-banner-text">
+          <strong>מחפש מתקין מוסמך?</strong>
+          <p>אנחנו נשדך אותך למתקין מאושר באזורך ללא עלות נוספת</p>
+        </div>
+        <div class="installer-buttons">
+          <button class="btn-installer-yes" onclick="matchInstaller()">כן, שדך לי מתקין</button>
+          <button class="btn-installer-no" onclick="dismissInstaller()">לא תודה</button>
+          <div class="installer-confirm" id="installerConfirm"><i class="ph ph-check-circle-fill"></i> נשלח בקשה בהצלחה!</div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<!-- STICKY BAR -->
+<div class="sticky-bar">
+  <div class="sticky-price-block">
+    <span class="sticky-price-label">סה"כ לפני מע"מ:</span>
+    <span class="sticky-price-val" id="stickyTotal">₪0</span>
+    <span class="sticky-price-tax">(+ מע"מ)</span>
+  </div>
+  <button class="btn-to-summary" onclick="document.getElementById('sec5').scrollIntoView({behavior:'smooth'})">
+    לסיכום והזמנה <i class="ph ph-arrow-left"></i>
+  </button>
+</div>
+
+<script>
+/* ══════════════════════════════════════
+   STATE
+══════════════════════════════════════ */
+const RAL_COLORS = [
+  { code:'9005', name:'שחור עמוק',    hex:'#0a0a0a' },
+  { code:'9016', name:'לבן תנועה',    hex:'#f1f0eb' },
+  { code:'9006', name:'אלומיניום לבן',hex:'#a5a5a5' },
+  { code:'9007', name:'אלומיניום אפור',hex:'#8f8f8f' },
+  { code:'7016', name:'אפור אנתרציט', hex:'#383e42' },
+  { code:'7035', name:'אפור בהיר',    hex:'#d7d7d7' },
+  { code:'7046', name:'אפור טלגרף',   hex:'#828282' },
+  { code:'8019', name:'חום אפרפר',    hex:'#403a3a' },
+  { code:'6005', name:'ירוק מוס',     hex:'#2f4538' },
+  { code:'3005', name:'אדום יין',     hex:'#5e1a1e' },
+  { code:'1013', name:'שמנת פנינה',   hex:'#eae6ca' },
+  { code:'1019', name:'בז\' אפור',    hex:'#c9b99a' },
+];
+
+const PVC_COLORS = [
+  { id:'white',   name:'לבן',           hex:'#f0f0f0' },
+  { id:'black',   name:'שחור',          hex:'#1a1a1a' },
+  { id:'gray46',  name:'אפור RAL7046',  hex:'#828282' },
+  { id:'gray16',  name:'אפור כהה RAL7016', hex:'#383e42' },
+  { id:'green',   name:'ירוק',          hex:'#2d5a35' },
+  { id:'red',     name:'אדום',          hex:'#7a1f25' },
+  { id:'cream',   name:'שמנת RAL1013',  hex:'#eae6ca' },
+];
+
+let nextId = 2;
+const state = {
+  projectName: '',
+  projectNumber: '',
+  supportType: 'legs',
+  addons: { led: false, remote: false, tahoma: false, dimmer: false },
+  systems: [
+    newSystemObj(1)
+  ]
+};
+
+function newSystemObj(id) {
+  return {
+    id,
+    name: '',
+    width: 400,
+    depth: 300,
+    installHeight: 270,
+    gutterHeight: 210,
+    gutterEdited: false,
+    aluminumColor: '9005',
+    aluminumColorCustom: '',
+    pvcColor: 'white',
+    ledColor: '9005',
+    ledColorCustom: ''
+  };
+}
+
+/* ══════════════════════════════════════
+   CALCULATIONS
+══════════════════════════════════════ */
+function calcGutter(depth, installHeight) {
+  return Math.round(installHeight - (depth * 0.1) - 30);
+}
+function calcArea(w, d) {
+  return (w / 100) * (d / 100);
+}
+function calcKitPrice(area) {
+  return area < 12 ? 5460 : Math.round(area * 455);
+}
+function calcTotal() {
+  let total = 0;
+  for (const s of state.systems) {
+    const area = calcArea(s.width, s.depth);
+    total += calcKitPrice(area);
+    if (state.addons.led) total += Math.round(area * 30);
+  }
+  if (state.addons.remote) total += 400;
+  if (state.addons.tahoma) total += 600;
+  if (state.addons.dimmer) total += 100;
+  return total;
+}
+
+/* ══════════════════════════════════════
+   RENDER
+══════════════════════════════════════ */
+function renderAll() {
+  renderSystems();
+  renderSummary();
+  updateStickyPrice();
+}
+
+function renderSystems() {
+  const container = document.getElementById('systemsContainer');
+  container.innerHTML = '';
+  state.systems.forEach(s => {
+    container.appendChild(buildSystemCard(s));
+  });
+}
+
+function buildSystemCard(s) {
+  const div = document.createElement('div');
+  div.className = 'system-card';
+  div.id = `sys-${s.id}`;
+
+  const area = calcArea(s.width, s.depth);
+  const price = calcKitPrice(area);
+  const alColor = RAL_COLORS.find(r => r.code === s.aluminumColor);
+  const alLabel = s.aluminumColorCustom ? `RAL ${s.aluminumColorCustom}` : (alColor ? `RAL ${alColor.code} – ${alColor.name}` : '—');
+  const pvcColor = PVC_COLORS.find(p => p.id === s.pvcColor);
+
+  div.innerHTML = `
+    <div class="system-card-header">
+      <span class="system-tag"><i class="ph ph-stack"></i> מערכת ${s.id}</span>
+      <button class="btn-remove" id="btn-remove-${s.id}" onclick="removeSystem(${s.id})" style="display:${state.systems.length > 1 ? 'flex' : 'none'}">
+        <i class="ph ph-trash"></i> הסר
+      </button>
     </div>
-
-    <script>
-        // State
-        let currentStep = 1;
-        const totalSteps = 5;
-        let activeSystem = 0;
-
-        let systems = [
-            { width: 300, depth: 400, installHeight: 300, gutterHeight: 230, hasLed: false }
-        ];
-
-        let renderTimeout;
-
-        // Initialize
-        document.addEventListener('DOMContentLoaded', () => {
-            renderDimensionsInputs();
-            renderAdditionsInputs();
-            renderSVGs();
-        });
-
-        // Configurator Logic
-        function updateSystemTabs() {
-            const count = parseInt(document.getElementById('systemCount').value) || 1;
-            const validCount = Math.max(1, Math.min(10, count));
-            document.getElementById('systemCount').value = validCount;
-
-            // Add new systems if needed
-            while (systems.length < validCount) {
-                systems.push({ width: 300, depth: 400, installHeight: 300, gutterHeight: 230, hasLed: false });
-            }
-            // Remove excess systems if needed
-            if (systems.length > validCount) {
-                systems = systems.slice(0, validCount);
-                if (activeSystem >= validCount) activeSystem = validCount - 1;
-            }
-
-            renderTabsHTML();
-            renderDimensionsInputs();
-            renderAdditionsInputs();
-            renderSVGs();
-        }
-
-        function renderTabsHTML() {
-            const container = document.getElementById('systemTabsContainer');
-            container.innerHTML = systems.map((_, index) => `
-                <div class="system-tab ${index === activeSystem ? 'active' : ''}" onclick="switchSystemTab(${index})">
-                    מערכת ${index + 1}
-                </div>
-            `).join('');
-        }
-
-        function switchSystemTab(index) {
-            activeSystem = index;
-            renderTabsHTML();
-            renderDimensionsInputs();
-            renderSVGs();
-        }
-
-        function renderDimensionsInputs() {
-            const sys = systems[activeSystem];
-            const container = document.getElementById('dimensionsContainer');
-
-            container.innerHTML = `
-                <div class="form-group">
-                    <label class="form-label" for="sysWidth">רוחב מערכת (ס"מ)</label>
-                    <input type="number" id="sysWidth" class="form-control" min="100" max="1200" value="${sys.width}" oninput="updateSystemParams()">
-                    <small style="color: var(--silver-dark);">בין 100 ל-1200 ס"מ</small>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="sysDepth">יציאה (עומק) (ס"מ)</label>
-                    <input type="number" id="sysDepth" class="form-control" min="100" max="800" value="${sys.depth}" oninput="updateSystemParams()">
-                    <small style="color: var(--silver-dark);">בין 100 ל-800 ס"מ</small>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="sysInstallHeight">גובה התקנה אחורי (ס"מ)</label>
-                    <input type="number" id="sysInstallHeight" class="form-control" min="200" max="500" value="${sys.installHeight}" oninput="updateSystemParams()">
-                    <small style="color: var(--silver-dark);">בין 200 ל-500 ס"מ | מינימום שפוע: 10%</small>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="sysGutterHeight">גובה מרזב תחתון / רגליים (ס"מ)</label>
-                    <input type="number" id="sysGutterHeight" class="form-control" value="${sys.gutterHeight}" oninput="updateSystemParams(true)">
-                    <small style="color: var(--silver-dark);">מחושב אוטומטית לפי שיפוע 10% + 30 ס"מ קסטה, ניתן לעריכה ידנית</small>
-                </div>
-            `;
-
-            // Sync leg height on step 2
-            document.getElementById('legHeight').value = sys.gutterHeight;
-        }
-
-        function updateSystemParams(isManualGutter = false) {
-            const width = parseInt(document.getElementById('sysWidth').value) || 300;
-            const depth = parseInt(document.getElementById('sysDepth').value) || 400;
-            const installHeight = parseInt(document.getElementById('sysInstallHeight').value) || 300;
-
-            let gutterHeight;
-            if (isManualGutter) {
-                gutterHeight = parseInt(document.getElementById('sysGutterHeight').value) || 200;
-                // Validation: gutter must be strictly lower than install
-                if (gutterHeight >= installHeight) {
-                    gutterHeight = installHeight - 10;
-                    document.getElementById('sysGutterHeight').value = gutterHeight;
-                }
-            } else {
-                // Formula: Install Height - (Depth * 10% + 30cm for cassette)
-                gutterHeight = Math.round(installHeight - (depth * 0.1) - 30);
-                document.getElementById('sysGutterHeight').value = gutterHeight;
-            }
-
-            systems[activeSystem].width = width;
-            systems[activeSystem].depth = depth;
-            systems[activeSystem].installHeight = installHeight;
-            systems[activeSystem].gutterHeight = gutterHeight;
-
-            // Sync with step 2
-            if (activeSystem === 0) {
-                document.getElementById('legHeight').value = gutterHeight;
-            }
-
-            debounceRenderSVGs();
-        }
-
-        function renderAdditionsInputs() {
-            const container = document.getElementById('additionsContainer');
-            container.innerHTML = systems.map((sys, index) => `
-                <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--surface-dark); border-radius: 8px; margin-bottom: 0.5rem;">
-                    <span style="color: var(--electric-blue); font-weight: 700;">מערכת ${index + 1} (${sys.width}x${sys.depth} ס"מ)</span>
-                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                        <input type="checkbox" ${sys.hasLed ? 'checked' : ''} onchange="toggleLed(${index}, this.checked)" style="transform: scale(1.2);">
-                        <span>תאורת LED בילט-אין (תוספת ₪30 למ"ר)</span>
-                    </label>
-                </div>
-            `).join('');
-        }
-
-        function toggleLed(index, isChecked) {
-            systems[index].hasLed = isChecked;
-            generateSummary(); // If already on step 5, update live
-        }
-
-        function toggleLegHeight(show) {
-            const group = document.getElementById('legHeightGroup');
-            group.style.display = show ? 'block' : 'none';
-        }
-
-        // --- SVG Rendering with Debounce ---
-        function debounceRenderSVGs() {
-            clearTimeout(renderTimeout);
-            renderTimeout = setTimeout(renderSVGs, 300);
-        }
-
-        function renderSVGs() {
-            const sys = systems[activeSystem];
-            const supportType = document.querySelector('input[name="supportType"]:checked').value;
-
-            // Render Isometric
-            const isoHtml = generateIsometricSVG(sys, supportType);
-            document.getElementById('svgIsometric').innerHTML = isoHtml;
-
-            // Render Technical
-            const techHtml = generateTechnicalSVG(sys, supportType);
-            document.getElementById('svgTechnical').innerHTML = techHtml;
-        }
-
-        function generateIsometricSVG(sys, supportType) {
-            // Very simplified isometric representation for conceptual visualization
-            const w = 400; const h = 250;
-            const scale = 0.3; // Scale dimensions down for SVG viewBox
-
-            // Normalized dimensions
-            const pW = sys.width * scale;
-            const pD = sys.depth * scale;
-            const pH_b = sys.installHeight * scale;
-            const pH_f = sys.gutterHeight * scale;
-
-            // Iso Projection Angles (approx 30 deg)
-            const dx1 = pW * 0.866; const dy1 = pW * 0.5;
-            const dx2 = -pD * 0.866; const dy2 = pD * 0.5;
-
-            // Origin bottom center
-            const ox = w / 2;
-            const oy = h * 0.8;
-
-            // Points
-            // Back Wall Corners (Base)
-            const bB_R = { x: ox + dx1, y: oy - dy1 };
-            const bB_L = { x: ox, y: oy };
-            // Front Corners (Base)
-            const fB_L = { x: ox + dx2, y: oy - dy2 };
-            const fB_R = { x: ox + dx1 + dx2, y: oy - dy1 - dy2 };
-
-            // Top Corners
-            const tB_R = { x: bB_R.x, y: bB_R.y - pH_b };
-            const tB_L = { x: bB_L.x, y: bB_L.y - pH_b };
-            const tF_L = { x: fB_L.x, y: fB_L.y - pH_f };
-            const tF_R = { x: fB_R.x, y: fB_R.y - pH_f };
-
-            let elements = ``;
-
-            // Back Wall Line (conceptual)
-            elements += `<polygon points="${bB_L.x},${bB_L.y} ${bB_R.x},${bB_R.y} ${tB_R.x},${tB_R.y} ${tB_L.x},${tB_L.y}" fill="rgba(80,80,80,0.3)" stroke="var(--silver-dark)"/>`;
-
-            if (supportType === 'legs') {
-                // Left Leg
-                elements += `<line x1="${fB_L.x}" y1="${fB_L.y}" x2="${tF_L.x}" y2="${tF_L.y}" stroke="var(--industrial-silver)" stroke-width="4"/>`;
-                // Right Leg
-                elements += `<line x1="${fB_R.x}" y1="${fB_R.y}" x2="${tF_R.x}" y2="${tF_R.y}" stroke="var(--industrial-silver)" stroke-width="4"/>`;
-            } else {
-                // Hangers
-                const hangL = { x: tB_L.x, y: tB_L.y - 30 };
-                const hangR = { x: tB_R.x, y: tB_R.y - 30 };
-                elements += `<line x1="${tF_L.x}" y1="${tF_L.y}" x2="${hangL.x}" y2="${hangL.y}" stroke="var(--electric-blue)" stroke-width="2" stroke-dasharray="4"/>`;
-                elements += `<line x1="${tF_R.x}" y1="${tF_R.y}" x2="${hangR.x}" y2="${hangR.y}" stroke="var(--electric-blue)" stroke-width="2" stroke-dasharray="4"/>`;
-            }
-
-            // Roof Polygon
-            elements += `<polygon points="${tB_L.x},${tB_L.y} ${tB_R.x},${tB_R.y} ${tF_R.x},${tF_R.y} ${tF_L.x},${tF_L.y}" fill="rgba(0, 195, 255, 0.2)" stroke="var(--electric-blue)" stroke-width="2"/>`;
-
-            // Guidelines
-            elements += `<line x1="${tB_L.x}" y1="${tB_L.y}" x2="${tF_L.x}" y2="${tF_L.y}" stroke="var(--silver-dark)" stroke-width="3"/>`;
-            elements += `<line x1="${tB_R.x}" y1="${tB_R.y}" x2="${tF_R.x}" y2="${tF_R.y}" stroke="var(--silver-dark)" stroke-width="3"/>`;
-
-            return `<svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">${elements}</svg>`;
-        }
-
-        function generateTechnicalSVG(sys, supportType) {
-            const w = 400; const h = 250;
-            const margin = 40;
-            const drawW = w - margin * 2;
-            const drawH = h - margin * 2;
-
-            // Dynamic scaling to fit bounds
-            const maxRealW = Math.max(sys.width, sys.depth);
-            const maxRealH = sys.installHeight;
-            const scaleX = (drawW / 2 - 20) / maxRealW;
-            const scaleY = drawH / maxRealH;
-            const s = Math.min(scaleX, scaleY);
-
-            // Calculate SVG coordinates
-            const sW = sys.width * s;
-            const sD = sys.depth * s;
-            const sHb = sys.installHeight * s;
-            const sHf = sys.gutterHeight * s;
-
-            const baseLine = h - margin;
-
-            // Left side -> Front View
-            const frontX = margin + 10;
-            const frontY = baseLine;
-
-            // Right side -> Side View
-            const sideX = margin + drawW / 2 + 10;
-            const sideY = baseLine;
-
-            let elements = ``;
-
-            // --- Front View ---
-            elements += `<text x="${frontX + sW / 2}" y="${frontY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">חזית</text>`;
-
-            if (supportType === 'legs') {
-                // Legs
-                elements += `<line x1="${frontX}" y1="${frontY}" x2="${frontX}" y2="${frontY - sHf}" stroke="var(--industrial-silver)" stroke-width="3"/>`;
-                elements += `<line x1="${frontX + sW}" y1="${frontY}" x2="${frontX + sW}" y2="${frontY - sHf}" stroke="var(--industrial-silver)" stroke-width="3"/>`;
-            }
-            // Roof / Gutter front line
-            elements += `<rect x="${frontX}" y="${frontY - sHf - 5}" width="${sW}" height="5" fill="var(--electric-blue)"/>`;
-
-            // Front View Dimensions
-            elements += `<line x1="${frontX}" y1="${frontY + 5}" x2="${frontX + sW}" y2="${frontY + 5}" stroke="var(--silver-dark)" marker-start="url(#arrow)" marker-end="url(#arrow)"/>`;
-            elements += `<text x="${frontX + sW / 2}" y="${frontY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.width}</text>`;
-
-            // --- Side View ---
-            elements += `<text x="${sideX + sD / 2}" y="${sideY + 20}" fill="var(--silver-dark)" font-size="12" text-anchor="middle">צד</text>`;
-
-            // Wall
-            elements += `<line x1="${sideX + sD}" y1="${sideY}" x2="${sideX + sD}" y2="${sideY - sHb}" stroke="rgba(255,255,255,0.3)" stroke-width="4"/>`;
-
-            if (supportType === 'legs') {
-                // Leg
-                elements += `<line x1="${sideX}" y1="${sideY}" x2="${sideX}" y2="${sideY - sHf}" stroke="var(--industrial-silver)" stroke-width="3"/>`;
-            } else {
-                // Hanger
-                elements += `<line x1="${sideX}" y1="${sideY - sHf}" x2="${sideX + sD}" y2="${sideY - sHb - 10}" stroke="var(--electric-blue)" stroke-width="1.5" stroke-dasharray="3"/>`;
-            }
-            // Roof Line
-            elements += `<line x1="${sideX}" y1="${sideY - sHf}" x2="${sideX + sD}" y2="${sideY - sHb}" stroke="var(--electric-blue)" stroke-width="4"/>`;
-
-            // Side View Dimensions (Depth)
-            elements += `<line x1="${sideX}" y1="${sideY + 5}" x2="${sideX + sD}" y2="${sideY + 5}" stroke="var(--silver-dark)"/>`;
-            elements += `<text x="${sideX + sD / 2}" y="${sideY - 10}" fill="var(--electric-blue)" font-size="12" text-anchor="middle">${sys.depth}</text>`;
-
-            // Side View Dimensions (Heights - approximated placement)
-            elements += `<text x="${sideX + sD + 5}" y="${sideY - sHb / 2}" fill="var(--electric-blue)" font-size="10" text-anchor="start">${sys.installHeight}</text>`;
-            elements += `<text x="${sideX - 5}" y="${sideY - sHf / 2}" fill="var(--electric-blue)" font-size="10" text-anchor="end">${sys.gutterHeight}</text>`;
-
-            return `
-                <svg viewBox="0 0 ${w} ${h}" width="100%" height="100%">
-                    <defs>
-                        <marker id="arrow" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse">
-                            <path d="M 0 0 L 10 5 L 0 10 z" fill="var(--silver-dark)" />
-                        </marker>
-                    </defs>
-                    ${elements}
-                </svg>
-            `;
-        }
-
-        // --- Wizard Navigation ---
-        function updateWizardUI() {
-            // Update nav indicators
-            for (let i = 1; i <= totalSteps; i++) {
-                const indicator = document.getElementById(`step-nav-${i}`);
-                if (i < currentStep) {
-                    indicator.className = 'step-indicator completed';
-                } else if (i === currentStep) {
-                    indicator.className = 'step-indicator active';
-                } else {
-                    indicator.className = 'step-indicator';
-                }
-
-                // Show hide content
-                const content = document.getElementById(`step-${i}`);
-                if (i === currentStep) {
-                    content.classList.add('active');
-                } else {
-                    content.classList.remove('active');
-                }
-            }
-
-            // Buttons
-            document.getElementById('btnPrev').disabled = currentStep === 1;
-
-            const btnNext = document.getElementById('btnNext');
-            if (currentStep === totalSteps) {
-                btnNext.style.display = 'none'; // Summary has its own buttons
-            } else {
-                btnNext.style.display = 'inline-flex';
-                btnNext.innerHTML = currentStep === totalSteps - 1 ? 'צפה בסיכום מחירון <i class="ph ph-check"></i>' : 'שלב הבא <i class="ph ph-arrow-left"></i>';
-            }
-
-            // Render additions if moving to step 4
-            if (currentStep === 4) {
-                renderAdditionsInputs();
-            }
-
-            // Generate summary data when hitting step 5
-            if (currentStep === totalSteps) {
-                generateSummary();
-            }
-        }
-
-        function nextStep() {
-            // Validation before moving
-            if (currentStep === 1) {
-                const w = parseInt(document.getElementById('sysWidth').value);
-                const d = parseInt(document.getElementById('sysDepth').value);
-                const h = parseInt(document.getElementById('sysInstallHeight').value);
-                if (w < 100 || w > 1200 || d < 100 || d > 800 || h < 200 || h > 500) {
-                    alert('חלק מהמידות שהזנת חורגות מהתקן המותר.');
-                    return;
-                }
-            }
-
-            if (currentStep < totalSteps) {
-                currentStep++;
-                updateWizardUI();
-            }
-        }
-
-        function prevStep() {
-            if (currentStep > 1) {
-                currentStep--;
-                updateWizardUI();
-            }
-        }
-
-        // --- Pricing Calculation ---
-        function generateSummary() {
-            let totalOverall = 0;
-            let summaryHTML = '';
-
-            systems.forEach((sys, idx) => {
-                // Calc Area in m^2
-                const area = (sys.width / 100) * (sys.depth / 100);
-
-                // Base Price
-                let basePrice = 0;
-                if (area < 12) {
-                    basePrice = 5460;
-                } else {
-                    basePrice = area * 455;
-                }
-
-                // LED Price
-                let ledPrice = 0;
-                if (sys.hasLed) {
-                    ledPrice = area * 30;
-                }
-
-                const sysTotal = basePrice + ledPrice;
-                totalOverall += sysTotal;
-
-                summaryHTML += `
-                    <div class="summary-card">
-                        <h3 style="color: var(--white); margin-bottom: 1rem;">מערכת ${idx + 1} (${sys.width}x${sys.depth} ס"מ)</h3>
-                        <div class="summary-row">
-                            <span style="color: var(--silver-light);">שטח הפרגולה</span>
-                            <span>${area.toFixed(2)} מ"ר</span>
-                        </div>
-                        <div class="summary-row">
-                            <span style="color: var(--silver-light);">מבנה הקיט (אלומיניום + PVC + מנוע Somfy)</span>
-                            <span>₪${Math.round(basePrice).toLocaleString()}</span>
-                        </div>
-                        ${sys.hasLed ? `
-                        <div class="summary-row">
-                            <span style="color: var(--silver-light);">תוספת חיווט LED (${Math.round(area)} מ"ר * ₪30)</span>
-                            <span>₪${Math.round(ledPrice).toLocaleString()}</span>
-                        </div>
-                        ` : ''}
-                        <div class="summary-row" style="font-weight: bold; border-top: 1px solid var(--gray-medium); padding-top: 0.5rem; margin-top: 0.5rem;">
-                            <span>סה"כ למערכת ${idx + 1}</span>
-                            <span>₪${Math.round(sysTotal).toLocaleString()}</span>
-                        </div>
-                    </div>
-                `;
-            });
-
-            summaryHTML += `
-                <div class="summary-card" style="border-color: var(--electric-blue); background-color: rgba(0, 195, 255, 0.05); margin-top: 2rem;">
-                    <div class="summary-row total">
-                        <span>סה"כ לתשלום (לפני מע"מ)</span>
-                        <span>₪${Math.round(totalOverall).toLocaleString()}</span>
-                    </div>
-                </div>
-            `;
-
-            document.getElementById('summaryContainer').innerHTML = summaryHTML;
-        }
-
-        function showBankDetails() {
-            document.getElementById('bankDetails').style.display = 'block';
-        }
-
-    </script>
+    <div class="system-card-body">
+      <!-- Name -->
+      <div class="field" style="margin-bottom:1rem;">
+        <label>שם / מיקום (אופציונלי)</label>
+        <input type="text" value="${s.name}" placeholder="לדוגמה: גג ראשי, מרפסת" oninput="updateSystem(${s.id},'name',this.value)">
+      </div>
+      <!-- Dimensions -->
+      <div class="dims-grid">
+        <div class="field">
+          <label>רוחב (ס"מ)</label>
+          <input type="number" value="${s.width}" min="100" max="1200" step="1" oninput="updateDim(${s.id},'width',this.value)">
+        </div>
+        <div class="field">
+          <label>עומק (ס"מ)</label>
+          <input type="number" value="${s.depth}" min="100" max="800" step="1" oninput="updateDim(${s.id},'depth',this.value)">
+        </div>
+        <div class="field">
+          <label>גובה התקנה אחורי (ס"מ)</label>
+          <input type="number" value="${s.installHeight}" min="200" max="500" step="1" oninput="updateDim(${s.id},'installHeight',this.value)">
+        </div>
+        <div class="field">
+          <label>גובה מרזב (ס"מ) <span style="color:var(--silver);font-size:0.75rem;">אוטומטי</span></label>
+          <input type="number" id="gutter-${s.id}" value="${s.gutterHeight}" min="100" max="500" step="1" oninput="updateGutter(${s.id},this.value)">
+        </div>
+      </div>
+
+      <!-- ALUMINUM COLOR -->
+      <div class="color-section">
+        <div class="color-section-title"><i class="ph ph-paint-bucket"></i> צבע אלומיניום</div>
+        <div class="ral-swatches" id="al-swatches-${s.id}">
+          ${RAL_COLORS.map(r => `
+            <div class="ral-swatch ${s.aluminumColor === r.code ? 'active' : ''}"
+              style="background:${r.hex}"
+              data-label="RAL ${r.code} – ${r.name}"
+              onclick="setAlColor(${s.id},'${r.code}')">
+            </div>`).join('')}
+        </div>
+        <div class="color-custom-row">
+          <label>RAL חופשי:</label>
+          <input class="field input" type="text" placeholder="לדוגמה: 5015" value="${s.aluminumColorCustom}"
+            oninput="setAlCustom(${s.id},this.value)"
+            style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:0.4rem 0.7rem;color:var(--white);font-family:'Heebo',sans-serif;font-size:0.88rem;max-width:150px;">
+        </div>
+      </div>
+
+      <!-- PVC COLOR -->
+      <div class="color-section">
+        <div class="color-section-title"><i class="ph ph-swatches"></i> גוון PVC</div>
+        <div class="pvc-swatches" id="pvc-swatches-${s.id}">
+          ${PVC_COLORS.map(p => `
+            <div class="pvc-dot ${s.pvcColor === p.id ? 'active' : ''}" onclick="setPvcColor(${s.id},'${p.id}')">
+              <div class="pvc-dot-circle" style="background:${p.hex}"></div>
+              ${p.name}
+            </div>`).join('')}
+        </div>
+      </div>
+
+      <!-- LED PROFILE COLOR (only if LED addon active) -->
+      <div class="color-section" id="led-color-section-${s.id}" style="display:${state.addons.led ? 'block' : 'none'}">
+        <div class="color-section-title"><i class="ph ph-lightbulb"></i> צבע פרופילי תאורה</div>
+        <div class="ral-swatches" id="led-swatches-${s.id}">
+          ${RAL_COLORS.map(r => `
+            <div class="ral-swatch ${s.ledColor === r.code ? 'active' : ''}"
+              style="background:${r.hex}"
+              data-label="RAL ${r.code} – ${r.name}"
+              onclick="setLedColor(${s.id},'${r.code}')">
+            </div>`).join('')}
+        </div>
+        <div class="color-custom-row">
+          <label>RAL חופשי:</label>
+          <input type="text" placeholder="לדוגמה: 9016" value="${s.ledColorCustom}"
+            oninput="setLedCustom(${s.id},this.value)"
+            style="background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:0.4rem 0.7rem;color:var(--white);font-family:'Heebo',sans-serif;font-size:0.88rem;max-width:150px;">
+        </div>
+      </div>
+
+      <!-- SVG PREVIEWS -->
+      <div class="preview-row">
+        <div class="preview-box">
+          <div class="preview-box-label"><i class="ph ph-cube"></i> הדמיה איזומטרית</div>
+          ${svgIsometric(s)}
+        </div>
+        <div class="preview-box">
+          <div class="preview-box-label"><i class="ph ph-ruler"></i> שרטוט טכני</div>
+          ${svgTechnical(s)}
+        </div>
+      </div>
+    </div>
+    <div class="system-card-footer">
+      <div class="system-price-preview">
+        שטח: ${area.toFixed(2)} מ"ר &nbsp;|&nbsp; מחיר קיט: <strong>₪${price.toLocaleString()}</strong>
+      </div>
+    </div>
+  `;
+  return div;
+}
+
+/* ══════════════════════════════════════
+   SVG ISOMETRIC  – פרגולה מקיר מבנה
+══════════════════════════════════════ */
+function svgIsometric(s) {
+  const W = 340, H = 240;
+
+  // Scale so the structure fits nicely
+  const sc = Math.min(
+    170 / Math.max(s.width, 80),
+    120 / Math.max(s.depth, 80),
+    75  / Math.max(s.installHeight, 80),
+    0.48
+  );
+
+  const w  = s.width  * sc;
+  const d  = s.depth  * sc;
+  const hF = Math.min(s.gutterHeight  * sc, 90); // front (lower)
+  const hB = Math.min(s.installHeight * sc, 110); // back – wall attachment (higher)
+  const hW = hB + 32; // wall extends above attachment
+
+  const ix = 0.866, iy = 0.5;
+  const ox = W * 0.50, oy = H - 18;
+
+  function pt(x, y, z) {
+    return { x: ox + (x - y) * ix, y: oy - z - (x + y) * iy };
+  }
+  function P(pts) { return pts.map(p => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' '); }
+
+  const pvcHex = (PVC_COLORS.find(p => p.id === s.pvcColor) || PVC_COLORS[0]).hex;
+  const alHex  = (RAL_COLORS.find(r => r.code === s.aluminumColor) || RAL_COLORS[1]).hex;
+  const alDk   = darken(alHex, 28);
+
+  // ── Wall (building wall at back, y = d) ──
+  const wBL  = pt(-w/2,   d,    0);
+  const wBR  = pt( w/2,   d,    0);
+  const wTL  = pt(-w/2,   d,    hW);
+  const wTR  = pt( w/2,   d,    hW);
+  // Wall thickness (right visible edge)
+  const wt   = 10;
+  const wBRb = pt( w/2,   d+wt, 0);
+  const wTRb = pt( w/2,   d+wt, hW);
+  const wTLb = pt(-w/2,   d+wt, hW);
+
+  // ── Beams (profile bm×bm) ──
+  const bm = 5;
+  // Back beam (attached to wall at hB)
+  const bbBL = pt(-w/2, d-1, hB),    bbBR = pt(w/2, d-1, hB);
+  const bbTL = pt(-w/2, d-1, hB+bm), bbTR = pt(w/2, d-1, hB+bm);
+  // Front beam at hF
+  const fbBL = pt(-w/2, 0, hF),    fbBR = pt(w/2, 0, hF);
+  const fbTL = pt(-w/2, 0, hF+bm), fbTR = pt(w/2, 0, hF+bm);
+  const fbFL = pt(-w/2,-bm, hF),   fbFR = pt(w/2,-bm, hF);
+  const fbFTL= pt(-w/2,-bm, hF+bm),fbFTR= pt(w/2,-bm, hF+bm);
+  // Right side beam (top face + right face)
+  const sbRTB= pt(w/2-bm, d,   hB+bm), sbRTF= pt(w/2-bm, 0, hF+bm);
+  const sbRTBr=pt(w/2,    d,   hB+bm), sbRTFr=pt(w/2,    0, hF+bm);
+  const sbRBB= pt(w/2,    d,   hB),    sbRBF= pt(w/2,    0, hF);
+  // Left side beam (top face, partially visible)
+  const sbLTB= pt(-w/2,   d,   hB+bm), sbLTF= pt(-w/2,   0, hF+bm);
+  const sbLBB= pt(-w/2,   d,   hB),    sbLBF= pt(-w/2,   0, hF);
+
+  // ── PVC louver slats (run front→back with slope) ──
+  const nSlats = 10;
+  const slats = [];
+  for(let i = 0; i < nSlats; i++) {
+    const t  = (i + 0.5) / nSlats;
+    const x  = -w/2 + w * t;
+    const sw = 3.2;
+    // top face
+    const s1 = pt(x-sw, 0, hF+bm+1), s2 = pt(x+sw, 0, hF+bm+1);
+    const s3 = pt(x+sw, d, hB+bm+1), s4 = pt(x-sw, d, hB+bm+1);
+    // front edge face
+    const sf1= pt(x-sw, 0, hF+bm), sf2= pt(x+sw, 0, hF+bm);
+    slats.push(
+      `<polygon points="${P([s1,s2,s3,s4])}" fill="${pvcHex}" opacity="0.88" stroke="${alHex}" stroke-width="0.5"/>`,
+      `<polygon points="${P([sf1,sf2,s2,s1])}" fill="${pvcHex}" opacity="0.55" stroke="${alHex}" stroke-width="0.3"/>`
+    );
+  }
+
+  // ── Front support: legs or tension cables ──
+  let support = '';
+  if(state.supportType === 'legs') {
+    const lg = 5;
+    // Right leg (front face + side face)
+    const rla = pt(w/2-lg, 0, 0),  rlb = pt(w/2+lg, 0, 0);
+    const rlc = pt(w/2+lg, 0, hF+bm), rld = pt(w/2-lg, 0, hF+bm);
+    const rlsa= pt(w/2+lg, 0,    0),  rlsb= pt(w/2+lg, lg, 0);
+    const rlsc= pt(w/2+lg, lg,   hF+bm), rlsd= pt(w/2+lg, 0, hF+bm);
+    // Left leg
+    const lla = pt(-w/2-lg, 0, 0),  llb = pt(-w/2+lg, 0, 0);
+    const llc = pt(-w/2+lg, 0, hF+bm), lld = pt(-w/2-lg, 0, hF+bm);
+    support = `
+      <polygon points="${P([rla,rlb,rlc,rld])}" fill="${alHex}" opacity="0.95"/>
+      <polygon points="${P([rlsa,rlsb,rlsc,rlsd])}" fill="${alDk}" opacity="0.82"/>
+      <polygon points="${P([lla,llb,llc,lld])}" fill="${alHex}" opacity="0.95"/>`;
+  } else {
+    const cr = pt(w/2, 0, hF+bm), cl = pt(-w/2, 0, hF+bm);
+    const tr = pt(w/2, d*0.25, hB+bm+22), tl = pt(-w/2, d*0.25, hB+bm+22);
+    support = `
+      <line x1="${cr.x}" y1="${cr.y}" x2="${tr.x}" y2="${tr.y}" stroke="${alHex}" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.8"/>
+      <line x1="${cl.x}" y1="${cl.y}" x2="${tl.x}" y2="${tl.y}" stroke="${alHex}" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.8"/>`;
+  }
+
+  // Ground
+  const gL = pt(-w/2-12, 0, 0), gR = pt(w/2+12, 0, 0);
+  const gBR= pt(w/2+12, d+wt+4, 0), gBL= pt(-w/2-12, d+wt+4, 0);
+
+  // Motor indicator on wall
+  const mpt = pt(w/2 - 9, d - 1, hB + bm + 3);
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${W}" height="${H}" fill="#f2f5f9"/>
+
+    <!-- Ground -->
+    <polygon points="${P([gL,gR,gBR,gBL])}" fill="#dde3ec" opacity="0.85"/>
+
+    <!-- Wall face -->
+    <polygon points="${P([wBL,wBR,wTR,wTL])}" fill="#cdd3de"/>
+    <!-- Wall horizontal lines (texture) -->
+    ${Array.from({length: Math.floor(hW/12)}, (_,i) => {
+      const yLine = i * 12;
+      const p1 = pt(-w/2, d, yLine), p2 = pt(w/2, d, yLine);
+      return `<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="#b8c0cc" stroke-width="0.5" opacity="0.5"/>`;
+    }).join('')}
+    <!-- Wall right side -->
+    <polygon points="${P([wBR,wBRb,wTRb,wTR])}" fill="#b8c0cc"/>
+    <!-- Wall top -->
+    <polygon points="${P([wTL,wTR,wTRb,wTLb])}" fill="#d8dde8"/>
+
+    <!-- Left side beam (back) -->
+    <polygon points="${P([sbLBB,sbLBF,sbLTF,sbLTB])}" fill="${alDk}" opacity="0.75"/>
+
+    <!-- PVC Slats -->
+    ${slats.join('')}
+
+    <!-- Right side beam top -->
+    <polygon points="${P([sbRTB,sbRTF,sbRTFr,sbRTBr])}" fill="${alHex}" opacity="0.88"/>
+    <!-- Right side beam right face -->
+    <polygon points="${P([sbRBB,sbRBF,sbRTFr,sbRTBr])}" fill="${alDk}" opacity="0.75"/>
+
+    <!-- Back beam (wall bracket) -->
+    <polygon points="${P([bbBL,bbBR,bbTR,bbTL])}" fill="${alHex}" opacity="0.9"/>
+
+    <!-- Front beam top -->
+    <polygon points="${P([fbTL,fbTR,fbFTR,fbFTL])}" fill="${alHex}" opacity="0.92"/>
+    <!-- Front beam front face -->
+    <polygon points="${P([fbFL,fbFR,fbFTR,fbFTL])}" fill="${alDk}" opacity="0.85"/>
+
+    <!-- Legs / cables -->
+    ${support}
+
+    <!-- Motor indicator -->
+    <rect x="${(mpt.x - 5).toFixed(1)}" y="${(mpt.y - 4).toFixed(1)}" width="10" height="8" rx="2"
+          fill="#0077cc" opacity="0.9"/>
+    <rect x="${(mpt.x - 3).toFixed(1)}" y="${(mpt.y - 2).toFixed(1)}" width="6" height="4" rx="1"
+          fill="#ffffff" opacity="0.6"/>
+
+    <!-- Label -->
+    <text x="${W/2}" y="${H - 4}" fill="#8899aa" font-size="8" text-anchor="middle" font-family="Heebo">פרגולה חשמלית PVC – מקיר מבנה</text>
+  </svg>`;
+}
+
+/* ══════════════════════════════════════
+   SVG TECHNICAL
+══════════════════════════════════════ */
+function svgTechnical(s) {
+  const W = 340, H = 230;
+  const midX = W / 2;
+  const alHex = (RAL_COLORS.find(r => r.code === s.aluminumColor) || RAL_COLORS[1]).hex;
+  const gnd = H - 22; // ground y
+
+  // ── Left panel: Front view (width × gutterHeight) ──
+  const lpW = midX - 36, lpOx = 14;
+  const scF = Math.min(lpW / s.width, (gnd - 36) / s.gutterHeight) * 0.82;
+  const fw = s.width * scF;
+  const fhF = s.gutterHeight * scF;
+  const fx = lpOx + (lpW - fw) / 2;
+  const fy = gnd - fhF;
+
+  // ── Right panel: Side view (depth × heights, sloped) ──
+  const rpW = midX - 36, rpOx = midX + 14;
+  const scS = Math.min(rpW / s.depth, (gnd - 36) / s.installHeight) * 0.82;
+  const sw = s.depth * scS;
+  const shF = s.gutterHeight  * scS; // front height (lower)
+  const shB = s.installHeight * scS; // back height (higher)
+  const sx = rpOx + (rpW - sw) / 2;
+  const syF = gnd - shF; // front top y
+  const syB = gnd - shB; // back top y
+
+  // helpers
+  function dimH(x1, x2, y, lbl) {
+    const yo = y - 7;
+    return `<line x1="${x1}" y1="${yo}" x2="${x2}" y2="${yo}" stroke="#7090b0" stroke-width="0.9"/>
+    <line x1="${x1}" y1="${yo-3}" x2="${x1}" y2="${yo+3}" stroke="#7090b0" stroke-width="0.9"/>
+    <line x1="${x2}" y1="${yo-3}" x2="${x2}" y2="${yo+3}" stroke="#7090b0" stroke-width="0.9"/>
+    <text x="${(x1+x2)/2}" y="${yo-4}" fill="#5a6a7a" font-size="8.5" text-anchor="middle" font-family="Heebo">${lbl}</text>`;
+  }
+  function dimV(x, y1, y2, lbl, dir) {
+    const xo = x + dir * 10;
+    const anchor = dir > 0 ? 'start' : 'end';
+    return `<line x1="${xo}" y1="${y1}" x2="${xo}" y2="${y2}" stroke="#7090b0" stroke-width="0.9"/>
+    <line x1="${xo-3}" y1="${y1}" x2="${xo+3}" y2="${y1}" stroke="#7090b0" stroke-width="0.9"/>
+    <line x1="${xo-3}" y1="${y2}" x2="${xo+3}" y2="${y2}" stroke="#7090b0" stroke-width="0.9"/>
+    <text x="${xo + dir*4}" y="${(y1+y2)/2+3}" fill="#5a6a7a" font-size="8.5" text-anchor="${anchor}" font-family="Heebo">${lbl}</text>`;
+  }
+
+  // front view slat lines
+  const slatsF = Array.from({length: 8}, (_, i) => {
+    const x = fx + (i + 0.5) * (fw / 8);
+    return `<line x1="${x.toFixed(1)}" y1="${fy}" x2="${x.toFixed(1)}" y2="${gnd}" stroke="${alHex}" stroke-width="0.9" opacity="0.4"/>`;
+  }).join('');
+
+  // side view hatch (wall symbol at right)
+  const wallX = sx + sw + 1;
+  const hatchLines = Array.from({length: Math.ceil((gnd - syB + 10) / 9)}, (_, i) => {
+    const yh = syB - 8 + i * 9;
+    return `<line x1="${wallX}" y1="${yh}" x2="${wallX + 7}" y2="${yh + 9}" stroke="#aab0bc" stroke-width="0.7"/>`;
+  }).join('');
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
+    <rect width="${W}" height="${H}" fill="#f2f5f9"/>
+
+    <!-- Center divider -->
+    <line x1="${midX}" y1="14" x2="${midX}" y2="${H-8}" stroke="#d6dde8" stroke-width="1" stroke-dasharray="5,3"/>
+
+    <!-- ── FRONT VIEW ── -->
+    <text x="${fx + fw/2}" y="14" fill="#5a6a7a" font-size="9" font-weight="700" text-anchor="middle" font-family="Heebo">מבט חזית</text>
+    <!-- pergola rectangle -->
+    <rect x="${fx}" y="${fy}" width="${fw}" height="${fhF}" fill="${alHex}18" stroke="${alHex}" stroke-width="1.5" rx="1"/>
+    <!-- slat lines -->
+    ${slatsF}
+    <!-- leg lines -->
+    <line x1="${fx}" y1="${fy + fhF}" x2="${fx}" y2="${gnd}" stroke="${alHex}" stroke-width="2.5" stroke-linecap="round"/>
+    <line x1="${fx+fw}" y1="${fy + fhF}" x2="${fx+fw}" y2="${gnd}" stroke="${alHex}" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- ground line -->
+    <line x1="${fx - 8}" y1="${gnd}" x2="${fx + fw + 8}" y2="${gnd}" stroke="#aab0bc" stroke-width="1.5"/>
+    <!-- dimensions -->
+    ${dimH(fx, fx + fw, fy, s.width + ' ס"מ')}
+    ${dimV(fx, fy, gnd, s.gutterHeight + ' ס"מ', -1)}
+    <!-- leg profile label -->
+    <text x="${fx + fw/2}" y="${gnd + 12}" fill="#5a6a7a" font-size="8" text-anchor="middle" font-family="Heebo">פרופיל רגל 100/100</text>
+
+    <!-- ── SIDE VIEW ── -->
+    <text x="${sx + sw/2}" y="14" fill="#5a6a7a" font-size="9" font-weight="700" text-anchor="middle" font-family="Heebo">מבט צד</text>
+    <!-- sloped trapezoid: front=lower, back=higher (wall) -->
+    <polygon points="${sx},${syF} ${sx+sw},${syB} ${sx+sw},${gnd} ${sx},${gnd}"
+      fill="${alHex}18" stroke="${alHex}" stroke-width="1.5"/>
+    <!-- wall symbol -->
+    <rect x="${wallX}" y="${syB - 8}" width="8" height="${gnd - syB + 8}" fill="#cdd3de" opacity="0.9"/>
+    ${hatchLines}
+    <!-- wall label -->
+    <text x="${wallX+4}" y="${syB - 11}" fill="#7a8898" font-size="7.5" text-anchor="middle" font-family="Heebo">קיר</text>
+    <!-- front leg in side view -->
+    <line x1="${sx}" y1="${syF}" x2="${sx}" y2="${gnd}" stroke="${alHex}" stroke-width="2.5" stroke-linecap="round"/>
+    <!-- ground line -->
+    <line x1="${sx - 8}" y1="${gnd}" x2="${sx + sw + 12}" y2="${gnd}" stroke="#aab0bc" stroke-width="1.5"/>
+    <!-- dimensions -->
+    ${dimH(sx, sx + sw, syF, s.depth + ' ס"מ')}
+    ${dimV(sx, syF, gnd, s.gutterHeight + ' ס"מ', -1)}
+    ${dimV(sx + sw, syB, gnd, s.installHeight + ' ס"מ', 1)}
+    <!-- slope arrow -->
+    <text x="${sx + sw/2 - 4}" y="${(syF + syB)/2 + 3}" fill="#7090b0" font-size="7.5" text-anchor="middle" font-family="Heebo">↗ שיפוע</text>
+  </svg>`;
+}
+
+function darken(hex, pct) {
+  let r = parseInt(hex.slice(1,3),16);
+  let g = parseInt(hex.slice(3,5),16);
+  let b = parseInt(hex.slice(5,7),16);
+  r = Math.max(0, r - pct); g = Math.max(0, g - pct); b = Math.max(0, b - pct);
+  return '#' + [r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+
+/* ══════════════════════════════════════
+   SUMMARY RENDER
+══════════════════════════════════════ */
+function renderSummary() {
+  const tbody = document.getElementById('summaryBody');
+  tbody.innerHTML = '';
+  let grand = 0;
+
+  for(const s of state.systems) {
+    const area = calcArea(s.width, s.depth);
+    const kit = calcKitPrice(area);
+    const led = state.addons.led ? Math.round(area * 30) : 0;
+    const tot = kit + led;
+    grand += tot;
+
+    const alColor = RAL_COLORS.find(r=>r.code===s.aluminumColor);
+    const alLabel = s.aluminumColorCustom ? `RAL ${s.aluminumColorCustom}` : (alColor ? `RAL ${alColor.code}` : '—');
+    const pvc = PVC_COLORS.find(p=>p.id===s.pvcColor);
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>מערכת ${s.id}${s.name ? ' – ' + s.name : ''}</td>
+      <td>${s.width} × ${s.depth}</td>
+      <td class="num">${area.toFixed(2)}</td>
+      <td>${alLabel}</td>
+      <td>${pvc ? pvc.name : '—'}</td>
+      <td class="num">₪${kit.toLocaleString()}</td>
+      <td class="num">${led > 0 ? '₪'+led.toLocaleString() : '—'}</td>
+      <td class="num">₪${tot.toLocaleString()}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+
+  // Totals
+  const totalsDiv = document.getElementById('summaryTotals');
+  let rows = `<div class="total-row"><span class="label">סה"כ מערכות</span><span class="val">₪${grand.toLocaleString()}</span></div>`;
+  if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪400</span></div>`;
+  if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪600</span></div>`;
+  if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪100</span></div>`;
+  const total = calcTotal();
+  rows += `<div class="total-row grand"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${total.toLocaleString()}</span></div>`;
+  totalsDiv.innerHTML = rows;
+}
+
+function updateStickyPrice() {
+  document.getElementById('stickyTotal').textContent = '₪' + calcTotal().toLocaleString();
+}
+
+/* ══════════════════════════════════════
+   STATE MUTATIONS
+══════════════════════════════════════ */
+function addSystem() {
+  state.systems.push(newSystemObj(nextId++));
+  renderAll();
+}
+
+function removeSystem(id) {
+  state.systems = state.systems.filter(s => s.id !== id);
+  renderAll();
+}
+
+function updateSystem(id, field, val) {
+  const s = state.systems.find(s => s.id === id);
+  if(s) { s[field] = val; renderSummary(); updateStickyPrice(); }
+}
+
+function updateDim(id, field, rawVal) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  const val = parseFloat(rawVal) || 0;
+  s[field] = val;
+  // recalc gutter if not manually edited
+  if(!s.gutterEdited && (field === 'depth' || field === 'installHeight')) {
+    s.gutterHeight = calcGutter(s.depth, s.installHeight);
+    const gutterInput = document.getElementById(`gutter-${id}`);
+    if(gutterInput) gutterInput.value = s.gutterHeight;
+  }
+  // update previews
+  refreshPreviews(id);
+  renderSummary();
+  updateStickyPrice();
+}
+
+function updateGutter(id, val) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.gutterHeight = parseFloat(val) || 0;
+  s.gutterEdited = true;
+  refreshPreviews(id);
+}
+
+function refreshPreviews(id) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  const card = document.getElementById(`sys-${id}`);
+  if(!card) return;
+  const boxes = card.querySelectorAll('.preview-box');
+  if(boxes[0]) boxes[0].innerHTML = `<div class="preview-box-label"><i class="ph ph-cube"></i> הדמיה איזומטרית</div>${svgIsometric(s)}`;
+  if(boxes[1]) boxes[1].innerHTML = `<div class="preview-box-label"><i class="ph ph-ruler"></i> שרטוט טכני</div>${svgTechnical(s)}`;
+}
+
+function setAlColor(id, code) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.aluminumColor = code;
+  s.aluminumColorCustom = '';
+  // update swatch active states
+  document.querySelectorAll(`#al-swatches-${id} .ral-swatch`).forEach(el => el.classList.remove('active'));
+  const target = document.querySelector(`#al-swatches-${id} .ral-swatch:nth-child(${RAL_COLORS.findIndex(r=>r.code===code)+1})`);
+  if(target) target.classList.add('active');
+  refreshPreviews(id);
+  renderSummary();
+}
+
+function setAlCustom(id, val) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.aluminumColorCustom = val;
+  if(val) { s.aluminumColor = ''; document.querySelectorAll(`#al-swatches-${id} .ral-swatch`).forEach(el=>el.classList.remove('active')); }
+  renderSummary();
+}
+
+function setPvcColor(id, colorId) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.pvcColor = colorId;
+  document.querySelectorAll(`#pvc-swatches-${id} .pvc-dot`).forEach(el => el.classList.remove('active'));
+  const idx = PVC_COLORS.findIndex(p=>p.id===colorId);
+  const target = document.querySelector(`#pvc-swatches-${id} .pvc-dot:nth-child(${idx+1})`);
+  if(target) target.classList.add('active');
+  refreshPreviews(id);
+}
+
+function setLedColor(id, code) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.ledColor = code;
+  s.ledColorCustom = '';
+  document.querySelectorAll(`#led-swatches-${id} .ral-swatch`).forEach(el => el.classList.remove('active'));
+  const target = document.querySelector(`#led-swatches-${id} .ral-swatch:nth-child(${RAL_COLORS.findIndex(r=>r.code===code)+1})`);
+  if(target) target.classList.add('active');
+}
+
+function setLedCustom(id, val) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.ledColorCustom = val;
+  if(val) { s.ledColor=''; document.querySelectorAll(`#led-swatches-${id} .ral-swatch`).forEach(el=>el.classList.remove('active')); }
+}
+
+function setSupportType(type) {
+  state.supportType = type;
+  document.getElementById('support-legs').classList.toggle('active', type==='legs');
+  document.getElementById('support-tension').classList.toggle('active', type==='tension');
+  // refresh all SVGs
+  state.systems.forEach(s => refreshPreviews(s.id));
+}
+
+function toggleAddon(key) {
+  state.addons[key] = !state.addons[key];
+  document.getElementById(`addon-${key}`).classList.toggle('active', state.addons[key]);
+  // show/hide LED color sections
+  if(key === 'led') {
+    state.systems.forEach(s => {
+      const el = document.getElementById(`led-color-section-${s.id}`);
+      if(el) el.style.display = state.addons.led ? 'block' : 'none';
+    });
+  }
+  renderSummary();
+  updateStickyPrice();
+}
+
+/* ══════════════════════════════════════
+   ORDER CODE
+══════════════════════════════════════ */
+function getOrderCode() {
+  const now = new Date();
+  if(state.projectNumber && state.projectNumber.trim()) {
+    return `ALM-${state.projectNumber.trim()}-${now.getFullYear()}`;
+  }
+  const d = now.toISOString().slice(0,10).replace(/-/g,'');
+  const r = String(Math.floor(Math.random()*9000)+1000);
+  return `ALM-${d}-${r}`;
+}
+
+function updateOrderCode() {
+  const el = document.getElementById('orderCodeDisplay');
+  if(el) el.textContent = getOrderCode();
+}
+
+/* ══════════════════════════════════════
+   PAYMENT
+══════════════════════════════════════ */
+let activePayment = null;
+function showPayment(type) {
+  if(activePayment === type) {
+    // toggle off
+    document.getElementById(`panel-${type}`).classList.remove('show');
+    document.getElementById(`btn-${type}`).classList.remove('active-pay');
+    activePayment = null;
+    return;
+  }
+  // close other
+  ['bank','credit'].forEach(t => {
+    document.getElementById(`panel-${t}`).classList.remove('show');
+    document.getElementById(`btn-${t}`).classList.remove('active-pay');
+  });
+  document.getElementById(`panel-${type}`).classList.add('show');
+  document.getElementById(`btn-${type}`).classList.add('active-pay');
+  activePayment = type;
+  if(type === 'bank') updateOrderCode();
+}
+
+function sendProofWA() {
+  const code = getOrderCode();
+  const total = calcTotal().toLocaleString();
+  const msg = encodeURIComponent(`שלום, שלחתי העברה בנקאית להזמנה קוד ${code}, סכום ₪${total}. מצורפת האסמכתא.`);
+  window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
+}
+
+function formatCC(input) {
+  let v = input.value.replace(/\D/g,'').slice(0,16);
+  input.value = v.replace(/(.{4})/g,'$1 ').trim();
+}
+function formatExp(input) {
+  let v = input.value.replace(/\D/g,'');
+  if(v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2,4);
+  input.value = v;
+}
+function submitCredit() {
+  alert('תשלום האשראי בתהליך אינטגרציה — ייפתח כחלק מהמערכת.');
+}
+
+/* ══════════════════════════════════════
+   WHATSAPP
+══════════════════════════════════════ */
+function openMeasureWA() {
+  const msg = encodeURIComponent('שלום, אני מעוניין לתאם שירות מדידה מקצועית בשטח לפרגולה חשמלית PVC.');
+  window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
+}
+
+/* ══════════════════════════════════════
+   INSTALLER
+══════════════════════════════════════ */
+function matchInstaller() {
+  const code = getOrderCode();
+  const msg = encodeURIComponent(`שלום, אני מעוניין בשידוך מתקין מוסמך להזמנה ${code}.`);
+  window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
+  document.getElementById('installerConfirm').classList.add('show');
+  document.querySelector('.installer-buttons').style.display = 'none';
+}
+function dismissInstaller() {
+  document.getElementById('installerBanner').classList.add('hidden');
+}
+
+/* ══════════════════════════════════════
+   INIT
+══════════════════════════════════════ */
+renderAll();
+</script>
 </body>
-
 </html>
-=======
-            gap: 12px;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--
->>>>>>> 021ac1f8f4c4d6663ea639f4368c494f59de83e1

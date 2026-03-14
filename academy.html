@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUM-IL | מכללת ALUM-IL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+
+.academy-wrapper { display: flex; min-height: calc(100vh - 65px); }
+.academy-main   { flex: 1; background-color: var(--bg-dark); overflow-y: auto; }
+
+/* ════════════════════════════
+   HERO
+════════════════════════════ */
+.academy-hero {
+  background-color: var(--electric-blue);
+  padding: 3.5rem 4rem;
+  color: #ffffff;
+  border-bottom: 3px solid var(--blue-hover);
+}
+.academy-hero-label {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #7aabdc;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.academy-hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  line-height: 1.1;
+  margin-bottom: 0.4rem;
+  color: #ffffff;
+}
+.academy-hero-tagline {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #7aabdc;
+  margin-bottom: 2rem;
+}
+.academy-hero-divider {
+  width: 40px;
+  height: 3px;
+  background: var(--blue-hover);
+  margin-bottom: 1.5rem;
+}
+.academy-hero-body {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.7);
+  font-weight: 400;
+  line-height: 1.8;
+  max-width: 680px;
+}
+
+/* ════════════════════════════
+   SHARED SECTION STYLES
+════════════════════════════ */
+.academy-section {
+  padding: 3rem 4rem;
+  border-bottom: 1px solid var(--surface-light);
+}
+.academy-section.dark {
+  background-color: var(--electric-blue);
+}
+.academy-section.light {
+  background-color: var(--surface-dark);
+}
+.academy-section.tinted {
+  background-color: var(--surface-light);
+}
+
+.sec-header {
+  margin-bottom: 2rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid var(--electric-blue);
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+.academy-section.dark .sec-header {
+  border-bottom-color: rgba(255,255,255,0.15);
+}
+.sec-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+}
+.academy-section.dark .sec-title { color: #ffffff; }
+.sec-sub {
+  font-size: 0.82rem;
+  color: var(--silver-dark);
+  font-weight: 500;
+}
+.academy-section.dark .sec-sub { color: #7aabdc; }
+
+/* ════════════════════════════
+   AUDIENCE CARDS
+════════════════════════════ */
+.audience-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.audience-card {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--surface-light);
+  border-radius: var(--border-radius);
+  padding: 2rem 1.75rem;
+  transition: all var(--transition-normal);
+}
+.audience-card:hover {
+  border-color: var(--blue-hover);
+  box-shadow: var(--box-shadow-hover);
+  transform: translateY(-3px);
+}
+.audience-icon-wrap {
+  width: 48px;
+  height: 48px;
+  background-color: var(--surface-light);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.1rem;
+}
+.audience-icon-wrap i { font-size: 1.4rem; color: var(--blue-hover); }
+.audience-role {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--blue-hover);
+  margin-bottom: 0.35rem;
+}
+.audience-card-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+  margin-bottom: 0.75rem;
+}
+.audience-card-body {
+  font-size: 0.9rem;
+  color: var(--silver-dark);
+  line-height: 1.7;
+}
+
+/* ════════════════════════════
+   VALUE CARDS (DARK SECTION)
+════════════════════════════ */
+.value-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--border-radius);
+  overflow: hidden;
+}
+.value-card {
+  background-color: rgba(255,255,255,0.05);
+  padding: 2rem 1.75rem;
+  transition: background var(--transition-fast);
+}
+.value-card:hover { background-color: rgba(255,255,255,0.08); }
+.value-num {
+  font-size: 3rem;
+  font-weight: 800;
+  color: rgba(122,171,220,0.25);
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  letter-spacing: -2px;
+}
+.value-card-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.6rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.value-card-title i { font-size: 1.1rem; color: #7aabdc; }
+.value-card-body {
+  font-size: 0.88rem;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.75;
+}
+
+/* ════════════════════════════
+   QUOTE BLOCK
+════════════════════════════ */
+.quote-block {
+  padding: 2.5rem 4rem;
+  background-color: var(--surface-light);
+  border-bottom: 1px solid var(--surface-light);
+  border-right: 4px solid var(--blue-hover);
+  display: flex;
+  align-items: flex-start;
+  gap: 1.5rem;
+}
+.quote-icon {
+  font-size: 3rem;
+  color: var(--blue-hover);
+  opacity: 0.25;
+  flex-shrink: 0;
+  line-height: 1;
+  font-family: Georgia, serif;
+}
+.quote-text {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--electric-blue);
+  line-height: 1.8;
+}
+
+/* ════════════════════════════
+   COURSES SECTION
+════════════════════════════ */
+.courses-hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 2px solid var(--electric-blue);
+}
+.courses-hdr-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+}
+.courses-hdr-meta {
+  font-size: 0.82rem;
+  color: var(--silver-dark);
+  font-weight: 500;
+}
+
+.course-card {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--surface-light);
+  border-radius: var(--border-radius);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: all var(--transition-normal);
+}
+.course-card:hover {
+  border-color: var(--blue-hover);
+  box-shadow: var(--box-shadow-hover);
+}
+.course-main {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: stretch;
+}
+.course-info {
+  padding: 1.75rem 2rem;
+  border-left: 1px solid var(--surface-light);
+}
+.course-top {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+}
+.course-badge {
+  background-color: var(--electric-blue);
+  color: #7aabdc;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  padding: 0.2rem 0.65rem;
+  border-radius: var(--border-radius);
+  white-space: nowrap;
+}
+.course-badge.highlight {
+  background-color: var(--blue-hover);
+  color: #ffffff;
+}
+.course-field {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--silver-dark);
+}
+.course-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+  margin-bottom: 0.5rem;
+}
+.course-desc {
+  font-size: 0.88rem;
+  color: var(--silver-dark);
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+.course-specs-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.course-spec {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--electric-blue);
+  font-weight: 500;
+  opacity: 0.7;
+}
+.course-spec i { font-size: 0.95rem; }
+
+.course-actions {
+  display: flex;
+  flex-direction: column;
+  min-width: 210px;
+  border-right: 1px solid var(--surface-light);
+}
+.btn-enroll {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  background-color: var(--electric-blue);
+  color: #ffffff;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.btn-enroll:hover { background-color: var(--blue-hover); }
+.btn-fasttrack {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0 1.5rem;
+  background: transparent;
+  color: var(--blue-hover);
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  text-align: center;
+}
+.btn-fasttrack:hover { background-color: var(--surface-light); }
+
+/* ── FAST-TRACK PANEL ── */
+.fasttrack-panel {
+  display: none;
+  background-color: var(--surface-light);
+  border-top: 1px solid var(--surface-light);
+  padding: 1.5rem 2rem;
+  animation: ft-in 0.18s ease;
+}
+.fasttrack-panel.open { display: block; }
+@keyframes ft-in { from { opacity:0; transform:translateY(-4px); } to { opacity:1; transform:translateY(0); } }
+
+.ft-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--blue-hover);
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+.ft-steps {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+.ft-step {
+  background-color: var(--surface-dark);
+  border: 1px solid var(--surface-light);
+  border-radius: var(--border-radius);
+  padding: 1.1rem 1.25rem;
+}
+.ft-step-label {
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--silver-dark);
+  margin-bottom: 0.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.ft-step-label i { color: var(--blue-hover); }
+.ft-step-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+  margin-bottom: 0.3rem;
+}
+.ft-step-desc {
+  font-size: 0.82rem;
+  color: var(--silver-dark);
+  line-height: 1.5;
+  margin-bottom: 0.85rem;
+}
+.btn-ft-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  background-color: var(--electric-blue);
+  color: #ffffff;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-decoration: none;
+  transition: background var(--transition-fast);
+}
+.btn-ft-step:hover { background-color: var(--blue-hover); }
+.ft-close {
+  background: none;
+  border: none;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.8rem;
+  color: var(--silver-dark);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0;
+  transition: color var(--transition-fast);
+}
+.ft-close:hover { color: var(--electric-blue); }
+
+/* ════════════════════════════
+   PRO-SCORE BANNER
+════════════════════════════ */
+.score-banner {
+  margin: 0 4rem 3rem;
+  background-color: var(--surface-dark);
+  border: 1px solid var(--surface-light);
+  border-right: 4px solid var(--blue-hover);
+  border-radius: var(--border-radius);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+  padding: 1.5rem 2rem;
+  box-shadow: var(--box-shadow);
+}
+.score-banner-text strong {
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--electric-blue);
+  margin-bottom: 0.3rem;
+}
+.score-banner-text span {
+  font-size: 0.85rem;
+  color: var(--silver-dark);
+  line-height: 1.5;
+}
+.btn-to-dash {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  background-color: var(--blue-hover);
+  color: #ffffff;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--transition-fast);
+}
+.btn-to-dash:hover { background-color: #3a6fa5; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 1024px) {
+  .academy-hero { padding: 2.5rem 2rem; }
+  .academy-section { padding: 2.5rem 2rem; }
+  .score-banner { margin: 0 2rem 2rem; }
+  .quote-block { padding: 2rem; }
+  .academy-hero-title { font-size: 2.2rem; }
+  .audience-grid { grid-template-columns: 1fr; }
+  .value-grid { grid-template-columns: 1fr; }
+  .course-main { grid-template-columns: 1fr; }
+  .course-actions {
+    flex-direction: row;
+    border-right: none;
+    border-top: 1px solid var(--surface-light);
+    min-width: unset;
+  }
+  .btn-enroll { border-bottom: none; border-left: 1px solid rgba(255,255,255,0.1); }
+  .course-info { border-left: none; }
+}
+@media (max-width: 768px) {
+  .dashboard-sidebar { display: none; }
+  .academy-hero { padding: 2rem 1.25rem; }
+  .academy-hero-title { font-size: 1.85rem; }
+  .academy-section { padding: 2rem 1.25rem; }
+  .score-banner { flex-direction: column; align-items: flex-start; gap: 1rem; margin: 0 1.25rem 2rem; }
+  .quote-block { padding: 1.5rem 1.25rem; }
+  .ft-steps { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body class="light-theme">
+
+<!-- HEADER -->
+<header class="header" style="position:sticky;top:0;z-index:100;border-bottom:1px solid var(--surface-light);background-color:var(--surface-dark);padding:1rem 0;">
+  <div class="container header-container" style="max-width:100%;padding:0 2rem;">
+    <a href="index.html" class="logo">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
+    </a>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:0.82rem;font-weight:500;color:var(--silver-dark);border:1px solid var(--surface-light);padding:0.25rem 0.75rem;border-radius:var(--border-radius);">
+        <i class="ph ph-medal" style="color:var(--blue-hover);"></i> Pro-Score: <strong style="color:var(--electric-blue);">74</strong>
+      </span>
+      <i class="ph ph-user-circle" style="font-size:2rem;color:var(--electric-blue);cursor:pointer;"></i>
+    </div>
+  </div>
+</header>
+
+<div class="dashboard-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="dashboard-sidebar">
+    <div style="color:var(--silver-dark);font-size:0.85rem;font-weight:700;margin-bottom:1rem;padding-right:1rem;">תפריט פעולות</div>
+    <ul class="dashboard-nav">
+      <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
+      <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
+      <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
+      <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
+      <li><a href="academy.html" class="active"><i class="ph ph-graduation-cap"></i> מכללת ALUM-IL</a></li>
+      <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+    </ul>
+  </aside>
+
+  <main class="academy-main">
+
+    <!-- ════ HERO ════ -->
+    <section class="academy-hero">
+      <div class="academy-hero-label"><i class="ph ph-graduation-cap"></i> מכללת ALUM-IL</div>
+      <h1 class="academy-hero-title">ברוכים הבאים למכללת ALUM-IL</h1>
+      <p class="academy-hero-tagline">הבית של מקצועני האלומיניום בישראל</p>
+      <div class="academy-hero-divider"></div>
+      <p class="academy-hero-body">
+        מכללת ALUM-IL היא לא עוד מוסד לימודי – היא הלב הטכנולוגי והמקצועי של המהפכה בענף. הקמנו את המכללה מתוך הבנה שהשוק משתנה, והמתקינים בשטח צריכים גב חזק, ידע עדכני וחותמת רשמית שתהפוך את הניסיון שלהם לכוח כלכלי. אנחנו כאן כדי לרכז את כל הידע, ההכשרות והטכנולוגיות המתקדמות ביותר תחת קורת גג אחת.
+      </p>
+    </section>
+
+    <!-- ════ AUDIENCE ════ -->
+    <section class="academy-section light">
+      <div class="sec-header">
+        <h2 class="sec-title">מענה שלם לכל אחד בענף</h2>
+        <span class="sec-sub">התאמה מדויקת לצרכים שלך</span>
+      </div>
+      <div class="audience-grid">
+
+        <div class="audience-card">
+          <div class="audience-icon-wrap"><i class="ph ph-wrench"></i></div>
+          <div class="audience-role">מתקין מתחיל</div>
+          <h3 class="audience-card-title">למתקין בתחילת הדרך</h3>
+          <p class="audience-card-body">אנחנו נותנים לך את "כרטיס הכניסה" המקצועי ביותר. למידה מעשית על המערכות המבוקשות בשוק שתקצר לך את הדרך להצלחה.</p>
+        </div>
+
+        <div class="audience-card">
+          <div class="audience-icon-wrap"><i class="ph ph-medal"></i></div>
+          <div class="audience-role">מתקין ותיק</div>
+          <h3 class="audience-card-title">למתקין הוותיק</h3>
+          <p class="audience-card-body">אנחנו מכירים בניסיון ובידיים שלך. המכללה מאפשרת לך להפוך שנות עבודה לתעודה רשמית ולדירוג גבוה במכרזים – בלי לבזבז זמן על מה שאתה כבר יודע.</p>
+        </div>
+
+        <div class="audience-card">
+          <div class="audience-icon-wrap"><i class="ph ph-buildings"></i></div>
+          <div class="audience-role">מעסיק / בעל עסק</div>
+          <h3 class="audience-card-title">למעסיק ולבעל העסק</h3>
+          <p class="audience-card-body">אנחנו הזרוע המקצועית שתכשיר עבורך את דור העתיד. שלח עובדים להכשרות ממוקדות, עקוב אחר ההתקדמות שלהם וודא שהצוות שלך הוא הטוב ביותר בשטח.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════ VALUE (DARK) ════ -->
+    <section class="academy-section dark">
+      <div class="sec-header">
+        <h2 class="sec-title">הערך המוסף: מערכת שעובדת בשבילך</h2>
+        <span class="sec-sub">ב-ALUM-IL הידע הוא מנוע צמיחה</span>
+      </div>
+      <div class="value-grid">
+
+        <div class="value-card">
+          <div class="value-num">01</div>
+          <div class="value-card-title"><i class="ph ph-chart-line-up"></i> הסמכה ששווה דירוג</div>
+          <p class="value-card-body">כל קורס או מבחן שתעבור מעלה אותך אוטומטית בדירוג המכרזים והעסקאות בפלטפורמה. יותר הסמכות = יותר עדיפות = יותר עבודה.</p>
+        </div>
+
+        <div class="value-card">
+          <div class="value-num">02</div>
+          <div class="value-card-title"><i class="ph ph-currency-dollar-simple"></i> מקסימום רווח, מינימום טעויות</div>
+          <p class="value-card-body">אנחנו מלמדים אותך איך לעבוד יעיל יותר, נכון יותר ורווחי יותר. פחות טעויות בשטח = יותר נטו בכיס.</p>
+        </div>
+
+        <div class="value-card">
+          <div class="value-num">03</div>
+          <div class="value-card-title"><i class="ph ph-seal-check"></i> אוטוריטה מקצועית</div>
+          <p class="value-card-body">כשאתה מוסמך ALUM-IL, הלקוח יודע שהוא מקבל את הסטנדרט הגבוה ביותר בישראל. שם שפותח דלתות ומצדיק תמחור גבוה יותר.</p>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ════ QUOTE ════ -->
+    <div class="quote-block">
+      <span class="quote-icon">"</span>
+      <p class="quote-text">לא משנה איפה אתה נמצא בקריירה שלך, אנחנו כאן כדי לקחת אותך לשלב הבא. בוא להפוך את הידע שלך ליתרון תחרותי במערכת שנבנתה במיוחד בשבילך.</p>
+    </div>
+
+    <!-- ════ COURSES ════ -->
+    <section class="academy-section light">
+      <div class="courses-hdr">
+        <h2 class="courses-hdr-title">קורסי הסמכה</h2>
+        <span class="courses-hdr-meta">5 קורסים · מיקום פיזי בלבד · הסמכה מוכרת</span>
+      </div>
+
+      <!-- ── קורס 1 ── -->
+      <div class="course-card">
+        <div class="course-main">
+          <div class="course-info">
+            <div class="course-top">
+              <span class="course-badge">+25% במכרזים</span>
+              <span class="course-field">פרגולות ומערכות</span>
+            </div>
+            <h3 class="course-name">מערכות ביוקלימטיות</h3>
+            <p class="course-desc">התקנה ותחזוקה של פרגולות לוחות אלומיניום מסתובבים — השוק הצומח ביותר כרגע.</p>
+            <div class="course-specs-row">
+              <span class="course-spec"><i class="ph ph-clock"></i> 40 שעות</span>
+              <span class="course-spec"><i class="ph ph-calendar-blank"></i> 8 מפגשים</span>
+              <span class="course-spec"><i class="ph ph-map-pin"></i> פיזי בלבד</span>
+            </div>
+          </div>
+          <div class="course-actions">
+            <a href="#" class="btn-enroll"><i class="ph ph-note-pencil"></i> הרשמה לקורס מלא</a>
+            <button class="btn-fasttrack" onclick="toggleFT('ft1')">
+              <i class="ph ph-lightning"></i> כבר מנוסה? הסמכה בלבד
+            </button>
+          </div>
+        </div>
+        <div class="fasttrack-panel" id="ft1">
+          <div class="ft-title"><i class="ph ph-lightning"></i> מסלול Fast-Track — לאנשי מקצוע מנוסים בלבד</div>
+          <div class="ft-steps">
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-video-camera"></i> שלב א׳ — מרחוק</div>
+              <div class="ft-step-title">ראיון קצר בוידאו</div>
+              <p class="ft-step-desc">שיחה עם נציג המכללה לבדיקת הניסיון שלך. לוקח 20 דקות.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-calendar"></i> קבע ראיון</a>
+            </div>
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-graduation-cap"></i> שלב ב׳ — פיזי</div>
+              <div class="ft-step-title">בחינה מעשית</div>
+              <p class="ft-step-desc">עובר? הסמכה מלאה ביד. Pro-Score שלך עולה מיידית.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-info"></i> פרטי הבחינה</a>
+            </div>
+          </div>
+          <button class="ft-close" onclick="toggleFT('ft1')"><i class="ph ph-x"></i> סגור</button>
+        </div>
+      </div>
+
+      <!-- ── קורס 2 ── -->
+      <div class="course-card">
+        <div class="course-main">
+          <div class="course-info">
+            <div class="course-top">
+              <span class="course-badge">+20% במכרזים</span>
+              <span class="course-field">פרגולות ומערכות</span>
+            </div>
+            <h3 class="course-name">פרגולות חשמליות ורוורסי ZIP</h3>
+            <p class="course-desc">התקנת פרגולות PVC חשמליות ומערכות ZIP — חיבור מנועי Somfy, תכנות שלט ואבחון תקלות.</p>
+            <div class="course-specs-row">
+              <span class="course-spec"><i class="ph ph-clock"></i> 32 שעות</span>
+              <span class="course-spec"><i class="ph ph-calendar-blank"></i> 6 מפגשים</span>
+              <span class="course-spec"><i class="ph ph-map-pin"></i> פיזי בלבד</span>
+            </div>
+          </div>
+          <div class="course-actions">
+            <a href="#" class="btn-enroll"><i class="ph ph-note-pencil"></i> הרשמה לקורס מלא</a>
+            <button class="btn-fasttrack" onclick="toggleFT('ft2')">
+              <i class="ph ph-lightning"></i> כבר מנוסה? הסמכה בלבד
+            </button>
+          </div>
+        </div>
+        <div class="fasttrack-panel" id="ft2">
+          <div class="ft-title"><i class="ph ph-lightning"></i> מסלול Fast-Track — לאנשי מקצוע מנוסים בלבד</div>
+          <div class="ft-steps">
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-video-camera"></i> שלב א׳ — מרחוק</div>
+              <div class="ft-step-title">ראיון קצר בוידאו</div>
+              <p class="ft-step-desc">שיחה עם נציג המכללה לבדיקת הניסיון שלך. לוקח 20 דקות.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-calendar"></i> קבע ראיון</a>
+            </div>
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-graduation-cap"></i> שלב ב׳ — פיזי</div>
+              <div class="ft-step-title">בחינה מעשית</div>
+              <p class="ft-step-desc">עובר? הסמכה מלאה ביד. Pro-Score שלך עולה מיידית.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-info"></i> פרטי הבחינה</a>
+            </div>
+          </div>
+          <button class="ft-close" onclick="toggleFT('ft2')"><i class="ph ph-x"></i> סגור</button>
+        </div>
+      </div>
+
+      <!-- ── קורס 3 — הכי גבוה ── -->
+      <div class="course-card" style="border-color:var(--blue-hover);">
+        <div class="course-main">
+          <div class="course-info">
+            <div class="course-top">
+              <span class="course-badge highlight">+30% במכרזים — הכי גבוה</span>
+              <span class="course-field">זכוכית ופנאורמי</span>
+            </div>
+            <h3 class="course-name">מתקין מערכות זכוכית מוסמך</h3>
+            <p class="course-desc">זכוכית פנאורמית, גגות זכוכית ומחיצות — התחום עם הביקוש הגבוה ביותר ומחסור חמור במתקינים מוסמכים.</p>
+            <div class="course-specs-row">
+              <span class="course-spec"><i class="ph ph-clock"></i> 48 שעות</span>
+              <span class="course-spec"><i class="ph ph-calendar-blank"></i> 10 מפגשים</span>
+              <span class="course-spec"><i class="ph ph-map-pin"></i> פיזי בלבד</span>
+            </div>
+          </div>
+          <div class="course-actions">
+            <a href="#" class="btn-enroll"><i class="ph ph-note-pencil"></i> הרשמה לקורס מלא</a>
+            <button class="btn-fasttrack" onclick="toggleFT('ft3')">
+              <i class="ph ph-lightning"></i> כבר מנוסה? הסמכה בלבד
+            </button>
+          </div>
+        </div>
+        <div class="fasttrack-panel" id="ft3">
+          <div class="ft-title"><i class="ph ph-lightning"></i> מסלול Fast-Track — לאנשי מקצוע מנוסים בלבד</div>
+          <div class="ft-steps">
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-video-camera"></i> שלב א׳ — מרחוק</div>
+              <div class="ft-step-title">ראיון קצר בוידאו</div>
+              <p class="ft-step-desc">שיחה עם נציג המכללה לבדיקת הניסיון שלך. לוקח 20 דקות.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-calendar"></i> קבע ראיון</a>
+            </div>
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-graduation-cap"></i> שלב ב׳ — פיזי</div>
+              <div class="ft-step-title">בחינה מעשית</div>
+              <p class="ft-step-desc">עובר? הסמכה מלאה ביד. Pro-Score שלך עולה מיידית.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-info"></i> פרטי הבחינה</a>
+            </div>
+          </div>
+          <button class="ft-close" onclick="toggleFT('ft3')"><i class="ph ph-x"></i> סגור</button>
+        </div>
+      </div>
+
+      <!-- ── קורס 4 ── -->
+      <div class="course-card">
+        <div class="course-main">
+          <div class="course-info">
+            <div class="course-top">
+              <span class="course-badge">+20% במכרזים</span>
+              <span class="course-field">ריתוך ועיבוד</span>
+            </div>
+            <h3 class="course-name">ריתוך ועיבוד אלומיניום</h3>
+            <p class="course-desc">ריתוך TIG ו-MIG לאלומיניום — חיבורים מדויקים, ניקוי תחמוצות ועיבוד שטח. הבסיס לכל עבודת מסגרות.</p>
+            <div class="course-specs-row">
+              <span class="course-spec"><i class="ph ph-clock"></i> 36 שעות</span>
+              <span class="course-spec"><i class="ph ph-calendar-blank"></i> 8 מפגשים</span>
+              <span class="course-spec"><i class="ph ph-map-pin"></i> פיזי בלבד</span>
+            </div>
+          </div>
+          <div class="course-actions">
+            <a href="#" class="btn-enroll"><i class="ph ph-note-pencil"></i> הרשמה לקורס מלא</a>
+            <button class="btn-fasttrack" onclick="toggleFT('ft4')">
+              <i class="ph ph-lightning"></i> כבר מנוסה? הסמכה בלבד
+            </button>
+          </div>
+        </div>
+        <div class="fasttrack-panel" id="ft4">
+          <div class="ft-title"><i class="ph ph-lightning"></i> מסלול Fast-Track — לאנשי מקצוע מנוסים בלבד</div>
+          <div class="ft-steps">
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-video-camera"></i> שלב א׳ — מרחוק</div>
+              <div class="ft-step-title">ראיון קצר בוידאו</div>
+              <p class="ft-step-desc">שיחה עם נציג המכללה לבדיקת הניסיון שלך. לוקח 20 דקות.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-calendar"></i> קבע ראיון</a>
+            </div>
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-graduation-cap"></i> שלב ב׳ — פיזי</div>
+              <div class="ft-step-title">בחינה מעשית</div>
+              <p class="ft-step-desc">עובר? הסמכה מלאה ביד. Pro-Score שלך עולה מיידית.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-info"></i> פרטי הבחינה</a>
+            </div>
+          </div>
+          <button class="ft-close" onclick="toggleFT('ft4')"><i class="ph ph-x"></i> סגור</button>
+        </div>
+      </div>
+
+      <!-- ── קורס 5 ── -->
+      <div class="course-card">
+        <div class="course-main">
+          <div class="course-info">
+            <div class="course-top">
+              <span class="course-badge">+25% במכרזים</span>
+              <span class="course-field">ריתוך ועיבוד</span>
+            </div>
+            <h3 class="course-name">ריתוך קונסטרוקציה</h3>
+            <p class="course-desc">ריתוך קונסטרוקטיבי לאלומיניום ופלדה — מבנים, שלדות ותמיכות. כולל חישובי עומסים ועבודה לפי תקן.</p>
+            <div class="course-specs-row">
+              <span class="course-spec"><i class="ph ph-clock"></i> 44 שעות</span>
+              <span class="course-spec"><i class="ph ph-calendar-blank"></i> 9 מפגשים</span>
+              <span class="course-spec"><i class="ph ph-map-pin"></i> פיזי בלבד</span>
+            </div>
+          </div>
+          <div class="course-actions">
+            <a href="#" class="btn-enroll"><i class="ph ph-note-pencil"></i> הרשמה לקורס מלא</a>
+            <button class="btn-fasttrack" onclick="toggleFT('ft5')">
+              <i class="ph ph-lightning"></i> כבר מנוסה? הסמכה בלבד
+            </button>
+          </div>
+        </div>
+        <div class="fasttrack-panel" id="ft5">
+          <div class="ft-title"><i class="ph ph-lightning"></i> מסלול Fast-Track — לאנשי מקצוע מנוסים בלבד</div>
+          <div class="ft-steps">
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-video-camera"></i> שלב א׳ — מרחוק</div>
+              <div class="ft-step-title">ראיון קצר בוידאו</div>
+              <p class="ft-step-desc">שיחה עם נציג המכללה לבדיקת הניסיון שלך. לוקח 20 דקות.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-calendar"></i> קבע ראיון</a>
+            </div>
+            <div class="ft-step">
+              <div class="ft-step-label"><i class="ph ph-graduation-cap"></i> שלב ב׳ — פיזי</div>
+              <div class="ft-step-title">בחינה מעשית</div>
+              <p class="ft-step-desc">עובר? הסמכה מלאה ביד. Pro-Score שלך עולה מיידית.</p>
+              <a href="#" class="btn-ft-step"><i class="ph ph-info"></i> פרטי הבחינה</a>
+            </div>
+          </div>
+          <button class="ft-close" onclick="toggleFT('ft5')"><i class="ph ph-x"></i> סגור</button>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ════ PRO-SCORE BANNER ════ -->
+    <div class="score-banner">
+      <div class="score-banner-text">
+        <strong>סיימת קורס? הציון שלך מתעדכן אוטומטית</strong>
+        <span>כל הסמכה — קורס מלא או Fast-Track — מעדכנת את ה-Pro-Score שלך במערכת המכרזים. ציון גבוה יותר = עדיפות גבוהה יותר = יותר עבודה.</span>
+      </div>
+      <a href="dashboard.html" class="btn-to-dash"><i class="ph ph-arrow-left"></i> לדשבורד המכרזים</a>
+    </div>
+
+  </main>
+</div>
+
+<script>
+function toggleFT(id) {
+  const panel = document.getElementById(id);
+  const isOpen = panel.classList.contains('open');
+  document.querySelectorAll('.fasttrack-panel').forEach(p => p.classList.remove('open'));
+  if (!isOpen) {
+    panel.classList.add('open');
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+</script>
+</body>
+</html>

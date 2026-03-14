@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /c/Users/User/Desktop/alumup-1 -type f \\\\\\( -name \"*.html\" -o -name \"*.css\" -o -name \"*.js\" \\\\\\) -exec wc -l {} +)",
+      "Bash(rm \"C:\\\\Users\\\\User\\\\Desktop\\\\alumup-1\\\\css\\\\pergola-configurator.css\" && rm \"C:\\\\Users\\\\User\\\\Desktop\\\\alumup-1\\\\pvc configorator.html\")"
+    ]
+  }
+}
