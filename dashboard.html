@@ -85,6 +85,7 @@
       font-size: 0.75rem; font-weight: 700; white-space: nowrap;
     }
     .status-draft    { background: rgba(196,124,0,0.1);  color: #a06000; border: 1px solid rgba(196,124,0,0.25); }
+    .status-review   { background: rgba(234,88,12,0.1);  color: #ea580c; border: 1px solid rgba(234,88,12,0.28); font-weight:800; }
     .status-production { background: rgba(26,95,170,0.1); color: var(--electric-blue); border: 1px solid rgba(26,95,170,0.25); }
     .status-delivered  { background: rgba(22,163,74,0.1);  color: #16a34a; border: 1px solid rgba(22,163,74,0.25); }
 
@@ -254,7 +255,7 @@ const supabase = createClient(
 );
 
 const PVC_NAMES = { white:'לבן', black:'שחור', gray46:'אפור 7046', gray16:'אפור כהה 7016', green:'ירוק', red:'אדום', cream:'שמנת 1013' };
-const STATUS_LABEL = { draft:'טיוטה', in_production:'בתהליך ייצור', delivered:'נמסר' };
+const STATUS_LABEL = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור', delivered:'נמסר' };
 
 /* ── AUTH ── */
 async function init() {
@@ -288,7 +289,7 @@ async function loadAllOrders() {
 
   if (error) { console.error(error); return; }
   allOrders = data || [];
-  renderOrderSection('orders-draft',      allOrders.filter(o => o.status === 'draft'));
+  renderOrderSection('orders-draft',      allOrders.filter(o => o.status === 'draft' || o.status === 'technical_review'));
   renderOrderSection('orders-production', allOrders.filter(o => o.status === 'in_production'));
   renderOrderSection('orders-delivered',  allOrders.filter(o => o.status === 'delivered'));
 }
@@ -308,7 +309,7 @@ function orderCard(o) {
   const systemCount = (d.systems || []).length;
   const dateStr = new Date(o.created_at).toLocaleDateString('he-IL');
   const name = o.project_name || `פרגולה חשמלית`;
-  const statusClass = { draft:'status-draft', in_production:'status-production', delivered:'status-delivered' }[o.status] || 'status-draft';
+  const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered' }[o.status] || 'status-draft';
   const statusLabel = { draft:'טיוטה — ממתין לאישור', in_production:'בתהליך ייצור', delivered:'נמסר' }[o.status] || o.status;
 
   return `<div class="order-card" onclick="openOrderModal('${o.id}')">

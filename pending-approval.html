@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | ההרשמה הושלמה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .pending-card {
+      text-align: center;
+      padding: 3rem 2rem 2.5rem;
+    }
+
+    .success-icon-wrap {
+      width: 88px; height: 88px;
+      background: rgba(22,163,74,0.09);
+      border: 2px solid rgba(22,163,74,0.22);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.75rem;
+      animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+    }
+
+    @keyframes popIn {
+      from { transform: scale(0.4); opacity: 0; }
+      to   { transform: scale(1);   opacity: 1; }
+    }
+
+    .success-icon-wrap i {
+      font-size: 2.8rem;
+      color: #16a34a;
+    }
+
+    .pending-title {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: var(--industrial-silver);
+      margin-bottom: 0.5rem;
+    }
+
+    .pending-subtitle {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--electric-blue);
+      margin-bottom: 1.5rem;
+    }
+
+    .pending-body {
+      font-size: 0.92rem;
+      color: var(--silver-dark);
+      line-height: 1.75;
+      margin-bottom: 1.75rem;
+    }
+
+    .info-box {
+      background: rgba(26,95,170,0.06);
+      border: 1px solid rgba(26,95,170,0.18);
+      border-radius: var(--border-radius);
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.75rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.75rem;
+      text-align: right;
+    }
+
+    .info-box i {
+      font-size: 1.25rem;
+      color: var(--electric-blue);
+      flex-shrink: 0;
+      margin-top: 0.1rem;
+    }
+
+    .info-box-text {
+      font-size: 0.88rem;
+      color: var(--industrial-silver);
+      line-height: 1.6;
+    }
+
+    .info-box-text strong {
+      color: var(--electric-blue);
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      width: 100%;
+      padding: 0.9rem 1.5rem;
+      background: #25d366;
+      color: #fff;
+      border: none;
+      border-radius: var(--border-radius);
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.18s ease, transform 0.15s ease;
+      margin-bottom: 1rem;
+    }
+
+    .btn-whatsapp:hover {
+      background: #1ebe5d;
+      transform: translateY(-1px);
+    }
+
+    .btn-whatsapp i { font-size: 1.3rem; }
+
+    .back-link {
+      font-size: 0.85rem;
+      color: var(--silver-dark);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.3rem;
+      transition: color 0.18s ease;
+    }
+
+    .back-link:hover { color: var(--electric-blue); }
+
+    .steps-row {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .step-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .step-dot {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: rgba(22,163,74,0.1);
+      border: 1.5px solid rgba(22,163,74,0.3);
+      display: flex; align-items: center; justify-content: center;
+      color: #16a34a;
+      font-size: 1rem;
+    }
+
+    .step-label {
+      font-size: 0.72rem;
+      color: var(--silver-dark);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="container header-container">
+      <a href="index.html" class="logo">
+        <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
+      </a>
+    </div>
+  </header>
+
+  <main class="auth-page">
+    <div class="hero-abstract-bg">
+      <div class="glow-orb primary-orb" style="top:15%;right:8%;"></div>
+      <div class="glow-orb secondary-orb" style="bottom:10%;left:8%;"></div>
+    </div>
+
+    <div class="container">
+      <div class="auth-container">
+        <div class="pending-card">
+
+          <div class="success-icon-wrap">
+            <i class="ph ph-check-circle"></i>
+          </div>
+
+          <div class="pending-title">ההרשמה הושלמה בהצלחה!</div>
+          <div class="pending-subtitle">החשבון שלך ממתין לאישור צוות ALUM-IL</div>
+
+          <div class="steps-row">
+            <div class="step-item">
+              <div class="step-dot"><i class="ph ph-check"></i></div>
+              <div class="step-label">הרשמה</div>
+            </div>
+            <div class="step-item">
+              <div class="step-dot" style="background:rgba(26,95,170,0.08);border-color:rgba(26,95,170,0.25);color:var(--electric-blue);">
+                <i class="ph ph-hourglass-medium"></i>
+              </div>
+              <div class="step-label">בדיקת ח"פ</div>
+            </div>
+            <div class="step-item">
+              <div class="step-dot" style="background:var(--border-light);border-color:var(--border);color:var(--silver-dark);">
+                <i class="ph ph-user-circle-check"></i>
+              </div>
+              <div class="step-label">אישור גישה</div>
+            </div>
+          </div>
+
+          <p class="pending-body">
+            נבדוק את פרטי העסק ונחזור אליך בהקדם האפשרי.<br>
+            בדרך כלל תוך <strong style="color:var(--industrial-silver);">1–2 ימי עסקים</strong>.<br>
+            תקבל הודעה במייל ברגע שהחשבון יאושר ותוכל להתחבר למערכת.
+          </p>
+
+          <div class="info-box">
+            <i class="ph ph-envelope"></i>
+            <div class="info-box-text">
+              <strong>בדוק את תיבת הדואר שלך</strong>
+              שלחנו אליך מייל אימות. לחץ על הקישור לאימות הכתובת לפני שהחשבון יופעל.
+            </div>
+          </div>
+
+          <a href="https://wa.me/972503494755?text=%D7%A9%D7%9C%D7%95%D7%9D%2C%20%D7%A0%D7%A8%D7%A9%D7%9E%D7%AA%D7%99%20%D7%9C%D7%9E%D7%A2%D7%A8%D7%9B%D7%AA%20ALUM-IL%20%D7%95%D7%90%D7%A9%D7%9E%D7%97%20%D7%9C%D7%A9%D7%9E%D7%95%D7%A2%20%D7%A2%D7%9C%20%D7%AA%D7%94%D7%9C%D7%99%D7%9A%20%D7%94%D7%90%D7%99%D7%A9%D7%95%D7%A8."
+     target="_blank" class="btn-whatsapp">
+            <i class="ph ph-whatsapp-logo"></i>
+            יש לך שאלות? שלח לנו וואטסאפ
+          </a>
+
+          <a href="login.html" class="back-link">
+            <i class="ph ph-arrow-right"></i>
+            חזרה לדף ההתחברות
+          </a>
+
+        </div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

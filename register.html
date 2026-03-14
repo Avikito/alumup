@@ -144,7 +144,7 @@
                     <div class="progress-step" id="indicator-3">3</div>
                 </div>
 
-                <form id="registrationForm" onsubmit="event.preventDefault(); window.location.href='dashboard.html';">
+                <form id="registrationForm" onsubmit="event.preventDefault()">
 
                     <!-- STEP 1: Basic Contact -->
                     <div class="step-container active" id="step-1">
@@ -165,14 +165,26 @@
                         </div>
                         <div class="form-row">
                             <div class="form-group">
+                                <label class="form-label" for="businessId">ח.פ. / ע.מ.</label>
+                                <input type="text" id="businessId" class="form-control"
+                                    placeholder="000000000" dir="ltr">
+                            </div>
+                            <div class="form-group">
                                 <label class="form-label" for="phone">טלפון נייד</label>
                                 <input type="tel" id="phone" class="form-control" required placeholder="050-0000000"
                                     dir="ltr">
                             </div>
+                        </div>
+                        <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label" for="email">כתובת דוא"ל</label>
                                 <input type="email" id="email" class="form-control" required
                                     placeholder="info@company.co.il" dir="ltr">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="password">סיסמה</label>
+                                <input type="password" id="password" class="form-control" required
+                                    placeholder="לפחות 6 תווים" dir="ltr">
                             </div>
                         </div>
                         <div class="form-group">
@@ -292,11 +304,13 @@
                             </label>
                         </div>
 
+                        <div id="regError" style="display:none; color:#dc2626; font-size:0.88rem; margin-bottom:1rem; padding:0.7rem 1rem; background:rgba(220,38,38,0.07); border-radius:8px; border:1px solid rgba(220,38,38,0.2);"></div>
+
                         <div class="form-row">
                             <button type="button" class="btn btn-outline-silver btn-large" onclick="prevStep(2)">
                                 <i class="ph ph-arrow-right"></i> חזור
                             </button>
-                            <button type="submit" class="btn btn-primary btn-large" style="flex:1;">
+                            <button type="button" id="submitBtn" class="btn btn-primary btn-large" style="flex:1;" onclick="handleRegistration()">
                                 אישור ופתיחת חשבון <i class="ph ph-check"></i>
                             </button>
                         </div>
@@ -311,28 +325,100 @@
         </div>
     </main>
 
-    <script>
-        function nextStep(step) {
-            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
-            document.getElementById('step-' + step).classList.add('active');
-            updateIndicators(step);
-        }
+    <script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-        function prevStep(step) {
-            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
-            document.getElementById('step-' + step).classList.add('active');
-            updateIndicators(step);
-        }
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
 
-        function updateIndicators(step) {
-            for (let i = 1; i <= 3; i++) {
-                if (i <= step) {
-                    document.getElementById('indicator-' + i).classList.add('active');
-                } else {
-                    document.getElementById('indicator-' + i).classList.remove('active');
-                }
-            }
-        }
+/* ── STEP NAVIGATION ── */
+window.nextStep = function(step) {
+  document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-' + step).classList.add('active');
+  updateIndicators(step);
+};
+
+window.prevStep = function(step) {
+  document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
+  document.getElementById('step-' + step).classList.add('active');
+  updateIndicators(step);
+};
+
+function updateIndicators(step) {
+  for (let i = 1; i <= 3; i++) {
+    const el = document.getElementById('indicator-' + i);
+    if (el) el.classList.toggle('active', i <= step);
+  }
+}
+
+/* ── REGISTRATION ── */
+window.handleRegistration = async function() {
+  const errEl = document.getElementById('regError');
+  errEl.style.display = 'none';
+
+  const email        = document.getElementById('email').value.trim();
+  const password     = document.getElementById('password').value;
+  const fullName     = document.getElementById('fullName').value.trim();
+  const businessName = document.getElementById('businessName').value.trim();
+  const businessId   = document.getElementById('businessId').value.trim();
+  const phone        = document.getElementById('phone').value.trim();
+
+  const regions     = Array.from(document.querySelectorAll('input[name="regions"]:checked')).map(el => el.value);
+  const userTypes   = Array.from(document.querySelectorAll('input[name="userType"]:checked')).map(el => el.value);
+  const specialties = Array.from(document.querySelectorAll('input[name="specialty"]:checked')).map(el => el.value);
+
+  if (!email || !password || !fullName || !businessName || !phone) {
+    showError('יש למלא את כל השדות החובה.');
+    return;
+  }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'רושם...';
+
+  try {
+    const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
+    if (authError) throw authError;
+
+    const { error: profileError } = await supabase.from('profiles').insert([{
+      id: authData.user.id,
+      full_name: fullName,
+      business_name: businessName,
+      business_id: businessId || null,
+      phone,
+      regions,
+      user_type: userTypes,
+      specialties,
+      status: 'pending'
+    }]);
+    if (profileError) throw profileError;
+
+    window.location.href = 'pending-approval.html';
+
+  } catch (error) {
+    let msg = 'שגיאה ברישום. נסה שנית.';
+    if (error.message?.includes('already registered') || error.message?.includes('User already registered')) {
+      msg = 'כתובת האימייל כבר רשומה במערכת. נסה להתחבר או השתמש בכתובת אחרת.';
+    } else if (error.message?.includes('security purposes') || error.message?.includes('after')) {
+      msg = 'מסיבות אבטחה, יש להמתין מספר שניות לפני ניסיון נוסף. נסה שוב בעוד דקה.';
+    } else if (error.message?.includes('Password')) {
+      msg = 'הסיסמה חייבת להכיל לפחות 6 תווים.';
+    } else if (error.message?.includes('email')) {
+      msg = 'כתובת האימייל אינה תקינה.';
+    }
+    showError(msg);
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = 'אישור ופתיחת חשבון <i class="ph ph-check"></i>';
+  }
+};
+
+function showError(msg) {
+  const el = document.getElementById('regError');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
     </script>
 </body>
 

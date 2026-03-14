@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | תמחור גלובלי</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
+
+    .admin-sidebar {
+      width:220px; flex-shrink:0;
+      background:var(--surface-dark);
+      border-left:1px solid var(--border);
+      padding:1.5rem 1rem;
+    }
+    .sidebar-label { font-size:0.72rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;padding:0 0.75rem;margin-bottom:0.75rem; }
+    .admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+    .admin-nav a {
+      display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;
+      font-size:0.9rem;font-weight:500;color:var(--silver-dark);cursor:pointer;
+      transition:all 0.18s ease;text-decoration:none;
+    }
+    .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+
+    .admin-content { flex:1;padding:2rem;overflow-y:auto; }
+    .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
+    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.75rem; }
+
+    /* ── TABS ── */
+    .tabs-bar {
+      display:flex;gap:0.25rem;
+      border-bottom:2px solid var(--border);
+      margin-bottom:1.75rem;
+    }
+    .tab-btn {
+      display:inline-flex;align-items:center;gap:0.45rem;
+      padding:0.55rem 1.1rem;
+      border:none;background:none;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
+      color:var(--silver-dark);cursor:pointer;
+      border-bottom:2.5px solid transparent;margin-bottom:-2px;
+      transition:color 0.18s ease, border-color 0.18s ease;
+    }
+    .tab-btn:hover { color:var(--electric-blue); }
+    .tab-btn.active { color:var(--electric-blue);border-bottom-color:var(--electric-blue);font-weight:700; }
+
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    /* ── SETTINGS CARD ── */
+    .settings-card {
+      background:var(--surface-dark);
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:2rem 2.25rem;
+      max-width:560px;
+    }
+
+    .section-divider {
+      font-size:0.72rem;font-weight:700;color:var(--silver-dark);
+      text-transform:uppercase;letter-spacing:1px;
+      margin:0 0 1.25rem;
+      padding-bottom:0.5rem;
+      border-bottom:1px solid var(--border);
+      display:flex;align-items:center;gap:0.5rem;
+    }
+    .section-divider i { font-size:1rem;color:var(--electric-blue); }
+
+    .fields-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1rem 1.5rem;
+      margin-bottom:1.5rem;
+    }
+    .fields-grid.single { grid-template-columns:1fr; }
+
+    .field-group { margin-bottom:0; }
+    .field-label {
+      display:block;
+      font-size:0.85rem;font-weight:700;color:var(--industrial-silver);
+      margin-bottom:0.35rem;
+    }
+    .field-desc {
+      font-size:0.75rem;color:var(--silver-dark);margin-bottom:0.45rem;line-height:1.4;
+    }
+    .field-input-wrap {
+      display:flex;align-items:center;
+      border:1.5px solid var(--border);border-radius:9px;overflow:hidden;
+      transition:border-color 0.18s;
+    }
+    .field-input-wrap:focus-within { border-color:var(--electric-blue); }
+    .field-prefix {
+      padding:0 0.75rem;
+      background:#f7f9fd;
+      color:var(--silver-dark);
+      font-size:0.88rem;font-weight:700;
+      border-left:1px solid var(--border);
+      height:42px;display:flex;align-items:center;flex-shrink:0;
+    }
+    .field-input {
+      flex:1;padding:0.6rem 0.75rem;border:none;outline:none;
+      font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:700;
+      color:var(--industrial-silver);background:var(--surface-dark);
+      min-width:0;
+    }
+    .field-suffix {
+      padding:0 0.75rem;
+      color:var(--silver-dark);
+      font-size:0.78rem;
+      border-right:1px solid var(--border);
+      height:42px;display:flex;align-items:center;flex-shrink:0;white-space:nowrap;
+    }
+
+    /* ── SAVE BAR ── */
+    .save-bar {
+      display:flex;align-items:center;justify-content:space-between;
+      padding-top:1.5rem;
+      border-top:1px solid var(--border);
+      margin-top:0.5rem;
+    }
+    .btn-save {
+      display:inline-flex;align-items:center;gap:0.5rem;
+      padding:0.75rem 1.75rem;
+      background:var(--electric-blue);color:#fff;
+      border:none;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.92rem;font-weight:700;
+      cursor:pointer;transition:background 0.18s ease,transform 0.15s ease;
+    }
+    .btn-save:hover { background:#154e8f;transform:translateY(-1px); }
+    .btn-save:disabled { opacity:0.5;pointer-events:none; }
+
+    .info-note {
+      font-size:0.78rem;color:var(--silver-dark);
+      display:flex;align-items:flex-start;gap:0.4rem;
+      max-width:280px;line-height:1.45;
+    }
+    .info-note i { flex-shrink:0;margin-top:0.1rem;color:var(--electric-blue); }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);
+      background:#16a34a;color:#fff;
+      padding:0.75rem 1.5rem;border-radius:10px;
+      font-size:0.9rem;font-weight:700;
+      display:flex;align-items:center;gap:0.5rem;
+      opacity:0;pointer-events:none;
+      transition:opacity 0.25s ease,transform 0.25s ease;
+      z-index:9999;box-shadow:0 4px 20px rgba(22,163,74,0.35);
+    }
+    .toast.show { opacity:1;transform:translateX(-50%) translateY(0);pointer-events:all; }
+    .toast.error { background:#dc2626;box-shadow:0 4px 20px rgba(220,38,38,0.35); }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite;display:inline-block; }
+  </style>
+</head>
+<body>
+  <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+        <i class="ph ph-shield-star"></i> פאנל ניהול
+      </span>
+      <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
+        <i class="ph ph-arrow-right"></i> אזור אישי
+      </a>
+    </div>
+  </header>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <div id="admin-sidebar-placeholder"></div>
+    </aside>
+
+    <main class="admin-content">
+      <div class="page-title">תמחור גלובלי</div>
+      <div class="page-subtitle">הגדרות מחיר בסיס המשפיעות על הצעות מחיר וקיטים — שינויים ישפיעו על הזמנות חדשות בלבד</div>
+
+      <!-- TABS -->
+      <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('raw')" id="tab-raw">
+          <i class="ph ph-atom"></i> חומרי גלם
+        </button>
+        <button class="tab-btn" onclick="switchTab('kits')" id="tab-kits">
+          <i class="ph ph-package"></i> קיטים
+        </button>
+        <button class="tab-btn" onclick="switchTab('accessories')" id="tab-accessories">
+          <i class="ph ph-wrench"></i> אביזרים
+        </button>
+      </div>
+
+      <!-- TAB: חומרי גלם -->
+      <div class="tab-panel active" id="panel-raw">
+        <div class="settings-card">
+          <div class="section-divider">
+            <i class="ph ph-atom"></i> מחירי חומרי גלם
+          </div>
+
+          <div class="fields-grid single">
+            <div class="field-group">
+              <label class="field-label" for="aluminumPrice">מחיר אלומיניום לק"ג</label>
+              <div class="field-desc">בסיס חישוב עלות הפרופילים בכל מערכת ובכל קיט</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="aluminumPrice" type="number" min="0" step="0.5" placeholder="45">
+                <span class="field-suffix">לק"ג</span>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="paintPrice">מחיר עיבוד צבע ליחידה</label>
+              <div class="field-desc">עלות אנודיזציה / צביעה באבקה לפרופיל בודד</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="paintPrice" type="number" min="0" step="1" placeholder="120">
+                <span class="field-suffix">ליחידה</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="save-bar">
+            <div class="info-note">
+              <i class="ph ph-info"></i>
+              <span>שינוי ישפיע על הצעות חדשות בלבד</span>
+            </div>
+            <button class="btn-save" id="saveRawBtn" onclick="saveTab('raw')">
+              <i class="ph ph-floppy-disk"></i> שמור
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: קיטים -->
+      <div class="tab-panel" id="panel-kits">
+        <div class="settings-card">
+          <div class="section-divider">
+            <i class="ph ph-package"></i> מחירי בסיס לקיטים
+          </div>
+
+          <div class="fields-grid">
+            <div class="field-group">
+              <label class="field-label" for="kitPergolaPrice">קיט פרגולה</label>
+              <div class="field-desc">מחיר בסיס לקיט פרגולה סטנדרטי</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="kitPergolaPrice" type="number" min="0" step="100" placeholder="3500">
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="kitVitrinePrice">קיט חלונות ויטרינה</label>
+              <div class="field-desc">מחיר בסיס לקיט חלון ויטרינה</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="kitVitrinePrice" type="number" min="0" step="100" placeholder="4200">
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="kitFencePrice">קיט גדרות ושערים</label>
+              <div class="field-desc">מחיר בסיס לקיט גדר / שער אלומיניום</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="kitFencePrice" type="number" min="0" step="100" placeholder="2800">
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="kitAlumPergolaPrice">קיט פרגולה אלומיניום</label>
+              <div class="field-desc">מחיר בסיס לפרגולת אלומיניום פרופיל כבד</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="kitAlumPergolaPrice" type="number" min="0" step="100" placeholder="5500">
+              </div>
+            </div>
+          </div>
+
+          <div class="save-bar">
+            <div class="info-note">
+              <i class="ph ph-info"></i>
+              <span>מחירי בסיס — לא כוללים אביזרים וצבע</span>
+            </div>
+            <button class="btn-save" id="saveKitsBtn" onclick="saveTab('kits')">
+              <i class="ph ph-floppy-disk"></i> שמור
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB: אביזרים -->
+      <div class="tab-panel" id="panel-accessories">
+        <div class="settings-card">
+          <div class="section-divider">
+            <i class="ph ph-wrench"></i> מחירי אביזרים ותוספות
+          </div>
+
+          <div class="fields-grid">
+            <div class="field-group">
+              <label class="field-label" for="accMotorPrice">מנוע Somfy</label>
+              <div class="field-desc">מחיר ליחידת מנוע (לא כולל שלט)</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="accMotorPrice" type="number" min="0" step="50" placeholder="980">
+                <span class="field-suffix">ליח'</span>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="accRainSensorPrice">חיישן גשם</label>
+              <div class="field-desc">חיישן גשם אוטומטי לסגירת פרגולה</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="accRainSensorPrice" type="number" min="0" step="10" placeholder="350">
+                <span class="field-suffix">ליח'</span>
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label class="field-label" for="accLedPerMeterPrice">תאורת LED</label>
+              <div class="field-desc">מחיר לפי מטר אורך (פרופיל + הזנה)</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="accLedPerMeterPrice" type="number" min="0" step="5" placeholder="85">
+                <span class="field-suffix">למ'</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="save-bar">
+            <div class="info-note">
+              <i class="ph ph-info"></i>
+              <span>מחירים לא כוללים מע"מ — יחושב בהצעה</span>
+            </div>
+            <button class="btn-save" id="saveAccBtn" onclick="saveTab('accessories')">
+              <i class="ph ph-floppy-disk"></i> שמור
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+/* ── TAB SWITCHING (plain script — not module, runs immediately) ── */
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+}
+</script>
+
+<script type="module">
+import { supabase, requireAdmin, renderSidebar } from './js/admin-core.js';
+
+renderSidebar('settings');
+
+// Map: input element id → global_settings key
+const FIELD_MAP = {
+  aluminumPrice:        'aluminum_price_per_kg',
+  paintPrice:           'paint_price_per_unit',
+  kitPergolaPrice:      'kit_pergola_base_price',
+  kitVitrinePrice:      'kit_vitrine_base_price',
+  kitFencePrice:        'kit_fence_base_price',
+  kitAlumPergolaPrice:  'kit_alum_pergola_base_price',
+  accMotorPrice:        'acc_motor_somfy_price',
+  accRainSensorPrice:   'acc_rain_sensor_price',
+  accLedPerMeterPrice:  'acc_led_per_meter_price',
+};
+
+const TAB_FIELDS = {
+  raw:         ['aluminumPrice', 'paintPrice'],
+  kits:        ['kitPergolaPrice', 'kitVitrinePrice', 'kitFencePrice', 'kitAlumPergolaPrice'],
+  accessories: ['accMotorPrice', 'accRainSensorPrice', 'accLedPerMeterPrice'],
+};
+
+const SAVE_BTNS = {
+  raw: 'saveRawBtn', kits: 'saveKitsBtn', accessories: 'saveAccBtn'
+};
+
+async function init() {
+  const user = await requireAdmin();
+  if (!user) return;
+  await loadSettings();
+}
+
+async function loadSettings() {
+  const { data } = await supabase.from('global_settings').select('key, value');
+  if (!data) return;
+  const map = Object.fromEntries(data.map(r => [r.key, r.value]));
+  Object.entries(FIELD_MAP).forEach(([inputId, settingsKey]) => {
+    const el = document.getElementById(inputId);
+    if (el && map[settingsKey] !== undefined) el.value = map[settingsKey];
+  });
+}
+
+window.saveTab = async function(tab) {
+  const btnId = SAVE_BTNS[tab];
+  const btn = document.getElementById(btnId);
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
+
+  const now = new Date().toISOString();
+  const rows = TAB_FIELDS[tab].map(inputId => ({
+    key: FIELD_MAP[inputId],
+    value: document.getElementById(inputId).value || '0',
+    updated_at: now
+  }));
+
+  const { error } = await supabase.from('global_settings').upsert(rows);
+
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור';
+  showToast(error ? 'שגיאה בשמירה: ' + error.message : 'ההגדרות נשמרו בהצלחה', !!error);
+};
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<i class="ph ${isError ? 'ph-warning' : 'ph-check-circle'}"></i> ${msg}`;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+init();
+</script>
+</body>
+</html>

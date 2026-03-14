@@ -65,9 +65,20 @@
       display:inline-flex;align-items:center;gap:0.3rem;padding:0.22rem 0.65rem;
       border-radius:20px;font-size:0.75rem;font-weight:700;white-space:nowrap;
     }
-    .status-draft      { background:rgba(196,124,0,0.1); color:#a06000;border:1px solid rgba(196,124,0,0.25); }
-    .status-production { background:rgba(26,95,170,0.1); color:var(--electric-blue);border:1px solid rgba(26,95,170,0.25); }
-    .status-delivered  { background:rgba(22,163,74,0.1); color:#16a34a;border:1px solid rgba(22,163,74,0.25); }
+    .status-draft      { background:rgba(196,124,0,0.1);  color:#a06000;border:1px solid rgba(196,124,0,0.25); }
+    .status-review     { background:rgba(234,88,12,0.12); color:#ea580c;border:1px solid rgba(234,88,12,0.3); font-weight:800; }
+    .status-production { background:rgba(26,95,170,0.1);  color:var(--electric-blue);border:1px solid rgba(26,95,170,0.25); }
+    .status-delivered  { background:rgba(22,163,74,0.1);  color:#16a34a;border:1px solid rgba(22,163,74,0.25); }
+
+    .btn-approve-production {
+      display:flex;align-items:center;justify-content:center;gap:0.5rem;
+      width:100%;padding:0.85rem;margin-top:1.25rem;
+      background:#ea580c;color:#fff;border:none;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:700;
+      cursor:pointer;transition:background 0.18s ease,transform 0.15s ease;
+    }
+    .btn-approve-production:hover { background:#c2410c;transform:translateY(-1px); }
+    .btn-approve-production:disabled { opacity:0.5;pointer-events:none; }
 
     .status-select {
       padding:0.3rem 0.65rem;border:1.5px solid var(--border);border-radius:7px;
@@ -140,10 +151,7 @@
 
   <div class="admin-wrapper">
     <aside class="admin-sidebar">
-      <div class="sidebar-label">ניהול</div>
-      <ul class="admin-nav">
-        <li><a class="active"><i class="ph ph-list-bullets"></i> כל ההזמנות</a></li>
-      </ul>
+      <div id="admin-sidebar-placeholder"></div>
     </aside>
 
     <main class="admin-content">
@@ -153,6 +161,7 @@
       <div class="filter-bar">
         <button class="filter-btn active" onclick="setFilter('all')">הכל</button>
         <button class="filter-btn" onclick="setFilter('draft')">טיוטה</button>
+        <button class="filter-btn" onclick="setFilter('technical_review')">בבדיקה טכנית</button>
         <button class="filter-btn" onclick="setFilter('in_production')">בתהליך ייצור</button>
         <button class="filter-btn" onclick="setFilter('delivered')">נמסר</button>
         <input class="search-input" type="text" placeholder="חיפוש קוד / פרויקט..." id="searchInput" oninput="renderTable()">
@@ -194,11 +203,9 @@
   </div>
 
 <script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-const supabase = createClient(
-  'https://exfdjelwyrspfspcevvm.supabase.co',
-  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
-);
+import { supabase, requireAdmin, renderSidebar } from './js/admin-core.js';
+
+renderSidebar('orders');
 
 const PVC_NAMES = { white:'לבן',black:'שחור',gray46:'אפור 7046',gray16:'אפור כהה 7016',green:'ירוק',red:'אדום',cream:'שמנת 1013' };
 const PNAMES = { '20/20':'זווית 20×20','30/30':'זווית 30×30','20/40':'זווית 20×40','100/100':'פרופיל 100×100','100/40':'פרופיל 100×40','120/80':'פרופיל 120×80' };
@@ -208,12 +215,8 @@ let currentFilter = 'all';
 
 /* ── AUTH + ADMIN CHECK ── */
 async function init() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { window.location.href = 'login.html'; return; }
-
-  const { data: adminRow } = await supabase.from('admin_users').select('user_id').eq('user_id', user.id).single();
-  if (!adminRow) { window.location.href = 'dashboard.html'; return; }
-
+  const user = await requireAdmin();
+  if (!user) return;
   document.getElementById('adminSubtitle').textContent = `מחובר כ-${user.email}`;
   await loadOrders();
 }
@@ -254,8 +257,8 @@ function renderTable() {
   tbody.innerHTML = rows.map(o => {
     const sys = (o.order_data?.systems || []).length;
     const date = new Date(o.created_at).toLocaleDateString('he-IL');
-    const statusClass = { draft:'status-draft', in_production:'status-production', delivered:'status-delivered' }[o.status] || '';
-    const statusLabel = { draft:'טיוטה', in_production:'בייצור', delivered:'נמסר' }[o.status] || o.status;
+    const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered' }[o.status] || '';
+    const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בייצור', delivered:'נמסר' }[o.status] || o.status;
 
     return `<tr>
       <td class="order-code-cell">${o.order_code}</td>
@@ -266,9 +269,10 @@ function renderTable() {
       <td>
         <div>
           <select class="status-select" data-id="${o.id}" onchange="updateStatus(this)">
-            <option value="draft"         ${o.status==='draft'         ?'selected':''}>טיוטה</option>
-            <option value="in_production" ${o.status==='in_production' ?'selected':''}>בתהליך ייצור</option>
-            <option value="delivered"     ${o.status==='delivered'     ?'selected':''}>נמסר</option>
+            <option value="draft"             ${o.status==='draft'             ?'selected':''}>טיוטה</option>
+            <option value="technical_review"  ${o.status==='technical_review'  ?'selected':''}>בבדיקה טכנית</option>
+            <option value="in_production"     ${o.status==='in_production'     ?'selected':''}>בתהליך ייצור</option>
+            <option value="delivered"         ${o.status==='delivered'         ?'selected':''}>נמסר</option>
           </select>
           <div class="save-indicator" id="si-${o.id}"></div>
         </div>
@@ -350,8 +354,34 @@ window.openDetail = function(id) {
     <div class="detail-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(o.grand_total||0).toLocaleString()}</span></div>
   </div>`;
 
+  if (o.status === 'technical_review') {
+    html += `<button class="btn-approve-production" id="approveBtn-${o.id}" onclick="approveToProduction('${o.id}')">
+      <i class="ph ph-check-circle"></i> נבדק — אשר לייצור
+    </button>`;
+  }
+
   document.getElementById('detailBody').innerHTML = html;
   document.getElementById('detailOverlay').classList.add('open');
+};
+
+window.approveToProduction = async function(id) {
+  const btn = document.getElementById(`approveBtn-${id}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...'; }
+
+  const { error } = await supabase.from('orders')
+    .update({ status: 'in_production', updated_at: new Date().toISOString() })
+    .eq('id', id);
+
+  if (error) {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-check-circle"></i> נבדק — אשר לייצור'; }
+    return;
+  }
+
+  // Update local cache + close panel + refresh table
+  const o = allOrders.find(x => x.id === id);
+  if (o) o.status = 'in_production';
+  document.getElementById('detailOverlay').classList.remove('open');
+  renderTable();
 };
 
 window.closeDetail = function(e) {
