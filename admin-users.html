@@ -186,16 +186,18 @@ async function requireAdmin() {
   if (!user) { window.location.href = 'login.html'; return null; }
   const { data: adminRow } = await supabase
     .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
-  if (!adminRow) { window.location.href = 'dashboard.html'; return null; }
+  if (!adminRow) { window.location.href = 'login.html'; return null; }
+  if (user.email !== 'avihay305@gmail.com') { window.location.href = 'login.html'; return null; }
   return user;
 }
 
 (function() {
   const items = [
-    { id: 'overview',  icon: 'ph-chart-bar',   label: 'סקירה כללית',    href: 'admin-overview.html' },
-    { id: 'users',     icon: 'ph-users',        label: 'אישור משתמשים', href: 'admin-users.html' },
-    { id: 'orders',    icon: 'ph-list-bullets', label: 'הזמנות',         href: 'admin.html' },
-    { id: 'settings',  icon: 'ph-gear-six',     label: 'תמחור גלובלי',  href: 'admin-settings.html' },
+    { id: 'overview',  icon: 'ph-chart-bar',       label: 'סקירה כללית',    href: 'admin-overview.html' },
+    { id: 'users',     icon: 'ph-users',            label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'crm',       icon: 'ph-address-book',     label: 'קהילה ו-CRM',   href: 'approved-users.html' },
+    { id: 'orders',    icon: 'ph-list-bullets',     label: 'הזמנות',         href: 'admin.html' },
+    { id: 'settings',  icon: 'ph-gear-six',         label: 'תמחור גלובלי',  href: 'admin-settings.html' },
   ];
   const el = document.getElementById('admin-sidebar-placeholder');
   if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
@@ -230,17 +232,22 @@ async function init() {
 }
 
 async function loadUsers() {
+  console.log('[USERS] loadUsers() called');
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('status', 'pending')
+    .or('is_approved.is.null,is_approved.eq.false')
     .order('created_at', { ascending: false });
 
+  console.log('[USERS] query result — data:', data, '| error:', error);
+
   if (error) {
-    document.getElementById('usersBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה</td></tr>`;
+    console.error('[USERS] Supabase error:', error.message, error.code, error.details);
+    document.getElementById('usersBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
     return;
   }
 
+  console.log('[USERS] rows returned:', data?.length ?? 0);
   allUsers = data || [];
   renderTable(allUsers);
 }
@@ -260,31 +267,40 @@ function renderTable(users) {
   }
 
   tbody.innerHTML = users.map(u => {
-    const date = new Date(u.created_at).toLocaleDateString('he-IL');
-    const types = (u.user_type || []).map(t => `<span class="type-badge">${TYPE_LABELS[t] || t}</span>`).join('');
-    const specs = (u.specialties || []).map(s => `<span class="spec-tag">${SPEC_LABELS[s] || s}</span>`).join('');
+    try {
+      const date = u.created_at ? new Date(u.created_at).toLocaleDateString('he-IL') : '—';
 
-    return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()}" data-bid="${(u.business_id||'').toLowerCase()}">
-      <td class="date-cell">${date}</td>
-      <td>
-        <div class="biz-name">${u.business_name || '—'}</div>
-        <div style="font-size:0.78rem;color:var(--silver-dark)">${u.full_name || ''}</div>
-      </td>
-      <td class="biz-id">${u.business_id || '—'}</td>
-      <td class="phone-cell">${u.phone || '—'}</td>
-      <td>${types || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
-      <td>${specs || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
-      <td>
-        <div class="actions-cell">
-          <button class="btn-approve" id="approve-${u.id}" onclick="handleAction('${u.id}','approved')">
-            <i class="ph ph-check"></i> אשר
-          </button>
-          <button class="btn-reject" id="reject-${u.id}" onclick="handleAction('${u.id}','rejected')">
-            <i class="ph ph-x"></i> דחה
-          </button>
-        </div>
-      </td>
-    </tr>`;
+      const typeArr = Array.isArray(u.user_type) ? u.user_type : (u.user_type ? [u.user_type] : []);
+      const specArr = Array.isArray(u.specialties) ? u.specialties : (u.specialties ? [u.specialties] : []);
+
+      const types = typeArr.map(t => `<span class="type-badge">${TYPE_LABELS[t] || t}</span>`).join('');
+      const specs = specArr.map(s => `<span class="spec-tag">${SPEC_LABELS[s] || s}</span>`).join('');
+
+      return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()}" data-bid="${(u.business_id||'').toLowerCase()}">
+        <td class="date-cell">${date}</td>
+        <td>
+          <div class="biz-name">${u.business_name || '—'}</div>
+          <div style="font-size:0.78rem;color:var(--silver-dark)">${u.full_name || ''}</div>
+        </td>
+        <td class="biz-id">${u.business_id || '—'}</td>
+        <td class="phone-cell">${u.phone || '—'}</td>
+        <td>${types || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
+        <td>${specs || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
+        <td>
+          <div class="actions-cell">
+            <button class="btn-approve" id="approve-${u.id}" onclick="handleAction('${u.id}','approved')">
+              <i class="ph ph-check"></i> אשר
+            </button>
+            <button class="btn-reject" id="reject-${u.id}" onclick="handleAction('${u.id}','rejected')">
+              <i class="ph ph-x"></i> דחה
+            </button>
+          </div>
+        </td>
+      </tr>`;
+    } catch (rowErr) {
+      console.error('[USERS] renderTable row error for id:', u?.id, rowErr);
+      return `<tr><td colspan="7" style="color:#dc2626;padding:0.5rem 1rem;">שגיאה בשורה: ${u?.business_name || u?.id || '?'}</td></tr>`;
+    }
   }).join('');
 }
 
@@ -294,9 +310,10 @@ window.handleAction = async function(id, newStatus) {
   if (approveBtn) approveBtn.disabled = true;
   if (rejectBtn)  rejectBtn.disabled = true;
 
+  const approved = (newStatus === 'approved');
   const { error } = await supabase
     .from('profiles')
-    .update({ status: newStatus })
+    .update({ is_approved: approved })
     .eq('id', id);
 
   if (error) {

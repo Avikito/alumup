@@ -236,10 +236,11 @@ const supabase = createClient(
 // ── SIDEBAR ──
 (function renderSidebar() {
   const items = [
-    { id: 'overview',  icon: 'ph-chart-bar',   label: 'סקירה כללית',    href: 'admin-overview.html' },
-    { id: 'users',     icon: 'ph-users',        label: 'אישור משתמשים', href: 'admin-users.html' },
-    { id: 'orders',    icon: 'ph-list-bullets', label: 'הזמנות',         href: 'admin.html' },
-    { id: 'settings',  icon: 'ph-gear-six',     label: 'תמחור גלובלי',  href: 'admin-settings.html' },
+    { id: 'overview',  icon: 'ph-chart-bar',       label: 'סקירה כללית',    href: 'admin-overview.html' },
+    { id: 'users',     icon: 'ph-users',            label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'crm',       icon: 'ph-address-book',     label: 'קהילה ו-CRM',   href: 'approved-users.html' },
+    { id: 'orders',    icon: 'ph-list-bullets',     label: 'הזמנות',         href: 'admin.html' },
+    { id: 'settings',  icon: 'ph-gear-six',         label: 'תמחור גלובלי',  href: 'admin-settings.html' },
   ];
   const el = document.getElementById('admin-sidebar-placeholder');
   if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
@@ -288,6 +289,11 @@ async function init() {
 
   if (!adminRow) {
     showDebugError(`המשתמש ${user.email} אינו בטבלת admin_users — הוסף אותו עם ה-SQL שקיבלת`);
+    return;
+  }
+
+  if (user.email !== 'avihay305@gmail.com') {
+    window.location.href = 'login.html';
     return;
   }
 

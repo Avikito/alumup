@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | קהילה ו-CRM</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    /* ─── Layout ─── */
+    .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
+    .admin-sidebar {
+      width:220px; flex-shrink:0;
+      background:var(--surface-dark);
+      border-left:1px solid var(--border);
+      padding:1.5rem 1rem;
+    }
+    .sidebar-label { font-size:0.72rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;padding:0 0.75rem;margin-bottom:0.75rem; }
+    .admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+    .admin-nav a {
+      display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;
+      font-size:0.9rem;font-weight:500;color:var(--silver-dark);text-decoration:none;
+      transition:all 0.18s ease;
+    }
+    .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+
+    .admin-content { flex:1;padding:2rem 2.5rem;overflow-y:auto; }
+
+    /* ─── Page Header ─── */
+    .page-header { display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:1.75rem;flex-wrap:wrap;gap:1rem; }
+    .page-title { font-size:1.45rem;font-weight:800;color:var(--industrial-silver);line-height:1.2; }
+    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-top:0.2rem; }
+    .stat-pills { display:flex;gap:0.6rem;flex-wrap:wrap; }
+    .stat-pill {
+      display:flex;align-items:center;gap:0.4rem;
+      padding:0.3rem 0.85rem;border-radius:20px;
+      font-size:0.78rem;font-weight:700;
+      background:var(--surface-dark);border:1px solid var(--border);
+      color:var(--silver-dark);
+    }
+    .stat-pill .pill-num { font-size:1rem;font-weight:800;color:var(--industrial-silver); }
+
+    /* ─── Toolbar ─── */
+    .toolbar {
+      display:flex;align-items:center;gap:0.6rem;margin-bottom:1.25rem;flex-wrap:wrap;
+    }
+    .search-wrap { position:relative;flex:1;min-width:200px; }
+    .search-wrap i { position:absolute;right:0.8rem;top:50%;transform:translateY(-50%);color:var(--silver-dark);pointer-events:none;font-size:1rem; }
+    .search-input {
+      width:100%;padding:0.5rem 2.2rem 0.5rem 1rem;
+      border:1.5px solid var(--border);border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--industrial-silver);
+      background:var(--surface-dark);
+    }
+    .search-input:focus { outline:none;border-color:var(--electric-blue); }
+    .filter-select {
+      padding:0.48rem 0.9rem;border:1.5px solid var(--border);border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.85rem;color:var(--industrial-silver);
+      background:var(--surface-dark);cursor:pointer;min-width:140px;
+    }
+    .filter-select:focus { outline:none;border-color:var(--electric-blue); }
+    .count-badge {
+      margin-right:auto;padding:0.3rem 0.8rem;border-radius:20px;
+      font-size:0.78rem;font-weight:700;color:var(--electric-blue);
+      background:var(--blue-dim);border:1px solid rgba(26,95,170,0.2);
+      white-space:nowrap;
+    }
+
+    /* ─── Table ─── */
+    .crm-table-wrap { overflow-x:auto;border-radius:14px;border:1px solid var(--border);box-shadow:0 2px 12px rgba(0,0,0,0.04); }
+    .crm-table { width:100%;border-collapse:collapse;font-size:0.86rem; }
+    .crm-table thead tr { background:linear-gradient(to left,#f4f7fb,#eef2f8); }
+    .crm-table th {
+      padding:0.75rem 1rem;
+      text-align:right;font-size:0.69rem;font-weight:800;color:var(--silver-dark);
+      text-transform:uppercase;letter-spacing:0.6px;border-bottom:1.5px solid var(--border);
+      white-space:nowrap;
+    }
+    .crm-table td { padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle; }
+    .crm-table tbody tr:last-child > td { border-bottom:none; }
+    .crm-table tbody tr.data-row:hover > td { background:rgba(26,95,170,0.03);cursor:pointer; }
+    .crm-table tbody tr.data-row.is-expanded > td { background:rgba(26,95,170,0.05); }
+
+    /* ─── Business name cell ─── */
+    .biz-cell .biz-name { font-weight:700;font-size:0.92rem;color:var(--industrial-silver); }
+    .biz-cell .biz-meta { display:flex;align-items:center;gap:0.4rem;margin-top:0.2rem;flex-wrap:wrap; }
+    .biz-cell .join-date { font-size:0.73rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.2rem; }
+    .biz-cell .full-name { font-size:0.75rem;color:var(--silver-dark); }
+
+    /* ─── Tag badges ─── */
+    .badge-wrap { display:flex;flex-wrap:wrap;gap:0.22rem; }
+    .badge {
+      display:inline-flex;align-items:center;
+      padding:0.13rem 0.52rem;border-radius:20px;
+      font-size:0.7rem;font-weight:700;white-space:nowrap;
+    }
+    /* Professional type — electric blue */
+    .badge-type {
+      background:rgba(26,95,170,0.09);color:#1a5faa;
+      border:1px solid rgba(26,95,170,0.2);
+    }
+    /* Specialties — teal */
+    .badge-spec {
+      background:rgba(13,148,136,0.09);color:#0d9488;
+      border:1px solid rgba(13,148,136,0.22);
+    }
+    /* Regions — amber */
+    .badge-region {
+      background:rgba(217,119,6,0.09);color:#b45309;
+      border:1px solid rgba(217,119,6,0.22);
+    }
+
+    /* ─── Quotes count ─── */
+    .quotes-cell { text-align:center; }
+    .quotes-num {
+      display:inline-flex;align-items:center;justify-content:center;
+      width:36px;height:36px;border-radius:50%;
+      font-size:0.88rem;font-weight:800;
+      background:var(--blue-dim);color:var(--electric-blue);
+      border:1.5px solid rgba(26,95,170,0.18);
+    }
+    .quotes-num.zero { background:rgba(100,100,100,0.06);color:var(--silver-dark);border-color:var(--border); }
+
+    /* ─── Actions column ─── */
+    .actions-cell { display:flex;gap:0.4rem;align-items:center; }
+    .btn-wa {
+      display:inline-flex;align-items:center;gap:0.25rem;
+      padding:0.3rem 0.7rem;border:none;border-radius:7px;
+      font-family:'Heebo',sans-serif;font-size:0.77rem;font-weight:700;
+      cursor:pointer;transition:all 0.18s ease;text-decoration:none;
+      background:rgba(37,211,102,0.1);color:#128C7E;
+      border:1.5px solid rgba(37,211,102,0.28);white-space:nowrap;
+    }
+    .btn-wa:hover { background:rgba(37,211,102,0.2); }
+    .btn-expand {
+      display:inline-flex;align-items:center;justify-content:center;
+      width:30px;height:30px;border:1.5px solid var(--border);border-radius:7px;
+      background:var(--surface-dark);color:var(--silver-dark);
+      cursor:pointer;transition:all 0.18s ease;font-size:1rem;
+    }
+    .btn-expand:hover { border-color:var(--electric-blue);color:var(--electric-blue); }
+    .btn-expand.open { border-color:var(--electric-blue);color:var(--electric-blue);background:var(--blue-dim); }
+
+    /* ─── Expand panel ─── */
+    .expand-row td { padding:0;border-bottom:1px solid var(--border);background:rgba(248,250,255,0.8); }
+    .expand-panel {
+      padding:1.5rem 1.75rem;
+      display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem 2rem;
+    }
+    .ep-field label {
+      display:block;font-size:0.7rem;font-weight:800;color:var(--silver-dark);
+      text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem;
+    }
+    .ep-field input[type="text"],
+    .ep-field input[type="date"],
+    .ep-field input[type="number"],
+    .ep-field select,
+    .ep-field textarea {
+      width:100%;padding:0.42rem 0.8rem;
+      border:1.5px solid var(--border);border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--industrial-silver);
+      background:#fff;resize:vertical;
+    }
+    .ep-field input:focus, .ep-field select:focus, .ep-field textarea:focus {
+      outline:none;border-color:var(--electric-blue);
+    }
+    .ep-stat { font-size:1.1rem;font-weight:800;color:var(--industrial-silver); }
+    .ep-stat-sub { font-size:0.75rem;color:var(--silver-dark);margin-top:0.15rem; }
+    .ep-actions {
+      grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:0.6rem;
+      padding-top:0.5rem;border-top:1px solid var(--border);
+    }
+    .btn-save-crm {
+      display:inline-flex;align-items:center;gap:0.3rem;
+      padding:0.4rem 1.15rem;border:none;border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;
+      cursor:pointer;transition:all 0.18s ease;
+      background:var(--electric-blue);color:#fff;
+    }
+    .btn-save-crm:hover { opacity:0.88; }
+    .btn-save-crm:disabled { opacity:0.4;pointer-events:none; }
+    .save-ok { font-size:0.8rem;color:#16a34a;font-weight:700;display:none;align-items:center;gap:0.3rem; }
+
+    /* ─── Stars ─── */
+    .star-row { display:flex;gap:0.15rem;cursor:pointer; }
+    .star-btn { font-size:1.3rem;color:var(--border);transition:color 0.12s;cursor:pointer;background:none;border:none;padding:0; }
+    .star-btn.lit { color:#f59e0b; }
+    .star-btn:hover { color:#f59e0b; }
+
+    /* ─── Sub badge ─── */
+    .sub-pill {
+      display:inline-flex;align-items:center;gap:0.25rem;
+      padding:0.18rem 0.6rem;border-radius:20px;font-size:0.71rem;font-weight:700;white-space:nowrap;
+    }
+    .sub-trial   { background:rgba(22,163,74,0.1);color:#16a34a;border:1px solid rgba(22,163,74,0.22); }
+    .sub-active  { background:rgba(26,95,170,0.1);color:#1a5faa;border:1px solid rgba(26,95,170,0.2); }
+    .sub-expired { background:rgba(220,38,38,0.08);color:#dc2626;border:1px solid rgba(220,38,38,0.2); }
+    .sub-none    { background:rgba(100,100,100,0.07);color:var(--silver-dark);border:1px solid var(--border); }
+
+    /* ─── Empty / loading ─── */
+    .empty-state { text-align:center;padding:4rem 2rem;color:var(--silver-dark); }
+    .empty-state i { font-size:2.5rem;opacity:0.25;display:block;margin-bottom:0.75rem; }
+    .empty-state p { font-size:0.92rem;font-weight:600; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite;display:inline-block; }
+  </style>
+</head>
+<body>
+  <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+        <i class="ph ph-shield-star"></i> פאנל ניהול
+      </span>
+      <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
+        <i class="ph ph-arrow-right"></i> אזור אישי
+      </a>
+    </div>
+  </header>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <div id="admin-sidebar-placeholder"></div>
+    </aside>
+
+    <main class="admin-content">
+      <div class="page-header">
+        <div>
+          <div class="page-title">קהילה ו-CRM</div>
+          <div class="page-subtitle">כלל המשתמשים המאושרים — ניהול, מעקב ותקשורת</div>
+        </div>
+        <div class="stat-pills" id="statPills">
+          <div class="stat-pill"><span class="pill-num" id="statTotal">—</span> סה"כ חברים</div>
+          <div class="stat-pill"><span class="pill-num" id="statActive">—</span> מנויים פעילים</div>
+          <div class="stat-pill"><span class="pill-num" id="statQuotes">—</span> הצעות מחיר</div>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search-wrap">
+          <i class="ph ph-magnifying-glass"></i>
+          <input class="search-input" type="text" id="searchInput"
+            placeholder="חיפוש לפי שם, עסק, טלפון..."
+            oninput="applyFilters()">
+        </div>
+        <select class="filter-select" id="filterRegion" onchange="applyFilters()">
+          <option value="">כל אזורי הפעילות</option>
+          <option value="north">צפון</option>
+          <option value="haifa">חיפה והסביבה</option>
+          <option value="sharon">שרון</option>
+          <option value="center">מרכז</option>
+          <option value="jerusalem">ירושלים</option>
+          <option value="south">דרום</option>
+          <option value="eilat">אילת והערבה</option>
+        </select>
+        <select class="filter-select" id="filterType" onchange="applyFilters()">
+          <option value="">כל סוגי הגורמים</option>
+          <option value="installer">מתקין</option>
+          <option value="manufacturer">יצרן אלומיניום</option>
+          <option value="importer">יבואן</option>
+          <option value="metalworker">מסגר</option>
+          <option value="warehouse">מחסן חומרי גלם</option>
+          <option value="gardening">גינון ופיתוח</option>
+          <option value="contractor">קבלן</option>
+          <option value="architect">אדריכל</option>
+          <option value="entrepreneur">יזם</option>
+        </select>
+        <select class="filter-select" id="filterSpec" onchange="applyFilters()">
+          <option value="">כל ההתמחויות</option>
+          <option value="luxury">וילות ויוקרה</option>
+          <option value="buildings">בנייה רוויה</option>
+          <option value="renovations">שיפוצים</option>
+          <option value="curtain-walls">קירות מסך</option>
+          <option value="fences">גדרות ושערים</option>
+          <option value="new-biz">עסק בהקמה</option>
+        </select>
+        <span class="count-badge" id="countBadge">טוען...</span>
+      </div>
+
+      <div class="crm-table-wrap">
+        <table class="crm-table" id="crmTable">
+          <thead>
+            <tr>
+              <th>שם עסק</th>
+              <th>סוג גורם</th>
+              <th>התמחויות</th>
+              <th>אזורי פעילות</th>
+              <th style="text-align:center;">הצעות מחיר</th>
+              <th>מנוי</th>
+              <th>פעולות</th>
+            </tr>
+          </thead>
+          <tbody id="crmBody">
+            <tr><td colspan="7" style="text-align:center;padding:3rem;color:var(--silver-dark);">
+              <i class="ph ph-circle-notch spin" style="font-size:1.5rem;margin-bottom:0.5rem;display:block;"></i>
+              טוען נתונים...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+/* ── Sidebar ── */
+(function() {
+  const items = [
+    { id: 'overview', icon: 'ph-chart-bar',     label: 'סקירה כללית',    href: 'admin-overview.html' },
+    { id: 'users',    icon: 'ph-users',          label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'crm',      icon: 'ph-address-book',   label: 'קהילה ו-CRM',   href: 'approved-users.html' },
+    { id: 'orders',   icon: 'ph-list-bullets',   label: 'הזמנות',         href: 'admin.html' },
+    { id: 'settings', icon: 'ph-gear-six',       label: 'תמחור גלובלי',  href: 'admin-settings.html' },
+  ];
+  const el = document.getElementById('admin-sidebar-placeholder');
+  if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
+    items.map(i => `<li><a href="${i.href}" class="${i.id==='crm'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
+  }</ul>`;
+})();
+
+/* ── Auth guard ── */
+async function requireAdmin() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return null; }
+  const { data: adminRow } = await supabase
+    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+  if (!adminRow) { window.location.href = 'login.html'; return null; }
+  if (user.email !== 'avihay305@gmail.com') { window.location.href = 'login.html'; return null; }
+  return user;
+}
+
+/* ── Label maps (exact values from register.html) ── */
+const TYPE_LABELS = {
+  installer:    'מתקין',
+  manufacturer: 'יצרן אלומיניום',
+  importer:     'יבואן',
+  metalworker:  'מסגר',
+  warehouse:    'מחסן חומרי גלם',
+  gardening:    'גינון ופיתוח',
+  contractor:   'קבלן',
+  architect:    'אדריכל',
+  entrepreneur: 'יזם',
+};
+const SPEC_LABELS = {
+  luxury:         'וילות ויוקרה',
+  buildings:      'בנייה רוויה',
+  renovations:    'שיפוצים',
+  'curtain-walls':'קירות מסך',
+  fences:         'גדרות ושערים',
+  'new-biz':      'עסק בהקמה',
+};
+const REGION_LABELS = {
+  north:      'צפון',
+  haifa:      'חיפה',
+  sharon:     'שרון',
+  center:     'מרכז',
+  jerusalem:  'ירושלים',
+  south:      'דרום',
+  eilat:      'אילת',
+};
+const SUB_LABELS = { trial:'ניסיון', active:'פעיל', expired:'פג תוקף' };
+
+/* ── Helpers ── */
+function toArr(v) {
+  if (!v) return [];
+  if (Array.isArray(v)) return v;
+  try { const p = JSON.parse(v); if (Array.isArray(p)) return p; } catch {}
+  return [v];
+}
+function formatDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('he-IL');
+}
+function waLink(phone) {
+  if (!phone) return null;
+  const digits = phone.replace(/\D/g, '');
+  const intl = digits.startsWith('972') ? digits : '972' + digits.replace(/^0/, '');
+  return `https://wa.me/${intl}`;
+}
+
+/* ── State ── */
+let allUsers = [];
+let expandedId = null;
+let pendingRatings = {};
+
+/* ── Init ── */
+async function init() {
+  const user = await requireAdmin();
+  if (!user) return;
+  await loadUsers();
+}
+
+/* ── Fetch ── */
+async function loadUsers() {
+  console.log('[CRM] loading approved users...');
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('*')
+    .eq('is_approved', true)
+    .order('created_at', { ascending: false });
+
+  console.log('[CRM] rows:', data?.length ?? 0, '| error:', error);
+
+  if (error) {
+    document.getElementById('crmBody').innerHTML =
+      `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה: ${error.message}</td></tr>`;
+    return;
+  }
+
+  allUsers = data || [];
+  updateStats();
+  applyFilters();
+}
+
+/* ── Stats header ── */
+function updateStats() {
+  document.getElementById('statTotal').textContent = allUsers.length;
+  const activeCount = allUsers.filter(u => ['trial','active'].includes(u.subscription_status)).length;
+  document.getElementById('statActive').textContent = activeCount;
+  const totalQ = allUsers.reduce((s, u) => s + (u.total_quotes_count || 0), 0);
+  document.getElementById('statQuotes').textContent = totalQ;
+}
+
+/* ── Filter ── */
+window.applyFilters = function() {
+  const q      = (document.getElementById('searchInput').value || '').toLowerCase();
+  const region = document.getElementById('filterRegion').value;
+  const type   = document.getElementById('filterType').value;
+  const spec   = document.getElementById('filterSpec').value;
+
+  const filtered = allUsers.filter(u => {
+    if (q) {
+      const hay = `${u.business_name||''} ${u.full_name||''} ${u.phone||''} ${u.business_id||''}`.toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    if (region) {
+      const regions = toArr(u.regions);
+      if (!regions.includes(region)) return false;
+    }
+    if (type) {
+      const types = toArr(u.user_type);
+      if (!types.includes(type)) return false;
+    }
+    if (spec) {
+      const specs = toArr(u.specialties);
+      if (!specs.includes(spec)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('countBadge').textContent = `${filtered.length} חברים`;
+  renderTable(filtered);
+};
+
+/* ── Render ── */
+function renderTable(users) {
+  const tbody = document.getElementById('crmBody');
+
+  if (users.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7">
+      <div class="empty-state">
+        <i class="ph ph-users-three"></i>
+        <p>לא נמצאו חברים התואמים את הסינון</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  const rows = [];
+  users.forEach(u => {
+    try {
+      rows.push(buildMainRow(u));
+      if (expandedId === u.id) rows.push(buildExpandRow(u));
+    } catch(err) {
+      console.error('[CRM] row render error', u?.id, err);
+    }
+  });
+  tbody.innerHTML = rows.join('');
+}
+
+/* ── Main row ── */
+function buildMainRow(u) {
+  const typeArr   = toArr(u.user_type);
+  const specArr   = toArr(u.specialties);
+  const regionArr = toArr(u.regions);
+
+  const typeBadges   = typeArr.map(v =>
+    `<span class="badge badge-type">${TYPE_LABELS[v]||v}</span>`).join('');
+  const specBadges   = specArr.map(v =>
+    `<span class="badge badge-spec">${SPEC_LABELS[v]||v}</span>`).join('');
+  const regionBadges = regionArr.map(v =>
+    `<span class="badge badge-region">${REGION_LABELS[v]||v}</span>`).join('');
+
+  const quotes  = u.total_quotes_count ?? 0;
+  const quotesCls = quotes > 0 ? 'quotes-num' : 'quotes-num zero';
+
+  const subStatus = u.subscription_status || '';
+  const subClass  = {trial:'sub-trial',active:'sub-active',expired:'sub-expired'}[subStatus]||'sub-none';
+  const subLabel  = SUB_LABELS[subStatus]||'—';
+
+  const isExp = expandedId === u.id;
+  const wa    = waLink(u.phone);
+
+  return `<tr class="data-row${isExp?' is-expanded':''}" onclick="toggleExpand('${u.id}')">
+    <td class="biz-cell">
+      <div class="biz-name">${u.business_name || '—'}</div>
+      <div class="biz-meta">
+        <span class="full-name">${u.full_name || ''}</span>
+        ${u.created_at ? `<span class="join-date"><i class="ph ph-calendar-blank"></i>${formatDate(u.created_at)}</span>` : ''}
+      </div>
+    </td>
+    <td><div class="badge-wrap">${typeBadges||'<span style="color:var(--silver-dark);font-size:0.78rem;">—</span>'}</div></td>
+    <td><div class="badge-wrap">${specBadges||'<span style="color:var(--silver-dark);font-size:0.78rem;">—</span>'}</div></td>
+    <td><div class="badge-wrap">${regionBadges||'<span style="color:var(--silver-dark);font-size:0.78rem;">—</span>'}</div></td>
+    <td class="quotes-cell"><span class="${quotesCls}">${quotes}</span></td>
+    <td><span class="sub-pill ${subClass}">${subLabel}</span></td>
+    <td onclick="event.stopPropagation()">
+      <div class="actions-cell">
+        ${wa ? `<a class="btn-wa" href="${wa}" target="_blank" rel="noopener"><i class="ph ph-whatsapp-logo"></i> WhatsApp</a>` : ''}
+        <button class="btn-expand${isExp?' open':''}" title="${isExp?'סגור':'ערוך'}">
+          <i class="ph ${isExp?'ph-caret-up':'ph-caret-down'}"></i>
+        </button>
+      </div>
+    </td>
+  </tr>`;
+}
+
+/* ── Expand row ── */
+function buildExpandRow(u) {
+  const expiry  = u.subscription_expiry ? u.subscription_expiry.split('T')[0] : '';
+  const notes   = (u.internal_notes || '').replace(/</g,'&lt;');
+  const rating  = parseInt(u.rating) || 0;
+  const quotes  = u.total_quotes_count ?? '—';
+  const lastAct = u.last_activity ? new Date(u.last_activity).toLocaleString('he-IL') : '—';
+
+  const stars = [1,2,3,4,5].map(n =>
+    `<button class="star-btn${rating>=n?' lit':''}" data-n="${n}" onclick="setRating('${u.id}',${n})" title="${n} כוכבים">★</button>`
+  ).join('');
+
+  return `<tr class="expand-row" id="expand-${u.id}">
+    <td colspan="7">
+      <div class="expand-panel">
+
+        <div class="ep-field" style="grid-column:1/-1;">
+          <label><i class="ph ph-note-pencil"></i> הערות פנימיות</label>
+          <textarea id="notes-${u.id}" rows="2">${notes}</textarea>
+        </div>
+
+        <div class="ep-field">
+          <label><i class="ph ph-credit-card"></i> סטטוס מנוי</label>
+          <select id="sub-${u.id}">
+            <option value="" ${!u.subscription_status?'selected':''}>— לא הוגדר</option>
+            <option value="trial"   ${ u.subscription_status==='trial'  ?'selected':''}>ניסיון</option>
+            <option value="active"  ${ u.subscription_status==='active' ?'selected':''}>פעיל</option>
+            <option value="expired" ${ u.subscription_status==='expired'?'selected':''}>פג תוקף</option>
+          </select>
+        </div>
+
+        <div class="ep-field">
+          <label><i class="ph ph-calendar"></i> תפוגת מנוי</label>
+          <input type="date" id="expiry-${u.id}" value="${expiry}">
+        </div>
+
+        <div class="ep-field">
+          <label><i class="ph ph-star"></i> דירוג פנימי</label>
+          <div class="star-row" id="stars-${u.id}">${stars}</div>
+          <input type="hidden" id="rating-${u.id}" value="${rating}">
+        </div>
+
+        <div class="ep-field">
+          <label><i class="ph ph-file-text"></i> סה"כ הצעות מחיר</label>
+          <div class="ep-stat">${quotes}</div>
+          <div class="ep-stat-sub">מצטבר</div>
+        </div>
+
+        <div class="ep-field">
+          <label><i class="ph ph-clock"></i> פעילות אחרונה</label>
+          <div class="ep-stat" style="font-size:0.88rem;">${lastAct}</div>
+        </div>
+
+        <div class="ep-field">
+          <label><i class="ph ph-phone"></i> טלפון</label>
+          <div class="ep-stat" style="font-size:0.88rem;direction:ltr;text-align:right;">${u.phone||'—'}</div>
+        </div>
+
+        <div class="ep-actions">
+          <span class="save-ok" id="save-ok-${u.id}"><i class="ph ph-check-circle"></i> נשמר בהצלחה</span>
+          <button class="btn-save-crm" id="save-btn-${u.id}" onclick="saveUser('${u.id}')">
+            <i class="ph ph-floppy-disk"></i> שמור שינויים
+          </button>
+        </div>
+
+      </div>
+    </td>
+  </tr>`;
+}
+
+/* ── Star rating ── */
+window.setRating = function(id, n) {
+  document.getElementById(`rating-${id}`).value = n;
+  const container = document.getElementById(`stars-${id}`);
+  if (!container) return;
+  container.querySelectorAll('.star-btn').forEach(btn => {
+    btn.classList.toggle('lit', parseInt(btn.dataset.n) <= n);
+  });
+};
+
+/* ── Toggle expand ── */
+window.toggleExpand = function(id) {
+  expandedId = (expandedId === id) ? null : id;
+  applyFilters();
+  if (expandedId) {
+    requestAnimationFrame(() => {
+      document.getElementById(`expand-${expandedId}`)?.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    });
+  }
+};
+
+/* ── Save ── */
+window.saveUser = async function(id) {
+  const btn = document.getElementById(`save-btn-${id}`);
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
+
+  const notes  = document.getElementById(`notes-${id}`)?.value  ?? '';
+  const subSt  = document.getElementById(`sub-${id}`)?.value    ?? '';
+  const expiry = document.getElementById(`expiry-${id}`)?.value ?? null;
+  const rating = parseInt(document.getElementById(`rating-${id}`)?.value) || null;
+
+  const payload = { internal_notes: notes };
+  if (subSt)  payload.subscription_status  = subSt;
+  if (expiry) payload.subscription_expiry  = expiry;
+  if (rating) payload.rating = rating;
+
+  const { error } = await supabase.from('profiles').update(payload).eq('id', id);
+
+  if (error) {
+    console.error('[CRM] save error:', error);
+    alert('שגיאה בשמירה: ' + error.message);
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור שינויים';
+    return;
+  }
+
+  /* update local cache */
+  const idx = allUsers.findIndex(u => u.id === id);
+  if (idx !== -1) {
+    Object.assign(allUsers[idx], {
+      internal_notes: notes,
+      subscription_status: subSt || allUsers[idx].subscription_status,
+      subscription_expiry: expiry || allUsers[idx].subscription_expiry,
+      rating: rating || allUsers[idx].rating,
+    });
+  }
+
+  updateStats();
+  const ok = document.getElementById(`save-ok-${id}`);
+  if (ok) { ok.style.display = 'flex'; setTimeout(() => { ok.style.display = 'none'; }, 2500); }
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור שינויים';
+};
+
+init();
+</script>
+</body>
+</html>

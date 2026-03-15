@@ -369,8 +369,13 @@ window.handleRegistration = async function() {
   const userTypes   = Array.from(document.querySelectorAll('input[name="userType"]:checked')).map(el => el.value);
   const specialties = Array.from(document.querySelectorAll('input[name="specialty"]:checked')).map(el => el.value);
 
+  console.log('[REGISTER] email captured:', email || '⚠️ EMPTY');
+  console.log('[REGISTER] fullName:', fullName, '| phone:', phone);
+
   if (!email || !password || !fullName || !businessName || !phone) {
-    showError('יש למלא את כל השדות החובה.');
+    const missing = [!email&&'email', !password&&'password', !fullName&&'fullName', !businessName&&'businessName', !phone&&'phone'].filter(Boolean);
+    console.warn('[REGISTER] Missing fields:', missing);
+    showError('יש למלא את כל השדות החובה: ' + missing.join(', '));
     return;
   }
 
@@ -379,8 +384,10 @@ window.handleRegistration = async function() {
   submitBtn.textContent = 'רושם...';
 
   try {
+    console.log('[REGISTER] calling supabase.auth.signUp for:', email);
     const { data: authData, error: authError } = await supabase.auth.signUp({ email, password });
     if (authError) throw authError;
+    console.log('[REGISTER] auth.signUp OK, user id:', authData.user?.id);
 
     const { error: profileError } = await supabase.from('profiles').insert([{
       id: authData.user.id,
@@ -391,9 +398,13 @@ window.handleRegistration = async function() {
       regions,
       user_type: userTypes,
       specialties,
-      status: 'pending'
+      is_approved: false
     }]);
-    if (profileError) throw profileError;
+    if (profileError) {
+      console.error('[REGISTER] profile insert error:', profileError);
+      throw profileError;
+    }
+    console.log('[REGISTER] profile inserted OK');
 
     window.location.href = 'pending-approval.html';
 
