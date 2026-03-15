@@ -1382,7 +1382,8 @@ const PROFILE_PRICES = { '20/20': 50, '30/30': 65, '20/40': 55, '100/100': 310, 
 const PROFILE_NAMES  = { '20/20': 'זווית 20×20', '30/30': 'זווית 30×30', '20/40': 'זווית 20×40', '100/100': 'פרופיל 100×100', '100/40': 'פרופיל 100×40', '120/80': 'פרופיל 120×80 (זכוכית)' };
 
 /* Addon prices — defaults overridden by global_settings */
-const ADDON_PRICES = { led: 30, remote: 400, tahoma: 600, dimmer: 100 };
+const ADDON_PRICES = { perSqm: 380, packaging: 120, led: 30, remote: 400, tahoma: 600, dimmer: 100 };
+window.prices = ADDON_PRICES; // expose for debugging + external access
 
 let nextId = 2;
 const state = {
@@ -1391,6 +1392,7 @@ const state = {
   supportType: 'legs',
   addons: { led: false, remote: false, tahoma: false, dimmer: false },
   measureService: false,
+  packagingFee: null, // null = use window.prices.kit_pvc_packaging_fee
   profileQtys: { '20/20': 0, '30/30': 0, '20/40': 0, '100/100': 0, '100/40': 0, '120/80': 0 },
   systems: [
     newSystemObj(1)
@@ -1427,7 +1429,7 @@ function calcArea(w, d) {
   return (w / 100) * (d / 100);
 }
 function calcKitPrice(area) {
-  return area < 12 ? 5460 : Math.round(area * 455);
+  return Math.round(Math.max(area, 12) * ADDON_PRICES.perSqm);
 }
 function calcTotal() {
   let subtotal = 0;
@@ -1440,12 +1442,14 @@ function calcTotal() {
   if (state.addons.tahoma) subtotal += ADDON_PRICES.tahoma;
   if (state.addons.dimmer) subtotal += ADDON_PRICES.dimmer;
   if (state.measureService) subtotal += 350;
+  // Packaging fee — per system, overridable per project
+  const pkgFee = state.packagingFee !== null ? Number(state.packagingFee) : ADDON_PRICES.packaging;
+  subtotal += pkgFee * state.systems.length;
   // Profiles & angles
   Object.entries(state.profileQtys).forEach(([k, q]) => {
     if (q > 0) subtotal += q * PROFILE_PRICES[k];
   });
   const hasProfiles = Object.values(state.profileQtys).some(q => q > 0);
-  if (hasProfiles) subtotal += 120 * state.systems.length;
   const vat = Math.round(subtotal * 0.18);
   const grandTotal = subtotal + vat;
   return { subtotal, vat, grandTotal };
@@ -1991,12 +1995,25 @@ function renderSummary() {
   if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪${ADDON_PRICES.tahoma.toLocaleString()}</span></div>`;
   if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪${ADDON_PRICES.dimmer.toLocaleString()}</span></div>`;
   if(state.measureService) rows += `<div class="total-row"><span class="label">שירות מדידה בשטח</span><span class="val">₪350</span></div>`;
+  // Packaging — always visible, editable per project
+  const pkgFee = state.packagingFee !== null ? Number(state.packagingFee) : ADDON_PRICES.packaging;
+  const pkgTotal = pkgFee * state.systems.length;
+  rows += `<div class="total-row" style="align-items:center;">
+    <span class="label" style="display:flex;align-items:center;gap:0.4rem;">
+      אריזה ומיגון
+      <span style="font-size:0.72rem;color:var(--silver);font-weight:400;">(${state.systems.length} מערכת/ות × ₪<input
+        type="number" value="${pkgFee}" min="0" step="10"
+        onchange="window.setPackagingFee(this.value)"
+        style="width:62px;border:1px solid var(--border);border-radius:5px;padding:0.1rem 0.35rem;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;color:var(--blue);background:transparent;text-align:center;"
+        title="ניתן לשנות לפרויקט זה">)</span>
+    </span>
+    <span class="val">₪${pkgTotal.toLocaleString()}</span>
+  </div>`;
   // Profiles & angles rows
   Object.entries(state.profileQtys).forEach(([k, q]) => {
     if (q > 0) rows += `<div class="total-row"><span class="label">פרופיל/זווית ${k} (${q} יח')</span><span class="val">₪${(q * PROFILE_PRICES[k]).toLocaleString()}</span></div>`;
   });
   const hasProfiles = Object.values(state.profileQtys).some(q => q > 0);
-  if (hasProfiles) rows += `<div class="total-row"><span class="label">אריזה (${state.systems.length} מערכות)</span><span class="val">₪${(120 * state.systems.length).toLocaleString()}</span></div>`;
   const { subtotal, vat, grandTotal } = calcTotal();
   rows += `<div class="total-row subtotal-row"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${subtotal.toLocaleString()}</span></div>`;
   rows += `<div class="total-row vat-row"><span class="label">מע"מ (18%)</span><span class="val">₪${vat.toLocaleString()}</span></div>`;
@@ -2304,10 +2321,14 @@ async function loadGlobalPrices() {
     if (!data) return;
     const map = {};
     data.forEach(r => { map[r.key] = parseFloat(r.value) || 0; });
+    if (map['kit_pvc_pergola_per_sqm'] > 0) ADDON_PRICES.perSqm    = map['kit_pvc_pergola_per_sqm'];
+    if (map['kit_pvc_lighting_addon']  > 0) ADDON_PRICES.led       = map['kit_pvc_lighting_addon'];
+    if (map['kit_pvc_packaging_fee']   > 0) ADDON_PRICES.packaging = map['kit_pvc_packaging_fee'];
     if (map['led_price_per_sqm'] > 0) ADDON_PRICES.led    = map['led_price_per_sqm'];
     if (map['remote_price']      > 0) ADDON_PRICES.remote  = map['remote_price'];
     if (map['tahoma_price']      > 0) ADDON_PRICES.tahoma  = map['tahoma_price'];
     if (map['dimmer_price']      > 0) ADDON_PRICES.dimmer  = map['dimmer_price'];
+    console.log('[PRICES] Loaded from global_settings:', JSON.stringify(window.prices));
     // Update price labels in the UI
     const ledDisp = document.getElementById('led-price-display');
     if (ledDisp) ledDisp.textContent = `₪${ADDON_PRICES.led} למ"ר`;
@@ -2318,7 +2339,8 @@ async function loadGlobalPrices() {
     const dimDisp = document.getElementById('dimmer-price-display');
     if (dimDisp) dimDisp.textContent = `₪${ADDON_PRICES.dimmer.toLocaleString()}`;
   } catch(e) {
-    console.warn('[PRICES] Could not load global_settings, using defaults:', e.message);
+    console.error('[PRICES] Failed to load global_settings — using defaults. Error:', e.message);
+    console.log('[PRICES] Defaults in use:', JSON.stringify(window.prices));
   }
 }
 
@@ -2402,6 +2424,11 @@ window.dismissInstaller    = dismissInstaller;
 window.saveOrder           = saveOrder;
 window.placeOrder          = placeOrder;
 window.togglePlaceOrderBtn = togglePlaceOrderBtn;
+window.setPackagingFee     = function(val) {
+  state.packagingFee = val === '' ? null : Number(val);
+  renderSummary();
+  updateStickyPrice();
+};
 
 /* ══════════════════════════════════════
    INIT
