@@ -9,6 +9,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     .admin-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
 
@@ -69,6 +71,12 @@
     .status-review     { background:rgba(234,88,12,0.12); color:#ea580c;border:1px solid rgba(234,88,12,0.3); font-weight:800; }
     .status-production { background:rgba(26,95,170,0.1);  color:var(--electric-blue);border:1px solid rgba(26,95,170,0.25); }
     .status-delivered  { background:rgba(22,163,74,0.1);  color:#16a34a;border:1px solid rgba(22,163,74,0.25); }
+    .status-dispute    { background:rgba(234,88,12,0.13); color:#c2410c;border:1px solid rgba(234,88,12,0.35); font-weight:800; }
+    .status-cancelled  { background:rgba(100,116,139,0.1);color:#64748b;border:1px solid rgba(100,116,139,0.25); }
+
+    /* orange row highlight for dispute */
+    .orders-table tr.row-dispute td { background:rgba(234,88,12,0.05); }
+    .orders-table tr.row-dispute:hover td { background:rgba(234,88,12,0.1); }
 
     .btn-approve-production {
       display:flex;align-items:center;justify-content:center;gap:0.5rem;
@@ -132,6 +140,19 @@
     .detail-totals { border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.75rem; }
     .detail-total-row { display:flex;justify-content:space-between;font-size:0.85rem;padding:0.25rem 0; }
     .detail-total-row.grand { font-weight:800;color:var(--electric-blue);font-size:0.95rem;border-top:1px solid var(--border);padding-top:0.4rem;margin-top:0.2rem; }
+
+    .barcode-container { text-align:center;margin:1rem 0;background:var(--surface-elevated,#f7f9fd);border:1px solid var(--border);border-radius:10px;padding:1rem; }
+    .barcode-container svg { max-width:100%; }
+    .btn-pdf {
+      display:flex;align-items:center;justify-content:center;gap:0.5rem;
+      width:100%;padding:0.75rem;margin-top:0.75rem;
+      background:var(--surface-dark);color:var(--electric-blue);
+      border:1.5px solid var(--electric-blue);border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;
+      cursor:pointer;transition:all 0.18s ease;
+    }
+    .btn-pdf:hover { background:var(--blue-dim); }
+    .btn-pdf:disabled { opacity:0.5;pointer-events:none; }
   </style>
 </head>
 <body>
@@ -164,6 +185,8 @@
         <button class="filter-btn" onclick="setFilter('technical_review')">בבדיקה טכנית</button>
         <button class="filter-btn" onclick="setFilter('in_production')">בתהליך ייצור</button>
         <button class="filter-btn" onclick="setFilter('delivered')">נמסר</button>
+        <button class="filter-btn" onclick="setFilter('dispute')" style="color:#c2410c;border-color:rgba(234,88,12,0.35);">מחלוקת</button>
+        <button class="filter-btn" onclick="setFilter('cancelled')">בוטל</button>
         <input class="search-input" type="text" placeholder="חיפוש קוד / פרויקט..." id="searchInput" oninput="renderTable()">
       </div>
 
@@ -173,16 +196,17 @@
           <thead>
             <tr>
               <th>קוד הזמנה</th>
-              <th>פרויקט</th>
-              <th>מערכות</th>
-              <th>סה"כ כולל מע"מ</th>
-              <th>תאריך שמירה</th>
+              <th>הרוכש</th>
+              <th>סוג מוצר</th>
+              <th>מידות</th>
+              <th>סה"כ</th>
+              <th>תאריך</th>
               <th>סטטוס</th>
               <th>פרטים</th>
             </tr>
           </thead>
           <tbody id="ordersTableBody">
-            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);">
               <i class="ph ph-circle-notch spin"></i> טוען הזמנות...
             </td></tr>
           </tbody>
@@ -203,30 +227,117 @@
   </div>
 
 <script type="module">
-import { supabase, requireAdmin, renderSidebar } from './js/admin-core.js';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-renderSidebar('orders');
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
 
-const PVC_NAMES = { white:'לבן',black:'שחור',gray46:'אפור 7046',gray16:'אפור כהה 7016',green:'ירוק',red:'אדום',cream:'שמנת 1013' };
-const PNAMES = { '20/20':'זווית 20×20','30/30':'זווית 30×30','20/40':'זווית 20×40','100/100':'פרופיל 100×100','100/40':'פרופיל 100×40','120/80':'פרופיל 120×80' };
+// ── SIDEBAR ──
+(function renderSidebar() {
+  const items = [
+    { id: 'overview',  icon: 'ph-chart-bar',   label: 'סקירה כללית',    href: 'admin-overview.html' },
+    { id: 'users',     icon: 'ph-users',        label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'orders',    icon: 'ph-list-bullets', label: 'הזמנות',         href: 'admin.html' },
+    { id: 'settings',  icon: 'ph-gear-six',     label: 'תמחור גלובלי',  href: 'admin-settings.html' },
+  ];
+  const el = document.getElementById('admin-sidebar-placeholder');
+  if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
+    items.map(i => `<li><a href="${i.href}" class="${i.id==='orders'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
+  }</ul>`;
+})();
+
 
 let allOrders = [];
 let currentFilter = 'all';
 
+const TYPE_LABELS = {
+  contractor: 'קבלן', installer: 'מתקין', architect: 'אדריכל',
+  designer: 'מעצב', supplier: 'ספק', manufacturer: 'יצרן',
+  importer: 'יבואן', entrepreneur: 'יזם', metalworker: 'מסגר',
+  warehouse: 'מחסנאי', gardening: 'גינון', other: 'אחר'
+};
+
+function getCode(o)  { return o.id.slice(0, 8); }
+function getTotal(o) { return o.total_price || 0; }
+function getDims(o)  { return (o.width && o.depth) ? `${o.width} × ${o.depth} ס"מ` : '—'; }
+function getKit(o)   {
+  if (!o.kit_id) return '—';
+  if (o.kit_id.startsWith('75f59')) return 'פרגולה אלומיניום';
+  const KIT = { pergola:'פרגולה', vitrine:'ויטרינה', fence:'גדר', alum_pergola:'פרגולה אלומיניום' };
+  return KIT[o.kit_id] || 'מוצר כללי';
+}
+
 /* ── AUTH + ADMIN CHECK ── */
 async function init() {
-  const user = await requireAdmin();
-  if (!user) return;
+  console.log('[ALUM-IL] init() started');
+
+  // Step 1: Check auth session
+  const { data: { user }, error: authErr } = await supabase.auth.getUser();
+  console.log('[ALUM-IL] getUser result:', user, authErr);
+
+  if (!user) {
+    console.warn('[ALUM-IL] No user session — redirect to login');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  // Step 2: Check admin_users table
+  const { data: adminRow, error: adminErr } = await supabase
+    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+  console.log('[ALUM-IL] admin_users check:', adminRow, adminErr);
+
+  if (adminErr) {
+    showDebugError(`שגיאת בדיקת אדמין: ${adminErr.message} (code: ${adminErr.code})`);
+    return;
+  }
+
+  if (!adminRow) {
+    showDebugError(`המשתמש ${user.email} אינו בטבלת admin_users — הוסף אותו עם ה-SQL שקיבלת`);
+    return;
+  }
+
   document.getElementById('adminSubtitle').textContent = `מחובר כ-${user.email}`;
   await loadOrders();
 }
 
 async function loadOrders() {
+  console.log('[ALUM-IL] loadOrders() — querying orders...');
+
   const { data, error } = await supabase
-    .from('orders').select('*').order('created_at', { ascending: false });
-  if (error) { console.error(error); return; }
-  allOrders = data || [];
+    .from('orders')
+    .select('id, created_at, status, total_price, width, depth, kit_id, profiles!orders_user_id_fkey(full_name)')
+    .order('created_at', { ascending: false });
+
+  console.log('[ALUM-IL] orders result:', data, error);
+
+  if (error) {
+    showDebugError(`שגיאת שאילתת הזמנות: ${error.message} (code: ${error.code})`);
+    return;
+  }
+
+  if (!data || data.length === 0) {
+    console.warn('[ALUM-IL] Query succeeded but returned 0 rows — check RLS or data exists');
+    document.getElementById('ordersTableBody').innerHTML =
+      `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+        <i class="ph ph-inbox"></i><br>אין הזמנות בטבלה — בדוק RLS ו-data
+      </td></tr>`;
+    document.getElementById('ordersCount').textContent = 'נמצאו 0 הזמנות';
+    return;
+  }
+
+  allOrders = data;
+  console.log('[ALUM-IL] Loaded', data.length, 'orders. First row:', data[0]);
   renderTable();
+}
+
+function showDebugError(msg) {
+  console.error('[ALUM-IL]', msg);
+  document.getElementById('adminSubtitle').innerHTML =
+    `<span style="color:#dc2626;font-weight:700;"><i class="ph ph-warning"></i> ${msg}</span>`;
+  document.getElementById('ordersTableBody').innerHTML =
+    `<tr><td colspan="8" style="text-align:center;padding:2rem;color:#dc2626;">${msg}</td></tr>`;
 }
 
 /* ── FILTER ── */
@@ -242,7 +353,7 @@ function renderTable() {
   const search = (document.getElementById('searchInput').value || '').toLowerCase();
   let rows = allOrders.filter(o => {
     if (currentFilter !== 'all' && o.status !== currentFilter) return false;
-    if (search && !o.order_code.toLowerCase().includes(search) && !(o.project_name||'').toLowerCase().includes(search)) return false;
+    if (search && !o.id.toLowerCase().includes(search) && !(o.profiles?.full_name||'').toLowerCase().includes(search)) return false;
     return true;
   });
 
@@ -250,29 +361,32 @@ function renderTable() {
 
   const tbody = document.getElementById('ordersTableBody');
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = rows.map(o => {
-    const sys = (o.order_data?.systems || []).length;
     const date = new Date(o.created_at).toLocaleDateString('he-IL');
-    const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered' }[o.status] || '';
-    const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בייצור', delivered:'נמסר' }[o.status] || o.status;
+    const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered', dispute:'status-dispute', cancelled:'status-cancelled' }[o.status] || '';
+    const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בייצור', delivered:'נמסר', dispute:'נפתחה מחלוקת', cancelled:'בוטל' }[o.status] || o.status;
+    const rowClass = o.status === 'dispute' ? 'row-dispute' : '';
 
-    return `<tr>
-      <td class="order-code-cell">${o.order_code}</td>
-      <td>${o.project_name || '—'}</td>
-      <td class="systems-cell">${sys} מערכת${sys > 1 ? 'ות' : ''}</td>
-      <td class="price-cell">₪${(o.grand_total||0).toLocaleString()}</td>
+    return `<tr class="${rowClass}">
+      <td class="order-code-cell">${getCode(o)}</td>
+      <td><div style="font-weight:600">${o.profiles?.full_name || '—'}</div></td>
+      <td class="systems-cell">${getKit(o)}</td>
+      <td class="systems-cell">${getDims(o)}</td>
+      <td class="price-cell">₪${getTotal(o).toLocaleString()}</td>
       <td>${date}</td>
       <td>
         <div>
-          <select class="status-select" data-id="${o.id}" onchange="updateStatus(this)">
+          <select class="status-select" data-id="${o.id}" data-prev="${o.status}" onchange="updateStatus(this)">
             <option value="draft"             ${o.status==='draft'             ?'selected':''}>טיוטה</option>
             <option value="technical_review"  ${o.status==='technical_review'  ?'selected':''}>בבדיקה טכנית</option>
             <option value="in_production"     ${o.status==='in_production'     ?'selected':''}>בתהליך ייצור</option>
             <option value="delivered"         ${o.status==='delivered'         ?'selected':''}>נמסר</option>
+            <option value="dispute"           ${o.status==='dispute'           ?'selected':''}>נפתחה מחלוקת</option>
+            <option value="cancelled"         ${o.status==='cancelled'         ?'selected':''}>ביטול הזמנה</option>
           </select>
           <div class="save-indicator" id="si-${o.id}"></div>
         </div>
@@ -290,7 +404,20 @@ function renderTable() {
 window.updateStatus = async function(sel) {
   const id = sel.dataset.id;
   const newStatus = sel.value;
+  const prevStatus = sel.dataset.prev;
   const si = document.getElementById(`si-${id}`);
+
+  // Password gate for cancellation
+  if (newStatus === 'cancelled') {
+    const pwd = window.prompt('ביטול הזמנה מצריך אישור מנהל.\nהכנס סיסמה:');
+    if (pwd !== 'ALUM123') {
+      sel.value = prevStatus; // revert
+      si.innerHTML = '<span class="save-err">אישור בוטל</span>';
+      setTimeout(() => { if(si) si.innerHTML = ''; }, 2000);
+      return;
+    }
+  }
+
   sel.classList.add('saving');
   si.innerHTML = '<i class="ph ph-circle-notch spin"></i>';
 
@@ -306,6 +433,8 @@ window.updateStatus = async function(sel) {
     // update local cache
     const o = allOrders.find(x => x.id === id);
     if (o) o.status = newStatus;
+    sel.dataset.prev = newStatus; // keep prev in sync
+    if (newStatus === 'dispute' || prevStatus === 'dispute') renderTable(); // refresh row highlight
     setTimeout(() => { if(si) si.innerHTML = ''; }, 2000);
   }
 };
@@ -314,44 +443,29 @@ window.updateStatus = async function(sel) {
 window.openDetail = function(id) {
   const o = allOrders.find(x => x.id === id);
   if (!o) return;
-  const d = o.order_data || {};
 
-  document.getElementById('detailTitle').textContent = `הזמנה ${o.order_code}`;
-  let html = '';
+  const code = getCode(o);
+  document.getElementById('detailTitle').textContent = `הזמנה ${code}`;
 
-  (d.systems || []).forEach(s => {
-    const area = ((s.width/100)*(s.depth/100)).toFixed(2);
-    const pvcName = PVC_NAMES[s.pvcColor] || s.pvcColor;
-    html += `<div class="detail-sys-card">
-      <div class="detail-sys-title">מערכת ${s.id}${s.name?' – '+s.name:''}</div>
-      <div class="detail-grid">
-        <div class="detail-item"><span class="detail-key">מידות</span><span class="detail-val">${s.width}×${s.depth} ס"מ</span></div>
-        <div class="detail-item"><span class="detail-key">שטח</span><span class="detail-val">${area} מ"ר</span></div>
-        <div class="detail-item"><span class="detail-key">גובה</span><span class="detail-val">${s.installHeight} / ${s.gutterHeight} ס"מ</span></div>
-        <div class="detail-item"><span class="detail-key">צבע אל.</span><span class="detail-val">RAL ${s.aluminumColorCustom||s.aluminumColor}</span></div>
-        <div class="detail-item"><span class="detail-key">PVC</span><span class="detail-val">${pvcName}</span></div>
-        <div class="detail-item"><span class="detail-key">פרופיל תאורה</span><span class="detail-val">RAL ${s.ledColorCustom||s.ledColor||'—'}</span></div>
-        ${(d.addons||{}).led?`<div class="detail-item"><span class="detail-key">גוון LED</span><span class="detail-val">${s.ledTone==='warm'?'צהוב 3000K':'לבן 6000K'}</span></div>`:''}
-      </div>
-    </div>`;
-  });
+  const date = new Date(o.created_at).toLocaleDateString('he-IL');
+  const total = getTotal(o);
 
-  const addons = d.addons || {};
-  const addList = [
-    addons.led?'תאורת LED':'', addons.remote?'שלט Somfy':'',
-    addons.tahoma?'TaHoma':'', addons.dimmer?'דימר':'',
-    d.measureService?'שירות מדידה':''
-  ].filter(Boolean);
-  if (addList.length) html += `<div style="font-size:0.85rem;margin-bottom:0.75rem;"><strong>תוספות:</strong> ${addList.join(', ')}</div>`;
+  let html = `<div class="detail-sys-card">
+    <div class="detail-grid">
+      <div class="detail-item"><span class="detail-key">מזמין</span><span class="detail-val">${o.profiles?.full_name || '—'}</span></div>
+      <div class="detail-item"><span class="detail-key">קוד הזמנה</span><span class="detail-val">${code}</span></div>
+      <div class="detail-item"><span class="detail-key">סוג מוצר</span><span class="detail-val">${getKit(o)}</span></div>
+      <div class="detail-item"><span class="detail-key">מידות</span><span class="detail-val">${getDims(o)}</span></div>
+      <div class="detail-item"><span class="detail-key">תאריך</span><span class="detail-val">${date}</span></div>
+    </div>
+  </div>`;
 
-  const pq = d.profileQtys || {};
-  const profList = Object.entries(pq).filter(([,q])=>q>0).map(([k,q])=>`${PNAMES[k]} ×${q}`).join(', ');
-  if (profList) html += `<div style="font-size:0.85rem;margin-bottom:0.75rem;"><strong>פרופילים:</strong> ${profList}</div>`;
+  html += `<div class="barcode-container">
+    <svg id="barcode-${o.id}"></svg>
+  </div>`;
 
   html += `<div class="detail-totals">
-    <div class="detail-total-row"><span>לפני מע"מ</span><span>₪${(o.subtotal||0).toLocaleString()}</span></div>
-    <div class="detail-total-row"><span>מע"מ 18%</span><span>₪${(o.vat||0).toLocaleString()}</span></div>
-    <div class="detail-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(o.grand_total||0).toLocaleString()}</span></div>
+    <div class="detail-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(total).toLocaleString()}</span></div>
   </div>`;
 
   if (o.status === 'technical_review') {
@@ -360,8 +474,110 @@ window.openDetail = function(id) {
     </button>`;
   }
 
+  html += `<button class="btn-pdf" onclick="generatePDF('${o.id}')">
+    <i class="ph ph-file-pdf"></i> הפק PDF
+  </button>`;
+
   document.getElementById('detailBody').innerHTML = html;
   document.getElementById('detailOverlay').classList.add('open');
+
+  // Render barcode after DOM update
+  try {
+    JsBarcode(`#barcode-${o.id}`, code, {
+      format: 'CODE128', width: 2, height: 50,
+      displayValue: true, fontSize: 13, margin: 8
+    });
+  } catch(e) { console.warn('JsBarcode:', e); }
+};
+
+/* ── GENERATE PDF ── */
+window.generatePDF = function(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o || !window.jspdf) return;
+
+  const code = getCode(o);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  const L = 20;   // left margin
+  const R = 190;  // right edge for RTL text
+
+  // Header
+  doc.setFillColor(26, 95, 170);
+  doc.rect(0, 0, 210, 18, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(14); doc.setFont('helvetica', 'bold');
+  doc.text('ALUM-IL', R, 12, { align: 'right' });
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.text('Order Confirmation', L, 12);
+
+  // Title
+  doc.setTextColor(26, 38, 64);
+  doc.setFontSize(16); doc.setFont('helvetica', 'bold');
+  doc.text(code, R, 30, { align: 'right' });
+  doc.setFontSize(10); doc.setFont('helvetica', 'normal');
+  doc.setTextColor(107, 122, 153);
+  doc.text(new Date(o.created_at).toLocaleDateString('he-IL'), R, 37, { align: 'right' });
+
+  // Barcode from SVG → PNG via canvas
+  try {
+    const svg = document.getElementById(`barcode-${id}`);
+    if (svg) {
+      const svgData = new XMLSerializer().serializeToString(svg);
+      const canvas = document.createElement('canvas');
+      canvas.width = svg.width.baseVal.value * 2;
+      canvas.height = svg.height.baseVal.value * 2;
+      const ctx = canvas.getContext('2d');
+      const img = new Image();
+      img.onload = function() {
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const pngData = canvas.toDataURL('image/png');
+        doc.addImage(pngData, 'PNG', L, 42, 80, 20);
+        finishPDF();
+      };
+      img.src = 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svgData)));
+      return;
+    }
+  } catch(e) { /* fall through without barcode image */ }
+  finishPDF();
+
+  function finishPDF() {
+    // Details table
+    doc.setTextColor(26, 38, 64);
+    const fields = [
+      ['Buyer',      o.profiles?.full_name || '—'],
+      ['Product',    getKit(o)],
+      ['Dimensions', getDims(o)],
+      ['Date',       new Date(o.created_at).toLocaleDateString('he-IL')],
+    ];
+    let y = 70;
+    doc.setDrawColor(221, 228, 240);
+    fields.forEach(([k, v]) => {
+      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
+      doc.setTextColor(107, 122, 153);
+      doc.text(k, L, y);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(26, 38, 64);
+      doc.text(v, L + 40, y);
+      doc.line(L, y + 2, R, y + 2);
+      y += 9;
+    });
+
+    // Totals
+    y += 5;
+    const pdfTotal = getTotal(o);
+    doc.setFontSize(13); doc.setFont('helvetica', 'bold');
+    doc.setTextColor(26, 95, 170);
+    doc.text('Total:', L, y);
+    doc.text(`ILS ${Number(pdfTotal).toLocaleString()}`, R, y, { align: 'right' });
+
+    // Footer
+    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.setTextColor(150, 160, 180);
+    doc.text('Generated by ALUM-IL Platform', 105, 285, { align: 'center' });
+
+    doc.save(`order_${code}.pdf`);
+  }
 };
 
 window.approveToProduction = async function(id) {

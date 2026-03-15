@@ -174,9 +174,34 @@
   </div>
 
 <script type="module">
-import { supabase, requireAdmin, renderSidebar } from './js/admin-core.js';
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-renderSidebar('users');
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+async function requireAdmin() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return null; }
+  const { data: adminRow } = await supabase
+    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+  if (!adminRow) { window.location.href = 'dashboard.html'; return null; }
+  return user;
+}
+
+(function() {
+  const items = [
+    { id: 'overview',  icon: 'ph-chart-bar',   label: 'סקירה כללית',    href: 'admin-overview.html' },
+    { id: 'users',     icon: 'ph-users',        label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'orders',    icon: 'ph-list-bullets', label: 'הזמנות',         href: 'admin.html' },
+    { id: 'settings',  icon: 'ph-gear-six',     label: 'תמחור גלובלי',  href: 'admin-settings.html' },
+  ];
+  const el = document.getElementById('admin-sidebar-placeholder');
+  if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
+    items.map(i => `<li><a href="${i.href}" class="${i.id==='users'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
+  }</ul>`;
+})();
 
 let allUsers = [];
 
