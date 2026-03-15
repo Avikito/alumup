@@ -1113,7 +1113,7 @@ a { text-decoration: none; color: inherit; }
             <div class="addon-check"><i class="ph ph-check-bold"></i></div>
             <span class="addon-name">שלט רב ערוצי Somfy</span>
           </div>
-          <div class="addon-price">₪400</div>
+          <div class="addon-price" id="remote-price-display">₪400</div>
           <div class="addon-desc">שלט 16 ערוצים, שליטה על מספר מנועים</div>
         </div>
         <div class="addon-card" id="addon-tahoma" onclick="toggleAddon('tahoma')">
@@ -1121,7 +1121,7 @@ a { text-decoration: none; color: inherit; }
             <div class="addon-check"><i class="ph ph-check-bold"></i></div>
             <span class="addon-name">בית חכם TaHoma</span>
           </div>
-          <div class="addon-price">₪600</div>
+          <div class="addon-price" id="tahoma-price-display">₪600</div>
           <div class="addon-desc">חיבור לאפליקציית Somfy TaHoma, שליטה מהנייד</div>
         </div>
         <div class="addon-card" id="addon-dimmer" onclick="toggleAddon('dimmer')">
@@ -1129,7 +1129,7 @@ a { text-decoration: none; color: inherit; }
             <div class="addon-check"><i class="ph ph-check-bold"></i></div>
             <span class="addon-name">שלט תאורה / דימר</span>
           </div>
-          <div class="addon-price">₪100</div>
+          <div class="addon-price" id="dimmer-price-display">₪100</div>
           <div class="addon-desc">שלט ייעודי לשליטה בתאורת LED עם עמעום</div>
         </div>
       </div>
@@ -1259,13 +1259,20 @@ a { text-decoration: none; color: inherit; }
       <div class="confirm-order-block" id="confirmOrderBlock">
         <div class="confirm-block-title"><i class="ph ph-seal-check"></i> אישור קריאה ותנאים</div>
         <div class="confirm-checkbox-row">
-          <input type="checkbox" id="confirmCheckbox">
+          <input type="checkbox" id="confirmCheckbox" onchange="togglePlaceOrderBtn()">
           <label for="confirmCheckbox" class="confirm-checkbox-text">
             <strong>קראתי ואישרתי את כל המידות, הצבעים והתוספות שנבחרו.</strong><br>
             אני מבין כי לאחר האישור לא ניתן לבצע שינויים בהזמנה.<br>
             האישור מהווה הסכמה ל<a onclick="return false;">תקנון ותנאי השירות</a> של ALUM-IL.
           </label>
         </div>
+        <div id="placeOrderBtnWrap" style="display:none; margin-top:0.75rem;">
+          <button id="btnPlaceOrder" onclick="placeOrder()"
+            style="width:100%;padding:1rem;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-family:'Heebo',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:opacity 0.2s ease;">
+            <i class="ph ph-check-circle"></i> שלח הזמנה לאישור
+          </button>
+        </div>
+        <div id="placeOrderMsg" class="save-order-msg" style="display:none;margin-top:0.75rem;"></div>
       </div>
 
     </section>
@@ -1374,6 +1381,9 @@ const PVC_COLORS = [
 const PROFILE_PRICES = { '20/20': 50, '30/30': 65, '20/40': 55, '100/100': 310, '100/40': 210, '120/80': 450 };
 const PROFILE_NAMES  = { '20/20': 'זווית 20×20', '30/30': 'זווית 30×30', '20/40': 'זווית 20×40', '100/100': 'פרופיל 100×100', '100/40': 'פרופיל 100×40', '120/80': 'פרופיל 120×80 (זכוכית)' };
 
+/* Addon prices — defaults overridden by global_settings */
+const ADDON_PRICES = { led: 30, remote: 400, tahoma: 600, dimmer: 100 };
+
 let nextId = 2;
 const state = {
   projectName: '',
@@ -1424,11 +1434,11 @@ function calcTotal() {
   for (const s of state.systems) {
     const area = calcArea(s.width, s.depth);
     subtotal += calcKitPrice(area);
-    if (state.addons.led) subtotal += Math.round(area * 30);
+    if (state.addons.led) subtotal += Math.round(area * ADDON_PRICES.led);
   }
-  if (state.addons.remote) subtotal += 400;
-  if (state.addons.tahoma) subtotal += 600;
-  if (state.addons.dimmer) subtotal += 100;
+  if (state.addons.remote) subtotal += ADDON_PRICES.remote;
+  if (state.addons.tahoma) subtotal += ADDON_PRICES.tahoma;
+  if (state.addons.dimmer) subtotal += ADDON_PRICES.dimmer;
   if (state.measureService) subtotal += 350;
   // Profiles & angles
   Object.entries(state.profileQtys).forEach(([k, q]) => {
@@ -1949,7 +1959,7 @@ function renderSummary() {
   for(const s of state.systems) {
     const area = calcArea(s.width, s.depth);
     const kit = calcKitPrice(area);
-    const led = state.addons.led ? Math.round(area * 30) : 0;
+    const led = state.addons.led ? Math.round(area * ADDON_PRICES.led) : 0;
     const tot = kit + led;
     grand += tot;
 
@@ -1977,9 +1987,9 @@ function renderSummary() {
   // Totals
   const totalsDiv = document.getElementById('summaryTotals');
   let rows = `<div class="total-row"><span class="label">סה"כ מערכות</span><span class="val">₪${grand.toLocaleString()}</span></div>`;
-  if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪400</span></div>`;
-  if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪600</span></div>`;
-  if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪100</span></div>`;
+  if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪${ADDON_PRICES.remote.toLocaleString()}</span></div>`;
+  if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪${ADDON_PRICES.tahoma.toLocaleString()}</span></div>`;
+  if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪${ADDON_PRICES.dimmer.toLocaleString()}</span></div>`;
   if(state.measureService) rows += `<div class="total-row"><span class="label">שירות מדידה בשטח</span><span class="val">₪350</span></div>`;
   // Profiles & angles rows
   Object.entries(state.profileQtys).forEach(([k, q]) => {
@@ -2258,33 +2268,19 @@ async function saveOrder() {
   msg.style.display = 'none';
 
   const { data: { user } } = await supabase.auth.getUser();
-  if (!user) {
-    window.location.href = 'login.html';
-    return;
-  }
+  if (!user) { window.location.href = 'login.html'; return; }
 
   const { subtotal, vat, grandTotal } = calcTotal();
   const code = getOrderCode();
 
-  const { error } = await supabase.from('orders').insert({
-    user_id: user.id,
-    order_code: code,
-    status: 'draft',
-    project_name: state.projectName || null,
-    project_number: state.projectNumber || null,
-    order_data: JSON.parse(JSON.stringify(state)),
-    category: 'פרגולה',
-    sub_product: (() => {
-      const isElectric = state.addons?.led || state.addons?.remote || state.addons?.tahoma || state.addons?.dimmer;
-      const isTension  = state.supportType === 'tension';
-      let name = 'פרגולה';
-      if (isElectric) name += ' חשמלית';
-      if (isTension)  name += ' תלייה';
-      return name;
-    })(),
+  const { error } = await supabase.from('quotes').insert({
+    user_id:     user.id,
+    quote_code:  code,
+    status:      'draft',
+    config:      JSON.parse(JSON.stringify(state)),
     subtotal,
     vat,
-    grand_total: grandTotal
+    total_price: grandTotal
   });
 
   if (error) {
@@ -2300,9 +2296,117 @@ async function saveOrder() {
 }
 
 /* ══════════════════════════════════════
+   GLOBAL SETTINGS — load addon prices
+══════════════════════════════════════ */
+async function loadGlobalPrices() {
+  try {
+    const { data } = await supabase.from('global_settings').select('key,value');
+    if (!data) return;
+    const map = {};
+    data.forEach(r => { map[r.key] = parseFloat(r.value) || 0; });
+    if (map['led_price_per_sqm'] > 0) ADDON_PRICES.led    = map['led_price_per_sqm'];
+    if (map['remote_price']      > 0) ADDON_PRICES.remote  = map['remote_price'];
+    if (map['tahoma_price']      > 0) ADDON_PRICES.tahoma  = map['tahoma_price'];
+    if (map['dimmer_price']      > 0) ADDON_PRICES.dimmer  = map['dimmer_price'];
+    // Update price labels in the UI
+    const ledDisp = document.getElementById('led-price-display');
+    if (ledDisp) ledDisp.textContent = `₪${ADDON_PRICES.led} למ"ר`;
+    const remDisp = document.getElementById('remote-price-display');
+    if (remDisp) remDisp.textContent = `₪${ADDON_PRICES.remote.toLocaleString()}`;
+    const tahDisp = document.getElementById('tahoma-price-display');
+    if (tahDisp) tahDisp.textContent = `₪${ADDON_PRICES.tahoma.toLocaleString()}`;
+    const dimDisp = document.getElementById('dimmer-price-display');
+    if (dimDisp) dimDisp.textContent = `₪${ADDON_PRICES.dimmer.toLocaleString()}`;
+  } catch(e) {
+    console.warn('[PRICES] Could not load global_settings, using defaults:', e.message);
+  }
+}
+
+/* ══════════════════════════════════════
+   PLACE ORDER (confirmation submit)
+══════════════════════════════════════ */
+function togglePlaceOrderBtn() {
+  const checked = document.getElementById('confirmCheckbox').checked;
+  const wrap = document.getElementById('placeOrderBtnWrap');
+  if (wrap) wrap.style.display = checked ? 'block' : 'none';
+}
+
+async function placeOrder() {
+  const btn = document.getElementById('btnPlaceOrder');
+  const msg = document.getElementById('placeOrderMsg');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ph ph-circle-notch"></i> שולח הזמנה...';
+  msg.style.display = 'none';
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+
+  const { subtotal, vat, grandTotal } = calcTotal();
+  const code = getOrderCode();
+
+  const isElectric = state.addons.led || state.addons.remote || state.addons.tahoma || state.addons.dimmer;
+  const isTension  = state.supportType === 'tension';
+  let subProduct = 'פרגולה';
+  if (isElectric) subProduct += ' חשמלית';
+  if (isTension)  subProduct += ' תלייה';
+
+  const { error } = await supabase.from('orders').insert({
+    user_id:     user.id,
+    order_code:  code,
+    status:      'pending',
+    category:    'פרגולה',
+    sub_product: subProduct,
+    total_price: grandTotal
+  });
+
+  if (error) {
+    msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשליחה: ${error.message}`;
+    msg.className = 'save-order-msg error';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ph ph-check-circle"></i> שלח הזמנה לאישור';
+  } else {
+    msg.innerHTML = `<i class="ph ph-check-circle"></i> <strong>ההזמנה התקבלה!</strong> קוד: ${code} — <a href="dashboard.html" style="color:var(--green);text-decoration:underline;">מעבר לאזור האישי</a>`;
+    msg.className = 'save-order-msg success';
+    btn.style.display = 'none';
+  }
+  msg.style.display = 'flex';
+}
+
+/* ══════════════════════════════════════
+   EXPOSE TO WINDOW (module scope fix)
+══════════════════════════════════════ */
+window.addSystem           = addSystem;
+window.removeSystem        = removeSystem;
+window.updateSystem        = updateSystem;
+window.updateDim           = updateDim;
+window.updateGutter        = updateGutter;
+window.setAlColor          = setAlColor;
+window.setAlCustom         = setAlCustom;
+window.setPvcColor         = setPvcColor;
+window.setLedColor         = setLedColor;
+window.setLedCustom        = setLedCustom;
+window.setSupportType      = setSupportType;
+window.toggleAddon         = toggleAddon;
+window.setLedTone          = setLedTone;
+window.setProfileQty       = setProfileQty;
+window.showPayment         = showPayment;
+window.sendProofWA         = sendProofWA;
+window.formatCC            = formatCC;
+window.formatExp           = formatExp;
+window.submitCredit        = submitCredit;
+window.openMeasureModal    = openMeasureModal;
+window.closeMeasureModal   = closeMeasureModal;
+window.confirmMeasure      = confirmMeasure;
+window.matchInstaller      = matchInstaller;
+window.dismissInstaller    = dismissInstaller;
+window.saveOrder           = saveOrder;
+window.placeOrder          = placeOrder;
+window.togglePlaceOrderBtn = togglePlaceOrderBtn;
+
+/* ══════════════════════════════════════
    INIT
 ══════════════════════════════════════ */
-renderAll();
+loadGlobalPrices().then(() => renderAll());
 </script>
 </body>
 </html>
