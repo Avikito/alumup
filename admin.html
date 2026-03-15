@@ -307,7 +307,7 @@ async function loadOrders() {
 
   const { data, error } = await supabase
     .from('orders')
-    .select('id, created_at, status, category, sub_product, total_price, user_id, profiles!user_id(full_name)')
+    .select('id, created_at, status_updated_at, status, category, sub_product, total_price, user_id, profiles!user_id(full_name)')
     .order('created_at', { ascending: false });
 
   console.log('[ALUM-IL] orders result:', data, error);
@@ -422,7 +422,7 @@ window.updateStatus = async function(sel) {
   si.innerHTML = '<i class="ph ph-circle-notch spin"></i>';
 
   const { error } = await supabase.from('orders')
-    .update({ status: newStatus, updated_at: new Date().toISOString() })
+    .update({ status: newStatus, updated_at: new Date().toISOString(), status_updated_at: new Date().toISOString() })
     .eq('id', id);
 
   sel.classList.remove('saving');
@@ -447,7 +447,10 @@ window.openDetail = function(id) {
   const code = getCode(o);
   document.getElementById('detailTitle').textContent = `הזמנה ${code}`;
 
-  const date = new Date(o.created_at).toLocaleDateString('he-IL');
+  const dateCreated = new Date(o.created_at).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+  const dateStatusUpdated = o.status_updated_at
+    ? new Date(o.status_updated_at).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' })
+    : 'אין עדכון עדיין';
 
   let html = `<div class="detail-sys-card">
     <div class="detail-grid">
@@ -455,7 +458,8 @@ window.openDetail = function(id) {
       <div class="detail-item"><span class="detail-key">קוד הזמנה</span><span class="detail-val">${code}</span></div>
       <div class="detail-item"><span class="detail-key">סוג מוצר</span><span class="detail-val">${getProductType(o)}</span></div>
       <div class="detail-item"><span class="detail-key">תת מוצר</span><span class="detail-val">${getSubProduct(o)}</span></div>
-      <div class="detail-item"><span class="detail-key">תאריך</span><span class="detail-val">${date}</span></div>
+      <div class="detail-item"><span class="detail-key">זמן כניסת הזמנה</span><span class="detail-val">${dateCreated}</span></div>
+      <div class="detail-item"><span class="detail-key">עדכון סטטוס אחרון</span><span class="detail-val">${dateStatusUpdated}</span></div>
     </div>
   </div>`;
 
@@ -565,7 +569,7 @@ window.approveToProduction = async function(id) {
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...'; }
 
   const { error } = await supabase.from('orders')
-    .update({ status: 'in_production', updated_at: new Date().toISOString() })
+    .update({ status: 'in_production', updated_at: new Date().toISOString(), status_updated_at: new Date().toISOString() })
     .eq('id', id);
 
   if (error) {
