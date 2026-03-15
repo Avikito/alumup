@@ -170,6 +170,9 @@
     <div style="display:flex;align-items:center;gap:0.75rem;">
       <span id="userEmail" style="font-size:0.85rem;color:var(--silver-dark);"></span>
       <i class="ph ph-user-circle" style="font-size:2rem;color:var(--electric-blue);"></i>
+      <button onclick="handleLogout()" style="display:flex;align-items:center;gap:0.4rem;padding:0.35rem 0.9rem;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;color:var(--silver-dark);cursor:pointer;transition:all 0.18s;">
+        <i class="ph ph-sign-out"></i> יציאה
+      </button>
     </div>
   </header>
 
@@ -219,7 +222,7 @@
         <div class="dashboard-title">הזמנות חדשות</div>
         <div class="dashboard-subtitle">הצעות מחיר שנשמרו והזמנות בתהליך</div>
 
-        <div class="section-divider-title">טיוטה — ממתין לאישור</div>
+        <div class="section-divider-title">הצעות מחיר שמורות &amp; ממתין לבדיקה</div>
         <div id="orders-draft"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
 
         <div class="section-divider-title">בתהליך ייצור</div>
@@ -255,20 +258,54 @@ const supabase = createClient(
 );
 
 const PVC_NAMES = { white:'לבן', black:'שחור', gray46:'אפור 7046', gray16:'אפור כהה 7016', green:'ירוק', red:'אדום', cream:'שמנת 1013' };
-const STATUS_LABEL = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור', delivered:'נמסר' };
+
+const STATUS_CLASS = {
+  draft:'status-draft', technical_review:'status-review',
+  in_production:'status-production', delivered:'status-delivered',
+  sent:'status-review', approved:'status-production', rejected:'status-draft'
+};
+const STATUS_LABEL = {
+  draft:'טיוטה — הצעה שמורה',
+  technical_review:'נשלח — ממתין לבדיקה',
+  in_production:'בתהליך ייצור',
+  delivered:'נמסר',
+  sent:'נשלח',
+  approved:'אושר',
+  rejected:'נדחה'
+};
+
+/* ── NORMALIZE: map quotes & orders to one shape ── */
+function normalize(row, type) {
+  return {
+    _id:       row.id,
+    _type:     type,                                        // 'quote' | 'order'
+    code:      type === 'quote' ? (row.quote_code || row.id.slice(0,8))
+                                : (row.order_code || row.id.slice(0,8)),
+    status:    row.status || 'draft',
+    config:    row.config || {},
+    total:     type === 'quote' ? (row.total_amount || 0) : (row.total_price || 0),
+    subtotal:  row.subtotal || 0,
+    vat:       row.vat || 0,
+    created_at: row.created_at
+  };
+}
 
 /* ── AUTH ── */
+let currentUserId = null;
+let allItems = [];   // normalized quotes + orders
+
 async function init() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { window.location.href = 'login.html'; return; }
+  currentUserId = user.id;
 
   document.getElementById('userEmail').textContent = user.email;
 
-  // Check admin
-  const { data: adminRow } = await supabase.from('admin_users').select('user_id').eq('user_id', user.id).single();
+  const { data: adminRow } = await supabase
+    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
   if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
 
-  loadAllOrders();
+  await loadAll();
 }
 
 /* ── NAVIGATION ── */
@@ -277,119 +314,135 @@ window.showSection = function(id) {
   document.querySelectorAll('.dashboard-nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   document.getElementById('nav-' + id).classList.add('active');
-  if (id === 'new-orders' || id === 'history') loadAllOrders();
+  if (id === 'new-orders' || id === 'history') loadAll();
 };
 
-/* ── LOAD ORDERS ── */
-let allOrders = [];
+/* ── LOAD BOTH TABLES ── */
+async function loadAll() {
+  console.log('[DASHBOARD] Loading quotes + orders for user:', currentUserId);
 
-async function loadAllOrders() {
-  const { data, error } = await supabase
-    .from('orders').select('*').order('created_at', { ascending: false });
+  const [quotesRes, ordersRes] = await Promise.all([
+    supabase.from('quotes').select('*').eq('user_id', currentUserId).order('created_at', { ascending: false }),
+    supabase.from('orders').select('*').eq('user_id', currentUserId).order('created_at', { ascending: false })
+  ]);
 
-  if (error) { console.error(error); return; }
-  allOrders = data || [];
-  renderOrderSection('orders-draft',      allOrders.filter(o => o.status === 'draft' || o.status === 'technical_review'));
-  renderOrderSection('orders-production', allOrders.filter(o => o.status === 'in_production'));
-  renderOrderSection('orders-delivered',  allOrders.filter(o => o.status === 'delivered'));
+  if (quotesRes.error) console.error('[DASHBOARD] quotes error:', quotesRes.error);
+  if (ordersRes.error) console.error('[DASHBOARD] orders error:', ordersRes.error);
+
+  const quotes = (quotesRes.data || []).map(r => normalize(r, 'quote'));
+  const orders = (ordersRes.data || []).map(r => normalize(r, 'order'));
+
+  console.log('[DASHBOARD] Loaded quotes:', quotes.length, '| orders:', orders.length);
+
+  allItems = [...quotes, ...orders].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
+  // Draft section: saved quotes (any status) + submitted orders awaiting review
+  const draftItems = allItems.filter(i =>
+    (i._type === 'quote') ||
+    (i._type === 'order' && i.status === 'technical_review')
+  );
+  // Production section: orders in production
+  const prodItems = allItems.filter(i => i._type === 'order' && i.status === 'in_production');
+  // History: delivered orders
+  const doneItems = allItems.filter(i => i._type === 'order' && i.status === 'delivered');
+
+  renderSection('orders-draft',      draftItems);
+  renderSection('orders-production', prodItems);
+  renderSection('orders-delivered',  doneItems);
 }
 
-function renderOrderSection(containerId, orders) {
+function renderSection(containerId, items) {
   const el = document.getElementById(containerId);
   if (!el) return;
-  if (orders.length === 0) {
+  if (items.length === 0) {
     el.innerHTML = `<div class="orders-empty"><i class="ph ph-inbox"></i><p>אין הזמנות להצגה</p></div>`;
     return;
   }
-  el.innerHTML = `<div class="orders-list">${orders.map(orderCard).join('')}</div>`;
+  el.innerHTML = `<div class="orders-list">${items.map(itemCard).join('')}</div>`;
 }
 
-function orderCard(o) {
-  const d = o.order_data || {};
-  const systemCount = (d.systems || []).length;
+function itemCard(o) {
+  const cfg = o.config;
+  const systemCount = (cfg.systems || []).length || 1;
   const dateStr = new Date(o.created_at).toLocaleDateString('he-IL');
-  const name = o.project_name || `פרגולה חשמלית`;
-  const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered' }[o.status] || 'status-draft';
-  const statusLabel = { draft:'טיוטה — ממתין לאישור', in_production:'בתהליך ייצור', delivered:'נמסר' }[o.status] || o.status;
+  const typeLabel = o._type === 'quote' ? 'הצעת מחיר' : 'הזמנה';
+  const stClass = STATUS_CLASS[o.status] || 'status-draft';
+  const stLabel = STATUS_LABEL[o.status] || o.status;
 
-  return `<div class="order-card" onclick="openOrderModal('${o.id}')">
+  return `<div class="order-card" onclick="openModal('${o._id}')">
     <div class="order-card-info">
       <div class="order-card-top">
-        <span class="status-badge ${statusClass}">${statusLabel}</span>
-        <span class="order-code">${o.order_code}</span>
+        <span class="status-badge ${stClass}">${stLabel}</span>
+        <span class="order-code">${o.code}</span>
+        <span style="font-size:0.72rem;color:var(--silver-dark);background:var(--surface-elevated,#f0f4f8);padding:0.15rem 0.5rem;border-radius:10px;">${typeLabel}</span>
       </div>
-      <div class="order-desc">${name} · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}</div>
+      <div class="order-desc">פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}</div>
       <div class="order-meta">נשמר: ${dateStr}</div>
     </div>
-    <div class="order-price">₪${(o.grand_total || 0).toLocaleString()}</div>
-    <button class="btn-order-detail" onclick="event.stopPropagation();openOrderModal('${o.id}')">
+    <div class="order-price">₪${Number(o.total).toLocaleString()}</div>
+    <button class="btn-order-detail" onclick="event.stopPropagation();openModal('${o._id}')">
       <i class="ph ph-eye"></i> פרטים
     </button>
   </div>`;
 }
 
 /* ── MODAL ── */
-window.openOrderModal = function(id) {
-  const o = allOrders.find(x => x.id === id);
+window.openModal = function(id) {
+  const o = allItems.find(x => x._id === id);
   if (!o) return;
-  const d = o.order_data || {};
+  const cfg = o.config;
 
   document.getElementById('modalTitle').innerHTML =
-    `פירוט הזמנה &nbsp;<span style="font-weight:400;color:var(--silver-dark);font-size:0.85rem;">${o.order_code}</span>`;
+    `פירוט &nbsp;<span style="font-weight:400;color:var(--silver-dark);font-size:0.85rem;">${o.code}</span>`;
 
   let html = '';
 
   // Systems
-  (d.systems || []).forEach((s, i) => {
-    const area = ((s.width / 100) * (s.depth / 100)).toFixed(2);
+  (cfg.systems || []).forEach(s => {
+    const w = s.width || '—', d = s.depth || '—';
+    const area = (w !== '—' && d !== '—') ? ((w / 100) * (d / 100)).toFixed(2) + ' מ"ר' : '—';
     const pvcName = PVC_NAMES[s.pvcColor] || s.pvcColor || '—';
+    const ledInfo = (cfg.addons || {}).led
+      ? `<div class="modal-item"><span class="modal-key">גוון LED</span><span class="modal-val">${s.ledTone === 'warm' ? 'צהוב 3000K' : 'לבן 6000K'}</span></div>` : '';
     html += `<div class="modal-sys-card">
-      <div class="modal-sys-title"><i class="ph ph-stack"></i> מערכת ${s.id}${s.name ? ' – ' + s.name : ''}</div>
+      <div class="modal-sys-title"><i class="ph ph-stack"></i> מערכת ${s.id || 1}${s.name ? ' – ' + s.name : ''}</div>
       <div class="modal-grid">
-        <div class="modal-item"><span class="modal-key">רוחב × עומק</span><span class="modal-val">${s.width} × ${s.depth} ס"מ</span></div>
-        <div class="modal-item"><span class="modal-key">שטח</span><span class="modal-val">${area} מ"ר</span></div>
-        <div class="modal-item"><span class="modal-key">גובה התקנה</span><span class="modal-val">${s.installHeight} ס"מ</span></div>
-        <div class="modal-item"><span class="modal-key">גובה מרזב</span><span class="modal-val">${s.gutterHeight} ס"מ</span></div>
-        <div class="modal-item"><span class="modal-key">צבע אלומיניום</span><span class="modal-val">RAL ${s.aluminumColorCustom || s.aluminumColor}</span></div>
+        <div class="modal-item"><span class="modal-key">רוחב × עומק</span><span class="modal-val">${w} × ${d} ס"מ</span></div>
+        <div class="modal-item"><span class="modal-key">שטח</span><span class="modal-val">${area}</span></div>
+        <div class="modal-item"><span class="modal-key">גובה התקנה</span><span class="modal-val">${s.installHeight || '—'} ס"מ</span></div>
+        <div class="modal-item"><span class="modal-key">גובה מרזב</span><span class="modal-val">${s.gutterHeight || '—'} ס"מ</span></div>
+        <div class="modal-item"><span class="modal-key">צבע אלומיניום</span><span class="modal-val">RAL ${s.aluminumColorCustom || s.aluminumColor || '—'}</span></div>
         <div class="modal-item"><span class="modal-key">גוון PVC</span><span class="modal-val">${pvcName}</span></div>
-        <div class="modal-item"><span class="modal-key">צבע פרופילי תאורה</span><span class="modal-val">RAL ${s.ledColorCustom || s.ledColor || '—'}</span></div>
-        ${(d.addons || {}).led ? `<div class="modal-item"><span class="modal-key">גוון LED</span><span class="modal-val">${s.ledTone === 'warm' ? 'אור צהוב (3000K)' : 'אור לבן (6000K)'}</span></div>` : ''}
+        ${ledInfo}
       </div>
     </div>`;
   });
 
   // Addons
-  const addons = d.addons || {};
-  const addonChips = [
-    addons.led     ? '<span class="modal-addon-chip"><i class="ph ph-lightbulb"></i> תאורת LED</span>' : '',
-    addons.remote  ? '<span class="modal-addon-chip"><i class="ph ph-radio-button"></i> שלט Somfy</span>' : '',
-    addons.tahoma  ? '<span class="modal-addon-chip"><i class="ph ph-wifi-high"></i> TaHoma</span>' : '',
-    addons.dimmer  ? '<span class="modal-addon-chip"><i class="ph ph-sliders"></i> דימר</span>' : '',
-    d.measureService ? '<span class="modal-addon-chip"><i class="ph ph-ruler"></i> שירות מדידה</span>' : '',
+  const addons = cfg.addons || {};
+  const chips = [
+    addons.led     && '<span class="modal-addon-chip"><i class="ph ph-lightbulb"></i> תאורת LED</span>',
+    addons.remote  && '<span class="modal-addon-chip"><i class="ph ph-radio-button"></i> שלט Somfy</span>',
+    addons.tahoma  && '<span class="modal-addon-chip"><i class="ph ph-wifi-high"></i> TaHoma</span>',
+    addons.dimmer  && '<span class="modal-addon-chip"><i class="ph ph-sliders"></i> דימר</span>',
+    cfg.measureService && '<span class="modal-addon-chip"><i class="ph ph-ruler"></i> שירות מדידה</span>',
   ].filter(Boolean).join('');
-
-  if (addonChips) {
-    html += `<div style="margin-bottom:1rem;">
-      <div style="font-size:0.75rem;font-weight:700;color:var(--silver-dark);margin-bottom:0.5rem;">תוספות</div>
-      <div class="modal-addons">${addonChips}</div>
-    </div>`;
-  }
+  if (chips) html += `<div style="margin-bottom:1rem;">
+    <div style="font-size:0.75rem;font-weight:700;color:var(--silver-dark);margin-bottom:0.5rem;">תוספות</div>
+    <div class="modal-addons">${chips}</div>
+  </div>`;
 
   // Profiles
-  const pq = d.profileQtys || {};
-  const PNAMES = { '20/20':'זווית 20×20', '30/30':'זווית 30×30', '20/40':'זווית 20×40', '100/100':'פרופיל 100×100', '100/40':'פרופיל 100×40', '120/80':'פרופיל 120×80' };
-  const profileItems = Object.entries(pq).filter(([,q]) => q > 0).map(([k,q]) => `${PNAMES[k]} ×${q}`).join(', ');
-  if (profileItems) {
-    html += `<div style="margin-bottom:1rem;font-size:0.85rem;color:var(--industrial-silver);">
-      <strong>פרופילים וזוויות:</strong> ${profileItems}
-    </div>`;
-  }
+  const pq = cfg.profileQtys || {};
+  const PNAMES = { '20/20':'זווית 20×20','30/30':'זווית 30×30','20/40':'זווית 20×40','100/100':'פרופיל 100×100','100/40':'פרופיל 100×40','120/80':'פרופיל 120×80' };
+  const profStr = Object.entries(pq).filter(([,q])=>q>0).map(([k,q])=>`${PNAMES[k]||k} ×${q}`).join(', ');
+  if (profStr) html += `<div style="margin-bottom:1rem;font-size:0.85rem;color:var(--industrial-silver);"><strong>פרופילים:</strong> ${profStr}</div>`;
 
   // Totals
   html += `<div class="modal-totals">
-    <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${(o.subtotal || 0).toLocaleString()}</span></div>
-    <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${(o.vat || 0).toLocaleString()}</span></div>
-    <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(o.grand_total || 0).toLocaleString()}</span></div>
+    <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
+    <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
+    <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
   </div>`;
 
   document.getElementById('modalBody').innerHTML = html;
@@ -400,6 +453,11 @@ window.closeOrderModal = function(e) {
   if (!e || e.target === document.getElementById('orderModalOverlay')) {
     document.getElementById('orderModalOverlay').classList.remove('open');
   }
+};
+
+window.handleLogout = async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
 };
 
 init();

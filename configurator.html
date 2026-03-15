@@ -982,8 +982,11 @@ a { text-decoration: none; color: inherit; }
   <a href="index.html" class="logo">
     <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
   </a>
-  <div>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
     <i class="ph ph-user-circle" style="font-size:2rem; color:var(--blue);"></i>
+    <button onclick="handleLogout()" style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 1rem;background:transparent;border:1.5px solid var(--border);border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;color:var(--silver);cursor:pointer;transition:all 0.2s;" onmouseover="this.style.borderColor='var(--blue)';this.style.color='var(--blue)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--silver)'">
+      <i class="ph ph-sign-out"></i> יציאה
+    </button>
   </div>
 </header>
 
@@ -1263,7 +1266,7 @@ a { text-decoration: none; color: inherit; }
           <label for="confirmCheckbox" class="confirm-checkbox-text">
             <strong>קראתי ואישרתי את כל המידות, הצבעים והתוספות שנבחרו.</strong><br>
             אני מבין כי לאחר האישור לא ניתן לבצע שינויים בהזמנה.<br>
-            האישור מהווה הסכמה ל<a onclick="return false;">תקנון ותנאי השירות</a> של ALUM-IL.
+            קראתי ואישרתי את <a href="terms.html" target="_blank" style="color:var(--blue);text-decoration:underline;">תקנון האתר ומדיניות הפרטיות</a> של ALUM-IL.
           </label>
         </div>
         <div id="placeOrderBtnWrap" style="display:none; margin-top:0.75rem;">
@@ -2000,7 +2003,7 @@ function renderSummary() {
   const pkgTotal = pkgFee * state.systems.length;
   rows += `<div class="total-row" style="align-items:center;">
     <span class="label" style="display:flex;align-items:center;gap:0.4rem;">
-      אריזה ומיגון
+      אריזה
       <span style="font-size:0.72rem;color:var(--silver);font-weight:400;">(${state.systems.length} מערכת/ות × ₪<input
         type="number" value="${pkgFee}" min="0" step="10"
         onchange="window.setPackagingFee(this.value)"
@@ -2284,26 +2287,39 @@ async function saveOrder() {
   btn.innerHTML = '<i class="ph ph-circle-notch"></i> שומר...';
   msg.style.display = 'none';
 
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { window.location.href = 'login.html'; return; }
+  console.log('[SAVE-QUOTE] Starting...');
+
+  const { data: { user }, error: authErr } = await supabase.auth.getUser();
+  if (authErr || !user) {
+    console.error('[SAVE-QUOTE] No user session:', authErr);
+    window.location.href = 'login.html';
+    return;
+  }
+  console.log('[SAVE-QUOTE] User:', user.id, user.email);
 
   const { subtotal, vat, grandTotal } = calcTotal();
   const code = getOrderCode();
 
-  const { error } = await supabase.from('quotes').insert({
-    user_id:     user.id,
-    quote_code:  code,
-    status:      'draft',
-    config:      JSON.parse(JSON.stringify(state)),
+  const payload = {
+    user_id:      user.id,
+    quote_code:   code,
+    status:       'draft',
+    config:       JSON.parse(JSON.stringify(state)),
     subtotal,
     vat,
-    total_price: grandTotal
-  });
+    total_amount: grandTotal
+  };
+  console.log('[SAVE-QUOTE] Inserting into quotes:', JSON.stringify(payload, null, 2));
+
+  const { data: insertData, error } = await supabase.from('quotes').insert(payload).select();
+  console.log('[SAVE-QUOTE] Supabase response — data:', insertData, '| error:', error);
 
   if (error) {
-    msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשמירה: ${error.message}`;
+    console.error('[SAVE-QUOTE] Insert FAILED. Code:', error.code, '| Message:', error.message, '| Details:', error.details, '| Hint:', error.hint);
+    msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשמירה (${error.code}): ${error.message}`;
     msg.className = 'save-order-msg error';
   } else {
+    console.log('[SAVE-QUOTE] Insert OK. Row inserted:', insertData);
     msg.innerHTML = `<i class="ph ph-check-circle"></i> ההצעה נשמרה! קוד: <strong>${code}</strong> — ניתן לצפות בה <a href="dashboard.html" style="color:var(--green);text-decoration:underline;">באזור האישי</a>.`;
     msg.className = 'save-order-msg success';
   }
@@ -2372,21 +2388,33 @@ async function placeOrder() {
   if (isElectric) subProduct += ' חשמלית';
   if (isTension)  subProduct += ' תלייה';
 
-  const { error } = await supabase.from('orders').insert({
+  const firstSys = state.systems[0] || {};
+  const orderPayload = {
     user_id:     user.id,
     order_code:  code,
-    status:      'pending',
+    status:      'technical_review',
     category:    'פרגולה',
     sub_product: subProduct,
+    width:       firstSys.width  || 0,
+    depth:       firstSys.depth  || 0,
+    config:      JSON.parse(JSON.stringify(state)),
+    subtotal,
+    vat,
     total_price: grandTotal
-  });
+  };
+  console.log('[PLACE-ORDER] Inserting into orders:', JSON.stringify(orderPayload, null, 2));
+
+  const { data: orderData, error } = await supabase.from('orders').insert(orderPayload).select();
+  console.log('[PLACE-ORDER] Supabase response — data:', orderData, '| error:', error);
 
   if (error) {
-    msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשליחה: ${error.message}`;
+    console.error('[PLACE-ORDER] Insert FAILED. Code:', error.code, '| Message:', error.message, '| Details:', error.details, '| Hint:', error.hint);
+    msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשליחה (${error.code}): ${error.message}`;
     msg.className = 'save-order-msg error';
     btn.disabled = false;
     btn.innerHTML = '<i class="ph ph-check-circle"></i> שלח הזמנה לאישור';
   } else {
+    console.log('[PLACE-ORDER] Insert OK. Row inserted:', orderData);
     msg.innerHTML = `<i class="ph ph-check-circle"></i> <strong>ההזמנה התקבלה!</strong> קוד: ${code} — <a href="dashboard.html" style="color:var(--green);text-decoration:underline;">מעבר לאזור האישי</a>`;
     msg.className = 'save-order-msg success';
     btn.style.display = 'none';
@@ -2428,6 +2456,14 @@ window.setPackagingFee     = function(val) {
   state.packagingFee = val === '' ? null : Number(val);
   renderSummary();
   updateStickyPrice();
+};
+
+/* ══════════════════════════════════════
+   LOGOUT
+══════════════════════════════════════ */
+window.handleLogout = async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
 };
 
 /* ══════════════════════════════════════

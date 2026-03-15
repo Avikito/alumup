@@ -23,6 +23,9 @@
             <div class="logo">
                 <img src="logo.PNG" alt="ALUM-IL" style="height:38px;display:block;">
             </div>
+            <button id="logoutBtn" onclick="handleLogout()" style="display:none;align-items:center;gap:0.4rem;padding:0.4rem 1rem;background:transparent;border:1.5px solid var(--border-light,#d6dde8);border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;color:var(--silver-dark,#6b7a99);cursor:pointer;transition:all 0.2s;">
+                <i class="ph ph-sign-out"></i> יציאה
+            </button>
         </div>
     </header>
 
@@ -63,6 +66,31 @@
                 </div>
             </div>
         </section>
+
+        <!-- Expertise Section -->
+        <section style="padding: 3rem 0; background: var(--surface-dark, #fff);">
+            <div class="container">
+                <h2 class="section-title text-center" style="margin-bottom: 1.5rem;">תחומי התמחות</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 1rem; justify-content: center;">
+                    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.85rem 1.5rem;background:var(--surface-light,#f2f5f9);border:1.5px solid var(--border-light,#d6dde8);border-radius:40px;font-weight:600;font-size:1rem;">
+                        <i class="ph ph-tree" style="font-size:1.2rem;color:var(--electric-blue,#0066ff);"></i>
+                        פרגולות אלומיניום
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.85rem 1.5rem;background:var(--surface-light,#f2f5f9);border:1.5px solid var(--border-light,#d6dde8);border-radius:40px;font-weight:600;font-size:1rem;">
+                        <i class="ph ph-lightning" style="font-size:1.2rem;color:var(--electric-blue,#0066ff);"></i>
+                        פרגולות חשמליות
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.85rem 1.5rem;background:var(--surface-light,#f2f5f9);border:1.5px solid var(--border-light,#d6dde8);border-radius:40px;font-weight:600;font-size:1rem;">
+                        <i class="ph ph-wind" style="font-size:1.2rem;color:var(--electric-blue,#0066ff);"></i>
+                        מסכי זיפ
+                    </div>
+                    <div style="display:flex;align-items:center;gap:0.6rem;padding:0.85rem 1.5rem;background:var(--surface-light,#f2f5f9);border:1.5px solid var(--border-light,#d6dde8);border-radius:40px;font-weight:600;font-size:1rem;">
+                        <i class="ph ph-squares-four" style="font-size:1.2rem;color:var(--electric-blue,#0066ff);"></i>
+                        עבודות זכוכית
+                    </div>
+                </div>
+            </div>
+        </section>
     </main>
 
     <!-- Professional Footer -->
@@ -83,7 +111,7 @@
                 <ul>
                     <li><a href="#">אודות</a></li>
                     <li><a href="#">צור קשר</a></li>
-                    <li><a href="#">תנאי שימוש</a></li>
+                    <li><a href="terms.html">תקנון ומדיניות פרטיות</a></li>
                 </ul>
             </div>
             <div class="footer-col contact-col">
@@ -100,6 +128,25 @@
             </div>
         </div>
     </footer>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+(async () => {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (user) {
+    const btn = document.getElementById('logoutBtn');
+    if (btn) btn.style.display = 'flex';
+  }
+})();
+window.handleLogout = async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+};
+</script>
 </body>
 
 </html>

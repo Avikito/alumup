@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUM-IL | תקנון ומדיניות פרטיות</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #f2f5f9;
+  --surface: #ffffff;
+  --border: #d6dde8;
+  --blue: #0066ff;
+  --text: #1a2535;
+  --silver: #6b7a99;
+  --radius: 12px;
+}
+body {
+  font-family: 'Heebo', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.8;
+  min-height: 100vh;
+}
+.header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0.9rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--blue);
+  text-decoration: none;
+}
+.header-back {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.9rem;
+  color: var(--silver);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.header-back:hover { color: var(--blue); }
+
+.container {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 5rem;
+}
+.page-title {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--text);
+  margin-bottom: 0.4rem;
+}
+.page-subtitle {
+  color: var(--silver);
+  font-size: 0.95rem;
+  margin-bottom: 2.5rem;
+}
+.toc {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem 2rem;
+  margin-bottom: 2.5rem;
+}
+.toc-title {
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.toc ol {
+  padding-right: 1.4rem;
+}
+.toc li {
+  margin-bottom: 0.4rem;
+  font-size: 0.9rem;
+}
+.toc a {
+  color: var(--blue);
+  text-decoration: none;
+}
+.toc a:hover { text-decoration: underline; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem 2.5rem;
+  margin-bottom: 1.5rem;
+  scroll-margin-top: 80px;
+}
+.card-title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: var(--blue);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1.2rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid var(--bg);
+}
+.card p {
+  color: var(--text);
+  margin-bottom: 0.9rem;
+  font-size: 0.97rem;
+}
+.card p:last-child { margin-bottom: 0; }
+.card ul, .card ol {
+  padding-right: 1.5rem;
+  margin-bottom: 0.9rem;
+}
+.card li {
+  margin-bottom: 0.5rem;
+  font-size: 0.97rem;
+}
+.highlight-box {
+  background: rgba(0,102,255,0.05);
+  border: 1px solid rgba(0,102,255,0.15);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  font-size: 0.93rem;
+}
+.warning-box {
+  background: rgba(220,38,38,0.05);
+  border: 1px solid rgba(220,38,38,0.15);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  margin: 1rem 0;
+  font-size: 0.93rem;
+}
+.footer-note {
+  text-align: center;
+  color: var(--silver);
+  font-size: 0.85rem;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+strong { font-weight: 700; }
+h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 1.2rem 0 0.6rem;
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <a href="index.html" class="logo">
+    <img src="logo.PNG" alt="ALUM-IL" style="height:34px;display:block;">
+  </a>
+  <a href="javascript:history.back()" class="header-back">
+    <i class="ph ph-arrow-right"></i> חזרה
+  </a>
+</header>
+
+<div class="container">
+  <h1 class="page-title">תקנון האתר ומדיניות פרטיות</h1>
+  <p class="page-subtitle">עדכון אחרון: מרץ 2026 | ALUM-IL בע"מ</p>
+
+  <!-- Table of Contents -->
+  <div class="toc">
+    <div class="toc-title"><i class="ph ph-list-bullets" style="color:var(--blue)"></i> תוכן עניינים</div>
+    <ol>
+      <li><a href="#sec1">כללי ותחולה</a></li>
+      <li><a href="#sec2">שימוש בפלטפורמה</a></li>
+      <li><a href="#sec3">מחירים ועדכונם</a></li>
+      <li><a href="#sec4">הגבלת אחריות לחישובים והצעות מחיר</a></li>
+      <li><a href="#sec5">ביטול עסקה ומדיניות החזרות</a></li>
+      <li><a href="#sec6">קניין רוחני</a></li>
+      <li><a href="#sec7">מדיניות פרטיות ואבטחת מידע</a></li>
+      <li><a href="#sec8">עוגיות (Cookies)</a></li>
+      <li><a href="#sec9">שינויים בתקנון</a></li>
+      <li><a href="#sec10">יצירת קשר ופניות</a></li>
+    </ol>
+  </div>
+
+  <!-- Section 1 -->
+  <div class="card" id="sec1">
+    <div class="card-title"><i class="ph ph-info"></i> 1. כללי ותחולה</div>
+    <p>ברוכים הבאים לאתר <strong>ALUM-IL</strong> (להלן: "האתר" או "הפלטפורמה"), המופעל על ידי <strong>ALUM-IL בע"מ</strong> (להלן: "החברה").</p>
+    <p>תקנון זה מסדיר את תנאי השימוש בפלטפורמה, לרבות הקונפיגרטור, מערכת ההזמנות, ואזור המשתמש. <strong>השימוש בפלטפורמה מהווה הסכמה מלאה לתנאים המפורטים להלן.</strong></p>
+    <p>הפלטפורמה מיועדת לגורמים עסקיים בלבד (ב2ב) — קבלנים, מתקינים, יצרנים ובעלי מקצוע בתחום האלומיניום. אינה מיועדת למשתמשים פרטיים.</p>
+    <div class="highlight-box">
+      <strong>הכרה בתנאים:</strong> שימוש בפלטפורמה, בין אם עם חשבון רשום ובין אם ללא, מהווה הסכמה בלתי מסויגת לתנאי תקנון זה ולמדיניות הפרטיות.
+    </div>
+  </div>
+
+  <!-- Section 2 -->
+  <div class="card" id="sec2">
+    <div class="card-title"><i class="ph ph-monitor"></i> 2. שימוש בפלטפורמה</div>
+    <p>המשתמש מתחייב לשימוש בפלטפורמה למטרות חוקיות בלבד ובהתאם לכל דין החל בישראל.</p>
+    <ul>
+      <li>חל איסור על העברת פרטי חשבון לצד שלישי.</li>
+      <li>חל איסור על כריית מידע (data scraping), העתקת תוכן או פגיעה בשלמות המערכת.</li>
+      <li>המשתמש אחראי לכל פעולה המבוצעת תחת חשבונו.</li>
+      <li>החברה שומרת לעצמה את הזכות לחסום או לבטל חשבון שנעשה בו שימוש לרעה.</li>
+    </ul>
+    <p>הפלטפורמה ניתנת "כפי שהיא" (AS IS). החברה אינה מתחייבת לזמינות רציפה של השירות.</p>
+  </div>
+
+  <!-- Section 3 -->
+  <div class="card" id="sec3">
+    <div class="card-title"><i class="ph ph-tag"></i> 3. מחירים ועדכונם</div>
+    <p>המחירים המוצגים באתר ובקונפיגרטור הינם <strong>אינדיקטיביים בלבד</strong> ועשויים להשתנות בכל עת וללא הודעה מוקדמת, בהתאם לשינויים בעלויות חומרי גלם, שער המטבע, מדד המחירים לצרכן, ושינויים אחרים בשוק האלומיניום.</p>
+    <div class="warning-box">
+      <strong>⚠️ חשוב:</strong> המחירים הסופיים ייקבעו אך ורק בהצעת מחיר כתובה וחתומה מטעם החברה. המחיר המוצג בקונפיגרטור אינו מהווה הצעה מחייבת.
+    </div>
+    <ul>
+      <li>המחירים אינם כוללים מע"מ, אלא אם כן צוין במפורש.</li>
+      <li>מחירי הובלה, התקנה ושירותי שדה אינם כלולים במחיר הבסיסי אלא אם צוין אחרת.</li>
+      <li>שינויים במחיר לאחר הגשת הזמנה ייתכנו רק בהסכמה בכתב של שני הצדדים.</li>
+    </ul>
+  </div>
+
+  <!-- Section 4 -->
+  <div class="card" id="sec4">
+    <div class="card-title"><i class="ph ph-calculator"></i> 4. הגבלת אחריות לחישובים והצעות מחיר</div>
+    <p>הקונפיגרטור והכלים החישוביים שבפלטפורמה נועדו לסייע בתכנון ראשוני בלבד. <strong>החברה אינה אחראית לכל טעות, אי-דיוק, או שגיאה בחישובים שהופקו על ידי הפלטפורמה.</strong></p>
+    <ul>
+      <li>כל חישוב, הצעת מחיר אוטומטית, או פלט מהקונפיגרטור — אינם מהווים חוזה מחייב.</li>
+      <li>המשתמש אחראי לאמת את כל הנתונים מול נציג מכירות מוסמך של החברה.</li>
+      <li>החברה לא תישא בכל אחריות לנזק ישיר, עקיף, או נסיבתי הנובע מהסתמכות על חישובים אוטומטיים.</li>
+      <li>שגיאות הקלדה, שגיאות טכניות, או תקלות מערכת אינן מחייבות את החברה לעמוד במחיר שגוי.</li>
+    </ul>
+    <div class="highlight-box">
+      לתוצאות מדויקות, יש לפנות לצוות המכירות לקבלת הצעת מחיר רשמית וחתומה.
+    </div>
+  </div>
+
+  <!-- Section 5 -->
+  <div class="card" id="sec5">
+    <div class="card-title"><i class="ph ph-arrow-u-up-left"></i> 5. ביטול עסקה ומדיניות החזרות</div>
+    <p>ביטול עסקאות יתבצע בהתאם להוראות <strong>חוק הגנת הצרכן, תשמ"א-1981</strong> ותקנות הגנת הצרכן (ביטול עסקה), תשע"א-2010, ככל שאלו חלים על עסקה בין עסקים.</p>
+    <h3>עסקאות בין עסקים (ב2ב):</h3>
+    <ul>
+      <li>ניתן לבטל הזמנה לפני אישור ייצור — ללא חיוב.</li>
+      <li>לאחר אישור ייצור — ביטול יגרור דמי ביטול של עד 30% מסכום ההזמנה.</li>
+      <li>מוצרים שיוצרו לפי מפרט מיוחד של הלקוח אינם ניתנים להחזרה.</li>
+    </ul>
+  </div>
+
+  <!-- Section 6 -->
+  <div class="card" id="sec6">
+    <div class="card-title"><i class="ph ph-copyright"></i> 6. קניין רוחני</div>
+    <p>כל התוכן באתר, לרבות עיצוב, טקסטים, תמונות, לוגו, קוד תוכנה, נתוני מחירים, ופרמטרים טכניים — הינם רכושה הבלעדי של <strong>ALUM-IL בע"מ</strong> ומוגנים בחוקי זכויות יוצרים ישראליים ובינלאומיים.</p>
+    <ul>
+      <li>חל איסור מוחלט על שכפול, העתקה, הפצה, או שימוש מסחרי בתוכן האתר ללא אישור מפורש בכתב.</li>
+      <li>שם המותג "ALUM-IL" וכל סימני המסחר הקשורים הם רכוש החברה.</li>
+    </ul>
+  </div>
+
+  <!-- Section 7 -->
+  <div class="card" id="sec7">
+    <div class="card-title"><i class="ph ph-shield-check"></i> 7. מדיניות פרטיות ואבטחת מידע</div>
+
+    <h3>7.1 מידע הנאסף</h3>
+    <p>בעת הרשמה ושימוש בפלטפורמה, החברה אוספת את המידע הבא:</p>
+    <ul>
+      <li>פרטי זיהוי: שם מלא, שם עסק, ח.פ./ע.מ., כתובת, טלפון, דוא"ל.</li>
+      <li>נתוני שימוש: היסטוריית הזמנות, קונפיגורציות שנשמרו, פעולות במערכת.</li>
+      <li>נתונים טכניים: כתובת IP, סוג דפדפן, מכשיר, זמן כניסה.</li>
+    </ul>
+
+    <h3>7.2 אחסון המידע — Supabase</h3>
+    <p>המידע האישי של המשתמשים נאגר ומנוהל באמצעות פלטפורמת <strong>Supabase</strong>, שירות בסיסי נתונים מבוסס ענן. הנתונים מאוחסנים בשרתים מאובטחים הכוללים הצפנה בתעבורה (TLS/SSL) ובמנוחה.</p>
+    <div class="highlight-box">
+      <strong>מיקום אחסון:</strong> הנתונים עשויים להיות מאוחסנים בשרתים מחוץ לישראל, בהתאם למדיניות Supabase. החברה נוקטת אמצעים סבירים להבטחת רמת הגנה מספקת.
+    </div>
+
+    <h3>7.3 מטרות השימוש במידע</h3>
+    <ul>
+      <li>ניהול חשבון המשתמש ואימות זהות.</li>
+      <li>עיבוד הזמנות ומתן שירות.</li>
+      <li>שיפור הפלטפורמה וניתוח דפוסי שימוש (בצורה מצטברת ואנונימית).</li>
+      <li>משלוח עדכונים ומידע שיווקי — בהסכמת המשתמש בלבד.</li>
+      <li>עמידה בדרישות חוקיות ורגולטוריות.</li>
+    </ul>
+
+    <h3>7.4 העברת מידע לצד שלישי</h3>
+    <p>החברה לא תמכור, תשכיר, או תשתף מידע אישי עם צדדים שלישיים, אלא:</p>
+    <ul>
+      <li>בהסכמת המשתמש המפורשת.</li>
+      <li>על פי צו שיפוטי או דרישה חוקית.</li>
+      <li>לספקי שירות חיוניים הקשורים בהפעלת הפלטפורמה (כגון ספקי ענן, עיבוד תשלומים), תחת חובות סודיות.</li>
+    </ul>
+
+    <h3>7.5 זכויות המשתמש</h3>
+    <p>בהתאם לחוק הגנת הפרטיות, תשמ"א-1981, המשתמש זכאי ל:</p>
+    <ul>
+      <li><strong>עיון:</strong> לקבל עותק של המידע הרשום אודותיו.</li>
+      <li><strong>תיקון:</strong> לתקן מידע שגוי או לא מעודכן.</li>
+      <li><strong>מחיקה:</strong> לבקש מחיקת המידע (בכפוף לדרישות חוקיות לשמירת רשומות).</li>
+    </ul>
+    <p>לממש זכויות אלו, יש לפנות ל: <strong>privacy@alum-il.co.il</strong></p>
+
+    <h3>7.6 אבטחת מידע</h3>
+    <p>החברה מיישמת אמצעי אבטחה מקובלים בתעשייה, לרבות הצפנת תקשורת, בקרת גישה, וניטור. עם זאת, <strong>אין ביכולת החברה להבטיח אבטחה מוחלטת</strong> ואין היא אחראית לנזק הנובע מאירועי סייבר מחוץ לשליטתה.</p>
+  </div>
+
+  <!-- Section 8 -->
+  <div class="card" id="sec8">
+    <div class="card-title"><i class="ph ph-cookie"></i> 8. עוגיות (Cookies)</div>
+    <p>הפלטפורמה עושה שימוש בעוגיות לצורך שמירת סשן משתמש, העדפות תצוגה, וניתוח שימוש. השימוש בפלטפורמה מהווה הסכמה לשימוש בעוגיות הכרחיות.</p>
+    <p>ניתן לחסום עוגיות דרך הגדרות הדפדפן, אך פעולה זו עשויה לפגוע בחלק מפונקציות האתר.</p>
+  </div>
+
+  <!-- Section 9 -->
+  <div class="card" id="sec9">
+    <div class="card-title"><i class="ph ph-pencil-simple"></i> 9. שינויים בתקנון</div>
+    <p>החברה שומרת לעצמה את הזכות לעדכן תקנון זה בכל עת. שינויים מהותיים יפורסמו בפלטפורמה עם הודעה של 14 יום מראש. המשך השימוש בפלטפורמה לאחר פרסום שינויים מהווה הסכמה לתקנון המעודכן.</p>
+    <p>גרסה זו עדכנית לתאריך <strong>מרץ 2026</strong>.</p>
+  </div>
+
+  <!-- Section 10 -->
+  <div class="card" id="sec10">
+    <div class="card-title"><i class="ph ph-envelope"></i> 10. יצירת קשר ופניות</div>
+    <p>לכל שאלה, פנייה, או תלונה הנוגעת לתקנון זה או למדיניות הפרטיות, ניתן לפנות:</p>
+    <ul>
+      <li><strong>דוא"ל:</strong> info@alum-il.co.il</li>
+      <li><strong>דוא"ל פרטיות:</strong> privacy@alum-il.co.il</li>
+      <li><strong>כתובת:</strong> ישראל</li>
+    </ul>
+    <p>החברה תשאף להשיב לפניות תוך 14 ימי עסקים.</p>
+    <div class="highlight-box">
+      <strong>הדין החל:</strong> תקנון זה כפוף לחוקי מדינת ישראל. כל מחלוקת תובא לפני בית המשפט המוסמך במחוז תל-אביב.
+    </div>
+  </div>
+
+  <div class="footer-note">
+    &copy; 2026 ALUM-IL בע"מ · כל הזכויות שמורות<br>
+    תקנון זה נכתב בהתאם להוראות חוק הגנת הפרטיות, תשמ"א-1981 וחוק המחשבים, תשנ"ה-1995
+  </div>
+</div>
+
+</body>
+</html>
