@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Bash(find /c/Users/User/Desktop/alumup-1 -type f \\\\\\( -name \"*.html\" -o -name \"*.css\" -o -name \"*.js\" \\\\\\) -exec wc -l {} +)",
-      "Bash(rm \"C:\\\\Users\\\\User\\\\Desktop\\\\alumup-1\\\\css\\\\pergola-configurator.css\" && rm \"C:\\\\Users\\\\User\\\\Desktop\\\\alumup-1\\\\pvc configorator.html\")"
+      "Bash(rm \"C:\\\\Users\\\\User\\\\Desktop\\\\alumup-1\\\\css\\\\pergola-configurator.css\" && rm \"C:\\\\Users\\\\User\\\\Desktop\\\\alumup-1\\\\pvc configorator.html\")",
+      "Bash(xargs grep:*)",
+      "Bash(grep -r \"generatePDF\\\\|export.*pdf\\\\|function.*pdf\" 'c:\\\\Users\\\\User\\\\Desktop\\\\עדכון אתר 1503\\\\alumup' --include=*.js --include=*.html)",
+      "Bash(grep -l \"generatePDF\\\\|jsPDF\\\\|pdf\" \"c:\\\\Users\\\\User\\\\Desktop\\\\עדכון אתר 1503\\\\alumup\"/*.html)",
+      "Bash(grep -r \"\\\\.insert\\\\|\\\\.upsert\" 'c:\\\\Users\\\\User\\\\Desktop\\\\עדכון אתר 1503\\\\alumup' --include=*.html --include=*.js)",
+      "Bash(curl -sL \"https://cdn.jsdelivr.net/gh/google/fonts/ofl/heebo/Heebo-Regular.ttf\" -o /tmp/heebo_reg.ttf)",
+      "Read(//tmp/**)"
     ]
   }
 }

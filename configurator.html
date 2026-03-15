@@ -2273,6 +2273,15 @@ async function saveOrder() {
     project_name: state.projectName || null,
     project_number: state.projectNumber || null,
     order_data: JSON.parse(JSON.stringify(state)),
+    category: 'פרגולה',
+    sub_product: (() => {
+      const isElectric = state.addons?.led || state.addons?.remote || state.addons?.tahoma || state.addons?.dimmer;
+      const isTension  = state.supportType === 'tension';
+      let name = 'פרגולה';
+      if (isElectric) name += ' חשמלית';
+      if (isTension)  name += ' תלייה';
+      return name;
+    })(),
     subtotal,
     vat,
     grand_total: grandTotal
