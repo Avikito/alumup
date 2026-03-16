@@ -2003,9 +2003,9 @@ function renderSummary() {
       אריזה
       <span style="font-size:0.72rem;color:var(--silver);font-weight:400;">(${state.systems.length} מערכת/ות × ₪<input
         type="number" value="${pkgFee}" min="0" step="10"
-        onchange="window.setPackagingFee(this.value)"
-        style="width:62px;border:1px solid var(--border);border-radius:5px;padding:0.1rem 0.35rem;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;color:var(--blue);background:transparent;text-align:center;"
-        title="ניתן לשנות לפרויקט זה">)</span>
+        readonly
+        style="width:62px;border:1px solid var(--border);border-radius:5px;padding:0.1rem 0.35rem;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;color:var(--silver);background:transparent;text-align:center;cursor:default;"
+        title="ערך נקבע מתוך הגדרות גלובליות">)</span>
     </span>
     <span class="val">₪${pkgTotal.toLocaleString()}</span>
   </div>`;
@@ -2394,10 +2394,13 @@ async function placeOrder() {
     sub_product: subProduct,
     width:       firstSys.width  || 0,
     depth:       firstSys.depth  || 0,
-    config:      JSON.parse(JSON.stringify(state)),
+    config:           JSON.parse(JSON.stringify(state)),
     subtotal,
     vat,
-    total_price: grandTotal
+    total_price:      grandTotal,
+    shipping_method:  'standard',
+    is_read:          false,
+    vendor_name:      ''
   };
   console.log('[PLACE-ORDER] Inserting into orders:', JSON.stringify(orderPayload, null, 2));
 

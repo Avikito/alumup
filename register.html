@@ -341,6 +341,29 @@ window.toggleSubmitBtn = function() {
 
 /* ── STEP NAVIGATION ── */
 window.nextStep = function(step) {
+  // Validate before leaving current step
+  if (step === 2) {
+    const required = [
+      { id: 'fullName',        label: 'שם מלא' },
+      { id: 'businessName',    label: 'שם העסק' },
+      { id: 'phone',           label: 'טלפון' },
+      { id: 'email',           label: 'דוא"ל' },
+      { id: 'password',        label: 'סיסמה' },
+      { id: 'businessAddress', label: 'כתובת העסק' },
+    ];
+    const missing = required.filter(f => !document.getElementById(f.id)?.value.trim()).map(f => f.label);
+    if (missing.length) {
+      alert('יש למלא את השדות הבאים: ' + missing.join(', '));
+      return;
+    }
+  }
+  if (step === 3) {
+    const regions = document.querySelectorAll('input[name="regions"]:checked');
+    if (!regions.length) {
+      alert('יש לבחור לפחות אזור פעילות אחד.');
+      return;
+    }
+  }
   document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
   document.getElementById('step-' + step).classList.add('active');
   updateIndicators(step);
@@ -364,12 +387,13 @@ window.handleRegistration = async function() {
   const errEl = document.getElementById('regError');
   errEl.style.display = 'none';
 
-  const email        = document.getElementById('email').value.trim();
-  const password     = document.getElementById('password').value;
-  const fullName     = document.getElementById('fullName').value.trim();
-  const businessName = document.getElementById('businessName').value.trim();
-  const businessId   = document.getElementById('businessId').value.trim();
-  const phone        = document.getElementById('phone').value.trim();
+  const email           = document.getElementById('email').value.trim();
+  const password        = document.getElementById('password').value;
+  const fullName        = document.getElementById('fullName').value.trim();
+  const businessName    = document.getElementById('businessName').value.trim();
+  const businessId      = document.getElementById('businessId').value.trim();
+  const phone           = document.getElementById('phone').value.trim();
+  const businessAddress = document.getElementById('businessAddress').value.trim();
 
   const regions     = Array.from(document.querySelectorAll('input[name="regions"]:checked')).map(el => el.value);
   const userTypes   = Array.from(document.querySelectorAll('input[name="userType"]:checked')).map(el => el.value);
@@ -378,8 +402,8 @@ window.handleRegistration = async function() {
   console.log('[REGISTER] email captured:', email || '⚠️ EMPTY');
   console.log('[REGISTER] fullName:', fullName, '| phone:', phone);
 
-  if (!email || !password || !fullName || !businessName || !phone) {
-    const missing = [!email&&'email', !password&&'password', !fullName&&'fullName', !businessName&&'businessName', !phone&&'phone'].filter(Boolean);
+  if (!email || !password || !fullName || !businessName || !phone || !businessAddress) {
+    const missing = [!email&&'דוא"ל', !password&&'סיסמה', !fullName&&'שם מלא', !businessName&&'שם העסק', !phone&&'טלפון', !businessAddress&&'כתובת העסק'].filter(Boolean);
     console.warn('[REGISTER] Missing fields:', missing);
     showError('יש למלא את כל השדות החובה: ' + missing.join(', '));
     return;
@@ -395,34 +419,38 @@ window.handleRegistration = async function() {
     if (authError) throw authError;
     console.log('[REGISTER] auth.signUp OK, user id:', authData.user?.id);
 
-    const { error: profileError } = await supabase.from('profiles').insert([{
-      id: authData.user.id,
-      full_name: fullName,
-      business_name: businessName,
-      business_id: businessId || null,
+    const profilePayload = {
+      id:               authData.user.id,
+      full_name:        fullName,
+      business_name:    businessName,
+      business_id:      businessId || null,
       phone,
+      business_address: businessAddress,
       regions,
-      user_type: userTypes,
+      user_type:        userTypes,
       specialties,
-      is_approved: false
-    }]);
+      is_approved:      false
+    };
+    console.log('[REGISTER] profile payload:', JSON.stringify(profilePayload));
+
+    const { error: profileError } = await supabase.from('profiles').insert([profilePayload]);
     if (profileError) {
-      console.error('[REGISTER] profile insert error:', profileError);
-      throw profileError;
+      console.error('[REGISTER] profile insert error:', profileError.code, profileError.message, profileError.details);
+      throw new Error(`שגיאת DB (${profileError.code}): ${profileError.message}`);
     }
     console.log('[REGISTER] profile inserted OK');
 
     window.location.href = 'pending-approval.html';
 
   } catch (error) {
-    let msg = 'שגיאה ברישום. נסה שנית.';
+    let msg = error.message || 'שגיאה ברישום. נסה שנית.';
     if (error.message?.includes('already registered') || error.message?.includes('User already registered')) {
       msg = 'כתובת האימייל כבר רשומה במערכת. נסה להתחבר או השתמש בכתובת אחרת.';
     } else if (error.message?.includes('security purposes') || error.message?.includes('after')) {
       msg = 'מסיבות אבטחה, יש להמתין מספר שניות לפני ניסיון נוסף. נסה שוב בעוד דקה.';
     } else if (error.message?.includes('Password')) {
       msg = 'הסיסמה חייבת להכיל לפחות 6 תווים.';
-    } else if (error.message?.includes('email')) {
+    } else if (error.message?.includes('Invalid email')) {
       msg = 'כתובת האימייל אינה תקינה.';
     }
     showError(msg);

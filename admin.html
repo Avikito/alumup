@@ -29,6 +29,10 @@
     }
     .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
     .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+    .nav-badge { margin-right:auto;background:#dc2626;color:#fff;font-size:0.62rem;font-weight:800;padding:0.1rem 0.42rem;border-radius:20px;line-height:1.5;display:none; }
+    .nav-badge.show { display:inline-block; }
+    .row-unread td:first-child { border-right:3px solid var(--electric-blue); }
+    .row-unread { background:rgba(0,102,255,0.04); }
 
     .admin-content { flex:1;padding:2rem;overflow-y:auto; }
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
@@ -187,7 +191,13 @@
         <button class="filter-btn" onclick="setFilter('delivered')">נמסר</button>
         <button class="filter-btn" onclick="setFilter('dispute')" style="color:#c2410c;border-color:rgba(234,88,12,0.35);">מחלוקת</button>
         <button class="filter-btn" onclick="setFilter('cancelled')">בוטל</button>
-        <input class="search-input" type="text" placeholder="חיפוש קוד / פרויקט..." id="searchInput" oninput="renderTable()">
+        <input class="search-input" type="text" placeholder="חיפוש קוד / שם רוכש..." id="searchInput" oninput="renderTable()">
+        <select class="search-input" id="typeFilter" onchange="renderTable()" style="min-width:140px;">
+          <option value="">כל הסוגים</option>
+          <option value="פרגולה">פרגולה</option>
+          <option value="חלונות">חלונות</option>
+          <option value="גדרות">גדרות</option>
+        </select>
       </div>
 
       <div class="orders-count" id="ordersCount"></div>
@@ -199,13 +209,15 @@
               <th>הרוכש</th>
               <th>סוג מוצר</th>
               <th>תת מוצר</th>
-              <th>תאריך רכישה</th>
+              <th>מחיר</th>
+              <th>כניסה</th>
+              <th>עדכון אחרון</th>
               <th>סטטוס</th>
               <th>פרטים</th>
             </tr>
           </thead>
           <tbody id="ordersTableBody">
-            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+            <tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--silver-dark);">
               <i class="ph ph-circle-notch spin"></i> טוען הזמנות...
             </td></tr>
           </tbody>
@@ -245,13 +257,21 @@ const supabase = createClient(
   ];
   const el = document.getElementById('admin-sidebar-placeholder');
   if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
-    items.map(i => `<li><a href="${i.href}" class="${i.id==='orders'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
+    items.map(i => `<li><a href="${i.href}" class="${i.id==='orders'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}${i.id==='orders'?'<span class="nav-badge" id="orders-badge"></span>':''}</a></li>`).join('')
   }</ul>`;
 })();
 
 
 let allOrders = [];
 let currentFilter = 'all';
+
+function updateUnreadBadge() {
+  const unread = allOrders.filter(o => o.is_read === false).length;
+  const badge = document.getElementById('orders-badge');
+  if (!badge) return;
+  badge.textContent = unread || '';
+  badge.classList.toggle('show', unread > 0);
+}
 
 const TYPE_LABELS = {
   contractor: 'קבלן', installer: 'מתקין', architect: 'אדריכל',
@@ -307,7 +327,7 @@ async function loadOrders() {
 
   const { data, error } = await supabase
     .from('orders')
-    .select('id, created_at, status_updated_at, status, category, sub_product, total_price, user_id, profiles!user_id(full_name)')
+    .select('id, created_at, status_updated_at, status, category, sub_product, total_price, is_read, shipping_method, vendor_name, user_id, profiles!user_id(full_name)')
     .order('created_at', { ascending: false });
 
   console.log('[ALUM-IL] orders result:', data, error);
@@ -320,7 +340,7 @@ async function loadOrders() {
   if (!data || data.length === 0) {
     console.warn('[ALUM-IL] Query succeeded but returned 0 rows — check RLS or data exists');
     document.getElementById('ordersTableBody').innerHTML =
-      `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+      `<tr><td colspan="9" style="text-align:center;padding:2rem;color:var(--silver-dark);">
         <i class="ph ph-inbox"></i><br>אין הזמנות בטבלה — בדוק RLS ו-data
       </td></tr>`;
     document.getElementById('ordersCount').textContent = 'נמצאו 0 הזמנות';
@@ -330,6 +350,7 @@ async function loadOrders() {
   allOrders = data;
   console.log('[ALUM-IL] Loaded', data.length, 'orders. First row:', data[0]);
   renderTable();
+  updateUnreadBadge();
 }
 
 function showDebugError(msg) {
@@ -337,7 +358,7 @@ function showDebugError(msg) {
   document.getElementById('adminSubtitle').innerHTML =
     `<span style="color:#dc2626;font-weight:700;"><i class="ph ph-warning"></i> ${msg}</span>`;
   document.getElementById('ordersTableBody').innerHTML =
-    `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#dc2626;">${msg}</td></tr>`;
+    `<tr><td colspan="9" style="text-align:center;padding:2rem;color:#dc2626;">${msg}</td></tr>`;
 }
 
 /* ── FILTER ── */
@@ -350,10 +371,12 @@ window.setFilter = function(f) {
 
 /* ── RENDER TABLE ── */
 function renderTable() {
-  const search = (document.getElementById('searchInput').value || '').toLowerCase();
+  const search   = (document.getElementById('searchInput').value || '').toLowerCase();
+  const typeVal  = (document.getElementById('typeFilter')?.value || '').toLowerCase();
   let rows = allOrders.filter(o => {
     if (currentFilter !== 'all' && o.status !== currentFilter) return false;
-    if (search && !o.id.toLowerCase().includes(search) && !(o.profiles?.full_name||'').toLowerCase().includes(search)) return false;
+    if (search && !o.id.toLowerCase().includes(search) && !(o.profiles?.full_name||'').toLowerCase().includes(search) && !(o.order_code||'').toLowerCase().includes(search) && !(o.vendor_name||'').toLowerCase().includes(search)) return false;
+    if (typeVal && !(o.category||'').toLowerCase().includes(typeVal)) return false;
     return true;
   });
 
@@ -361,23 +384,31 @@ function renderTable() {
 
   const tbody = document.getElementById('ordersTableBody');
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = rows.map(o => {
-    const _d = new Date(o.created_at);
-    const date = `${String(_d.getDate()).padStart(2,'0')}/${String(_d.getMonth()+1).padStart(2,'0')}/${_d.getFullYear()}`;
+    const fmtDT = iso => {
+      if (!iso) return '—';
+      const d = new Date(iso);
+      return `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')} ${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`;
+    };
+    const date = fmtDT(o.created_at);
+    const lastUpdate = fmtDT(o.status_updated_at);
     const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered', dispute:'status-dispute', cancelled:'status-cancelled' }[o.status] || '';
     const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בייצור', delivered:'נמסר', dispute:'נפתחה מחלוקת', cancelled:'בוטל' }[o.status] || o.status;
-    const rowClass = o.status === 'dispute' ? 'row-dispute' : '';
+    const rowClass = [o.status === 'dispute' ? 'row-dispute' : '', o.is_read === false ? 'row-unread' : ''].filter(Boolean).join(' ');
+    const price = o.total_price ? `₪${Number(o.total_price).toLocaleString()}` : '—';
 
     return `<tr class="${rowClass}">
       <td class="order-code-cell">${getCode(o)}</td>
       <td><div style="font-weight:600">${o.profiles?.full_name || '—'}</div></td>
       <td>${getProductType(o)}</td>
       <td>${getSubProduct(o)}</td>
+      <td style="font-weight:700;color:var(--electric-blue)">${price}</td>
       <td>${date}</td>
+      <td style="color:var(--silver-dark);font-size:0.82rem;">${lastUpdate}</td>
       <td>
         <div>
           <select class="status-select" data-id="${o.id}" data-prev="${o.status}" onchange="updateStatus(this)">
@@ -443,6 +474,17 @@ window.updateStatus = async function(sel) {
 window.openDetail = function(id) {
   const o = allOrders.find(x => x.id === id);
   if (!o) return;
+
+  // Mark as read
+  if (o.is_read === false) {
+    supabase.from('orders').update({ is_read: true }).eq('id', id).then(() => {
+      o.is_read = true;
+      updateUnreadBadge();
+      // remove unread highlight from this row
+      const row = document.querySelector(`tr.row-unread td.order-code-cell`);
+      if (row) row.closest('tr')?.classList.remove('row-unread');
+    });
+  }
 
   const code = getCode(o);
   document.getElementById('detailTitle').textContent = `הזמנה ${code}`;
