@@ -2377,6 +2377,7 @@ async function placeOrder() {
   if (!user) { window.location.href = 'login.html'; return; }
 
   const { subtotal, vat, grandTotal } = calcTotal();
+  console.log('[PLACE-ORDER] calcTotal →', { subtotal, vat, grandTotal }, '| perSqm:', ADDON_PRICES.perSqm);
   const code = getOrderCode();
 
   const isElectric = state.addons.led || state.addons.remote || state.addons.tahoma || state.addons.dimmer;

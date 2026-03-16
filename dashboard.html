@@ -261,14 +261,17 @@ const PVC_NAMES = { white:'לבן', black:'שחור', gray46:'אפור 7046', gr
 
 const STATUS_CLASS = {
   draft:'status-draft', technical_review:'status-review',
-  in_production:'status-production', delivered:'status-delivered',
+  in_production:'status-production', ready_for_delivery:'status-production',
+  delivered:'status-delivered', cancelled:'status-draft',
   sent:'status-review', approved:'status-production', rejected:'status-draft'
 };
 const STATUS_LABEL = {
   draft:'טיוטה — הצעה שמורה',
-  technical_review:'נשלח — ממתין לבדיקה',
+  technical_review:'בבדיקה טכנית',
   in_production:'בתהליך ייצור',
+  ready_for_delivery:'מוכן למסירה',
   delivered:'נמסר',
+  cancelled:'בוטל',
   sent:'נשלח',
   approved:'אושר',
   rejected:'נדחה'
@@ -341,10 +344,14 @@ async function loadAll() {
     (i._type === 'quote') ||
     (i._type === 'order' && i.status === 'technical_review')
   );
-  // Production section: orders in production
-  const prodItems = allItems.filter(i => i._type === 'order' && i.status === 'in_production');
-  // History: delivered orders
-  const doneItems = allItems.filter(i => i._type === 'order' && i.status === 'delivered');
+  // Production section: in production OR ready for delivery
+  const prodItems = allItems.filter(i =>
+    i._type === 'order' && (i.status === 'in_production' || i.status === 'ready_for_delivery')
+  );
+  // History: delivered + cancelled orders
+  const doneItems = allItems.filter(i =>
+    i._type === 'order' && (i.status === 'delivered' || i.status === 'cancelled')
+  );
 
   renderSection('orders-draft',      draftItems);
   renderSection('orders-production', prodItems);

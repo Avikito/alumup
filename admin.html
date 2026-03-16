@@ -188,8 +188,8 @@
         <button class="filter-btn" onclick="setFilter('draft')">טיוטה</button>
         <button class="filter-btn" onclick="setFilter('technical_review')">בבדיקה טכנית</button>
         <button class="filter-btn" onclick="setFilter('in_production')">בתהליך ייצור</button>
+        <button class="filter-btn" onclick="setFilter('ready_for_delivery')">מוכן למסירה</button>
         <button class="filter-btn" onclick="setFilter('delivered')">נמסר</button>
-        <button class="filter-btn" onclick="setFilter('dispute')" style="color:#c2410c;border-color:rgba(234,88,12,0.35);">מחלוקת</button>
         <button class="filter-btn" onclick="setFilter('cancelled')">בוטל</button>
         <input class="search-input" type="text" placeholder="חיפוש קוד / שם רוכש..." id="searchInput" oninput="renderTable()">
         <select class="search-input" id="typeFilter" onchange="renderTable()" style="min-width:140px;">
@@ -280,7 +280,7 @@ const TYPE_LABELS = {
   warehouse: 'מחסנאי', gardening: 'גינון', other: 'אחר'
 };
 
-function getCode(o)  { return o.id.slice(0, 8); }
+function getCode(o)  { return o.order_code || o.id.slice(0, 8); }
 function getProductType(o) { return o.category    || '—'; }
 function getSubProduct(o)  { return o.sub_product || '—'; }
 
@@ -327,7 +327,7 @@ async function loadOrders() {
 
   const { data, error } = await supabase
     .from('orders')
-    .select('id, created_at, status_updated_at, status, category, sub_product, total_price, is_read, shipping_method, vendor_name, user_id, profiles!user_id(full_name)')
+    .select('id, order_code, created_at, status_updated_at, status, category, sub_product, total_price, is_read, shipping_method, vendor_name, user_id, profiles!user_id(full_name)')
     .order('created_at', { ascending: false });
 
   console.log('[ALUM-IL] orders result:', data, error);
@@ -396,10 +396,10 @@ function renderTable() {
     };
     const date = fmtDT(o.created_at);
     const lastUpdate = fmtDT(o.status_updated_at);
-    const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', delivered:'status-delivered', dispute:'status-dispute', cancelled:'status-cancelled' }[o.status] || '';
-    const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בייצור', delivered:'נמסר', dispute:'נפתחה מחלוקת', cancelled:'בוטל' }[o.status] || o.status;
+    const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', ready_for_delivery:'status-production', delivered:'status-delivered', cancelled:'status-cancelled' }[o.status] || '';
+    const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור', ready_for_delivery:'מוכן למסירה', delivered:'נמסר', cancelled:'בוטל' }[o.status] || o.status;
     const rowClass = [o.status === 'dispute' ? 'row-dispute' : '', o.is_read === false ? 'row-unread' : ''].filter(Boolean).join(' ');
-    const price = o.total_price ? `₪${Number(o.total_price).toLocaleString()}` : '—';
+    const price = o.total_price != null ? `₪${Number(o.total_price).toLocaleString()}` : '—';
 
     return `<tr class="${rowClass}">
       <td class="order-code-cell">${getCode(o)}</td>
@@ -412,12 +412,12 @@ function renderTable() {
       <td>
         <div>
           <select class="status-select" data-id="${o.id}" data-prev="${o.status}" onchange="updateStatus(this)">
-            <option value="draft"             ${o.status==='draft'             ?'selected':''}>טיוטה</option>
-            <option value="technical_review"  ${o.status==='technical_review'  ?'selected':''}>בבדיקה טכנית</option>
-            <option value="in_production"     ${o.status==='in_production'     ?'selected':''}>בתהליך ייצור</option>
-            <option value="delivered"         ${o.status==='delivered'         ?'selected':''}>נמסר</option>
-            <option value="dispute"           ${o.status==='dispute'           ?'selected':''}>נפתחה מחלוקת</option>
-            <option value="cancelled"         ${o.status==='cancelled'         ?'selected':''}>ביטול הזמנה</option>
+            <option value="draft"               ${o.status==='draft'               ?'selected':''}>טיוטה</option>
+            <option value="technical_review"    ${o.status==='technical_review'    ?'selected':''}>בבדיקה טכנית</option>
+            <option value="in_production"       ${o.status==='in_production'       ?'selected':''}>בתהליך ייצור</option>
+            <option value="ready_for_delivery"  ${o.status==='ready_for_delivery'  ?'selected':''}>מוכן למסירה</option>
+            <option value="delivered"           ${o.status==='delivered'           ?'selected':''}>נמסר</option>
+            <option value="cancelled"           ${o.status==='cancelled'           ?'selected':''}>בוטל</option>
           </select>
           <div class="save-indicator" id="si-${o.id}"></div>
         </div>
@@ -452,20 +452,25 @@ window.updateStatus = async function(sel) {
   sel.classList.add('saving');
   si.innerHTML = '<i class="ph ph-circle-notch spin"></i>';
 
+  const now = new Date().toISOString();
   const { error } = await supabase.from('orders')
-    .update({ status: newStatus, updated_at: new Date().toISOString(), status_updated_at: new Date().toISOString() })
+    .update({ status: newStatus, status_updated_at: now })
     .eq('id', id);
 
   sel.classList.remove('saving');
   if (error) {
-    si.innerHTML = '<span class="save-err"><i class="ph ph-warning"></i> שגיאה</span>';
+    console.error('[STATUS] update failed:', error.code, error.message);
+    si.innerHTML = `<span class="save-err"><i class="ph ph-warning"></i> ${error.message}</span>`;
+    setTimeout(() => { if(si) si.innerHTML = ''; }, 4000);
   } else {
     si.innerHTML = '<span class="save-ok"><i class="ph ph-check"></i> נשמר</span>';
     // update local cache
     const o = allOrders.find(x => x.id === id);
-    if (o) o.status = newStatus;
-    sel.dataset.prev = newStatus; // keep prev in sync
-    if (newStatus === 'dispute' || prevStatus === 'dispute') renderTable(); // refresh row highlight
+    if (o) { o.status = newStatus; o.status_updated_at = now; }
+    sel.dataset.prev = newStatus;
+    // update "Last Update" cell in DOM directly (col index 6)
+    const lastUpdateCell = sel.closest('tr')?.cells[6];
+    if (lastUpdateCell) lastUpdateCell.textContent = 'עכשיו';
     setTimeout(() => { if(si) si.innerHTML = ''; }, 2000);
   }
 };
