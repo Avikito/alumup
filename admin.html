@@ -399,7 +399,7 @@ function renderTable() {
     const statusClass = { draft:'status-draft', technical_review:'status-review', in_production:'status-production', ready_for_delivery:'status-production', delivered:'status-delivered', cancelled:'status-cancelled' }[o.status] || '';
     const statusLabel = { draft:'טיוטה', technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור', ready_for_delivery:'מוכן למסירה', delivered:'נמסר', cancelled:'בוטל' }[o.status] || o.status;
     const rowClass = [o.status === 'dispute' ? 'row-dispute' : '', o.is_read === false ? 'row-unread' : ''].filter(Boolean).join(' ');
-    const price = o.total_price != null ? `₪${Number(o.total_price).toLocaleString()}` : '—';
+    const price = (o.total_price != null && o.total_price !== 0) ? `₪${Number(o.total_price).toLocaleString()}` : `₪0`;
 
     return `<tr class="${rowClass}">
       <td class="order-code-cell">${getCode(o)}</td>

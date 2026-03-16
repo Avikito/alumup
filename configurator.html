@@ -2377,7 +2377,19 @@ async function placeOrder() {
   if (!user) { window.location.href = 'login.html'; return; }
 
   const { subtotal, vat, grandTotal } = calcTotal();
+  const finalPriceValue = Number(grandTotal);
   console.log('[PLACE-ORDER] calcTotal →', { subtotal, vat, grandTotal }, '| perSqm:', ADDON_PRICES.perSqm);
+  console.log("DEBUG: Sending total_price to Supabase:", finalPriceValue);
+
+  if (!finalPriceValue || finalPriceValue <= 0) {
+    console.error('CRITICAL: Price is 0 or invalid — aborting insert. ADDON_PRICES:', JSON.stringify(ADDON_PRICES), '| state.systems:', state.systems.length);
+    msg.innerHTML = '<i class="ph ph-warning"></i> שגיאה: המחיר חושב כ-0. נסה לרענן את הדף.';
+    msg.className = 'save-order-msg error';
+    msg.style.display = 'flex';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ph ph-check-circle"></i> שלח הזמנה לאישור';
+    return;
+  }
   const code = getOrderCode();
 
   const isElectric = state.addons.led || state.addons.remote || state.addons.tahoma || state.addons.dimmer;
@@ -2398,7 +2410,7 @@ async function placeOrder() {
     config:           JSON.parse(JSON.stringify(state)),
     subtotal,
     vat,
-    total_price:      grandTotal,
+    total_price:      finalPriceValue,
     shipping_method:  'standard',
     is_read:          false,
     vendor_name:      ''
