@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>מרכז הרכש | ALUM-IL</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
   <style>
     :root {
       --bg: #f5f7fa;
@@ -273,14 +274,15 @@
 
     /* Order details bar */
     .order-bar {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, #eef4fb 0%, #f5f8fc 100%);
+      border: 1.5px solid var(--blue-light);
       border-radius: 12px;
       padding: 16px 20px;
       margin-bottom: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 16px;
+      box-shadow: 0 2px 8px rgba(74, 127, 181, 0.12);
     }
 
     .order-field label {
@@ -407,6 +409,71 @@
     .view-btn:hover:not(.active) {
       background: var(--surface2);
       color: var(--text);
+    }
+
+    .cat-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    .cat-tab {
+      padding: 7px 16px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--muted);
+      font-family: 'Heebo', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.18s;
+    }
+
+    .cat-tab.active,
+    .cat-tab:hover {
+      background: var(--blue);
+      color: #fff;
+      border-color: var(--blue);
+    }
+
+    .accessory-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .acc-toggle {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .acc-toggle input[type="checkbox"] {
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      accent-color: var(--blue);
+    }
+
+    .acc-count {
+      font-size: 12px;
+      opacity: 0.7;
+    }
+
+    .empty-cat-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+      font-size: 16px;
+      font-weight: 500;
     }
 
     .chips {
@@ -1052,6 +1119,102 @@
       }
     }
 
+    /* ── LANGUAGE SELECTOR ── */
+    .lang-select {
+      padding: 6px 10px; border: 1px solid var(--border); border-radius: 8px;
+      font-family: 'Heebo', sans-serif; font-size: 13px; background: var(--surface);
+      color: var(--text); cursor: pointer;
+    }
+
+    /* ── SCREWS SUB-TABS ── */
+    .screw-tabs {
+      display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 20px;
+      border-bottom: 2px solid var(--border); padding-bottom: 12px;
+    }
+    .screw-tab {
+      padding: 7px 16px; border-radius: 8px 8px 0 0; font-family: 'Heebo', sans-serif;
+      font-size: 14px; font-weight: 600; cursor: pointer; border: 1px solid var(--border);
+      background: var(--surface2); color: var(--muted); transition: all 0.2s;
+      margin-bottom: -2px;
+    }
+    .screw-tab.active {
+      background: var(--blue); color: #fff; border-color: var(--blue);
+    }
+    .screw-tab:hover:not(.active) { background: var(--surface); color: var(--text); }
+
+    /* ── SCREWS TABLE ── */
+    .screws-table {
+      width: 100%; border-collapse: collapse; background: var(--surface);
+      border-radius: 10px; overflow: hidden; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .screws-table th {
+      background: var(--blue); color: #fff; padding: 11px 14px;
+      font-size: 12px; font-weight: 600; text-align: right;
+    }
+    .screws-table td {
+      padding: 10px 14px; font-size: 13px; border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .screws-table tr:last-child td { border-bottom: none; }
+    .screws-table tr:hover td { background: var(--surface2); }
+    .screws-icon { font-size: 20px; line-height: 1; }
+    .screws-name { font-weight: 600; color: var(--text); }
+    .screws-spec { font-size: 12px; color: var(--muted); margin-top: 2px; }
+    .screws-price { font-weight: 700; color: var(--blue); white-space: nowrap; }
+    .screws-pack { font-size: 12px; color: var(--muted); }
+    .screws-supplier { font-size: 12px; color: var(--muted); }
+    .screws-qty-ctrl { display: flex; align-items: center; gap: 5px; }
+    .screw-add-btn {
+      padding: 5px 12px; background: var(--blue); color: #fff; border: none;
+      border-radius: 6px; font-family: 'Heebo', sans-serif; font-size: 12px;
+      font-weight: 600; cursor: pointer; transition: background 0.2s; white-space: nowrap;
+    }
+    .screw-add-btn:hover { background: var(--blue-light); }
+    .screw-add-btn.in-cart { background: var(--green); }
+
+    .btn-save-order {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; margin-top: 12px; padding: 12px;
+      background: var(--blue); color: #fff;
+      border: none; border-radius: 9px;
+      font-family: 'Heebo', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: opacity 0.18s;
+    }
+    .btn-save-order:hover { opacity: 0.88; }
+    .btn-save-order:disabled { opacity: 0.5; cursor: default; }
+    .order-save-success {
+      margin-top: 10px; padding: 10px 14px;
+      background: #f0fdf4; border: 1px solid #86efac;
+      border-radius: 8px; font-size: 13px; color: #15803d;
+      align-items: center; gap: 8px; flex-wrap: wrap; line-height: 1.6;
+    }
+
+    .placeholder-note {
+      margin-top: 16px; padding: 10px 16px; background: #fef9ec;
+      border: 1px solid #e9c04c; border-radius: 8px;
+      font-size: 12px; color: #7a5c00;
+    }
+
+    /* ── SCREWS CART PANEL ── */
+    .screws-layout {
+      display: grid; grid-template-columns: 1fr 320px; gap: 0;
+      min-height: calc(100vh - 120px);
+    }
+    @media (max-width: 900px) {
+      .screws-layout { grid-template-columns: 1fr; }
+    }
+    .screws-catalog-panel { padding: 24px; border-left: 1px solid var(--border); }
+    .screws-search-bar { margin-bottom: 16px; }
+    .screws-search-bar input {
+      width: 100%; padding: 9px 14px; border: 1px solid var(--border);
+      border-radius: 9px; font-family: 'Heebo', sans-serif; font-size: 14px;
+      background: var(--surface);
+    }
+    .screws-search-bar input:focus { outline: none; border-color: var(--blue-light); }
+    .screw-cart-total { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+    .screw-cart-total-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
+    .screw-cart-total-row.grand { font-weight: 700; font-size: 15px; color: var(--blue); }
+
     @media print {
       body * {
         visibility: hidden;
@@ -1100,57 +1263,42 @@
         <a onclick="showView('categories')">מרכז הרכש</a>
       </div>
     </div>
-    <button class="cart-btn" onclick="scrollToCart()">
-      🛒 סל הזמנה
-      <span class="cart-badge" id="cartCount">0</span>
-    </button>
+    <div style="display:flex;align-items:center;gap:10px;">
+      <select class="lang-select" id="langSelect" onchange="setLang(this.value)">
+        <option value="he">🇮🇱 עברית</option>
+        <option value="ar">🇸🇦 العربية</option>
+        <option value="ru">🇷🇺 Русский</option>
+      </select>
+      <button class="cart-btn" onclick="scrollToCart()">
+        🛒 <span id="t-cart">סל הזמנה</span>
+        <span class="cart-badge" id="cartCount">0</span>
+      </button>
+    </div>
   </div>
 
   <!-- Main Categories View -->
   <div id="view-categories" class="view-section active">
     <div class="cats-container">
       <div class="cats-title">מרכז הרכש</div>
-      <div class="cats-grid">
-        <div class="cat-card active-cat" onclick="showView('catalog')">
-          <div class="cat-icon">🏗️</div>
-          <div class="cat-name">פרופילי אלומיניום</div>
-          <div class="cat-desc">מגוון רחב של עד 160 סוגי פרופילים מוכנים להזמנה במגוון אורכים ומידות.</div>
-          <button class="cat-btn">כניסה לקטגוריה</button>
+      <div class="cats-grid" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));max-width:1000px;margin:0 auto;">
+        <div class="cat-card active-cat" onclick="showView('catalog')" style="min-height:280px;">
+          <div class="cat-icon" style="font-size:56px;">🏗️</div>
+          <div class="cat-name" data-t="cat-pergola">פרופילי אלומיניום</div>
+          <div class="cat-desc" data-t="cat-pergola-desc">מעל 160 סוגי פרופילי אלומיניום מוכנים להזמנה — מלבנים, מרובעים, זוויות, עמודים, חוצצים ועוד.</div>
+          <button class="cat-btn" style="background:var(--blue);color:#fff;border:none;cursor:pointer;padding:10px 28px;border-radius:9px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;" data-t="enter-cat">כניסה לקטגוריה</button>
         </div>
-        <div class="cat-card coming-soon">
-          <div class="coming-badge">בקרוב</div>
-          <div class="cat-icon">🔩</div>
-          <div class="cat-name">עוגנים וברגים</div>
-          <div class="cat-desc">ברגי התקנה איכותיים, עוגנים סטטיים ודינמיים לחוזק מירבי.</div>
-          <button class="cat-btn">בקרוב</button>
+        <div class="cat-card active-cat" onclick="showView('screws')" style="min-height:280px;">
+          <div class="cat-icon" style="font-size:56px;">🔩</div>
+          <div class="cat-name" data-t="cat-screws">ברגים ועוגנים</div>
+          <div class="cat-desc" data-t="cat-screws-desc">ברגי התקנה לאלומיניום, נירוסטה, עוגנים כימיים ודינמיים, ניטים ואביזרי קיבוע מקצועיים.</div>
+          <button class="cat-btn" style="background:var(--blue);color:#fff;border:none;cursor:pointer;padding:10px 28px;border-radius:9px;font-family:'Heebo',sans-serif;font-size:15px;font-weight:600;" data-t="enter-cat">כניסה לקטגוריה</button>
         </div>
-        <div class="cat-card coming-soon">
-          <div class="coming-badge">בקרוב</div>
-          <div class="cat-icon">💧</div>
-          <div class="cat-name">חומרי איטום</div>
-          <div class="cat-desc">סיליקון, דבקים ופתרונות איטום תקניים לתעשיית האלומיניום.</div>
-          <button class="cat-btn">בקרוב</button>
-        </div>
-        <div class="cat-card coming-soon">
-          <div class="coming-badge">בקרוב</div>
-          <div class="cat-icon">🏠</div>
-          <div class="cat-name">קירוי</div>
-          <div class="cat-desc">פנלים, פוליקרבונט, פרספקס ולינים תקניים.</div>
-          <button class="cat-btn">בקרוב</button>
-        </div>
-        <div class="cat-card coming-soon">
-          <div class="coming-badge">בקרוב</div>
-          <div class="cat-icon">🦺</div>
-          <div class="cat-name">אביזרים ובטיחות</div>
-          <div class="cat-desc">כפפות, משקפי מגן, רתמות וציוד עזר למתקינים.</div>
-          <button class="cat-btn">בקרוב</button>
-        </div>
-        <div class="cat-card coming-soon">
-          <div class="coming-badge">בקרוב</div>
-          <div class="cat-icon">🛠️</div>
-          <div class="cat-name">כלים ומוצרים</div>
-          <div class="cat-desc">כלי עבודה ייעודיים חשמליים וידניים לאלומיניום.</div>
-          <button class="cat-btn">בקרוב</button>
+        <div class="cat-card coming-soon" style="min-height:280px;">
+          <div class="coming-badge" data-t="coming-soon">בקרוב</div>
+          <div class="cat-icon" style="font-size:56px;">🪟</div>
+          <div class="cat-name" data-t="cat-windows">חלונות ותריסים</div>
+          <div class="cat-desc" data-t="cat-windows-desc">פרופילי חלונות, תריסים, מסכים ואביזרי פנים — בקרוב.</div>
+          <button class="cat-btn" data-t="coming-soon">בקרוב</button>
         </div>
       </div>
     </div>
@@ -1211,9 +1359,17 @@
           </div>
         </div>
 
-        <div class="chips" id="catChips">
-          <div class="chip active" onclick="setCategory('')">הכל</div>
-          <!-- Will be populated dynamically -->
+        <div class="cat-tabs" id="catTabs">
+          <button class="cat-tab active" data-main="pergola" onclick="setMainCat('pergola')">פרגולות, שערים וגדרות</button>
+          <button class="cat-tab" data-main="window" onclick="setMainCat('window')">חלונות ותריסים</button>
+          <button class="cat-tab" data-main="solar" onclick="setMainCat('solar')">תעשיית הסולארי</button>
+        </div>
+        <div class="accessory-row">
+          <label class="acc-toggle">
+            <input type="checkbox" id="accCheck" onchange="toggleAccessories(this.checked)">
+            <span>אביזרים בלבד</span>
+          </label>
+          <span class="acc-count" id="accCount"></span>
         </div>
 
         <div class="results-count" id="resultsCount">מציג 0 פרופילים</div>
@@ -1258,6 +1414,49 @@
         <div class="note">⚠️ המשקלים הם לפני צבע. קיימת סטייה של עד 5% במשקל.</div>
         <div class="price-notice">מחיר לק"ג מתעדכן שבועית</div>
         <button class="export-btn" id="exportBtn" onclick="showSpec()" disabled>📄 הצג מפרט הזמנה</button>
+        <button class="btn-save-order" id="btnSaveProfileOrder" onclick="saveProcurementOrder('profiles')">💾 שמור כהזמנת רכש באזור האישי</button>
+        <div class="order-save-success" id="profileOrderSuccess" style="display:none;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Screws & Anchors View -->
+  <div id="view-screws" class="view-section">
+    <div class="screws-layout">
+      <div class="screws-catalog-panel">
+        <div class="screws-search-bar">
+          <input type="text" id="screwSearch" placeholder="🔍 חיפוש לפי שם, מידה או ספק..." oninput="renderScrewsTable()">
+        </div>
+        <div class="screw-tabs" id="screwTabs">
+          <button class="screw-tab active" onclick="switchScrewTab('alum')">🔩 ברגים לאלומיניום</button>
+          <button class="screw-tab" onclick="switchScrewTab('ss')">✨ ברגים נירוסטה</button>
+          <button class="screw-tab" onclick="switchScrewTab('anchor')">⚓ עוגנים</button>
+          <button class="screw-tab" onclick="switchScrewTab('rivets')">📌 ניטים ואביזרים</button>
+        </div>
+        <div id="screwsTableWrap"></div>
+        <div class="placeholder-note" id="screwsNote">
+          ⚠️ <strong>קטלוג לדוגמה בלבד</strong> — הקטלוג המלא יועלה בקרוב. המוצרים המוצגים הם פלייסהולדרים לצורכי תצוגה.
+        </div>
+      </div>
+
+      <!-- Screws Cart Panel -->
+      <div class="cart-panel" id="screwCartPanel">
+        <div class="cart-title">
+          <span>📋 <span data-t="cart">סל ההזמנה</span></span>
+          <button class="clear-search" style="display:inline-block;position:static;transform:none;" onclick="clearScrewCart()" title="רוקן סל">🗑️</button>
+        </div>
+        <div id="screwCartItems">
+          <div class="cart-empty">הסל ריק<br><span style="font-size:11px">הוסף מוצרים מהקטלוג</span></div>
+        </div>
+        <div class="screw-cart-total" id="screwCartTotal" style="display:none;">
+          <div class="screw-cart-total-row"><span>סה"כ לפני מע"מ</span><span id="screwSumPre">₪0</span></div>
+          <div class="screw-cart-total-row"><span>מע"מ 18%</span><span id="screwSumVat">₪0</span></div>
+          <div class="screw-cart-total-row grand"><span>סה"כ לתשלום</span><span id="screwSumTotal">₪0</span></div>
+        </div>
+        <div class="note" style="margin-top:10px;">⚠️ מחירים לפי בקשה — ייתכנו שינויים בהתאם לכמות ולספק.</div>
+        <button class="export-btn" id="screwExportBtn" onclick="exportScrewSpec()" disabled style="margin-top:12px;">📄 הצג מפרט הזמנה</button>
+        <button class="btn-save-order" id="btnSaveScrewOrder" onclick="saveProcurementOrder('screws')">💾 שמור כהזמנת רכש באזור האישי</button>
+        <div class="order-save-success" id="screwOrderSuccess" style="display:none;"></div>
       </div>
     </div>
   </div>
@@ -1523,11 +1722,221 @@
     ];
 
 
+    const PRICE_PER_KG = 23;
+    const VAT = 1.18;
+
+    const _supabase = supabase.createClient(
+      'https://exfdjelwyrspfspcevvm.supabase.co',
+      'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+    );
+
+    // ── TRANSLATIONS ──
+    const TRANSLATIONS = {
+      he: { dir:'rtl', 'cart':'סל הזמנה', 'cat-pergola':'פרופילי אלומיניום', 'cat-pergola-desc':'מעל 160 פרופילי אלומיניום — מלבנים, מרובעים, זוויות, עמודים ועוד.', 'cat-screws':'ברגים ועוגנים', 'cat-screws-desc':'ברגי התקנה, נירוסטה, עוגנים וניטים מקצועיים.', 'cat-windows':'חלונות ותריסים', 'cat-windows-desc':'בקרוב.', 'coming-soon':'בקרוב', 'enter-cat':'כניסה לקטגוריה' },
+      ar: { dir:'rtl', 'cart':'سلة الطلب', 'cat-pergola':'ملفات الألومنيوم', 'cat-pergola-desc':'أكثر من 160 نوع من ملفات الألومنيوم — مستطيلات، مربعات، زوايا، أعمدة والمزيد.', 'cat-screws':'براغي وأوتاد', 'cat-screws-desc':'براغي تركيب، ستانلس، أوتاد كيميائية وبراشيم احترافية.', 'cat-windows':'نوافذ وستائر', 'cat-windows-desc':'قريباً.', 'coming-soon':'قريباً', 'enter-cat':'دخول الفئة' },
+      ru: { dir:'ltr', 'cart':'Корзина', 'cat-pergola':'Профили алюминия', 'cat-pergola-desc':'Более 160 видов алюминиевых профилей — прямоугольные, квадратные, уголки, стойки и другие.', 'cat-screws':'Болты и Анкеры', 'cat-screws-desc':'Крепёжные болты, нержавеющая сталь, анкеры и профессиональные заклёпки.', 'cat-windows':'Окна и Жалюзи', 'cat-windows-desc':'Скоро.', 'coming-soon':'Скоро', 'enter-cat':'Войти в категорию' }
+    };
+    let currentLang = 'he';
+
+    function setLang(lang) {
+      currentLang = lang;
+      const t = TRANSLATIONS[lang];
+      document.documentElement.setAttribute('dir', t.dir);
+      document.documentElement.setAttribute('lang', lang);
+      document.querySelectorAll('[data-t]').forEach(el => {
+        const key = el.getAttribute('data-t');
+        if (t[key]) el.textContent = t[key];
+      });
+      const cartSpan = document.getElementById('t-cart');
+      if (cartSpan) cartSpan.textContent = t['cart'];
+    }
+
+    // ── SCREWS DATA (placeholder — 2-3 items per tab) ──
+    const SCREWS_DATA = {
+      alum: [
+        { id:'SC-AL-001', icon:'🔩', name:'בורג פח לפח קודח', spec:'4.2×13 מ"מ — ראש קודח, מגולוון', price:20.8, pack:'100 יח\'', supplier:'אמרוסי' },
+        { id:'SC-AL-002', icon:'🔩', name:'בורג סיבית', spec:'4×30 מ"מ — צהוב פסיבציה', price:26, pack:'200 יח\'', supplier:'טוטאל טולס' },
+        { id:'SC-AL-003', icon:'⭐', name:'ברגי טורקס', spec:'5×70 מ"מ — בודי', price:55, pack:'200 יח\'', supplier:'שולץ את בן מאיר' },
+      ],
+      ss: [
+        { id:'SC-SS-001', icon:'✨', name:'בורג נירוסטה A2 (304)', spec:'מגוון מידות — עמידות גבוהה לחלודה', price:null, pack:'משתנה', supplier:'מיברג' },
+        { id:'SC-SS-002', icon:'✨', name:'בורג נירוסטה ראש שטוח', spec:'M10×30 מ"מ', price:74, pack:'1 יח\'', supplier:'China Steel' },
+        { id:'SC-SS-003', icon:'🔩', name:'אום נירוסטה', spec:'עד M52 — DIN 934', price:null, pack:'משתנה', supplier:'מיברג' },
+      ],
+      anchor: [
+        { id:'SC-AN-001', icon:'⚗️', name:'עוגן כימי', spec:'300 מ"ל — דו רכיבי פוליאסטר, עמידות שליפה 4-6 טון', price:25, pack:'1 יח\'', supplier:'בנייה אונליין' },
+        { id:'SC-AN-002', icon:'⚓', name:'עוגן ג\'מבו', spec:'מגוון מידות — מגולוון', price:2, pack:'1 יח\'', supplier:'סמקו סנטר' },
+        { id:'SC-AN-003', icon:'🏗️', name:'עוגן בורג לפרגולות', spec:'עוגני קרקע בצורת L או T', price:null, pack:'משתנה', supplier:'וייצמן פרגולות' },
+      ],
+      rivets: [
+        { id:'SC-RV-001', icon:'📌', name:'ניטים אלומיניום-פלדה', spec:'4×10 מ"מ', price:null, pack:'מארז', supplier:'שם טוב פרזול' },
+        { id:'SC-RV-002', icon:'📌', name:'ניטים', spec:'סטנדרט — 100 יחידות', price:10, pack:'100 יח\'', supplier:'אלום גד' },
+        { id:'SC-RV-003', icon:'🔩', name:'דיבל + בורג', spec:'מגוון מידות — מארז 50 יחידות', price:8, pack:'50 יח\'', supplier:'דינקי' },
+      ]
+    };
+
+    let currentScrewTab = 'alum';
+    let screwCart = {};
+
+    function switchScrewTab(tab) {
+      currentScrewTab = tab;
+      document.querySelectorAll('.screw-tab').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+      document.getElementById('screwSearch').value = '';
+      renderScrewsTable();
+    }
+
+    function renderScrewsTable() {
+      const query = (document.getElementById('screwSearch').value || '').toLowerCase();
+      const items = SCREWS_DATA[currentScrewTab].filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        p.spec.toLowerCase().includes(query) ||
+        p.supplier.toLowerCase().includes(query) ||
+        p.id.toLowerCase().includes(query)
+      );
+      const wrap = document.getElementById('screwsTableWrap');
+      if (items.length === 0) {
+        wrap.innerHTML = `<div class="orders-empty" style="padding:2rem 0;text-align:center;color:var(--muted);">לא נמצאו פריטים</div>`;
+        return;
+      }
+      const table = document.createElement('table');
+      table.className = 'screws-table';
+      table.innerHTML = `<thead><tr>
+        <th style="width:44px;"></th>
+        <th>שם פריט</th>
+        <th>מידות ותיאור</th>
+        <th>מחיר (₪)</th>
+        <th>באריזה</th>
+        <th>ספק</th>
+        <th>כמות</th>
+        <th></th>
+      </tr></thead><tbody></tbody>`;
+      const tbody = table.querySelector('tbody');
+      items.forEach(p => {
+        const inCart = !!screwCart[p.id];
+        const qty = inCart ? screwCart[p.id].qty : 1;
+        const priceDisplay = p.price != null ? `₪${p.price.toLocaleString()}` : 'לפי בקשה';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="screws-icon">${p.icon}</td>
+          <td><div class="screws-name">${p.name}</div></td>
+          <td><div class="screws-spec">${p.spec}</div></td>
+          <td class="screws-price">${priceDisplay}</td>
+          <td class="screws-pack">${p.pack}</td>
+          <td class="screws-supplier">${p.supplier}</td>
+          <td><div class="screws-qty-ctrl">
+            <button class="qty-btn" data-id="${p.id}" data-delta="-1">−</button>
+            <input class="qty-input" type="number" min="1" value="${qty}" id="sq_${p.id}" style="width:46px;" data-id="${p.id}" oninput="setScrewQty('${p.id}',this.value)">
+            <button class="qty-btn" data-id="${p.id}" data-delta="1">+</button>
+          </div></td>
+          <td><button class="screw-add-btn ${inCart?'in-cart':''}" data-id="${p.id}">${inCart?'✓ בסל':'+ הוסף'}</button></td>`;
+        // Attach events safely (no inline JSON)
+        const [btnMinus, btnPlus] = tr.querySelectorAll('.qty-btn');
+        btnMinus.addEventListener('click', () => changeScrewQty(p.id, p, -1));
+        btnPlus.addEventListener('click',  () => changeScrewQty(p.id, p,  1));
+        tr.querySelector('.screw-add-btn').addEventListener('click', () => toggleScrewCart(p.id, p));
+        tbody.appendChild(tr);
+      });
+      wrap.innerHTML = '';
+      wrap.appendChild(table);
+    }
+
+    function getScrewQtyInput(id) { return document.getElementById('sq_' + id); }
+
+    function changeScrewQty(id, p, delta) {
+      const inp = getScrewQtyInput(id);
+      let val = inp ? Math.max(1, (parseInt(inp.value)||1) + delta) : 1;
+      if (inp) inp.value = val;
+      if (screwCart[id]) { screwCart[id].qty = val; updateScrewCart(); }
+    }
+
+    function setScrewQty(id, val) {
+      val = Math.max(1, parseInt(val)||1);
+      if (screwCart[id]) { screwCart[id].qty = val; updateScrewCart(); }
+    }
+
+    function toggleScrewCart(id, p) {
+      if (screwCart[id]) { delete screwCart[id]; }
+      else {
+        const inp = getScrewQtyInput(id);
+        const qty = inp ? Math.max(1, parseInt(inp.value)||1) : 1;
+        screwCart[id] = { ...p, qty };
+      }
+      updateScrewCart();
+      renderScrewsTable();
+    }
+
+    function clearScrewCart() {
+      if (!confirm('לרוקן את סל הברגים?')) return;
+      screwCart = {};
+      updateScrewCart();
+      renderScrewsTable();
+    }
+
+    function updateScrewCart() {
+      const items = Object.values(screwCart);
+      const el = document.getElementById('screwCartItems');
+      const totalEl = document.getElementById('screwCartTotal');
+      const exportBtn = document.getElementById('screwExportBtn');
+      document.getElementById('cartCount').textContent = Object.keys(cart).length + items.length;
+
+      if (items.length === 0) {
+        el.innerHTML = '<div class="cart-empty">הסל ריק<br><span style="font-size:11px">הוסף מוצרים מהקטלוג</span></div>';
+        totalEl.style.display = 'none'; exportBtn.disabled = true; return;
+      }
+      exportBtn.disabled = false; totalEl.style.display = 'block';
+      let total = 0;
+      el.innerHTML = '';
+      items.forEach(item => {
+        const linePrice = item.price != null ? item.price * item.qty : null;
+        if (linePrice != null) total += linePrice;
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        div.innerHTML = `
+          <div class="cart-item-top">
+            <div class="cart-item-name">${item.icon} ${item.name}</div>
+            <button class="cart-remove" onclick="removeScrewFromCart('${item.id}')" title="הסר">✕</button>
+          </div>
+          <div class="cart-item-sku" style="font-size:11px;color:var(--muted)">${item.spec}</div>
+          <div class="cart-item-bottom">
+            <div class="qty-ctrl cart-item-qty">
+              <button class="qty-btn" onclick="changeScrewCartQty('${item.id}',-1)">−</button>
+              <span class="qty-input" style="display:inline-block;text-align:center;">${item.qty}</span>
+              <button class="qty-btn" onclick="changeScrewCartQty('${item.id}',1)">+</button>
+            </div>
+            <span class="cart-item-weight" style="color:var(--blue);font-weight:700;">
+              ${linePrice != null ? '₪' + linePrice.toLocaleString() : 'לפי בקשה'}
+            </span>
+          </div>`;
+        el.appendChild(div);
+      });
+      const vat = total * 0.18;
+      document.getElementById('screwSumPre').textContent = '₪' + total.toLocaleString();
+      document.getElementById('screwSumVat').textContent = '₪' + Math.round(vat).toLocaleString();
+      document.getElementById('screwSumTotal').textContent = '₪' + Math.round(total + vat).toLocaleString();
+    }
+
+    function removeScrewFromCart(id) {
+      delete screwCart[id]; updateScrewCart(); renderScrewsTable();
+    }
+
+    function changeScrewCartQty(id, delta) {
+      if (!screwCart[id]) return;
+      screwCart[id].qty = Math.max(1, screwCart[id].qty + delta);
+      updateScrewCart(); renderScrewsTable();
+    }
+
+    function exportScrewSpec() {
+      alert('ייצוא מפרט ברגים — יוטמע בקרוב.');
+    }
+
     let cart = JSON.parse(localStorage.getItem('alumCart')) || {};
     let currentPage = 1;
     const PAGE_SIZE = 30;
     let displayMode = 'grid'; // 'grid' | 'list'
     let currentCategory = '';
+    let currentMainCat = 'pergola'; // 'pergola' | 'window' | 'solar'
+    let showAccessories = false;
     let searchQuery = '';
 
     // Populate RAL
@@ -1561,8 +1970,12 @@
         bcrumb.innerHTML = `<a onclick="showView('categories')">מרכז הרכש</a>`;
       } else if (view === 'catalog') {
         bcrumb.innerHTML = `<a onclick="showView('categories')">מרכז הרכש</a> &gt; <span>פרופילי אלומיניום</span>`;
-        renderChips();
+        updateAccCount();
         renderPage();
+      } else if (view === 'screws') {
+        bcrumb.innerHTML = `<a onclick="showView('categories')">מרכז הרכש</a> &gt; <span>ברגים ועוגנים</span>`;
+        renderScrewsTable();
+        updateScrewCart();
       }
     }
 
@@ -1601,19 +2014,42 @@
       return Array.from(cats);
     }
 
-    function renderChips() {
-      const chips = document.getElementById('catChips');
-      const cats = getCategories();
-      chips.innerHTML = `<div class="chip ${currentCategory === '' ? 'active' : ''}" onclick="setCategory('')">הכל</div>`;
-      cats.forEach(c => {
-        chips.innerHTML += `<div class="chip ${currentCategory === c ? 'active' : ''}" onclick="setCategory('${c}')">${c}</div>`;
+    function getMainCat(p) {
+      const n = (p.name || '').toLowerCase();
+      if (/מכסה|קליפס|קליק|מעצור|חיפוי|קונסטרוקציה|מסתור|ערבי|חיבור|אטב|אחיזה|סיכה|ריתוך/.test(n)) return 'accessory';
+      if (/תריס|וואל|סוכך|פרופיל 200[0-9]|ארובה|רולטה|תריסי|חלון/.test(n)) return 'window';
+      if (/סולאר|פנל|פוטו|ואטי|חשמל/.test(n)) return 'solar';
+      return 'pergola';
+    }
+
+    function setMainCat(cat) {
+      currentMainCat = cat;
+      showAccessories = false;
+      const accCheck = document.getElementById('accCheck');
+      if (accCheck) accCheck.checked = false;
+      document.querySelectorAll('.cat-tab').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.main === cat);
       });
+      currentPage = 1;
+      updateAccCount();
+      renderPage();
+    }
+
+    function toggleAccessories(checked) {
+      showAccessories = checked;
+      currentPage = 1;
+      renderPage();
+    }
+
+    function updateAccCount() {
+      const count = PROFILES.filter(p => getMainCat(p) === 'accessory').length;
+      const el = document.getElementById('accCount');
+      if (el) el.textContent = count > 0 ? `(${count} פרופילים)` : '';
     }
 
     function setCategory(cat) {
       currentCategory = cat;
       currentPage = 1;
-      renderChips();
       renderPage();
     }
 
@@ -1651,9 +2087,17 @@
 
     function getFiltered() {
       return PROFILES.filter(p => {
-        const matchCat = currentCategory === '' || p.cat === currentCategory;
-        const matchSearch = p.name.toLowerCase().includes(searchQuery) || p.sku.toLowerCase().includes(searchQuery);
-        return matchCat && matchSearch;
+        const mainCat = getMainCat(p);
+        if (showAccessories) {
+          if (mainCat !== 'accessory') return false;
+        } else {
+          if (mainCat === 'accessory') return false;
+          if (mainCat !== currentMainCat) return false;
+        }
+        if (searchQuery) {
+          return p.name.toLowerCase().includes(searchQuery) || p.sku.toLowerCase().includes(searchQuery);
+        }
+        return true;
       });
     }
 
@@ -1671,6 +2115,11 @@
       const list = document.getElementById('profileListItems');
       grid.innerHTML = '';
       list.innerHTML = '';
+
+      if (total === 0) {
+        grid.innerHTML = '<div class="empty-cat-state">אין פרופילים בקטגוריה זו עדיין</div>';
+        return;
+      }
 
       slice.forEach((p, idx) => {
         const inCart = cart[p.sku] && cart[p.sku].qty > 0;
@@ -1926,10 +2375,100 @@
     }
 
     function scrollToCart() {
-      if (!document.getElementById('view-catalog').classList.contains('active')) {
-        showView('catalog');
+      const active = document.querySelector('.view-section.active');
+      if (active && active.id === 'view-screws') {
+        document.getElementById('screwCartPanel').scrollIntoView({ behavior: 'smooth' });
+      } else {
+        if (!document.getElementById('view-catalog').classList.contains('active')) {
+          showView('catalog');
+        }
+        document.getElementById('cartPanel').scrollIntoView({ behavior: 'smooth' });
       }
-      document.getElementById('cartPanel').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ── SAVE PROCUREMENT ORDER ──
+    async function saveProcurementOrder(source) {
+      const profileItems = Object.values(cart);
+      const screwItems   = Object.values(screwCart);
+      if (profileItems.length === 0 && screwItems.length === 0) {
+        alert('הסל ריק — הוסף פרופילים או ברגים לפני השמירה.');
+        return;
+      }
+
+      const btn = document.getElementById(source === 'screws' ? 'btnSaveScrewOrder' : 'btnSaveProfileOrder');
+      if (btn) { btn.disabled = true; btn.textContent = 'שומר...'; }
+
+      const { data: { user }, error: authErr } = await _supabase.auth.getUser();
+      if (authErr || !user) {
+        if (btn) { btn.disabled = false; btn.innerHTML = '💾 שמור כהזמנת רכש באזור האישי'; }
+        if (confirm('יש להתחבר לאזור האישי כדי לשמור הזמנה. עבור לדף הכניסה?')) {
+          window.location.href = 'dashboard.html';
+        }
+        return;
+      }
+
+      // Build order code
+      const now = new Date();
+      const dateStr = now.getFullYear().toString() +
+        String(now.getMonth() + 1).padStart(2, '0') +
+        String(now.getDate()).padStart(2, '0');
+      const rand = Math.random().toString(16).slice(2, 6).toUpperCase();
+      const orderCode = `PRO-${dateStr}-${rand}`;
+
+      // Calculate totals
+      let profilesSubtotal = 0;
+      profileItems.forEach(item => {
+        profilesSubtotal += (item.wpm || 0) * parseFloat(item.len || 6) * (item.qty || 1) * PRICE_PER_KG;
+      });
+      let screwsSubtotal = 0;
+      screwItems.forEach(item => {
+        if (item.price != null) screwsSubtotal += item.price * (item.qty || 1);
+      });
+      const subtotal   = Math.round(profilesSubtotal + screwsSubtotal);
+      const vat        = Math.round(subtotal * 0.18);
+      const totalPrice = subtotal + vat;
+
+      const config = {
+        type:     'procurement',
+        orderNum: (document.getElementById('orderNum') || {}).value || '',
+        ralCode:  (document.getElementById('ralSelect') || {}).value || '',
+        profiles: profileItems,
+        screws:   screwItems
+      };
+
+      const { error } = await _supabase.from('orders').insert({
+        user_id:         user.id,
+        order_code:      orderCode,
+        status:          'quote',
+        category:        'רכש',
+        config,
+        subtotal,
+        vat,
+        total_price:     totalPrice,
+        width:           0,
+        depth:           0,
+        sub_product:     profileItems.length > 0 && screwItems.length > 0
+          ? 'פרופילי אלומיניום + ברגים ועוגנים'
+          : profileItems.length > 0 ? 'פרופילי אלומיניום' : 'ברגים ועוגנים',
+        shipping_method: 'standard',
+        is_read:         false,
+        vendor_name:     ''
+      });
+
+      if (error) {
+        alert('שגיאה בשמירת ההזמנה: ' + error.message);
+        if (btn) { btn.disabled = false; btn.innerHTML = '💾 שמור כהזמנת רכש באזור האישי'; }
+        return;
+      }
+
+      // Show success
+      const successId = source === 'screws' ? 'screwOrderSuccess' : 'profileOrderSuccess';
+      const successEl = document.getElementById(successId);
+      if (successEl) {
+        successEl.style.display = 'flex';
+        successEl.innerHTML = `✅ ההזמנה נשמרה בהצלחה! קוד: <strong>${orderCode}</strong> &nbsp;|&nbsp; <a href="dashboard.html" style="color:var(--blue-light);font-weight:700;">עבור לאזור האישי</a>`;
+      }
+      if (btn) { btn.disabled = false; btn.innerHTML = '💾 שמור כהזמנת רכש באזור האישי'; }
     }
 
     // Initial Boot

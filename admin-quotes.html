@@ -232,24 +232,49 @@ async function init() {
 }
 
 async function loadQuotes() {
-  console.log('[ADMIN-QUOTES] loadQuotes() — querying quotes table...');
-
-  const { data, error } = await supabase
+  // Query 1: formal quotes table
+  const { data: quotesData, error: quotesErr } = await supabase
     .from('quotes')
     .select('id, created_at, quote_code, status, subtotal, vat, total_amount, config, user_id, profiles!user_id(full_name, business_name, phone)')
     .order('created_at', { ascending: false });
 
-  console.log('[ADMIN-QUOTES] result — rows:', data?.length ?? 'null', '| error:', error);
-  if (data && data.length > 0) console.log('[ADMIN-QUOTES] First row sample:', JSON.stringify(data[0], null, 2));
-
-  if (error) {
-    console.error('[ADMIN-QUOTES] Fetch FAILED. Code:', error.code, '| Message:', error.message, '| Hint:', error.hint);
-    showError(`שגיאה בטעינה (${error.code}): ${error.message}`);
+  if (quotesErr) {
+    showError(`שגיאה בטעינת הצעות (${quotesErr.code}): ${quotesErr.message}`);
     return;
   }
 
-  allQuotes = data || [];
-  if (allQuotes.length === 0) console.warn('[ADMIN-QUOTES] Query OK but 0 rows — check RLS policies on quotes table');
+  // Query 2: orders table with status quote/draft (procurement orders) — no profiles JOIN to avoid RLS exclusion
+  const { data: orderQuotes, error: ordersErr } = await supabase
+    .from('orders')
+    .select('id, created_at, order_code, status, subtotal, total_price, config, user_id, vendor_name, category')
+    .in('status', ['quote', 'draft'])
+    .order('created_at', { ascending: false });
+
+  if (ordersErr) {
+    showError(`שגיאה בטעינת הזמנות-הצעות (${ordersErr.code}): ${ordersErr.message}`);
+    return;
+  }
+
+  // Normalize orders into the same shape as quotes
+  const normalizedOrders = (orderQuotes || []).map(o => ({
+    _source: 'order',
+    id: o.id,
+    created_at: o.created_at,
+    quote_code: o.order_code,
+    status: o.status,
+    subtotal: o.subtotal || 0,
+    vat: 0,
+    total_amount: o.total_price || o.subtotal || 0,
+    config: o.config,
+    user_id: o.user_id,
+    vendor_name: o.vendor_name,
+    category: o.category,
+    profiles: null,
+  }));
+
+  allQuotes = [...(quotesData || []), ...normalizedOrders]
+    .sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+
   renderTable();
 }
 
@@ -273,7 +298,7 @@ function renderTable() {
   const search = (document.getElementById('searchInput').value || '').toLowerCase();
   const rows = allQuotes.filter(q => {
     if (currentFilter !== 'all' && q.status !== currentFilter) return false;
-    const name = (q.profiles?.full_name || '').toLowerCase();
+    const name = (q.profiles?.full_name || q.vendor_name || '').toLowerCase();
     const code = (q.quote_code || q.id || '').toLowerCase();
     if (search && !code.includes(search) && !name.includes(search)) return false;
     return true;
@@ -295,16 +320,19 @@ function renderTable() {
     const d = new Date(q.created_at);
     const date = `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
     const code = q.quote_code || q.id?.slice(0,8) || '—';
-    const name = q.profiles?.full_name || '—';
-    const email = '—'; // not fetched from profiles — available via auth
+    const name = q.profiles?.full_name || q.vendor_name || '—';
+    const phone = q.profiles?.phone || '—';
     const total = q.total_amount ? `₪${Number(q.total_amount).toLocaleString()}` : '—';
     const st = q.status || 'draft';
     const badge = `<span class="status-badge ${statusClass[st] || ''}">${statusLabel[st] || st}</span>`;
+    const sourceTag = q._source === 'order'
+      ? `<span style="font-size:0.68rem;background:rgba(26,95,170,0.1);color:var(--electric-blue);border:1px solid rgba(26,95,170,0.2);padding:0.1rem 0.4rem;border-radius:10px;margin-right:0.3rem;">רכש</span>`
+      : '';
 
     return `<tr>
-      <td class="quote-code-cell">${code}</td>
-      <td><div style="font-weight:600">${name}</div><div style="font-size:0.78rem;color:var(--silver-dark)">${q.profiles?.business_name || ''}</div></td>
-      <td style="font-size:0.82rem;color:var(--silver-dark)">${q.profiles?.phone || '—'}</td>
+      <td class="quote-code-cell">${sourceTag}${code}</td>
+      <td><div style="font-weight:600">${name}</div><div style="font-size:0.78rem;color:var(--silver-dark)">${q.profiles?.business_name || q.category || ''}</div></td>
+      <td style="font-size:0.82rem;color:var(--silver-dark)">${phone}</td>
       <td>${date}</td>
       <td class="price-cell">${total}</td>
       <td>
@@ -335,7 +363,9 @@ window.updateStatus = async function(sel) {
   sel.disabled = true;
   si.innerHTML = '<i class="ph ph-circle-notch" style="animation:spin 0.8s linear infinite;display:inline-block"></i>';
 
-  const { error } = await supabase.from('quotes')
+  const q = allQuotes.find(x => x.id === id);
+  const tableName = q?._source === 'order' ? 'orders' : 'quotes';
+  const { error } = await supabase.from(tableName)
     .update({ status: newStatus, updated_at: new Date().toISOString() })
     .eq('id', id);
 
@@ -345,7 +375,6 @@ window.updateStatus = async function(sel) {
     sel.value = sel.dataset.prev;
   } else {
     si.innerHTML = '<span class="save-ok"><i class="ph ph-check"></i> נשמר</span>';
-    const q = allQuotes.find(x => x.id === id);
     if (q) q.status = newStatus;
     sel.dataset.prev = newStatus;
     setTimeout(() => { if(si) si.innerHTML = ''; }, 2000);
@@ -362,17 +391,58 @@ window.openDetail = function(id) {
 
   const cfg = q.config || {};
   const systems = Array.isArray(cfg.systems) ? cfg.systems : [];
+  const isProcurement = cfg.type === 'procurement';
 
   let html = `<div class="detail-card">
     <div class="detail-card-title"><i class="ph ph-user"></i> פרטי לקוח</div>
     <div class="detail-grid">
-      <div class="detail-item"><span class="detail-key">שם מלא</span><span class="detail-val">${q.profiles?.full_name || '—'}</span></div>
-      <div class="detail-item"><span class="detail-key">שם עסק</span><span class="detail-val">${q.profiles?.business_name || '—'}</span></div>
+      <div class="detail-item"><span class="detail-key">שם מלא</span><span class="detail-val">${q.profiles?.full_name || q.vendor_name || '—'}</span></div>
+      <div class="detail-item"><span class="detail-key">שם עסק</span><span class="detail-val">${q.profiles?.business_name || q.category || '—'}</span></div>
       <div class="detail-item"><span class="detail-key">טלפון</span><span class="detail-val">${q.profiles?.phone || '—'}</span></div>
       <div class="detail-item"><span class="detail-key">קוד הצעה</span><span class="detail-val">${code}</span></div>
       <div class="detail-item"><span class="detail-key">תאריך</span><span class="detail-val">${new Date(q.created_at).toLocaleDateString('he-IL')}</span></div>
     </div>
   </div>`;
+
+  // Procurement order — show profiles + screws tables
+  if (isProcurement) {
+    const profiles = cfg.profiles || [];
+    const screws   = cfg.screws   || [];
+    if (profiles.length > 0) {
+      html += `<div class="detail-card">
+        <div class="detail-card-title"><i class="ph ph-list-bullets"></i> פרופילי אלומיניום</div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+          <thead><tr style="background:#f7f9fd;">
+            <th style="padding:5px 8px;font-weight:600;text-align:right;">מק"ט</th>
+            <th style="padding:5px 8px;font-weight:600;text-align:right;">שם</th>
+            <th style="padding:5px 8px;font-weight:600;text-align:center;">אורך (מ')</th>
+            <th style="padding:5px 8px;font-weight:600;text-align:center;">כמות</th>
+          </tr></thead><tbody>` +
+          profiles.map((p, i) => `<tr style="border-top:1px solid #e8edf2;background:${i%2===0?'transparent':'#f8fafc'}">
+            <td style="padding:5px 8px;color:var(--silver-dark)">${p.sku||'—'}</td>
+            <td style="padding:5px 8px;">${p.name||'—'}</td>
+            <td style="padding:5px 8px;text-align:center;">${p.len||6}</td>
+            <td style="padding:5px 8px;text-align:center;">${p.qty||1}</td>
+          </tr>`).join('') +
+          `</tbody></table>
+      </div>`;
+    }
+    if (screws.length > 0) {
+      html += `<div class="detail-card">
+        <div class="detail-card-title"><i class="ph ph-nut"></i> ברגים ועוגנים</div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+          <thead><tr style="background:#f7f9fd;">
+            <th style="padding:5px 8px;font-weight:600;text-align:right;">מוצר</th>
+            <th style="padding:5px 8px;font-weight:600;text-align:center;">כמות</th>
+          </tr></thead><tbody>` +
+          screws.map((s, i) => `<tr style="border-top:1px solid #e8edf2;background:${i%2===0?'transparent':'#f8fafc'}">
+            <td style="padding:5px 8px;">${s.name||s.product||'—'}</td>
+            <td style="padding:5px 8px;text-align:center;">${s.qty||1}</td>
+          </tr>`).join('') +
+          `</tbody></table>
+      </div>`;
+    }
+  }
 
   if (systems.length > 0) {
     systems.forEach((s, i) => {

@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     /* ── DASHBOARD LAYOUT ── */
     .dashboard-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
@@ -160,6 +161,65 @@
     /* ── SPINNER ── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spin { animation: spin 0.8s linear infinite; display: inline-block; }
+
+    /* ── CUSTOMER QUOTE SECTION ── */
+    .modal-quote-section {
+      border-top: 2px solid var(--electric-blue); margin-top: 1.25rem; padding-top: 1.1rem;
+    }
+    .modal-quote-title {
+      font-size: 0.8rem; font-weight: 800; color: var(--electric-blue);
+      text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.85rem;
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+    .modal-quote-inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.65rem; margin-bottom: 0.85rem; }
+    .modal-quote-input-row { display: flex; flex-direction: column; gap: 0.25rem; }
+    .modal-quote-label { font-size: 0.72rem; font-weight: 700; color: var(--silver-dark); }
+    .modal-quote-input {
+      padding: 0.45rem 0.7rem; border: 1.5px solid var(--border); border-radius: 8px;
+      font-family: 'Heebo', sans-serif; font-size: 0.88rem;
+      background: var(--surface-elevated, #f7f9fd); color: var(--industrial-silver);
+      transition: border-color 0.18s;
+    }
+    .modal-quote-input:focus { outline: none; border-color: var(--electric-blue); }
+    .modal-quote-markup-row {
+      display: flex; align-items: center; gap: 0.6rem; flex-wrap: wrap;
+      background: var(--surface-elevated, #f7f9fd); border-radius: 8px;
+      padding: 0.6rem 0.85rem; margin-bottom: 0.85rem;
+    }
+    .modal-quote-markup-input {
+      width: 62px; padding: 0.3rem 0.5rem; border: 1.5px solid var(--border); border-radius: 7px;
+      font-family: 'Heebo', sans-serif; font-size: 0.9rem; font-weight: 700;
+      text-align: center; background: #fff; color: var(--industrial-silver); transition: border-color 0.18s;
+    }
+    .modal-quote-markup-input:focus { outline: none; border-color: var(--electric-blue); }
+    .modal-quote-selling { font-size: 1.1rem; font-weight: 800; color: var(--electric-blue); }
+    .btn-quote-pdf-dash {
+      display: flex; align-items: center; justify-content: center; gap: 0.5rem;
+      width: 100%; padding: 0.8rem; background: var(--electric-blue); color: #fff;
+      border: none; border-radius: 9px; font-family: 'Heebo', sans-serif;
+      font-size: 0.92rem; font-weight: 700; cursor: pointer; transition: opacity 0.18s ease;
+    }
+    .btn-quote-pdf-dash:hover { opacity: 0.87; }
+    .btn-quote-pdf-dash:disabled { opacity: 0.5; pointer-events: none; }
+
+    /* ── APPROVE BUTTON ── */
+    .btn-approve-order {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 1rem; background: var(--green, #16a34a); color: #fff;
+      border: none; border-radius: 8px; font-family: 'Heebo', sans-serif;
+      font-size: 0.82rem; font-weight: 700; cursor: pointer; white-space: nowrap;
+      transition: opacity 0.18s ease;
+    }
+    .btn-approve-order:hover { opacity: 0.88; }
+    .btn-approve-order:disabled { opacity: 0.5; pointer-events: none; }
+
+    /* ── PLACEHOLDER SECTION ── */
+    .section-coming-soon {
+      text-align: center; padding: 4rem 1rem; color: var(--silver-dark);
+    }
+    .section-coming-soon i { font-size: 3.5rem; opacity: 0.25; margin-bottom: 1rem; display: block; }
+    .section-coming-soon h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--industrial-silver); }
+    .section-coming-soon p { font-size: 0.88rem; opacity: 0.7; }
   </style>
 </head>
 <body>
@@ -181,10 +241,11 @@
       <div class="sidebar-label">תפריט</div>
       <ul class="dashboard-nav">
         <li><a class="active" onclick="showSection('home')" id="nav-home"><i class="ph ph-house"></i> דף הבית</a></li>
-        <li><a onclick="showSection('new-orders')" id="nav-new-orders"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
-        <li><a onclick="showSection('history')" id="nav-history"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
-        <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
-        <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+        <li><a onclick="showSection('saved-quotes')" id="nav-saved-quotes"><i class="ph ph-note-pencil"></i> הצעות מחיר שמורות</a></li>
+        <li><a onclick="showSection('in-progress')" id="nav-in-progress"><i class="ph ph-factory"></i> הזמנות בתהליך</a></li>
+        <li><a onclick="showSection('history')" id="nav-history"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות שסופקו</a></li>
+        <li><a onclick="showSection('documents')" id="nav-documents"><i class="ph ph-files"></i> חשבוניות ומסמכים</a></li>
+        <li><a onclick="showSection('settings')" id="nav-settings"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
         <li class="nav-admin-link" id="adminNavItem" style="display:none;">
           <a href="admin.html"><i class="ph ph-shield-star"></i> פאנל ניהול</a>
         </li>
@@ -217,23 +278,45 @@
         </div>
       </section>
 
-      <!-- ── NEW ORDERS ── -->
-      <section class="dash-section" id="sec-new-orders">
-        <div class="dashboard-title">הזמנות חדשות</div>
-        <div class="dashboard-subtitle">הצעות מחיר שנשמרו והזמנות בתהליך</div>
+      <!-- ── SAVED QUOTES ── -->
+      <section class="dash-section" id="sec-saved-quotes">
+        <div class="dashboard-title">הצעות מחיר שמורות</div>
+        <div class="dashboard-subtitle">הצעות שנשמרו מהקונפיגרטור — לחץ "אישור ושליחה לייצור" כדי להעביר לייצור</div>
+        <div id="orders-saved-quotes"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
+      </section>
 
-        <div class="section-divider-title">הצעות מחיר שמורות &amp; ממתין לבדיקה</div>
-        <div id="orders-draft"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
-
-        <div class="section-divider-title">בתהליך ייצור</div>
-        <div id="orders-production"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
+      <!-- ── IN PROGRESS ── -->
+      <section class="dash-section" id="sec-in-progress">
+        <div class="dashboard-title">הזמנות בתהליך</div>
+        <div class="dashboard-subtitle">הזמנות שנשלחו לייצור ובתהליך טיפול</div>
+        <div id="orders-in-progress"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
       </section>
 
       <!-- ── HISTORY ── -->
       <section class="dash-section" id="sec-history">
-        <div class="dashboard-title">היסטוריית הזמנות</div>
-        <div class="dashboard-subtitle">הזמנות שנמסרו</div>
+        <div class="dashboard-title">היסטוריית הזמנות שסופקו</div>
+        <div class="dashboard-subtitle">הזמנות שנמסרו ללקוח</div>
         <div id="orders-delivered"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
+      </section>
+
+      <!-- ── DOCUMENTS (placeholder) ── -->
+      <section class="dash-section" id="sec-documents">
+        <div class="dashboard-title">חשבוניות ומסמכים</div>
+        <div class="section-coming-soon">
+          <i class="ph ph-files"></i>
+          <h3>בקרוב</h3>
+          <p>חשבוניות, קבלות ומסמכים מסחריים יוצגו כאן בקרוב.</p>
+        </div>
+      </section>
+
+      <!-- ── SETTINGS (placeholder) ── -->
+      <section class="dash-section" id="sec-settings">
+        <div class="dashboard-title">הגדרות פרופיל</div>
+        <div class="section-coming-soon">
+          <i class="ph ph-gear"></i>
+          <h3>בקרוב</h3>
+          <p>עדכון פרטי העסק, לוגו ומידע ליצירת קשר יתאפשר כאן בקרוב.</p>
+        </div>
       </section>
 
     </main>
@@ -259,14 +342,21 @@ const supabase = createClient(
 
 const PVC_NAMES = { white:'לבן', black:'שחור', gray46:'אפור 7046', gray16:'אפור כהה 7016', green:'ירוק', red:'אדום', cream:'שמנת 1013' };
 
+// Quote generator state — reset on each modal open
+let quoteState = { markup: 25, customerName: '', customerAddress: '' };
+const QUOTE_ELIGIBLE = ['quote', 'draft', 'technical_review', 'sent', 'approved'];
+
 const STATUS_CLASS = {
-  draft:'status-draft', technical_review:'status-review',
+  quote:'status-draft', draft:'status-draft',
+  pending:'status-review', technical_review:'status-review',
   in_production:'status-production', ready_for_delivery:'status-production',
   delivered:'status-delivered', cancelled:'status-draft',
   sent:'status-review', approved:'status-production', rejected:'status-draft'
 };
 const STATUS_LABEL = {
+  quote:'הצעת מחיר שמורה',
   draft:'טיוטה — הצעה שמורה',
+  pending:'ממתין לאישור',
   technical_review:'בבדיקה טכנית',
   in_production:'בתהליך ייצור',
   ready_for_delivery:'מוכן למסירה',
@@ -286,7 +376,7 @@ function normalize(row, type) {
                                 : (row.order_code || row.id.slice(0,8)),
     status:    row.status || 'draft',
     config:    row.config || {},
-    total:     type === 'quote' ? (row.total_amount || 0) : (row.total_price || 0),
+    total:     type === 'quote' ? (row.total_amount || 0) : (row.subtotal || row.total_price || 0),
     subtotal:  row.subtotal || 0,
     vat:       row.vat || 0,
     created_at: row.created_at
@@ -316,8 +406,9 @@ window.showSection = function(id) {
   document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.dashboard-nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
-  document.getElementById('nav-' + id).classList.add('active');
-  if (id === 'new-orders' || id === 'history') loadAll();
+  const navEl = document.getElementById('nav-' + id);
+  if (navEl) navEl.classList.add('active');
+  if (['saved-quotes', 'in-progress', 'history'].includes(id)) loadAll();
 };
 
 /* ── LOAD BOTH TABLES ── */
@@ -339,42 +430,48 @@ async function loadAll() {
 
   allItems = [...quotes, ...orders].sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-  // Draft section: saved quotes (any status) + submitted orders awaiting review
-  const draftItems = allItems.filter(i =>
-    (i._type === 'quote') ||
-    (i._type === 'order' && i.status === 'technical_review')
+  // Saved Quotes: legacy quotes table (any) + orders with status quote/draft
+  const savedQuotesItems = allItems.filter(i =>
+    i._type === 'quote' ||
+    (i._type === 'order' && ['quote', 'draft'].includes(i.status))
   );
-  // Production section: in production OR ready for delivery
-  const prodItems = allItems.filter(i =>
-    i._type === 'order' && (i.status === 'in_production' || i.status === 'ready_for_delivery')
+  // In Progress: orders sent to production
+  const inProgressItems = allItems.filter(i =>
+    i._type === 'order' && ['pending', 'technical_review', 'in_production', 'ready_for_delivery'].includes(i.status)
   );
-  // History: delivered + cancelled orders
+  // History: delivered + cancelled
   const doneItems = allItems.filter(i =>
-    i._type === 'order' && (i.status === 'delivered' || i.status === 'cancelled')
+    i._type === 'order' && ['delivered', 'cancelled'].includes(i.status)
   );
 
-  renderSection('orders-draft',      draftItems);
-  renderSection('orders-production', prodItems);
-  renderSection('orders-delivered',  doneItems);
+  renderSection('orders-saved-quotes', savedQuotesItems, true);
+  renderSection('orders-in-progress',  inProgressItems, false);
+  renderSection('orders-delivered',    doneItems, false);
 }
 
-function renderSection(containerId, items) {
+function renderSection(containerId, items, showApprove) {
   const el = document.getElementById(containerId);
   if (!el) return;
   if (items.length === 0) {
     el.innerHTML = `<div class="orders-empty"><i class="ph ph-inbox"></i><p>אין הזמנות להצגה</p></div>`;
     return;
   }
-  el.innerHTML = `<div class="orders-list">${items.map(itemCard).join('')}</div>`;
+  el.innerHTML = `<div class="orders-list">${items.map(o => itemCard(o, showApprove)).join('')}</div>`;
 }
 
-function itemCard(o) {
+function itemCard(o, showApprove) {
   const cfg = o.config;
   const systemCount = (cfg.systems || []).length || 1;
   const dateStr = new Date(o.created_at).toLocaleDateString('he-IL');
   const typeLabel = o._type === 'quote' ? 'הצעת מחיר' : 'הזמנה';
   const stClass = STATUS_CLASS[o.status] || 'status-draft';
   const stLabel = STATUS_LABEL[o.status] || o.status;
+  // Approve button only for orders with status quote/draft (not legacy quotes table rows)
+  const canApprove = showApprove && o._type === 'order' && ['quote', 'draft'].includes(o.status);
+  const isProcurement = cfg.type === 'procurement';
+  const descText = isProcurement
+    ? `פרופילי אלומיניום · ${(cfg.profiles||[]).length + (cfg.screws||[]).length} פריטים`
+    : `פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}`;
 
   return `<div class="order-card" onclick="openModal('${o._id}')">
     <div class="order-card-info">
@@ -383,13 +480,18 @@ function itemCard(o) {
         <span class="order-code">${o.code}</span>
         <span style="font-size:0.72rem;color:var(--silver-dark);background:var(--surface-elevated,#f0f4f8);padding:0.15rem 0.5rem;border-radius:10px;">${typeLabel}</span>
       </div>
-      <div class="order-desc">פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}</div>
+      <div class="order-desc">${descText}</div>
       <div class="order-meta">נשמר: ${dateStr}</div>
     </div>
     <div class="order-price">₪${Number(o.total).toLocaleString()}</div>
-    <button class="btn-order-detail" onclick="event.stopPropagation();openModal('${o._id}')">
-      <i class="ph ph-eye"></i> פרטים
-    </button>
+    ${canApprove
+      ? `<button class="btn-approve-order" id="appBtn-${o._id}" onclick="event.stopPropagation();approveOrder('${o._id}')">
+           <i class="ph ph-paper-plane-tilt"></i> אישור ושליחה לייצור
+         </button>`
+      : `<button class="btn-order-detail" onclick="event.stopPropagation();openModal('${o._id}')">
+           <i class="ph ph-eye"></i> פרטים
+         </button>`
+    }
   </div>`;
 }
 
@@ -403,6 +505,71 @@ window.openModal = function(id) {
     `פירוט &nbsp;<span style="font-weight:400;color:var(--silver-dark);font-size:0.85rem;">${o.code}</span>`;
 
   let html = '';
+
+  // ── Procurement order — special layout ──
+  if (cfg.type === 'procurement') {
+    const profiles = cfg.profiles || [];
+    if (profiles.length > 0) {
+      html += `<div style="margin-bottom:1.25rem;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.5px;">פרופילי אלומיניום</div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+          <thead><tr style="background:var(--surface-elevated,#f0f4f8);text-align:right;">
+            <th style="padding:6px 10px;font-weight:600;">מק"ט</th>
+            <th style="padding:6px 10px;font-weight:600;">שם פרופיל</th>
+            <th style="padding:6px 10px;font-weight:600;text-align:center;">אורך (מ')</th>
+            <th style="padding:6px 10px;font-weight:600;text-align:center;">כמות</th>
+            <th style="padding:6px 10px;font-weight:600;text-align:center;">משקל (ק"ג)</th>
+          </tr></thead>
+          <tbody>`;
+      profiles.forEach((p, i) => {
+        const w = ((p.wpm||0) * parseFloat(p.len||6) * (p.qty||1)).toFixed(2);
+        html += `<tr style="border-top:1px solid var(--border-color,#e8edf2);background:${i%2===0?'transparent':'var(--surface-elevated,#f8fafc)'}">
+          <td style="padding:6px 10px;color:var(--silver-dark)">${p.sku||'—'}</td>
+          <td style="padding:6px 10px;">${p.name||'—'}</td>
+          <td style="padding:6px 10px;text-align:center;">${p.len||6}</td>
+          <td style="padding:6px 10px;text-align:center;">${p.qty||1}</td>
+          <td style="padding:6px 10px;text-align:center;">${w}</td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+    }
+
+    const screws = cfg.screws || [];
+    if (screws.length > 0) {
+      html += `<div style="margin-bottom:1.25rem;">
+        <div style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);margin-bottom:0.5rem;text-transform:uppercase;letter-spacing:0.5px;">ברגים ועוגנים</div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+          <thead><tr style="background:var(--surface-elevated,#f0f4f8);text-align:right;">
+            <th style="padding:6px 10px;font-weight:600;">מוצר</th>
+            <th style="padding:6px 10px;font-weight:600;">מפרט</th>
+            <th style="padding:6px 10px;font-weight:600;text-align:center;">כמות</th>
+            <th style="padding:6px 10px;font-weight:600;text-align:center;">מחיר ליח'</th>
+          </tr></thead>
+          <tbody>`;
+      screws.forEach((s, i) => {
+        html += `<tr style="border-top:1px solid var(--border-color,#e8edf2);background:${i%2===0?'transparent':'var(--surface-elevated,#f8fafc)'}">
+          <td style="padding:6px 10px;">${s.icon||''} ${s.name||'—'}</td>
+          <td style="padding:6px 10px;color:var(--silver-dark)">${s.spec||'—'}</td>
+          <td style="padding:6px 10px;text-align:center;">${s.qty||1}</td>
+          <td style="padding:6px 10px;text-align:center;">${s.price != null ? '₪'+s.price : 'לפי בקשה'}</td>
+        </tr>`;
+      });
+      html += `</tbody></table></div>`;
+    }
+
+    if (cfg.orderNum) html += `<div style="font-size:0.82rem;color:var(--silver-dark);margin-bottom:0.4rem;">מספר הזמנה: <strong>${cfg.orderNum}</strong></div>`;
+    if (cfg.ralCode) html += `<div style="font-size:0.82rem;color:var(--silver-dark);margin-bottom:1rem;">גוון RAL: <strong>${cfg.ralCode}</strong></div>`;
+
+    html += `<div class="modal-totals">
+      <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
+      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
+      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+    </div>`;
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('orderModalOverlay').classList.add('open');
+    return;
+  }
 
   // Systems
   (cfg.systems || []).forEach(s => {
@@ -452,6 +619,39 @@ window.openModal = function(id) {
     <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
   </div>`;
 
+  // Customer Quote Section — only for unapproved orders/quotes
+  if (QUOTE_ELIGIBLE.includes(o.status) || o._type === 'quote') {
+    quoteState = { markup: 25, customerName: '', customerAddress: '' };
+    html += `<div class="modal-quote-section">
+      <div class="modal-quote-title"><i class="ph ph-file-text"></i> ייצוא הצעת מחיר ללקוח</div>
+      <p style="font-size:0.82rem;color:var(--silver-dark);line-height:1.55;margin-bottom:1rem;">
+        לנוחיותכם, תוכלו לייצא הצעת מחיר מותאמת אישית ללקוח שלכם תחת שם העסק שלכם.<br>
+        <strong style="color:var(--industrial-silver);">אתם רשאים לקבוע את המחיר הסופי ללקוח באופן עצמאי.</strong>
+      </p>
+      <div class="modal-quote-inputs">
+        <div class="modal-quote-input-row">
+          <label class="modal-quote-label">שם הלקוח</label>
+          <input class="modal-quote-input" type="text" placeholder="ישראל ישראלי"
+            oninput="quoteState.customerName=this.value">
+        </div>
+        <div class="modal-quote-input-row">
+          <label class="modal-quote-label">כתובת הפרויקט</label>
+          <input class="modal-quote-input" type="text" placeholder="רחוב, עיר"
+            oninput="quoteState.customerAddress=this.value">
+        </div>
+      </div>
+      <div class="modal-quote-markup-row">
+        <span style="font-size:0.82rem;color:var(--silver-dark);font-weight:600;">הוספת רווח (%):</span>
+        <input class="modal-quote-markup-input" type="number" min="0" max="300" value="25"
+          oninput="quoteState.markup=Number(this.value)||0">
+        <span style="font-size:0.78rem;color:var(--silver-dark);margin-right:auto;">המחיר בPDF יכלול את הרווח שהגדרתם</span>
+      </div>
+      <button class="btn-quote-pdf-dash" id="dqBtn-${o._id}" onclick="window.generateDashboardPDF('${o._id}')">
+        <i class="ph ph-file-pdf"></i> ייצא הצעת מחיר ללקוח — PDF
+      </button>
+    </div>`;
+  }
+
   document.getElementById('modalBody').innerHTML = html;
   document.getElementById('orderModalOverlay').classList.add('open');
 };
@@ -460,6 +660,168 @@ window.closeOrderModal = function(e) {
   if (!e || e.target === document.getElementById('orderModalOverlay')) {
     document.getElementById('orderModalOverlay').classList.remove('open');
   }
+};
+
+/* ── CUSTOMER QUOTE — DASHBOARD ── */
+window.generateDashboardPDF = async function(id) {
+  const btn = document.getElementById(`dqBtn-${id}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch"></i> מכין PDF...'; }
+
+  try {
+    const o = allItems.find(x => x._id === id);
+    if (!o) throw new Error('Order not found');
+
+    // Profile
+    const { data: { user } } = await supabase.auth.getUser();
+    let profile = {};
+    if (user) {
+      const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      if (p) profile = p;
+    }
+
+    // Prices
+    const factor = 1 + (Number(quoteState.markup) || 0) / 100;
+    const sellingSubtotal = Math.round(o.subtotal * factor);
+    const sellingVat      = Math.round(sellingSubtotal * 0.18);
+    const sellingTotal    = sellingSubtotal + sellingVat;
+
+    // Date + code
+    const now = new Date();
+    const dateStr = String(now.getDate()).padStart(2,'0') + '/' + String(now.getMonth()+1).padStart(2,'0') + '/' + now.getFullYear();
+    const code = o.code;
+
+    // Build description from config
+    const cfg = o.config || {};
+    const sysCount = (cfg.systems || []).length || 1;
+    const firstSys = cfg.systems?.[0] || {};
+    const dims = (firstSys.width && firstSys.depth) ? `${firstSys.width}×${firstSys.depth} ס"מ` : '';
+    const addonsStr = [
+      cfg.addons?.led    && 'LED',
+      cfg.addons?.remote && 'שלט Somfy',
+      cfg.addons?.tahoma && 'TaHoma',
+      cfg.addons?.dimmer && 'דימר',
+    ].filter(Boolean).join(', ');
+    const desc = `פרגולה PVC${dims ? ' · ' + dims : ''}${addonsStr ? ' · ' + addonsStr : ''}`;
+
+    // Profile header
+    const bizName  = profile.business_name || profile.full_name || 'הצעת מחיר';
+    const bizPhone = profile.phone || '';
+    const bizAddr  = profile.business_address || '';
+    const headerBrand = profile.logo_url
+      ? `<img src="${profile.logo_url}" style="max-height:52px;max-width:180px;object-fit:contain;">`
+      : `<div style="font-size:21px;font-weight:800;">${bizName}</div>`;
+
+    const html = `<div style="font-family:'Heebo',Arial,sans-serif;direction:rtl;color:#1a2535;background:#fff;width:794px;">
+      <div style="background:#1a5faa;color:#fff;padding:22px 32px;display:flex;justify-content:space-between;align-items:center;">
+        <div>
+          ${headerBrand}
+          <div style="font-size:12px;opacity:0.8;margin-top:4px;">${bizPhone}${bizAddr ? ' · ' + bizAddr : ''}</div>
+        </div>
+        <div style="text-align:left;">
+          <div style="font-size:11px;opacity:0.7;margin-bottom:2px;">הצעת מחיר</div>
+          <div style="font-size:13px;font-weight:700;">${code}</div>
+          <div style="font-size:11px;opacity:0.7;margin-top:2px;">${dateStr}</div>
+        </div>
+      </div>
+      ${(quoteState.customerName || quoteState.customerAddress) ? `
+      <div style="padding:14px 32px;background:#f0f4f8;border-bottom:1px solid #d6dde8;">
+        <div style="font-size:11px;color:#6b7a99;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.5px;">ללקוח</div>
+        <div style="font-size:15px;font-weight:700;">${quoteState.customerName || ''}</div>
+        ${quoteState.customerAddress ? `<div style="font-size:13px;color:#6b7a99;margin-top:2px;">${quoteState.customerAddress}</div>` : ''}
+      </div>` : ''}
+      <div style="padding:20px 32px;">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead>
+            <tr style="border-bottom:2px solid #1a5faa;">
+              <th style="text-align:right;padding:8px 0;font-size:11px;font-weight:700;color:#6b7a99;text-transform:uppercase;letter-spacing:0.5px;">תיאור</th>
+              <th style="text-align:center;padding:8px 0;font-size:11px;font-weight:700;color:#6b7a99;text-transform:uppercase;letter-spacing:0.5px;">כמות</th>
+              <th style="text-align:left;padding:8px 0;font-size:11px;font-weight:700;color:#6b7a99;text-transform:uppercase;letter-spacing:0.5px;">מחיר</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom:1px solid #e5eaf2;">
+              <td style="padding:10px 0;font-size:13px;">${desc}</td>
+              <td style="text-align:center;padding:10px 0;font-size:13px;color:#6b7a99;">${sysCount}</td>
+              <td style="text-align:left;padding:10px 0;font-size:13px;font-weight:700;color:#1a5faa;">₪${sellingSubtotal.toLocaleString()}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:0 32px 24px;">
+        <div style="border-top:1px solid #d6dde8;padding-top:12px;">
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;">
+            <span style="color:#6b7a99;">סה"כ לפני מע"מ</span><span>₪${sellingSubtotal.toLocaleString()}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:5px 0;font-size:13px;">
+            <span style="color:#6b7a99;">מע"מ (18%)</span><span>₪${sellingVat.toLocaleString()}</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;padding:10px 0 6px;font-size:17px;font-weight:800;border-top:2px solid #1a5faa;margin-top:8px;color:#1a5faa;">
+            <span>סה"כ לתשלום</span><span>₪${sellingTotal.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+      <div style="text-align:center;padding:13px 32px;background:#f0f4f8;border-top:1px solid #d6dde8;font-size:11px;color:#6b7a99;">
+        מסמך זה הופק ע"י מערכת ALUM-IL
+      </div>
+    </div>`;
+
+    await html2pdf().set({
+      margin: 0,
+      filename: `quote-${code}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true, logging: false },
+      jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait' }
+    }).from(html).save();
+
+  } catch(err) {
+    console.error('[QUOTE-PDF]', err);
+    alert('שגיאה ביצירת PDF: ' + err.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-file-pdf"></i> ייצא הצעת מחיר ללקוח — PDF'; }
+  }
+};
+
+/* ── APPROVE ORDER — send quote to production ── */
+window.approveOrder = async function(id) {
+  const btn = document.getElementById(`appBtn-${id}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch"></i> שולח...'; }
+
+  const { data: updateData, error } = await supabase
+    .from('orders')
+    .update({ status: 'pending', status_updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .eq('user_id', currentUserId)
+    .select('id, status');
+
+  console.log('[APPROVE] update result:', updateData, error);
+
+  if (error || !updateData || updateData.length === 0) {
+    console.error('[APPROVE] failed — error:', error, '| rows updated:', updateData?.length ?? 0);
+    alert('שגיאה: ההזמנה לא עודכנה. נסה שוב.' + (error ? ' ' + error.message : ''));
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> אישור ושליחה לייצור'; }
+    return;
+  }
+
+  // Update local state immediately
+  const item = allItems.find(x => x._id === id);
+  if (item) item.status = 'pending';
+
+  // Re-render sections from updated local state
+  const savedQuotesItems = allItems.filter(i =>
+    i._type === 'quote' || (i._type === 'order' && ['quote', 'draft'].includes(i.status))
+  );
+  const inProgressItems = allItems.filter(i =>
+    i._type === 'order' && ['pending', 'technical_review', 'in_production', 'ready_for_delivery'].includes(i.status)
+  );
+  renderSection('orders-saved-quotes', savedQuotesItems, true);
+  renderSection('orders-in-progress', inProgressItems, false);
+
+  // Navigate to in-progress directly (no loadAll re-trigger)
+  document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.dashboard-nav a').forEach(a => a.classList.remove('active'));
+  document.getElementById('sec-in-progress').classList.add('active');
+  const navEl = document.getElementById('nav-in-progress');
+  if (navEl) navEl.classList.add('active');
 };
 
 window.handleLogout = async function() {

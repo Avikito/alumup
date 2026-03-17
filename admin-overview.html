@@ -267,23 +267,31 @@ async function loadStats() {
 }
 
 async function loadActivity() {
+  const ACTIVE_STATUSES = ['pending', 'technical_review', 'in_production', 'ready_for_delivery'];
+
   const { data, error } = await supabase
     .from('orders')
     .select('*')
+    .in('status', ACTIVE_STATUSES)
     .order('updated_at', { ascending: false })
     .limit(8);
 
   const tbody = document.getElementById('activityBody');
 
   if (error || !data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות עדיין</p></div></td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות בתהליך</p></div></td></tr>`;
     return;
   }
 
   tbody.innerHTML = data.map(o => {
     const sys = (o.order_data?.systems || []).length;
     const date = new Date(o.updated_at || o.created_at).toLocaleDateString('he-IL');
-    const statusMap = { draft: ['status-draft', 'טיוטה'], in_production: ['status-production', 'בייצור'], delivered: ['status-delivered', 'נמסר'] };
+    const statusMap = {
+      pending:              ['status-review',      'ממתין לאישור'],
+      technical_review:     ['status-review',      'בבדיקה טכנית'],
+      in_production:        ['status-production',  'בייצור'],
+      ready_for_delivery:   ['status-production',  'מוכן למסירה'],
+    };
     const [cls, label] = statusMap[o.status] || ['', o.status];
 
     return `<tr>
