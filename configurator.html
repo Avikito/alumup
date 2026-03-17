@@ -133,6 +133,8 @@ a { text-decoration: none; color: inherit; }
 /* ── SECTION ── */
 .section {
   margin-bottom: 2.5rem;
+  border-right: 4px solid var(--blue);
+  padding-right: 1rem;
 }
 .section-header {
   display: flex;
@@ -1014,6 +1016,41 @@ a { text-decoration: none; color: inherit; }
   font-size: 0.88rem; color: var(--silver); line-height: 1.7;
 }
 .confirm-checkbox-text strong { color: var(--white); }
+
+/* ── ACTION BUTTONS ── */
+.action-btns { display:flex; gap:1rem; margin:1.5rem 0; }
+.btn-action-quote {
+  flex:1; padding:0.9rem 1rem; border:2px solid var(--blue);
+  background:transparent; color:var(--blue); border-radius:var(--radius);
+  font-family:'Heebo',sans-serif; font-size:1rem; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:0.5rem;
+  transition:background var(--trans), color var(--trans);
+}
+.btn-action-quote:hover { background:var(--blue-dim); }
+.btn-action-purchase {
+  flex:1; padding:0.9rem 1rem; border:none;
+  background:var(--blue); color:#fff; border-radius:var(--radius);
+  font-family:'Heebo',sans-serif; font-size:1rem; font-weight:700; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; gap:0.5rem;
+  transition:opacity var(--trans);
+}
+.btn-action-purchase:hover { opacity:0.88; }
+
+/* ── PURCHASE MODAL ── */
+.purchase-modal-overlay {
+  position:fixed; inset:0; background:rgba(0,0,0,0.45);
+  display:flex; align-items:center; justify-content:center; z-index:1000;
+}
+.purchase-modal-box {
+  background:var(--surface); border-radius:var(--radius-lg);
+  padding:2rem; width:min(540px,92vw); max-height:85vh;
+  overflow-y:auto; position:relative;
+}
+.modal-close-btn {
+  position:absolute; top:1rem; left:1rem;
+  background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--silver);
+}
+.modal-close-btn:hover { color:var(--white); }
 </style>
 </head>
 <body>
@@ -1221,110 +1258,120 @@ a { text-decoration: none; color: inherit; }
       <!-- Totals -->
       <div class="summary-totals" id="summaryTotals"></div>
 
-      <!-- Customer Quote Card -->
-      <div id="quoteCard"></div>
 
-      <!-- Save Quote -->
-      <button class="btn-save-order" id="btnSaveOrder" onclick="saveOrder()">
-        <i class="ph ph-floppy-disk"></i> שמור הצעת מחיר
-      </button>
+
+      <!-- Action Buttons -->
+      <div class="action-btns">
+        <button class="btn-action-quote" id="btnSaveOrder" onclick="saveOrder()">
+          <i class="ph ph-floppy-disk"></i> הפק הצעת מחיר לאזור האישי
+        </button>
+        <button class="btn-action-purchase" onclick="openPurchaseModal()">
+          <i class="ph ph-shopping-cart-simple"></i> לרכישה
+        </button>
+      </div>
       <div id="saveOrderMsg" class="save-order-msg" style="display:none"></div>
-
-      <!-- Payment Buttons -->
-      <div class="payment-buttons">
-        <button class="btn-payment" id="btn-bank" onclick="showPayment('bank')">
-          <i class="ph ph-bank"></i>
-          העברה בנקאית
-        </button>
-        <button class="btn-payment" id="btn-credit" onclick="showPayment('credit')">
-          <i class="ph ph-credit-card"></i>
-          תשלום באשראי
-        </button>
-      </div>
-
-      <!-- Bank Transfer Panel -->
-      <div class="payment-panel" id="panel-bank">
-        <div class="bank-details">
-          <div class="bank-row"><span class="key">בנק</span><span class="val">הפועלים (12)</span></div>
-          <div class="bank-row"><span class="key">סניף</span><span class="val">123</span></div>
-          <div class="bank-row"><span class="key">מספר חשבון</span><span class="val">123456</span></div>
-          <div class="bank-row"><span class="key">על שם</span><span class="val">אלום-איל בע"מ</span></div>
-        </div>
-        <div class="order-code-box">
-          <div class="order-code-label">קוד הזמנה</div>
-          <div class="order-code-val" id="orderCodeDisplay">—</div>
-          <div class="order-code-hint">יש לציין קוד זה בביצוע ההעברה</div>
-        </div>
-        <button class="btn-wa-proof" onclick="sendProofWA()">
-          <i class="ph ph-whatsapp-logo"></i>
-          שלח אסמכתא ב-WhatsApp
-        </button>
-      </div>
-
-      <!-- Credit Card Panel -->
-      <div class="payment-panel" id="panel-credit">
-        <div class="credit-form">
-          <div class="field">
-            <label>מספר כרטיס</label>
-            <input type="text" id="ccNum" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCC(this)">
-          </div>
-          <div class="credit-row">
-            <div class="field">
-              <label>תוקף</label>
-              <input type="text" id="ccExp" placeholder="MM/YY" maxlength="5" oninput="formatExp(this)">
-            </div>
-            <div class="field">
-              <label>CVV</label>
-              <input type="text" id="ccCvv" placeholder="CVV" maxlength="4">
-            </div>
-          </div>
-          <div class="field">
-            <label>שם על הכרטיס</label>
-            <input type="text" id="ccName" placeholder="שם מלא">
-          </div>
-          <button class="btn-submit-credit" onclick="submitCredit()">
-            <i class="ph ph-lock-key"></i> אישור תשלום מאובטח
-          </button>
-        </div>
-      </div>
-
-      <!-- Installer Matchmaking Banner -->
-      <div class="installer-banner" id="installerBanner" style="margin-top:1.5rem;">
-        <div class="installer-banner-icon"><i class="ph ph-wrench"></i></div>
-        <div class="installer-banner-text">
-          <strong>מחפש מתקין מוסמך?</strong>
-          <p>אנחנו נשדך אותך למתקין מאושר באזורך ללא עלות נוספת</p>
-        </div>
-        <div class="installer-buttons">
-          <button class="btn-installer-yes" onclick="matchInstaller()">כן, שדך לי מתקין</button>
-          <button class="btn-installer-no" onclick="dismissInstaller()">לא תודה</button>
-          <div class="installer-confirm" id="installerConfirm"><i class="ph ph-check-circle-fill"></i> נשלח בקשה בהצלחה!</div>
-        </div>
-      </div>
-
-      <!-- Confirm checkbox -->
-      <div class="confirm-order-block" id="confirmOrderBlock">
-        <div class="confirm-block-title"><i class="ph ph-seal-check"></i> אישור קריאה ותנאים</div>
-        <div class="confirm-checkbox-row">
-          <input type="checkbox" id="confirmCheckbox" onchange="togglePlaceOrderBtn()">
-          <label for="confirmCheckbox" class="confirm-checkbox-text">
-            <strong>קראתי ואישרתי את כל המידות, הצבעים והתוספות שנבחרו.</strong><br>
-            אני מבין כי לאחר האישור לא ניתן לבצע שינויים בהזמנה.<br>
-            קראתי ואישרתי את <a href="terms.html" target="_blank" style="color:var(--blue);text-decoration:underline;">תקנון האתר ומדיניות הפרטיות</a> של ALUM-IL.
-          </label>
-        </div>
-        <div id="placeOrderBtnWrap" style="display:none; margin-top:0.75rem;">
-          <button id="btnPlaceOrder" onclick="placeOrder()"
-            style="width:100%;padding:1rem;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-family:'Heebo',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:opacity 0.2s ease;">
-            <i class="ph ph-check-circle"></i> שלח הזמנה לאישור
-          </button>
-        </div>
-        <div id="placeOrderMsg" class="save-order-msg" style="display:none;margin-top:0.75rem;"></div>
-      </div>
 
     </section>
 
   </main>
+</div>
+
+<!-- PURCHASE MODAL -->
+<div id="purchaseModal" class="purchase-modal-overlay" style="display:none" onclick="if(event.target===this)closePurchaseModal()">
+  <div class="purchase-modal-box">
+    <button class="modal-close-btn" onclick="closePurchaseModal()"><i class="ph ph-x"></i></button>
+    <h2 style="margin-bottom:1.25rem;font-size:1.15rem;font-weight:800;color:var(--white);">השלם רכישה</h2>
+
+    <!-- Payment Buttons -->
+    <div class="payment-buttons">
+      <button class="btn-payment" id="btn-bank" onclick="showPayment('bank')">
+        <i class="ph ph-bank"></i> העברה בנקאית
+      </button>
+      <button class="btn-payment" id="btn-credit" onclick="showPayment('credit')">
+        <i class="ph ph-credit-card"></i> תשלום באשראי
+      </button>
+    </div>
+
+    <!-- Bank Transfer Panel -->
+    <div class="payment-panel" id="panel-bank">
+      <div class="bank-details">
+        <div class="bank-row"><span class="key">בנק</span><span class="val">הפועלים (12)</span></div>
+        <div class="bank-row"><span class="key">סניף</span><span class="val">123</span></div>
+        <div class="bank-row"><span class="key">מספר חשבון</span><span class="val">123456</span></div>
+        <div class="bank-row"><span class="key">על שם</span><span class="val">אלום-איל בע"מ</span></div>
+      </div>
+      <div class="order-code-box">
+        <div class="order-code-label">קוד הזמנה</div>
+        <div class="order-code-val" id="orderCodeDisplay">—</div>
+        <div class="order-code-hint">יש לציין קוד זה בביצוע ההעברה</div>
+      </div>
+      <button class="btn-wa-proof" onclick="sendProofWA()">
+        <i class="ph ph-whatsapp-logo"></i> שלח אסמכתא ב-WhatsApp
+      </button>
+    </div>
+
+    <!-- Credit Card Panel -->
+    <div class="payment-panel" id="panel-credit">
+      <div class="credit-form">
+        <div class="field">
+          <label>מספר כרטיס</label>
+          <input type="text" id="ccNum" placeholder="XXXX XXXX XXXX XXXX" maxlength="19" oninput="formatCC(this)">
+        </div>
+        <div class="credit-row">
+          <div class="field">
+            <label>תוקף</label>
+            <input type="text" id="ccExp" placeholder="MM/YY" maxlength="5" oninput="formatExp(this)">
+          </div>
+          <div class="field">
+            <label>CVV</label>
+            <input type="text" id="ccCvv" placeholder="CVV" maxlength="4">
+          </div>
+        </div>
+        <div class="field">
+          <label>שם על הכרטיס</label>
+          <input type="text" id="ccName" placeholder="שם מלא">
+        </div>
+        <button class="btn-submit-credit" onclick="submitCredit()">
+          <i class="ph ph-lock-key"></i> אישור תשלום מאובטח
+        </button>
+      </div>
+    </div>
+
+    <!-- Installer Matchmaking Banner -->
+    <div class="installer-banner" id="installerBanner" style="margin-top:1.5rem;">
+      <div class="installer-banner-icon"><i class="ph ph-wrench"></i></div>
+      <div class="installer-banner-text">
+        <strong>מחפש מתקין מוסמך?</strong>
+        <p>אנחנו נשדך אותך למתקין מאושר באזורך ללא עלות נוספת</p>
+      </div>
+      <div class="installer-buttons">
+        <button class="btn-installer-yes" onclick="matchInstaller()">כן, שדך לי מתקין</button>
+        <button class="btn-installer-no" onclick="dismissInstaller()">לא תודה</button>
+        <div class="installer-confirm" id="installerConfirm"><i class="ph ph-check-circle-fill"></i> נשלח בקשה בהצלחה!</div>
+      </div>
+    </div>
+
+    <!-- Confirm checkbox -->
+    <div class="confirm-order-block" id="confirmOrderBlock">
+      <div class="confirm-block-title"><i class="ph ph-seal-check"></i> אישור קריאה ותנאים</div>
+      <div class="confirm-checkbox-row">
+        <input type="checkbox" id="confirmCheckbox" onchange="togglePlaceOrderBtn()">
+        <label for="confirmCheckbox" class="confirm-checkbox-text">
+          <strong>קראתי ואישרתי את כל המידות, הצבעים והתוספות שנבחרו.</strong><br>
+          אני מבין כי לאחר האישור לא ניתן לבצע שינויים בהזמנה.<br>
+          קראתי ואישרתי את <a href="terms.html" target="_blank" style="color:var(--blue);text-decoration:underline;">תקנון האתר ומדיניות הפרטיות</a> של ALUM-IL.
+        </label>
+      </div>
+      <div id="placeOrderBtnWrap" style="display:none; margin-top:0.75rem;">
+        <button id="btnPlaceOrder" onclick="placeOrder()"
+          style="width:100%;padding:1rem;background:var(--green);color:#fff;border:none;border-radius:var(--radius);font-family:'Heebo',sans-serif;font-size:1.05rem;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;transition:opacity 0.2s ease;">
+          <i class="ph ph-check-circle"></i> שלח הזמנה לאישור
+        </button>
+      </div>
+      <div id="placeOrderMsg" class="save-order-msg" style="display:none;margin-top:0.75rem;"></div>
+    </div>
+
+  </div>
 </div>
 
 <!-- STICKY BAR -->
@@ -2526,15 +2573,23 @@ async function saveOrder() {
 
   const { subtotal, vat, grandTotal } = calcTotal();
   const code = getOrderCode();
+  const firstSys = state.systems[0] || {};
 
   const payload = {
     user_id:      user.id,
     order_code:   code,
     status:       'quote',
+    category:     'פרגולה',
+    sub_product:  'פרגולה',
+    width:        firstSys.width  || 0,
+    depth:        firstSys.depth  || 0,
     config:       JSON.parse(JSON.stringify(state)),
     subtotal,
     vat,
-    total_price:  grandTotal
+    total_price:  grandTotal,
+    shipping_method: 'standard',
+    is_read:      false,
+    vendor_name:  ''
   };
   console.log('[SAVE-QUOTE] Inserting into orders:', JSON.stringify(payload, null, 2));
 
@@ -2699,6 +2754,8 @@ window.updateMarkup          = function(val) { state.markup = Number(val) || 0; 
 window.updateCustomerName    = function(val) { state.customerName = val; };
 window.updateCustomerAddress = function(val) { state.customerAddress = val; };
 window.generateCustomerPDF   = generateCustomerPDF;
+window.openPurchaseModal  = function() { document.getElementById('purchaseModal').style.display='flex'; };
+window.closePurchaseModal = function() { document.getElementById('purchaseModal').style.display='none'; };
 window.setPackagingFee     = function(val) {
   state.packagingFee = val === '' ? null : Number(val);
   renderSummary();

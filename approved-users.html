@@ -424,7 +424,7 @@ async function init() {
 /* ── Fetch ── */
 async function loadUsers() {
   const { data, error } = await supabase
-    .from('user_crm_summary')
+    .from('profiles')
     .select('*')
     .eq('is_approved', true)
     .order('created_at', { ascending: false });
@@ -509,7 +509,7 @@ function renderTable(users) {
 /* ── Main row ── */
 function buildMainRow(u) {
   const typeArr   = toArr(u.user_type);
-  const specArr   = toArr(u.expertise || u.specialties);
+  const specArr   = toArr(u.specialties);
   const regionArr = toArr(u.regions);
 
   const typeBadges   = typeArr.map(v =>
@@ -576,7 +576,7 @@ function buildExpandRow(u) {
           <label><i class="ph ph-graduation-cap"></i> תחומי התמחות</label>
           <div class="spec-check-wrap">
             ${Object.entries(SPEC_LABELS).map(([k, lbl]) =>
-              `<label class="spec-ck"><input type="checkbox" name="spec-${u.id}" value="${k}"${toArr(u.expertise || u.specialties).includes(k) ? ' checked' : ''}><span>${lbl}</span></label>`
+              `<label class="spec-ck"><input type="checkbox" name="spec-${u.id}" value="${k}"${toArr(u.specialties).includes(k) ? ' checked' : ''}><span>${lbl}</span></label>`
             ).join('')}
           </div>
         </div>
@@ -693,7 +693,7 @@ window.saveUser = async function(id) {
     document.querySelectorAll(`input[name="spec-${id}"]:checked`)
   ).map(el => el.value);
 
-  const payload = { internal_notes: notes, expertise: specialties, specialties };
+  const payload = { internal_notes: notes, specialties };
   if (subSt)  payload.subscription_status  = subSt;
   if (expiry) payload.subscription_expiry  = expiry;
   if (rating) payload.rating = rating;
@@ -714,7 +714,6 @@ window.saveUser = async function(id) {
     Object.assign(allUsers[idx], {
       internal_notes: notes,
       specialties,
-      expertise: specialties,
       subscription_status: subSt || allUsers[idx].subscription_status,
       subscription_expiry: expiry || allUsers[idx].subscription_expiry,
       rating: rating || allUsers[idx].rating,
