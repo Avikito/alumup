@@ -392,6 +392,13 @@ async function init() {
   if (!user) { window.location.href = 'login.html'; return; }
   currentUserId = user.id;
 
+  // נקה עגלת פרופילים אם המשתמש הנוכחי שונה מהקודם
+  const savedCartUser = localStorage.getItem('alumCartUserId');
+  if (savedCartUser && savedCartUser !== user.id) {
+    localStorage.removeItem('alumCart');
+  }
+  localStorage.setItem('alumCartUserId', user.id);
+
   const [{ data: profile }, { data: adminRow }] = await Promise.all([
     supabase.from('profiles').select('is_approved').eq('id', user.id).maybeSingle(),
     supabase.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle()

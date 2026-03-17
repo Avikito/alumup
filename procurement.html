@@ -1930,7 +1930,8 @@
       alert('ייצוא מפרט ברגים — יוטמע בקרוב.');
     }
 
-    let cart = JSON.parse(localStorage.getItem('alumCart')) || {};
+    const _cartUid = localStorage.getItem('alumCartUserId') || 'guest';
+    let cart = JSON.parse(localStorage.getItem('alumCart_' + _cartUid)) || {};
     let currentPage = 1;
     const PAGE_SIZE = 30;
     let displayMode = 'grid'; // 'grid' | 'list'
@@ -2243,7 +2244,8 @@
     }
 
     function saveCart() {
-      localStorage.setItem('alumCart', JSON.stringify(cart));
+      const uid = localStorage.getItem('alumCartUserId') || 'guest';
+      localStorage.setItem('alumCart_' + uid, JSON.stringify(cart));
     }
 
     function removeFromCart(sku) {
