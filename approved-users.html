@@ -90,6 +90,10 @@
     .biz-cell .biz-meta { display:flex;align-items:center;gap:0.4rem;margin-top:0.2rem;flex-wrap:wrap; }
     .biz-cell .join-date { font-size:0.73rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.2rem; }
     .biz-cell .full-name { font-size:0.75rem;color:var(--silver-dark); }
+    .biz-cell .biz-contact { font-size:0.73rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;margin-top:0.15rem; }
+    .spec-check-wrap { display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.35rem; }
+    .spec-ck { display:inline-flex;align-items:center;gap:0.3rem;font-size:0.82rem;cursor:pointer;color:var(--industrial-silver); }
+    .spec-ck input { cursor:pointer; }
 
     /* ─── Tag badges ─── */
     .badge-wrap { display:flex;flex-wrap:wrap;gap:0.22rem; }
@@ -103,11 +107,12 @@
       background:rgba(26,95,170,0.09);color:#1a5faa;
       border:1px solid rgba(26,95,170,0.2);
     }
-    /* Specialties — teal */
-    .badge-spec {
-      background:rgba(13,148,136,0.09);color:#0d9488;
-      border:1px solid rgba(13,148,136,0.22);
-    }
+    /* Specialties — per-type colors */
+    .badge-spec-pergolas          { background:rgba(22,163,74,0.1);   color:#16a34a; border:1px solid rgba(22,163,74,0.25); }
+    .badge-spec-electric-pergolas { background:rgba(124,58,237,0.1);  color:#7c3aed; border:1px solid rgba(124,58,237,0.25); }
+    .badge-spec-zip-screens       { background:rgba(234,88,12,0.1);   color:#ea580c; border:1px solid rgba(234,88,12,0.25); }
+    .badge-spec-windows-shutters  { background:rgba(3,105,161,0.1);   color:#0369a1; border:1px solid rgba(3,105,161,0.25); }
+    .badge-spec-gates-fences      { background:rgba(185,28,28,0.1);   color:#b91c1c; border:1px solid rgba(185,28,28,0.25); }
     /* Regions — amber */
     .badge-region {
       background:rgba(217,119,6,0.09);color:#b45309;
@@ -273,12 +278,11 @@
         </select>
         <select class="filter-select" id="filterSpec" onchange="applyFilters()">
           <option value="">כל ההתמחויות</option>
-          <option value="luxury">וילות ויוקרה</option>
-          <option value="buildings">בנייה רוויה</option>
-          <option value="renovations">שיפוצים</option>
-          <option value="curtain-walls">קירות מסך</option>
-          <option value="fences">גדרות ושערים</option>
-          <option value="new-biz">עסק בהקמה</option>
+          <option value="pergolas">פרגולות</option>
+          <option value="electric-pergolas">פרגולות חשמליות</option>
+          <option value="zip-screens">מסכי זיפ</option>
+          <option value="windows-shutters">חלונות ותריסים</option>
+          <option value="gates-fences">שערים וגדרות</option>
         </select>
         <span class="count-badge" id="countBadge">טוען...</span>
       </div>
@@ -355,12 +359,20 @@ const TYPE_LABELS = {
   entrepreneur: 'יזם',
 };
 const SPEC_LABELS = {
-  luxury:         'וילות ויוקרה',
-  buildings:      'בנייה רוויה',
-  renovations:    'שיפוצים',
-  'curtain-walls':'קירות מסך',
-  fences:         'גדרות ושערים',
-  'new-biz':      'עסק בהקמה',
+  pergolas:            'פרגולות',
+  'electric-pergolas': 'פרגולות חשמליות',
+  'zip-screens':       'מסכי זיפ',
+  'windows-shutters':  'חלונות ותריסים',
+  'gates-fences':      'שערים וגדרות',
+};
+/* Map old DB keys → new CSS/display keys (backward compat) */
+const SPEC_NORMALIZE = {
+  luxury:          'electric-pergolas',
+  buildings:       'windows-shutters',
+  fences:          'gates-fences',
+  renovations:     'pergolas',
+  'curtain-walls': 'zip-screens',
+  'new-biz':       'pergolas',
 };
 const REGION_LABELS = {
   north:      'צפון',
@@ -405,14 +417,11 @@ async function init() {
 
 /* ── Fetch ── */
 async function loadUsers() {
-  console.log('[CRM] loading approved users...');
   const { data, error } = await supabase
-    .from('profiles')
+    .from('user_crm_summary')
     .select('*')
     .eq('is_approved', true)
     .order('created_at', { ascending: false });
-
-  console.log('[CRM] rows:', data?.length ?? 0, '| error:', error);
 
   if (error) {
     document.getElementById('crmBody').innerHTML =
@@ -494,13 +503,15 @@ function renderTable(users) {
 /* ── Main row ── */
 function buildMainRow(u) {
   const typeArr   = toArr(u.user_type);
-  const specArr   = toArr(u.specialties);
+  const specArr   = toArr(u.expertise || u.specialties);
   const regionArr = toArr(u.regions);
 
   const typeBadges   = typeArr.map(v =>
     `<span class="badge badge-type">${TYPE_LABELS[v]||v}</span>`).join('');
-  const specBadges   = specArr.map(v =>
-    `<span class="badge badge-spec">${SPEC_LABELS[v]||v}</span>`).join('');
+  const specBadges   = specArr.map(v => {
+    const cssKey = SPEC_NORMALIZE[v] || v;
+    return `<span class="badge badge-spec-${cssKey}">${SPEC_LABELS[v] || SPEC_LABELS[cssKey] || v}</span>`;
+  }).join('');
   const regionBadges = regionArr.map(v =>
     `<span class="badge badge-region">${REGION_LABELS[v]||v}</span>`).join('');
 
@@ -521,6 +532,7 @@ function buildMainRow(u) {
         <span class="full-name">${u.full_name || ''}</span>
         ${u.created_at ? `<span class="join-date"><i class="ph ph-calendar-blank"></i>${formatDate(u.created_at)}</span>` : ''}
       </div>
+      ${u.phone ? `<div class="biz-contact"><i class="ph ph-phone"></i>${u.phone}</div>` : ''}
     </td>
     <td><div class="badge-wrap">${typeBadges||'<span style="color:var(--silver-dark);font-size:0.78rem;">—</span>'}</div></td>
     <td><div class="badge-wrap">${specBadges||'<span style="color:var(--silver-dark);font-size:0.78rem;">—</span>'}</div></td>
@@ -555,8 +567,17 @@ function buildExpandRow(u) {
       <div class="expand-panel">
 
         <div class="ep-field" style="grid-column:1/-1;">
-          <label><i class="ph ph-note-pencil"></i> הערות פנימיות</label>
-          <textarea id="notes-${u.id}" rows="2">${notes}</textarea>
+          <label><i class="ph ph-graduation-cap"></i> תחומי התמחות</label>
+          <div class="spec-check-wrap">
+            ${Object.entries(SPEC_LABELS).map(([k, lbl]) =>
+              `<label class="spec-ck"><input type="checkbox" name="spec-${u.id}" value="${k}"${toArr(u.expertise || u.specialties).includes(k) ? ' checked' : ''}><span>${lbl}</span></label>`
+            ).join('')}
+          </div>
+        </div>
+
+        <div class="ep-field" style="grid-column:1/-1;">
+          <label><i class="ph ph-note-pencil"></i> הערות פנימיות <span style="font-size:0.68rem;color:var(--silver-dark);margin-right:0.4rem;"><i class="ph ph-lock-key"></i> מחיקה מוגנת קוד 1503</span></label>
+          <textarea id="notes-${u.id}" rows="3" data-original="${notes}">${notes}</textarea>
         </div>
 
         <div class="ep-field">
@@ -581,9 +602,9 @@ function buildExpandRow(u) {
         </div>
 
         <div class="ep-field">
-          <label><i class="ph ph-file-text"></i> סה"כ הצעות מחיר</label>
-          <div class="ep-stat">${quotes}</div>
-          <div class="ep-stat-sub">מצטבר</div>
+          <label><i class="ph ph-shopping-cart"></i> הזמנות במערכת</label>
+          <div class="ep-stat">${u.total_orders ?? 0}</div>
+          <div class="ep-stat-sub">₪${Number(u.total_spent ?? 0).toLocaleString('he-IL')}</div>
         </div>
 
         <div class="ep-field">
@@ -608,14 +629,17 @@ function buildExpandRow(u) {
   </tr>`;
 }
 
-/* ── Star rating ── */
-window.setRating = function(id, n) {
+/* ── Star rating (immediate save) ── */
+window.setRating = async function(id, n) {
   document.getElementById(`rating-${id}`).value = n;
   const container = document.getElementById(`stars-${id}`);
   if (!container) return;
   container.querySelectorAll('.star-btn').forEach(btn => {
     btn.classList.toggle('lit', parseInt(btn.dataset.n) <= n);
   });
+  await supabase.from('profiles').update({ rating: n }).eq('id', id);
+  const idx = allUsers.findIndex(u => u.id === id);
+  if (idx !== -1) allUsers[idx].rating = n;
 };
 
 /* ── Toggle expand ── */
@@ -635,12 +659,35 @@ window.saveUser = async function(id) {
   btn.disabled = true;
   btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
 
-  const notes  = document.getElementById(`notes-${id}`)?.value  ?? '';
+  const notesEl      = document.getElementById(`notes-${id}`);
+  const originalNotes = notesEl?.dataset.original || '';
+  let   notes         = notesEl?.value ?? '';
+
+  /* Deletion protection: PIN required if existing text was removed */
+  if (originalNotes && !notes.includes(originalNotes)) {
+    const code = prompt('קוד אישור נדרש למחיקת הערות קיימות:');
+    if (code !== '1503') {
+      if (code !== null) alert('קוד שגוי — ההערות לא שונו');
+      notes = originalNotes;
+      if (notesEl) notesEl.value = originalNotes;
+    }
+  }
+
+  /* Auto timestamp when notes are changed */
+  if (notes && notes !== originalNotes) {
+    const now = new Date();
+    const ts = `[${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}] `;
+    if (!notes.trimStart().startsWith('[')) notes = ts + notes;
+  }
+
   const subSt  = document.getElementById(`sub-${id}`)?.value    ?? '';
   const expiry = document.getElementById(`expiry-${id}`)?.value ?? null;
   const rating = parseInt(document.getElementById(`rating-${id}`)?.value) || null;
+  const specialties = Array.from(
+    document.querySelectorAll(`input[name="spec-${id}"]:checked`)
+  ).map(el => el.value);
 
-  const payload = { internal_notes: notes };
+  const payload = { internal_notes: notes, expertise: specialties, specialties };
   if (subSt)  payload.subscription_status  = subSt;
   if (expiry) payload.subscription_expiry  = expiry;
   if (rating) payload.rating = rating;
@@ -660,11 +707,15 @@ window.saveUser = async function(id) {
   if (idx !== -1) {
     Object.assign(allUsers[idx], {
       internal_notes: notes,
+      specialties,
+      expertise: specialties,
       subscription_status: subSt || allUsers[idx].subscription_status,
       subscription_expiry: expiry || allUsers[idx].subscription_expiry,
       rating: rating || allUsers[idx].rating,
     });
   }
+  /* update textarea baseline so re-saves don't re-trigger timestamp */
+  if (notesEl) { notesEl.dataset.original = notes; notesEl.value = notes; }
 
   updateStats();
   const ok = document.getElementById(`save-ok-${id}`);

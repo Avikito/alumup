@@ -191,6 +191,7 @@
         <button class="filter-btn" onclick="setFilter('ready_for_delivery')">מוכן למסירה</button>
         <button class="filter-btn" onclick="setFilter('delivered')">נמסר</button>
         <button class="filter-btn" onclick="setFilter('cancelled')">בוטל</button>
+        <button class="filter-btn" onclick="setFilter('dispute')">מחלוקת</button>
         <input class="search-input" type="text" placeholder="חיפוש קוד / שם רוכש..." id="searchInput" oninput="renderTable()">
         <select class="search-input" id="typeFilter" onchange="renderTable()" style="min-width:140px;">
           <option value="">כל הסוגים</option>
@@ -264,6 +265,15 @@ const supabase = createClient(
 
 let allOrders = [];
 let currentFilter = 'all';
+let statusFlow = {}; // { status_key: step_order } — loaded from DB
+const FALLBACK_STEPS = {
+  quote: 1, draft: 2, pending: 3,
+  technical_review: 4, in_production: 5,
+  ready_for_delivery: 6, delivered: 7,
+  cancelled: 99, dispute: 100
+};
+const SPECIAL_STATUSES = ['cancelled', 'dispute'];
+const ADMIN_PWD = 'ALUM2026';
 
 function updateUnreadBadge() {
   const unread = allOrders.filter(o => o.is_read === false).length;
@@ -322,6 +332,11 @@ async function init() {
   }
 
   document.getElementById('adminSubtitle').textContent = `מחובר כ-${user.email}`;
+
+  /* Load status flow rules */
+  const { data: sfData } = await supabase.from('status_flow').select('status, step_order');
+  if (sfData) sfData.forEach(r => { statusFlow[r.status] = r.step_order; });
+
   await loadOrders();
 }
 
@@ -329,8 +344,8 @@ async function loadOrders() {
   console.log('[ALUM-IL] loadOrders() — querying orders...');
 
   const { data, error } = await supabase
-    .from('orders')
-    .select('id, order_code, created_at, status_updated_at, status, category, sub_product, subtotal, total_price, is_read, shipping_method, vendor_name, user_id, config')
+    .from('orders_with_names')
+    .select('id, order_code, created_at, status_updated_at, status, category, sub_product, subtotal, total_price, is_read, shipping_method, vendor_name, customer_name, user_id, config')
     .order('created_at', { ascending: false });
 
   console.log('[ALUM-IL] orders result:', data, error);
@@ -392,7 +407,7 @@ function renderTable() {
     // specific tab: show only matching status
     if (currentFilter !== 'all' && o.status !== currentFilter) return false;
     // search filter
-    if (search && !o.id.toLowerCase().includes(search) && !(o.vendor_name||'').toLowerCase().includes(search) && !(o.order_code||'').toLowerCase().includes(search)) return false;
+    if (search && !o.id.toLowerCase().includes(search) && !(o.customer_name||o.vendor_name||'').toLowerCase().includes(search) && !(o.order_code||'').toLowerCase().includes(search)) return false;
     // category/type filter
     if (typeVal && !(o.category||'').toLowerCase().includes(typeVal)) return false;
     return true;
@@ -422,7 +437,7 @@ function renderTable() {
 
     return `<tr class="${rowClass}">
       <td class="order-code-cell">${getCode(o)}</td>
-      <td><div style="font-weight:600">${o.vendor_name || '—'}</div></td>
+      <td><div style="font-weight:600">${o.customer_name || o.vendor_name || '—'}</div></td>
       <td>${getProductType(o)}</td>
       <td>${getSubProduct(o)}</td>
       <td style="font-weight:700;color:var(--electric-blue)">${price}</td>
@@ -439,6 +454,7 @@ function renderTable() {
             <option value="ready_for_delivery"  ${o.status==='ready_for_delivery'  ?'selected':''}>מוכן למסירה</option>
             <option value="delivered"           ${o.status==='delivered'           ?'selected':''}>נמסר</option>
             <option value="cancelled"           ${o.status==='cancelled'           ?'selected':''}>בוטל</option>
+            <option value="dispute"             ${o.status==='dispute'             ?'selected':''}>מחלוקת</option>
           </select>
           <div class="save-indicator" id="si-${o.id}"></div>
         </div>
@@ -454,18 +470,35 @@ function renderTable() {
 
 /* ── UPDATE STATUS ── */
 window.updateStatus = async function(sel) {
-  const id = sel.dataset.id;
-  const newStatus = sel.value;
+  const id         = sel.dataset.id;
+  const newStatus  = sel.value;
   const prevStatus = sel.dataset.prev;
-  const si = document.getElementById(`si-${id}`);
+  const si         = document.getElementById(`si-${id}`);
 
-  // Password gate for cancellation
-  if (newStatus === 'cancelled') {
-    const pwd = window.prompt('ביטול הזמנה מצריך אישור מנהל.\nהכנס סיסמה:');
-    if (pwd !== 'ALUM123') {
-      sel.value = prevStatus; // revert
-      si.innerHTML = '<span class="save-err">אישור בוטל</span>';
-      setTimeout(() => { if(si) si.innerHTML = ''; }, 2000);
+  const prevStep = statusFlow[prevStatus] ?? FALLBACK_STEPS[prevStatus] ?? 0;
+  const newStep  = statusFlow[newStatus]  ?? FALLBACK_STEPS[newStatus]  ?? 0;
+
+  const isEnteringSpecial = SPECIAL_STATUSES.includes(newStatus);
+  const isExitingSpecial  = SPECIAL_STATUSES.includes(prevStatus);
+  const isForward         = newStep === prevStep + 1;
+
+  /* Determine if password is needed */
+  let needsPassword = false;
+  if (isExitingSpecial) {
+    needsPassword = true; // exiting cancelled/dispute always needs password
+  } else if (!isEnteringSpecial && !isForward) {
+    needsPassword = true; // backward or skipping steps
+  }
+
+  if (needsPassword) {
+    const reason = isExitingSpecial
+      ? `יציאה מסטטוס "${prevStatus === 'cancelled' ? 'בוטל' : 'מחלוקת'}" מצריכה אישור.`
+      : 'שינוי שלב שאינו רצוף מצריך אישור מנהל.';
+    const pwd = window.prompt(`${reason}\nהכנס סיסמה:`);
+    if (pwd !== ADMIN_PWD) {
+      sel.value = prevStatus;
+      si.innerHTML = '<span class="save-err"><i class="ph ph-lock"></i> סיסמה שגויה</span>';
+      setTimeout(() => { if (si) si.innerHTML = ''; }, 2500);
       return;
     }
   }
@@ -474,27 +507,25 @@ window.updateStatus = async function(sel) {
   si.innerHTML = '<i class="ph ph-circle-notch spin"></i>';
 
   const now = new Date().toISOString();
-  const { error } = await supabase.from('orders')
-    .update({ status: newStatus, status_updated_at: now })
+  const { error, count } = await supabase.from('orders')
+    .update({ status: newStatus, status_updated_at: now }, { count: 'exact' })
     .eq('id', id);
 
   sel.classList.remove('saving');
-  if (error) {
-    console.error('[STATUS] update failed:', error.code, error.message);
-    si.innerHTML = `<span class="save-err"><i class="ph ph-warning"></i> ${error.message}</span>`;
-    setTimeout(() => { if(si) si.innerHTML = ''; }, 4000);
+  if (error || !count) {
+    sel.value = prevStatus; // revert — DB didn't save
+    const msg = error ? error.message : 'שינוי לא נשמר — בדוק הרשאות ב-Supabase';
+    si.innerHTML = `<span class="save-err"><i class="ph ph-warning"></i> ${msg}</span>`;
+    setTimeout(() => { if (si) si.innerHTML = ''; }, 4000);
   } else {
-    // update local cache
     const o = allOrders.find(x => x.id === id);
     if (o) { o.status = newStatus; o.status_updated_at = now; }
     sel.dataset.prev = newStatus;
-    // Re-render table so row moves to correct filter immediately
     renderTable();
-    // Show brief success indicator (after re-render the indicator span may be re-created)
     const siAfter = document.getElementById(`si-${id}`);
     if (siAfter) {
       siAfter.innerHTML = '<span class="save-ok"><i class="ph ph-check"></i> נשמר</span>';
-      setTimeout(() => { if(siAfter) siAfter.innerHTML = ''; }, 2000);
+      setTimeout(() => { if (siAfter) siAfter.innerHTML = ''; }, 2000);
     }
   }
 };
