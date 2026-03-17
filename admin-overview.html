@@ -172,6 +172,12 @@
           <div class="stat-icon"><i class="ph ph-currency-circle-dollar"></i></div>
           <div class="stat-value" id="statRevenue">—</div>
           <div class="stat-label">מחזור כולל</div>
+          <div style="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;">
+            <input type="date" id="revenueFrom" style="font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid #ccc;">
+            <span style="font-size:11px">עד</span>
+            <input type="date" id="revenueTo" style="font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid #ccc;">
+            <button onclick="applyRevenuePicker()" style="font-size:11px;padding:2px 8px;border-radius:6px;background:#2e7d32;color:#fff;border:none;cursor:pointer;">הצג</button>
+          </div>
         </div>
         <div class="stat-card purple">
           <div class="stat-icon"><i class="ph ph-factory"></i></div>
@@ -247,30 +253,56 @@ async function init() {
   await Promise.all([loadStats(), loadActivity()]);
 }
 
+async function loadRevenue(from, to) {
+  let revenue = 0;
+  if (from && to) {
+    const { data } = await supabase
+      .from('totals_ledger')
+      .select('total_production_revenue')
+      .gte('entry_date', from)
+      .lte('entry_date', to);
+    revenue = (data || []).reduce((s, r) => s + (r.total_production_revenue || 0), 0);
+  } else {
+    const today = new Date().toISOString().slice(0, 10);
+    const { data } = await supabase
+      .from('totals_ledger')
+      .select('total_production_revenue')
+      .eq('entry_date', today)
+      .maybeSingle();
+    revenue = data?.total_production_revenue || 0;
+  }
+  document.getElementById('statRevenue').textContent = '₪' + revenue.toLocaleString('he-IL');
+}
+
+async function applyRevenuePicker() {
+  const from = document.getElementById('revenueFrom').value;
+  const to   = document.getElementById('revenueTo').value;
+  if (from && to) await loadRevenue(from, to);
+}
+window.applyRevenuePicker = applyRevenuePicker;
+
 async function loadStats() {
   const [pendingRes, ordersRes] = await Promise.all([
-    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
-    supabase.from('orders').select('id, grand_total, status')
+    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_approved', false),
+    supabase.from('orders_with_names').select('id, status')
   ]);
 
-  // Pending users
   document.getElementById('statPending').textContent = pendingRes.count ?? '—';
 
   const orders = ordersRes.data || [];
   document.getElementById('statOrders').textContent = orders.length;
 
-  const revenue = orders.reduce((sum, o) => sum + (o.grand_total || 0), 0);
-  document.getElementById('statRevenue').textContent = '₪' + revenue.toLocaleString('he-IL');
-
   const inProd = orders.filter(o => o.status === 'in_production').length;
   document.getElementById('statProduction').textContent = inProd;
+
+  await loadRevenue();
 }
 
 async function loadActivity() {
   const ACTIVE_STATUSES = ['pending', 'technical_review', 'in_production', 'ready_for_delivery'];
 
   const { data, error } = await supabase
-    .from('orders')
+    .from('orders_with_names')
     .select('*')
     .in('status', ACTIVE_STATUSES)
     .order('updated_at', { ascending: false })
