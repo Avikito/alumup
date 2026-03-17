@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
   <meta charset="UTF-8">
@@ -246,7 +246,7 @@ async function loadQuotes() {
   // Query 2: orders table with status quote/draft (procurement orders) — no profiles JOIN to avoid RLS exclusion
   const { data: orderQuotes, error: ordersErr } = await supabase
     .from('orders')
-    .select('id, created_at, order_code, status, subtotal, total_price, config, user_id, vendor_name, category')
+    .select('id, created_at, order_code, status, subtotal, total_price, config, user_id, vendor_name, category, profiles!user_id(full_name, business_name, phone)')
     .in('status', ['quote', 'draft'])
     .order('created_at', { ascending: false });
 
@@ -269,7 +269,7 @@ async function loadQuotes() {
     user_id: o.user_id,
     vendor_name: o.vendor_name,
     category: o.category,
-    profiles: null,
+    profiles: o.profiles || null,
   }));
 
   allQuotes = [...(quotesData || []), ...normalizedOrders]
