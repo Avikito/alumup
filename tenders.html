@@ -461,7 +461,7 @@
 
   <!-- SIDEBAR -->
   <aside class="dashboard-sidebar">
-    <div style="color:var(--silver-dark);font-size:0.85rem;font-weight:700;margin-bottom:1rem;padding-right:1rem;">תפריט פעולות</div>
+    <div class="sidebar-section-label" style="margin-bottom:1rem;">תפריט פעולות</div>
     <ul class="dashboard-nav">
       <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
       <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
@@ -471,6 +471,23 @@
       <li><a href="academy.html"><i class="ph ph-graduation-cap"></i> מכללת ALUM-IL</a></li>
       <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
     </ul>
+
+    <div class="sidebar-section-divider"></div>
+    <div class="sidebar-section-label">כלים</div>
+    <ul class="dashboard-nav">
+      <li><a href="configurator.html"><i class="ph ph-sliders"></i> קונפיגורטור פרגולות</a></li>
+      <li><a href="window-configurator.html"><i class="ph ph-browser"></i> קונפיגורטור חלונות</a></li>
+      <li><a href="kits.html"><i class="ph ph-package"></i> קיטים</a></li>
+      <li><a href="tenders.html" class="active"><i class="ph ph-briefcase"></i> מכרזים</a></li>
+    </ul>
+
+    <div class="sidebar-user-footer">
+      <div class="sidebar-user-name" id="sidebarUserName"></div>
+      <div class="sidebar-user-email" id="sidebarUserEmail"></div>
+      <button class="sidebar-logout-btn" id="sidebarLogoutBtn">
+        <i class="ph ph-sign-out"></i> יציאה
+      </button>
+    </div>
   </aside>
 
   <main class="tenders-main">
@@ -831,6 +848,28 @@ function filterTenders(category, btn) {
   const labels = { all: 'הזדמנויות', gov: 'מכרזים ממשלתיים', public: 'מכרזים ציבוריים', arch: 'מכרזי אדריכלים', biz: 'מכרזים עסקיים', private: 'מכרזים פרטיים' };
   document.getElementById('tenders-count').textContent = visible + ' ' + (labels[category] || 'הזדמנויות');
 }
+</script>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+(async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const n = document.getElementById('sidebarUserName');
+      const e = document.getElementById('sidebarUserEmail');
+      if (n) n.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+      if (e) e.textContent = user.email || '';
+    }
+  } catch(err) {}
+})();
+document.getElementById('sidebarLogoutBtn')?.addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+});
 </script>
 </body>
 </html>

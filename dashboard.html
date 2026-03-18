@@ -250,6 +250,23 @@
           <a href="admin-overview.html"><i class="ph ph-shield-star"></i> פאנל ניהול</a>
         </li>
       </ul>
+
+      <div class="sidebar-section-divider"></div>
+      <div class="sidebar-label">כלים</div>
+      <ul class="dashboard-nav">
+        <li><a href="configurator.html"><i class="ph ph-sliders"></i> קונפיגורטור פרגולות</a></li>
+        <li><a href="window-configurator.html"><i class="ph ph-browser"></i> קונפיגורטור חלונות</a></li>
+        <li><a href="kits.html"><i class="ph ph-package"></i> קיטים</a></li>
+        <li><a href="tenders.html"><i class="ph ph-briefcase"></i> מכרזים</a></li>
+      </ul>
+
+      <div class="sidebar-user-footer">
+        <div class="sidebar-user-name" id="dashSidebarUserName"></div>
+        <div class="sidebar-user-email" id="dashSidebarUserEmail"></div>
+        <button class="sidebar-logout-btn" onclick="handleLogout()">
+          <i class="ph ph-sign-out"></i> יציאה
+        </button>
+      </div>
     </aside>
 
     <main class="dashboard-content">
@@ -407,6 +424,11 @@ async function init() {
   if (profile?.is_blocked && !adminRow) { await supabase.auth.signOut(); window.location.href = 'login.html'; return; }
 
   document.getElementById('userEmail').textContent = user.email;
+
+  const sidebarName = document.getElementById('dashSidebarUserName');
+  const sidebarEmail = document.getElementById('dashSidebarUserEmail');
+  if (sidebarName) sidebarName.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+  if (sidebarEmail) sidebarEmail.textContent = user.email || '';
 
   if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
 

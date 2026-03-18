@@ -113,8 +113,49 @@
     }
     .btn-logout:hover { border-color: var(--red); color: var(--red); background: rgba(220,38,38,0.05); }
 
+    /* ── BODY LAYOUT ── */
+    .cfg-body { display: flex; flex: 1; min-height: calc(100vh - 60px); }
+
+    /* ── SIDEBAR ── */
+    .cfg-sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      padding: 1.25rem 0.9rem 1.25rem;
+      display: flex; flex-direction: column; gap: 0.15rem;
+      position: sticky; top: 60px;
+      height: calc(100vh - 60px); overflow-y: auto;
+    }
+    .cfg-sidebar .sidebar-section-label {
+      font-size: 0.68rem; font-weight: 700; color: var(--silver-light);
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 0 0.6rem; margin-bottom: 0.5rem; margin-top: 0.25rem;
+    }
+    .cfg-sidebar .snav { list-style: none; display: flex; flex-direction: column; gap: 0.1rem; flex: 1; }
+    .cfg-sidebar .snav a {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 0.7rem; border-radius: var(--radius);
+      font-size: 0.85rem; font-weight: 500; color: var(--silver);
+      text-decoration: none; transition: all var(--trans);
+    }
+    .cfg-sidebar .snav a:hover { background: var(--blue-dim); color: var(--blue); }
+    .cfg-sidebar .snav a.active-page { background: var(--blue-dim); color: var(--blue); font-weight: 700; }
+    .cfg-sidebar .snav-divider { height: 1px; background: var(--border); margin: 0.35rem 0.6rem; }
+    .cfg-sidebar-footer {
+      margin-top: auto; padding: 0.85rem 0.6rem 0.25rem;
+      border-top: 1px solid var(--border);
+    }
+    .cfg-sidebar-footer .sidebar-user-name {
+      font-size: 0.82rem; font-weight: 700; color: var(--ink); margin-bottom: 0.15rem;
+    }
+    .cfg-sidebar-footer .sidebar-user-email {
+      font-size: 0.72rem; color: var(--silver); margin-bottom: 0.65rem;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+
     /* ── MAIN ── */
-    .cfg-main { max-width: 880px; margin: 0 auto; padding: 2.25rem 1.5rem; position: relative; z-index: 1; }
+    .cfg-main { flex: 1; overflow-y: auto; }
+    .cfg-main-inner { max-width: 880px; margin: 0 auto; padding: 2.25rem 1.5rem; position: relative; z-index: 1; }
 
     /* ── SECTION ── */
     .section {
@@ -623,13 +664,13 @@
 
     /* ── STICKY BAR ── */
     .sticky-bar {
-      position: fixed; bottom: 0; left: 0; right: 0; z-index: 400;
+      position: fixed; bottom: 0; left: 0; right: 220px; z-index: 400;
       background: rgba(220,228,242,0.9);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border-top: 1px solid var(--border);
       box-shadow: 0 -4px 28px rgba(0,50,120,0.12);
-      padding: 0 2rem; height: 64px;
+      padding: 0 2rem; height: 56px;
       display: flex; align-items: center; justify-content: space-between;
     }
     .sticky-info { display: flex; align-items: baseline; gap: 0.75rem; }
@@ -677,12 +718,13 @@
     /* ── RESPONSIVE ── */
     @media (max-width: 640px) {
       .cfg-header { padding: 0 1rem; }
-      .cfg-main { padding: 1rem; }
+      .cfg-sidebar { display: none; }
+      .cfg-main-inner { padding: 1rem; }
       .field-row, .field-row.cols3 { grid-template-columns: 1fr; }
       .preview-row { grid-template-columns: 1fr; }
       .action-btns { flex-direction: column; }
       .btn-primary, .btn-secondary, .btn-ghost { width: 100%; justify-content: center; }
-      .sticky-bar { padding: 0 1rem; }
+      .sticky-bar { padding: 0 1rem; right: 0; }
     }
   </style>
 </head>
@@ -703,7 +745,40 @@
   </button>
 </header>
 
-<div class="cfg-main">
+<div class="cfg-body">
+
+<!-- SIDEBAR — אזור אישי -->
+<aside class="cfg-sidebar">
+  <div class="sidebar-section-label">איזור אישי</div>
+  <ul class="snav">
+    <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
+    <li><a href="dashboard.html"><i class="ph ph-note-pencil"></i> הצעות שמורות</a></li>
+    <li><a href="dashboard.html"><i class="ph ph-factory"></i> הזמנות בתהליך</a></li>
+    <li><a href="dashboard.html"><i class="ph ph-clock-counter-clockwise"></i> היסטוריה</a></li>
+    <li><a href="dashboard.html"><i class="ph ph-files"></i> מסמכים</a></li>
+    <li><a href="dashboard.html"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+  </ul>
+  <div class="snav-divider"></div>
+  <div class="sidebar-section-label" style="margin-top:0.5rem;">כלים</div>
+  <ul class="snav">
+    <li><a href="configurator.html"><i class="ph ph-sun-horizon"></i> קונפיגורטור פרגולות</a></li>
+    <li><a href="window-configurator.html" class="active-page"><i class="ph ph-frame-corners"></i> קונפיגורטור חלונות</a></li>
+    <li><a href="kits.html"><i class="ph ph-package"></i> קיטים</a></li>
+    <li><a href="tenders.html"><i class="ph ph-scroll"></i> מכרזים</a></li>
+  </ul>
+  <div class="cfg-sidebar-footer">
+    <div class="sidebar-user-name" id="cfgSidebarUserName"></div>
+    <div class="sidebar-user-email" id="cfgSidebarUserEmail"></div>
+    <button onclick="handleLogout()"
+      style="width:100%;padding:0.4rem 0.5rem;border:1px solid var(--border);border-radius:var(--radius);background:none;color:var(--silver);font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.4rem;transition:all var(--trans);"
+      onmouseover="this.style.borderColor='var(--red)';this.style.color='var(--red)'"
+      onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--silver)'">
+      <i class="ph ph-sign-out"></i> יציאה
+    </button>
+  </div>
+</aside>
+
+<div class="cfg-main"><div class="cfg-main-inner">
 
   <!-- SECTION 1: פרטי פרויקט -->
   <div class="section">
@@ -793,7 +868,8 @@
     </div>
   </div>
 
-</div>
+</div></div><!-- /cfg-main-inner /cfg-main -->
+</div><!-- /cfg-body -->
 
 <!-- STICKY BAR -->
 <div class="sticky-bar">
@@ -1843,6 +1919,19 @@ async function init() {
 }
 
 init();
+
+// ── SIDEBAR USER INFO ──
+(async () => {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      const nm = document.getElementById('cfgSidebarUserName');
+      const em = document.getElementById('cfgSidebarUserEmail');
+      if (nm) nm.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+      if (em) em.textContent = user.email || '';
+    }
+  } catch(e) {}
+})();
 
 // ── BLIND MODAL ──
 let _blindModalId = null;

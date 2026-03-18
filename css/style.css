@@ -532,6 +532,38 @@ select.form-control {
 }
 .dashboard-nav i { font-size: 1.15rem; }
 
+/* ── Sidebar tools section & user footer (shared) ── */
+.sidebar-section-divider {
+  height: 1px; background: var(--border); margin: 1rem 0;
+}
+.sidebar-section-label {
+  font-size: 0.72rem; font-weight: 700; color: var(--silver-dark);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 0 1rem; margin-bottom: 0.5rem;
+}
+.sidebar-user-footer {
+  margin-top: auto; padding-top: 1rem;
+  border-top: 1px solid var(--border);
+  display: flex; flex-direction: column; gap: 0.45rem;
+}
+.sidebar-user-name {
+  font-size: 0.88rem; font-weight: 700; color: var(--text, #1e2a3a);
+  padding: 0 0.25rem;
+}
+.sidebar-user-email {
+  font-size: 0.76rem; color: var(--silver-dark);
+  padding: 0 0.25rem; word-break: break-all;
+}
+.sidebar-logout-btn {
+  display: flex; align-items: center; gap: 0.4rem;
+  padding: 0.45rem 0.75rem; margin-top: 0.25rem;
+  background: transparent; border: 1.5px solid var(--border);
+  border-radius: 8px; font-family: 'Heebo', sans-serif;
+  font-size: 0.85rem; font-weight: 600; color: var(--silver-dark);
+  cursor: pointer; transition: all 0.18s; width: 100%;
+}
+.sidebar-logout-btn:hover { border-color: var(--electric-blue, #1a5faa); color: var(--electric-blue, #1a5faa); }
+
 .dashboard-content {
   flex: 1;
   padding: 3rem 4rem;
