@@ -82,6 +82,35 @@
     .orders-table tr.row-dispute td { background:rgba(234,88,12,0.05); }
     .orders-table tr.row-dispute:hover td { background:rgba(234,88,12,0.1); }
 
+    /* ── STATUS ROW COLORS ── */
+    .orders-table tr.row-s-pending td              { background:#FFF4E5; color:#663C00; }
+    .orders-table tr.row-s-pending td:first-child  { border-right:3px solid #FFB74D; }
+    .orders-table tr.row-s-pending:hover td        { background:#FFE0B2; }
+
+    .orders-table tr.row-s-technical_review td             { background:#F3E5F5; color:#4A148C; }
+    .orders-table tr.row-s-technical_review td:first-child { border-right:3px solid #CE93D8; }
+    .orders-table tr.row-s-technical_review:hover td       { background:#E1BEE7; }
+
+    .orders-table tr.row-s-in_production td             { background:#E3F2FD; color:#0D47A1; }
+    .orders-table tr.row-s-in_production td:first-child { border-right:3px solid #64B5F6; }
+    .orders-table tr.row-s-in_production:hover td       { background:#BBDEFB; }
+
+    .orders-table tr.row-s-ready_for_delivery td             { background:#C8E6C9; color:#1B5E20; }
+    .orders-table tr.row-s-ready_for_delivery td:first-child { border-right:3px solid #81C784; }
+    .orders-table tr.row-s-ready_for_delivery:hover td       { background:#A5D6A7; }
+
+    .orders-table tr.row-s-delivered td             { background:#ECEFF1; color:#455A64; }
+    .orders-table tr.row-s-delivered td:first-child { border-right:3px solid #B0BEC5; }
+    .orders-table tr.row-s-delivered:hover td       { background:#CFD8DC; }
+
+    .orders-table tr.row-s-cancelled td             { background:#FFEBEE; color:#B71C1C; }
+    .orders-table tr.row-s-cancelled td:first-child { border-right:3px solid #EF5350; }
+    .orders-table tr.row-s-cancelled:hover td       { background:#FFCDD2; }
+
+    .orders-table tr.row-s-dispute td             { background:#FFE0B2; color:#E65100; }
+    .orders-table tr.row-s-dispute td:first-child { border-right:3px solid #FF6D00; }
+    .orders-table tr.row-s-dispute:hover td       { background:#FFCC80; }
+
     .btn-approve-production {
       display:flex;align-items:center;justify-content:center;gap:0.5rem;
       width:100%;padding:0.85rem;margin-top:1.25rem;
@@ -431,7 +460,11 @@ function renderTable() {
     const lastUpdate = fmtDT(o.status_updated_at);
     const statusClass = { quote:'status-draft', draft:'status-draft', pending:'status-review', technical_review:'status-review', in_production:'status-production', ready_for_delivery:'status-production', delivered:'status-delivered', cancelled:'status-cancelled' }[o.status] || '';
     const statusLabel = { quote:'הצעת מחיר', draft:'טיוטה', pending:'ממתין לאישור', technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור', ready_for_delivery:'מוכן למסירה', delivered:'נמסר', cancelled:'בוטל' }[o.status] || o.status;
-    const rowClass = [o.status === 'dispute' ? 'row-dispute' : '', o.is_read === false ? 'row-unread' : ''].filter(Boolean).join(' ');
+    const rowClass = [
+      o.status ? `row-s-${o.status}` : '',
+      o.status === 'dispute' ? 'row-dispute' : '',
+      o.is_read === false ? 'row-unread' : ''
+    ].filter(Boolean).join(' ');
     const priceVal = o.subtotal || o.total_price || 0;
     const price = priceVal > 0 ? `₪${Number(priceVal).toLocaleString()}` : `₪0`;
 
