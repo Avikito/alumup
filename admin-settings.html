@@ -195,6 +195,9 @@
         <button class="tab-btn" onclick="switchTab('accessories')" id="tab-accessories">
           <i class="ph ph-wrench"></i> אביזרים
         </button>
+        <button class="tab-btn" onclick="switchTab('windows')" id="tab-windows">
+          <i class="ph ph-frame-corners"></i> חלונות ויטרינה
+        </button>
       </div>
 
       <!-- TAB: חומרי גלם -->
@@ -379,6 +382,114 @@
         </div>
       </div>
 
+      <!-- TAB: חלונות ויטרינה -->
+      <div class="tab-panel" id="panel-windows">
+        <div class="settings-card">
+          <div class="section-divider">
+            <i class="ph ph-frame-corners"></i> סדרות בסיס — מחיר למ"ר (כולל זכוכית טריפלקס 3+3)
+          </div>
+          <div class="fields-grid">
+            <div class="field-group">
+              <label class="field-label" for="windowSeries7000">סדרה 7000</label>
+              <div class="field-desc">מחיר בסיס למ"ר — סדרה 7000</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowSeries7000" type="number" min="0" step="10" placeholder="450">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="windowSeries9000">סדרה 9000</label>
+              <div class="field-desc">מחיר בסיס למ"ר — סדרה 9000</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowSeries9000" type="number" min="0" step="10" placeholder="650">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider" style="margin-top:1.5rem;">
+            <i class="ph ph-stack"></i> שדרוגי זכוכית — תוספת למ"ר
+          </div>
+          <div class="fields-grid">
+            <div class="field-group">
+              <label class="field-label" for="windowGlassMilky">זכוכית חלבית / אנטי-סאן</label>
+              <div class="field-desc">תוספת מעל מחיר הסדרה</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowGlassMilky" type="number" min="0" step="5" placeholder="80">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="windowGlassInsulating">זכוכית בידודית 4-12-4</label>
+              <div class="field-desc">תוספת מעל מחיר הסדרה</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowGlassInsulating" type="number" min="0" step="5" placeholder="120">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider" style="margin-top:1.5rem;">
+            <i class="ph ph-rows"></i> תריסים ורשתות — תוספת למ"ר
+          </div>
+          <div class="fields-grid">
+            <div class="field-group">
+              <label class="field-label" for="windowBlindPull">שלב תריס משוך</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowBlindPull" type="number" min="0" step="5" placeholder="90">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="windowBlindFoam">שלב תריס מוקצף</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowBlindFoam" type="number" min="0" step="5" placeholder="120">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="field-label" for="windowScreen">רשת (הזזה / קבועה)</label>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowScreen" type="number" min="0" step="5" placeholder="60">
+                <span class="field-suffix">למ"ר</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider" style="margin-top:1.5rem;">
+            <i class="ph ph-lightning"></i> תוספות קבועות
+          </div>
+          <div class="fields-grid">
+            <div class="field-group">
+              <label class="field-label" for="windowMotor">מנוע חשמלי לתריס</label>
+              <div class="field-desc">מחיר קבוע ליחידה</div>
+              <div class="field-input-wrap">
+                <span class="field-prefix">₪</span>
+                <input class="field-input" id="windowMotor" type="number" min="0" step="50" placeholder="350">
+                <span class="field-suffix">ליח'</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="save-bar">
+            <div class="info-note">
+              <i class="ph ph-info"></i>
+              <span>מחירים לא כוללים מע"מ — יחושב בהצעה</span>
+            </div>
+            <button class="btn-save" id="saveWindowsBtn" onclick="saveTab('windows')">
+              <i class="ph ph-floppy-disk"></i> שמור
+            </button>
+          </div>
+        </div>
+      </div>
+
     </main>
   </div>
 
@@ -441,16 +552,25 @@ const FIELD_MAP = {
   accMotorPrice:        'acc_motor_somfy_price',
   accRainSensorPrice:   'acc_rain_sensor_price',
   accLedPerMeterPrice:  'acc_led_per_meter_price',
+  windowSeries7000:      'window_series_7000',
+  windowSeries9000:      'window_series_9000',
+  windowGlassMilky:      'window_glass_milky',
+  windowGlassInsulating: 'window_glass_insulating',
+  windowBlindPull:       'window_blind_pull',
+  windowBlindFoam:       'window_blind_foam',
+  windowScreen:          'window_screen',
+  windowMotor:           'window_motor',
 };
 
 const TAB_FIELDS = {
   raw:         ['aluminumPrice', 'paintPrice'],
   kits:        ['kitPergolaPrice', 'kitVitrinePrice', 'kitFencePrice', 'kitAlumPergolaPrice', 'pvcPerSqmPrice', 'pvcLightingAddon', 'pvcPackagingFee'],
   accessories: ['accMotorPrice', 'accRainSensorPrice', 'accLedPerMeterPrice'],
+  windows: ['windowSeries7000','windowSeries9000','windowGlassMilky','windowGlassInsulating','windowBlindPull','windowBlindFoam','windowScreen','windowMotor'],
 };
 
 const SAVE_BTNS = {
-  raw: 'saveRawBtn', kits: 'saveKitsBtn', accessories: 'saveAccBtn'
+  raw: 'saveRawBtn', kits: 'saveKitsBtn', accessories: 'saveAccBtn', windows: 'saveWindowsBtn'
 };
 
 async function init() {

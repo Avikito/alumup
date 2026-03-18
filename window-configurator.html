@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | קונפיגורטור חלונות ויטרינה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    /* ── LAYOUT ── */
+    body { background:#f4f6f9; }
+    .cfg-header {
+      background:#fff; border-bottom:1px solid #e2e8f0;
+      padding:0.85rem 2rem; display:flex; align-items:center; justify-content:space-between;
+      position:sticky; top:0; z-index:100;
+    }
+    .cfg-header-right { display:flex; align-items:center; gap:1rem; }
+    .cfg-back { font-size:0.85rem; color:#64748b; display:flex; align-items:center; gap:0.3rem; text-decoration:none; }
+    .cfg-back:hover { color:#1a5faa; }
+    .cfg-title { font-size:1.1rem; font-weight:800; color:#1e293b; }
+    .cfg-subtitle { font-size:0.8rem; color:#64748b; font-weight:400; }
+
+    .cfg-main { max-width:960px; margin:0 auto; padding:2rem 1.5rem; }
+
+    /* ── SECTION ── */
+    .section {
+      background:#fff; border:1px solid #e2e8f0; border-radius:14px;
+      padding:1.75rem 2rem; margin-bottom:1.5rem;
+    }
+    .section-header {
+      display:flex; align-items:center; gap:0.75rem; margin-bottom:1.5rem;
+    }
+    .section-num {
+      width:28px; height:28px; border-radius:50%; background:#1a5faa; color:#fff;
+      font-size:0.8rem; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;
+    }
+    .section-title { font-size:1rem; font-weight:800; color:#1e293b; }
+
+    /* ── FORM GRID ── */
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem 1.5rem; }
+    .form-grid.cols3 { grid-template-columns:1fr 1fr 1fr; }
+    .form-grid.cols1 { grid-template-columns:1fr; }
+    .field-group { display:flex; flex-direction:column; gap:0.35rem; }
+    .field-label { font-size:0.82rem; font-weight:700; color:#475569; }
+    .field-input {
+      padding:0.55rem 0.85rem; border:1.5px solid #e2e8f0; border-radius:8px;
+      font-family:'Heebo',sans-serif; font-size:0.92rem; color:#1e293b;
+      background:#fff; transition:border-color 0.15s;
+    }
+    .field-input:focus { outline:none; border-color:#1a5faa; }
+    select.field-input { cursor:pointer; }
+
+    /* ── WINDOW CARD ── */
+    .window-card {
+      border:1.5px solid #e2e8f0; border-radius:12px;
+      margin-bottom:1.25rem; overflow:hidden;
+      transition:box-shadow 0.2s;
+    }
+    .window-card:hover { box-shadow:0 2px 12px rgba(26,95,170,0.08); }
+    .window-card-header {
+      background:#f8fafc; padding:0.85rem 1.25rem;
+      display:flex; align-items:center; justify-content:space-between;
+      border-bottom:1px solid #e2e8f0;
+    }
+    .window-card-title { font-size:0.9rem; font-weight:800; color:#1e293b; display:flex; align-items:center; gap:0.5rem; }
+    .window-card-title i { color:#1a5faa; }
+    .btn-remove-window {
+      background:none; border:none; color:#94a3b8; cursor:pointer; font-size:1rem;
+      padding:0.25rem 0.5rem; border-radius:6px; transition:all 0.15s;
+    }
+    .btn-remove-window:hover { background:#fee2e2; color:#dc2626; }
+
+    .window-card-body { padding:1.25rem; }
+
+    /* ── OPTION CHIPS ── */
+    .chip-group { display:flex; flex-wrap:wrap; gap:0.4rem; margin-top:0.35rem; }
+    .chip {
+      padding:0.3rem 0.8rem; border-radius:20px;
+      border:1.5px solid #e2e8f0; background:#f8fafc;
+      font-family:'Heebo',sans-serif; font-size:0.8rem; font-weight:600;
+      color:#64748b; cursor:pointer; transition:all 0.15s;
+    }
+    .chip:hover { border-color:#1a5faa; color:#1a5faa; }
+    .chip.active { background:#1a5faa; border-color:#1a5faa; color:#fff; }
+    .chip.active-green { background:#16a34a; border-color:#16a34a; color:#fff; }
+    .chip.active-amber { background:#d97706; border-color:#d97706; color:#fff; }
+
+    /* ── SVG PREVIEW ── */
+    .window-preview {
+      background:#f0f4f8; border-radius:10px; padding:1rem;
+      display:flex; flex-direction:column; align-items:center;
+      margin-top:1.25rem; border:1px solid #e2e8f0;
+    }
+    .window-preview-label { font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.75rem; }
+    .window-preview svg { max-width:100%; }
+
+    /* ── MOTOR TOGGLE ── */
+    .motor-row {
+      display:flex; align-items:center; gap:0.75rem;
+      margin-top:0.75rem; padding:0.65rem 0.9rem;
+      background:#fffbeb; border:1px solid #fde68a; border-radius:8px;
+    }
+    .motor-row label { font-size:0.83rem; font-weight:600; color:#92400e; cursor:pointer; }
+    .motor-toggle { width:18px; height:18px; cursor:pointer; accent-color:#d97706; }
+
+    /* ── ADD WINDOW BTN ── */
+    .btn-add-window {
+      width:100%; padding:0.85rem; border:2px dashed #cbd5e1; border-radius:10px;
+      background:none; font-family:'Heebo',sans-serif; font-size:0.9rem; font-weight:700;
+      color:#64748b; cursor:pointer; transition:all 0.18s; display:flex; align-items:center; justify-content:center; gap:0.5rem;
+    }
+    .btn-add-window:hover { border-color:#1a5faa; color:#1a5faa; background:#f0f7ff; }
+
+    /* ── SUMMARY TABLE ── */
+    .summary-table { width:100%; border-collapse:collapse; font-size:0.85rem; }
+    .summary-table th {
+      background:#f8fafc; padding:0.6rem 0.85rem; text-align:right;
+      font-size:0.72rem; font-weight:700; color:#64748b; text-transform:uppercase;
+      letter-spacing:0.4px; border-bottom:1px solid #e2e8f0;
+    }
+    .summary-table td { padding:0.75rem 0.85rem; border-bottom:1px solid #f1f5f9; vertical-align:middle; }
+    .summary-table tr:last-child td { border-bottom:none; }
+    .summary-table tr:hover td { background:#f8fafc; }
+    .num { text-align:left; font-weight:700; }
+
+    .summary-totals { margin-top:1.25rem; border-top:2px solid #e2e8f0; padding-top:1rem; }
+    .total-row {
+      display:flex; justify-content:space-between; align-items:center;
+      padding:0.4rem 0; font-size:0.9rem;
+    }
+    .total-row .label { color:#64748b; font-weight:500; }
+    .total-row .val { font-weight:700; color:#1e293b; }
+    .total-row.grand { font-size:1.15rem; padding-top:0.75rem; margin-top:0.25rem; border-top:1px solid #e2e8f0; }
+    .total-row.grand .label { font-weight:800; color:#1e293b; }
+    .total-row.grand .val { color:#1a5faa; font-size:1.25rem; }
+
+    /* ── ACTION BUTTONS ── */
+    .action-bar {
+      display:flex; gap:1rem; justify-content:flex-end; margin-top:1.5rem;
+    }
+    .btn-primary {
+      padding:0.85rem 2rem; background:#1a5faa; color:#fff;
+      border:none; border-radius:10px; font-family:'Heebo',sans-serif;
+      font-size:0.95rem; font-weight:700; cursor:pointer; transition:all 0.18s;
+      display:flex; align-items:center; gap:0.5rem;
+    }
+    .btn-primary:hover { background:#154e8f; transform:translateY(-1px); }
+    .btn-primary:disabled { opacity:0.5; pointer-events:none; }
+    .btn-secondary {
+      padding:0.85rem 1.75rem; background:#fff; color:#1a5faa;
+      border:1.5px solid #1a5faa; border-radius:10px; font-family:'Heebo',sans-serif;
+      font-size:0.92rem; font-weight:700; cursor:pointer; transition:all 0.18s;
+      display:flex; align-items:center; gap:0.5rem;
+    }
+    .btn-secondary:hover { background:#f0f7ff; }
+    .btn-secondary:disabled { opacity:0.5; pointer-events:none; }
+
+    /* ── ALERT BADGE ── */
+    .alert-badge {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      padding:0.2rem 0.6rem; border-radius:6px;
+      background:#fffbeb; border:1px solid #fde68a;
+      font-size:0.72rem; font-weight:700; color:#92400e;
+    }
+
+    /* ── TOAST ── */
+    .toast {
+      position:fixed; bottom:2rem; left:50%; transform:translateX(-50%) translateY(20px);
+      background:#16a34a; color:#fff; padding:0.75rem 1.5rem; border-radius:10px;
+      font-size:0.9rem; font-weight:700; display:flex; align-items:center; gap:0.5rem;
+      opacity:0; pointer-events:none; transition:opacity 0.25s,transform 0.25s;
+      z-index:9999; box-shadow:0 4px 20px rgba(22,163,74,0.35);
+    }
+    .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+    .toast.error { background:#dc2626; box-shadow:0 4px 20px rgba(220,38,38,0.35); }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite; display:inline-block; }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="cfg-header">
+  <div class="cfg-header-right">
+    <a href="kits.html" class="cfg-back"><i class="ph ph-arrow-right"></i> חזרה לקיטים</a>
+    <div>
+      <div class="cfg-title">קונפיגורטור חלונות ויטרינה</div>
+      <div class="cfg-subtitle">סדרה 7000 / 9000 | תמחור לפי מ"ר</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <span id="totalDisplay" style="font-size:1rem;font-weight:800;color:#1a5faa;">₪0</span>
+    <span style="font-size:0.72rem;color:#64748b;">כולל מע"מ</span>
+  </div>
+</header>
+
+<div class="cfg-main">
+
+  <!-- SECTION 1: פרטי פרויקט -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">1</div>
+      <div class="section-title">פרטי פרויקט</div>
+    </div>
+    <div class="form-grid">
+      <div class="field-group">
+        <label class="field-label" for="projectName">שם פרויקט</label>
+        <input class="field-input" id="projectName" type="text" placeholder="למשל: משרד רוטשילד 22" oninput="state.projectName=this.value">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="projectNumber">מספר פרויקט (אופציונלי)</label>
+        <input class="field-input" id="projectNumber" type="text" placeholder="מספר פנימי" oninput="state.projectNumber=this.value">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="customerName">שם לקוח</label>
+        <input class="field-input" id="customerName" type="text" placeholder="שם מלא" oninput="state.customerName=this.value">
+      </div>
+      <div class="field-group">
+        <label class="field-label" for="customerAddress">כתובת</label>
+        <input class="field-input" id="customerAddress" type="text" placeholder="כתובת הפרויקט" oninput="state.customerAddress=this.value">
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: חלונות -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">2</div>
+      <div class="section-title">הגדרת חלונות</div>
+    </div>
+    <div id="windowsList"></div>
+    <button class="btn-add-window" onclick="addWindow()">
+      <i class="ph ph-plus-circle"></i> הוסף חלון
+    </button>
+  </div>
+
+  <!-- SECTION 3: סיכום -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">3</div>
+      <div class="section-title">סיכום פרויקט</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>מיקום</th>
+            <th>סדרה</th>
+            <th>מידות (מ"מ)</th>
+            <th>מ"ר</th>
+            <th>כנפיים</th>
+            <th>זכוכית</th>
+            <th>תוספות</th>
+            <th>מחיר</th>
+          </tr>
+        </thead>
+        <tbody id="summaryBody"></tbody>
+      </table>
+    </div>
+    <div class="summary-totals" id="summaryTotals"></div>
+  </div>
+
+  <!-- ACTION BAR -->
+  <div class="action-bar">
+    <button class="btn-secondary" id="btnSaveQuote" onclick="saveOrder()">
+      <i class="ph ph-floppy-disk"></i> שמור כהצעה
+    </button>
+    <button class="btn-primary" id="btnPlaceOrder" onclick="placeOrder()">
+      שלח לבדיקה טכנית <i class="ph ph-paper-plane-tilt"></i>
+    </button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+// ── PRICES (defaults, overridden from global_settings) ──
+let PRICES = {
+  series7000: 450, series9000: 650,
+  glassMilky: 80,  glassInsulating: 120,
+  blindPull: 90,   blindFoam: 120,
+  screen: 60,      motor: 350
+};
+
+// ── STATE ──
+let nextId = 2;
+const state = {
+  projectName: '', projectNumber: '',
+  customerName: '', customerAddress: '',
+  markup: 25,
+  windows: [ newWindowObj(1) ]
+};
+
+function newWindowObj(id) {
+  return { id, location: '', series: '7000', width: 1200, height: 1400, wings: 2, glass: 'triplex', blind: null, blindMotor: false, screen: null };
+}
+
+// ── LOAD PRICES FROM global_settings ──
+async function loadPrices() {
+  try {
+    const { data } = await supabase.from('global_settings').select('key,value');
+    if (!data) return;
+    const map = Object.fromEntries(data.map(r => [r.key, parseFloat(r.value) || 0]));
+    if (map.window_series_7000 > 0)     PRICES.series7000      = map.window_series_7000;
+    if (map.window_series_9000 > 0)     PRICES.series9000      = map.window_series_9000;
+    if (map.window_glass_milky > 0)     PRICES.glassMilky      = map.window_glass_milky;
+    if (map.window_glass_insulating > 0)PRICES.glassInsulating = map.window_glass_insulating;
+    if (map.window_blind_pull > 0)      PRICES.blindPull       = map.window_blind_pull;
+    if (map.window_blind_foam > 0)      PRICES.blindFoam       = map.window_blind_foam;
+    if (map.window_screen > 0)          PRICES.screen          = map.window_screen;
+    if (map.window_motor > 0)           PRICES.motor           = map.window_motor;
+    renderAll();
+  } catch(e) { console.warn('[PRICES]', e.message); }
+}
+
+// ── PRICING ──
+function calcWindowPrice(w) {
+  const sqm = Math.max((w.width / 1000) * (w.height / 1000), 1.0);
+  const base = w.series === '9000' ? PRICES.series9000 : PRICES.series7000;
+  let price = sqm * base;
+  if (w.glass === 'milky')      price += sqm * PRICES.glassMilky;
+  if (w.glass === 'insulating') price += sqm * PRICES.glassInsulating;
+  if (w.blind === 'pull')       price += sqm * PRICES.blindPull;
+  if (w.blind === 'foam')       price += sqm * PRICES.blindFoam;
+  if (w.screen)                 price += sqm * PRICES.screen;
+  if (w.blindMotor)             price += PRICES.motor;
+  return Math.round(price);
+}
+
+function calcTotal() {
+  const subtotal = state.windows.reduce((s, w) => s + calcWindowPrice(w), 0);
+  const vat = Math.round(subtotal * 0.18);
+  return { subtotal, vat, grandTotal: subtotal + vat };
+}
+
+// ── SVG WINDOW PREVIEW ──
+function svgWindow(w) {
+  const VW = 280, VH = 190;
+  const blindH = w.blind ? 30 : 0;
+  const frameY = blindH + 2;
+  const frameH = VH - blindH - 20;
+  const wingW  = (VW - 4) / w.wings;
+  const sqm    = Math.max((w.width/1000)*(w.height/1000), 1.0).toFixed(2);
+
+  // warnings
+  const warnH = w.height > 2200 ? `<text x="${VW/2}" y="${VH-4}" text-anchor="middle" font-size="9" fill="#d97706">⚠ גובה חריג</text>` : '';
+  const warnW = w.width  > 2000 ? `<text x="${VW/2}" y="${VH-4}" text-anchor="middle" font-size="9" fill="#d97706">⚠ רוחב חריג</text>` : '';
+
+  let svg = `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg" style="width:100%;max-width:280px;">`;
+
+  // ארגז תריס
+  if (w.blind) {
+    svg += `<rect x="2" y="0" width="${VW-4}" height="${blindH}" rx="3" fill="#cbd5e1" stroke="#94a3b8" stroke-width="1.5"/>`;
+    svg += `<text x="${VW/2}" y="${blindH/2+4}" text-anchor="middle" font-size="9" fill="#475569" font-family="Heebo,sans-serif">
+      תריס ${w.blind==='foam'?'מוקצף':'משוך'}${w.blindMotor?' ⚡':''}
+    </text>`;
+  }
+
+  // מסגרת ראשית
+  svg += `<rect x="2" y="${frameY}" width="${VW-4}" height="${frameH}" rx="2" fill="#dbeafe" stroke="#1e40af" stroke-width="3"/>`;
+
+  // כנפיים + חצים
+  for (let i = 0; i < w.wings; i++) {
+    const x1 = 2 + i * wingW;
+    const x2 = x1 + wingW;
+    const cy  = frameY + frameH / 2;
+    // קו מחיצה
+    if (i > 0) svg += `<line x1="${x1}" y1="${frameY}" x2="${x1}" y2="${frameY+frameH}" stroke="#1e40af" stroke-width="1.5"/>`;
+    // חץ הזזה
+    const arrow = i % 2 === 0 ? '→' : '←';
+    const arrowColor = '#2563eb';
+    svg += `<text x="${x1+wingW/2}" y="${cy+5}" text-anchor="middle" font-size="20" fill="${arrowColor}" font-family="sans-serif">${arrow}</text>`;
+  }
+
+  // רשת
+  if (w.screen) {
+    svg += `<rect x="${VW-30}" y="${frameY+frameH-18}" width="26" height="14" rx="2" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1"/>`;
+    svg += `<text x="${VW-17}" y="${frameY+frameH-8}" text-anchor="middle" font-size="7" fill="#64748b" font-family="Heebo,sans-serif">רשת</text>`;
+  }
+
+  // מידות
+  svg += `<text x="${VW/2}" y="${VH-6}" text-anchor="middle" font-size="9" fill="#64748b" font-family="Heebo,sans-serif">${w.width}×${w.height} מ"מ | ${sqm} מ"ר</text>`;
+
+  svg += warnH || warnW;
+  svg += `</svg>`;
+  return svg;
+}
+
+// ── RENDER WINDOW CARD ──
+function renderWindowCard(w) {
+  const price = calcWindowPrice(w);
+  const sqm   = Math.max((w.width/1000)*(w.height/1000), 1.0).toFixed(2);
+
+  const glassLabels = { triplex:'טריפלקס 3+3 (ברירת מחדל)', milky:'חלבית / אנטי-סאן', insulating:'בידודית 4-12-4' };
+  const blindLabels  = { pull:'שלב משוך', foam:'שלב מוקצף' };
+  const screenLabels = { sliding:'רשת הזזה', fixed:'רשת קבועה' };
+
+  const warnBadge = (w.height > 2200 || w.width > 2000)
+    ? `<span class="alert-badge"><i class="ph ph-warning"></i> חריגה ממפרט יצרן</span>` : '';
+
+  return `<div class="window-card" id="wcard-${w.id}">
+    <div class="window-card-header">
+      <div class="window-card-title">
+        <i class="ph ph-frame-corners"></i>
+        חלון ${w.id}${w.location ? ' — ' + w.location : ''}
+        ${warnBadge}
+      </div>
+      <div style="display:flex;align-items:center;gap:0.75rem;">
+        <span style="font-size:0.85rem;font-weight:800;color:#1a5faa;">₪${price.toLocaleString()}</span>
+        ${state.windows.length > 1 ? `<button class="btn-remove-window" onclick="removeWindow(${w.id})" title="הסר חלון"><i class="ph ph-trash"></i></button>` : ''}
+      </div>
+    </div>
+    <div class="window-card-body">
+      <div class="form-grid cols3" style="margin-bottom:1rem;">
+        <div class="field-group">
+          <label class="field-label">שם מיקום</label>
+          <input class="field-input" type="text" placeholder="למשל: חזית, חדר שינה..." value="${w.location}"
+            oninput="updateWindow(${w.id},'location',this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">סדרה</label>
+          <select class="field-input" onchange="updateWindow(${w.id},'series',this.value)">
+            <option value="7000" ${w.series==='7000'?'selected':''}>סדרה 7000 — ₪${PRICES.series7000}/מ"ר</option>
+            <option value="9000" ${w.series==='9000'?'selected':''}>סדרה 9000 — ₪${PRICES.series9000}/מ"ר</option>
+          </select>
+        </div>
+        <div class="field-group">
+          <label class="field-label">מספר כנפיים</label>
+          <select class="field-input" onchange="updateWindow(${w.id},'wings',+this.value)">
+            ${[1,2,3,4].map(n=>`<option value="${n}" ${w.wings===n?'selected':''}>${n} כנפיים</option>`).join('')}
+          </select>
+        </div>
+      </div>
+
+      <div class="form-grid" style="margin-bottom:1rem;">
+        <div class="field-group">
+          <label class="field-label">רוחב (מ"מ)</label>
+          <input class="field-input" type="number" min="300" max="3000" step="10" value="${w.width}"
+            oninput="updateWindow(${w.id},'width',+this.value)">
+        </div>
+        <div class="field-group">
+          <label class="field-label">גובה (מ"מ)</label>
+          <input class="field-input" type="number" min="300" max="3000" step="10" value="${w.height}"
+            oninput="updateWindow(${w.id},'height',+this.value)">
+        </div>
+      </div>
+
+      <!-- זכוכית -->
+      <div style="margin-bottom:1rem;">
+        <div class="field-label" style="margin-bottom:0.4rem;">סוג זכוכית</div>
+        <div class="chip-group">
+          ${Object.entries(glassLabels).map(([k,v])=>
+            `<button class="chip ${w.glass===k?'active':''}" onclick="updateWindow(${w.id},'glass','${k}')">${v}</button>`
+          ).join('')}
+        </div>
+      </div>
+
+      <!-- תריס -->
+      <div style="margin-bottom:0.75rem;">
+        <div class="field-label" style="margin-bottom:0.4rem;">תריס</div>
+        <div class="chip-group">
+          <button class="chip ${w.blind===null?'active':''}" onclick="updateWindow(${w.id},'blind',null)">ללא תריס</button>
+          ${Object.entries(blindLabels).map(([k,v])=>
+            `<button class="chip ${w.blind===k?'active-amber':''}" onclick="updateWindow(${w.id},'blind','${k}')">${v}</button>`
+          ).join('')}
+        </div>
+        ${w.blind ? `<div class="motor-row">
+          <input class="motor-toggle" type="checkbox" id="motor-${w.id}" ${w.blindMotor?'checked':''}
+            onchange="updateWindow(${w.id},'blindMotor',this.checked)">
+          <label for="motor-${w.id}">⚡ מנוע חשמלי לתריס — ₪${PRICES.motor.toLocaleString()} ליחידה</label>
+        </div>` : ''}
+      </div>
+
+      <!-- רשת -->
+      <div style="margin-bottom:1rem;">
+        <div class="field-label" style="margin-bottom:0.4rem;">רשת</div>
+        <div class="chip-group">
+          <button class="chip ${w.screen===null?'active':''}" onclick="updateWindow(${w.id},'screen',null)">ללא רשת</button>
+          ${Object.entries(screenLabels).map(([k,v])=>
+            `<button class="chip ${w.screen===k?'active-green':''}" onclick="updateWindow(${w.id},'screen','${k}')">${v}</button>`
+          ).join('')}
+        </div>
+      </div>
+
+      <!-- SVG PREVIEW -->
+      <div class="window-preview">
+        <div class="window-preview-label"><i class="ph ph-ruler"></i> תצוגה מקדימה</div>
+        ${svgWindow(w)}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── RENDER SUMMARY ──
+function renderSummary() {
+  const glassMap = { triplex:'טריפלקס 3+3', milky:'חלבית/אנטי-סאן', insulating:'בידודית 4-12-4' };
+  const tbody = document.getElementById('summaryBody');
+  tbody.innerHTML = state.windows.map(w => {
+    const sqm   = Math.max((w.width/1000)*(w.height/1000), 1.0).toFixed(2);
+    const price = calcWindowPrice(w);
+    const extras = [
+      w.blind ? (w.blind==='pull'?'תריס משוך':'תריס מוקצף') : null,
+      w.blindMotor ? 'מנוע' : null,
+      w.screen ? (w.screen==='sliding'?'רשת הזזה':'רשת קבועה') : null,
+    ].filter(Boolean).join(', ') || '—';
+    return `<tr>
+      <td>${w.location || `חלון ${w.id}`}</td>
+      <td>סדרה ${w.series}</td>
+      <td>${w.width}×${w.height}</td>
+      <td class="num">${sqm}</td>
+      <td>${w.wings}</td>
+      <td>${glassMap[w.glass]||w.glass}</td>
+      <td style="font-size:0.8rem;color:#64748b;">${extras}</td>
+      <td class="num">₪${price.toLocaleString()}</td>
+    </tr>`;
+  }).join('');
+
+  const { subtotal, vat, grandTotal } = calcTotal();
+  document.getElementById('summaryTotals').innerHTML = `
+    <div class="total-row"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${subtotal.toLocaleString()}</span></div>
+    <div class="total-row"><span class="label">מע"מ (18%)</span><span class="val">₪${vat.toLocaleString()}</span></div>
+    <div class="total-row grand"><span class="label">סה"כ כולל מע"מ</span><span class="val">₪${grandTotal.toLocaleString()}</span></div>
+  `;
+  document.getElementById('totalDisplay').textContent = `₪${grandTotal.toLocaleString()}`;
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  document.getElementById('windowsList').innerHTML = state.windows.map(renderWindowCard).join('');
+  renderSummary();
+}
+
+// ── MUTATIONS ──
+window.updateWindow = function(id, field, value) {
+  const w = state.windows.find(x => x.id === id);
+  if (!w) return;
+  w[field] = value;
+  renderAll();
+};
+
+window.addWindow = function() {
+  state.windows.push(newWindowObj(nextId++));
+  renderAll();
+};
+
+window.removeWindow = function(id) {
+  state.windows = state.windows.filter(x => x.id !== id);
+  renderAll();
+};
+
+// ── ORDER CODE ──
+function getOrderCode() {
+  if (state.projectNumber?.trim()) return `ALM-${state.projectNumber.trim()}-${new Date().getFullYear()}`;
+  const d = new Date().toISOString().slice(0,10).replace(/-/g,'');
+  const r = String(Math.floor(Math.random()*9000)+1000);
+  return `ALM-${d}-${r}`;
+}
+
+// ── DOMINANT SERIES ──
+function dominantSeries() {
+  const cnt9 = state.windows.filter(w => w.series === '9000').length;
+  return cnt9 >= state.windows.length / 2 ? '9000' : '7000';
+}
+
+// ── SAVE QUOTE ──
+window.saveOrder = async function() {
+  const btn = document.getElementById('btnSaveQuote');
+  btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { showToast('נדרשת התחברות', true); return; }
+    const { subtotal, vat, grandTotal } = calcTotal();
+    const code = getOrderCode();
+    const { error } = await supabase.from('orders').insert({
+      user_id: user.id, order_code: code, status: 'quote',
+      category: 'חלון ויטרינה',
+      sub_product: `חלון ויטרינה סדרה ${dominantSeries()}`,
+      width: state.windows[0]?.width || 0,
+      depth: state.windows[0]?.height || 0,
+      config: JSON.parse(JSON.stringify(state)),
+      subtotal, vat, total_price: grandTotal,
+      shipping_method: 'standard', is_read: false, vendor_name: ''
+    });
+    if (error) { showToast('שגיאה בשמירה: ' + error.message, true); return; }
+    showToast(`ההצעה נשמרה — ${code}`);
+  } finally {
+    btn.disabled = false; btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור כהצעה';
+  }
+};
+
+// ── PLACE ORDER ──
+window.placeOrder = async function() {
+  if (state.windows.length === 0) { showToast('יש להוסיף לפחות חלון אחד', true); return; }
+  const btn = document.getElementById('btnPlaceOrder');
+  btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שולח...';
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) { showToast('נדרשת התחברות', true); return; }
+    const { subtotal, vat, grandTotal } = calcTotal();
+    if (!grandTotal || grandTotal <= 0) { showToast('מחיר לא תקין', true); return; }
+    const code = getOrderCode();
+    const { error } = await supabase.from('orders').insert({
+      user_id: user.id, order_code: code, status: 'technical_review',
+      category: 'חלון ויטרינה',
+      sub_product: `חלון ויטרינה סדרה ${dominantSeries()}`,
+      width: state.windows[0]?.width || 0,
+      depth: state.windows[0]?.height || 0,
+      config: JSON.parse(JSON.stringify(state)),
+      subtotal, vat, total_price: grandTotal,
+      shipping_method: 'standard', is_read: false, vendor_name: ''
+    });
+    if (error) { showToast('שגיאה: ' + error.message, true); return; }
+    showToast(`ההזמנה נשלחה לבדיקה — ${code}`);
+    setTimeout(() => window.location.href = 'dashboard.html', 2200);
+  } finally {
+    btn.disabled = false; btn.innerHTML = 'שלח לבדיקה טכנית <i class="ph ph-paper-plane-tilt"></i>';
+  }
+};
+
+// ── TOAST ──
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<i class="ph ${isError?'ph-warning':'ph-check-circle'}"></i> ${msg}`;
+  t.className = 'toast' + (isError ? ' error' : '');
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// ── AUTH GUARD ──
+async function init() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+  await loadPrices();
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>

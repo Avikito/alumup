@@ -130,6 +130,38 @@
     .spin { animation:spin 0.8s linear infinite;display:inline-block; }
 
     .order-code { font-weight:700;color:var(--electric-blue);font-size:0.82rem; }
+
+    /* ── ORDERS FILTER PILLS ── */
+    .orders-filter { display:flex; gap:0.25rem; margin-top:0.6rem; flex-wrap:wrap; }
+    .ofb {
+      padding:0.16rem 0.55rem; border-radius:20px;
+      border:1.5px solid rgba(217,119,6,0.35);
+      background:transparent; font-family:'Heebo',sans-serif;
+      font-size:0.7rem; font-weight:700; color:#d97706;
+      cursor:pointer; transition:all 0.15s ease; letter-spacing:0.2px;
+    }
+    .ofb:hover { background:rgba(217,119,6,0.1); border-color:#d97706; }
+    .ofb.active {
+      background:#d97706; color:#fff; border-color:#d97706;
+      box-shadow:0 2px 8px rgba(217,119,6,0.3);
+    }
+
+    /* ── ACTIVITY TABLE STATUS COLORS ── */
+    .activity-table tr.row-s-pending td             { background:#FFF4E5; color:#663C00; }
+    .activity-table tr.row-s-pending td:first-child { border-right:3px solid #FFB74D; }
+    .activity-table tr.row-s-pending:hover td       { background:#FFE0B2; }
+
+    .activity-table tr.row-s-technical_review td             { background:#F3E5F5; color:#4A148C; }
+    .activity-table tr.row-s-technical_review td:first-child { border-right:3px solid #CE93D8; }
+    .activity-table tr.row-s-technical_review:hover td       { background:#E1BEE7; }
+
+    .activity-table tr.row-s-in_production td             { background:#E3F2FD; color:#0D47A1; }
+    .activity-table tr.row-s-in_production td:first-child { border-right:3px solid #64B5F6; }
+    .activity-table tr.row-s-in_production:hover td       { background:#BBDEFB; }
+
+    .activity-table tr.row-s-ready_for_delivery td             { background:#C8E6C9; color:#1B5E20; }
+    .activity-table tr.row-s-ready_for_delivery td:first-child { border-right:3px solid #81C784; }
+    .activity-table tr.row-s-ready_for_delivery:hover td       { background:#A5D6A7; }
   </style>
 </head>
 <body>
@@ -167,6 +199,12 @@
           <div class="stat-icon"><i class="ph ph-list-bullets"></i></div>
           <div class="stat-value" id="statOrders">—</div>
           <div class="stat-label">סה"כ הזמנות</div>
+          <div class="orders-filter">
+            <button class="ofb active" onclick="setOrdersFilter('today',this)">היום</button>
+            <button class="ofb" onclick="setOrdersFilter('7',this)">7 ימים</button>
+            <button class="ofb" onclick="setOrdersFilter('30',this)">30 ימים</button>
+            <button class="ofb" onclick="setOrdersFilter('all',this)">הכל</button>
+          </div>
         </div>
         <div class="stat-card green">
           <div class="stat-icon"><i class="ph ph-currency-circle-dollar"></i></div>
@@ -194,7 +232,7 @@
           <thead>
             <tr>
               <th>קוד הזמנה</th>
-              <th>פרויקט</th>
+              <th>רוכש</th>
               <th>מערכות</th>
               <th>סה"כ כולל מע"מ</th>
               <th>תאריך</th>
@@ -274,6 +312,31 @@ async function loadRevenue(from, to) {
   document.getElementById('statRevenue').textContent = '₪' + revenue.toLocaleString('he-IL');
 }
 
+async function setOrdersFilter(range, btn) {
+  document.querySelectorAll('.ofb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  await loadOrdersCount(range);
+}
+window.setOrdersFilter = setOrdersFilter;
+
+async function loadOrdersCount(range = 'today') {
+  let query = supabase.from('orders_with_names').select('id', { count:'exact', head:true });
+  const now = new Date();
+  if (range === 'today') {
+    const start = new Date(now); start.setHours(0,0,0,0);
+    const end   = new Date(now); end.setHours(23,59,59,999);
+    query = query.gte('created_at', start.toISOString()).lte('created_at', end.toISOString());
+  } else if (range === '7') {
+    const start = new Date(now); start.setDate(start.getDate()-7);
+    query = query.gte('created_at', start.toISOString());
+  } else if (range === '30') {
+    const start = new Date(now); start.setDate(start.getDate()-30);
+    query = query.gte('created_at', start.toISOString());
+  }
+  const { count } = await query;
+  document.getElementById('statOrders').textContent = count ?? '—';
+}
+
 async function applyRevenuePicker() {
   const from = document.getElementById('revenueFrom').value;
   const to   = document.getElementById('revenueTo').value;
@@ -290,7 +353,7 @@ async function loadStats() {
   document.getElementById('statPending').textContent = pendingRes.count ?? '—';
 
   const orders = ordersRes.data || [];
-  document.getElementById('statOrders').textContent = orders.length;
+  await loadOrdersCount('today');
 
   const inProd = orders.filter(o => o.status === 'in_production').length;
   document.getElementById('statProduction').textContent = inProd;
@@ -326,9 +389,9 @@ async function loadActivity() {
     };
     const [cls, label] = statusMap[o.status] || ['', o.status];
 
-    return `<tr>
+    return `<tr class="row-s-${o.status}">
       <td class="order-code">${o.order_code}</td>
-      <td>${o.project_name || '—'}</td>
+      <td>${o.customer_name || o.vendor_name || '—'}</td>
       <td style="color:var(--silver-dark)">${sys} מערכת${sys !== 1 ? 'ות' : ''}</td>
       <td style="font-weight:700">₪${(o.grand_total || 0).toLocaleString()}</td>
       <td>${date}</td>

@@ -11,6 +11,7 @@
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <style>
     .admin-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
 
@@ -591,7 +592,7 @@ window.openDetail = function(id) {
 
   let html = `<div class="detail-sys-card">
     <div class="detail-grid">
-      <div class="detail-item"><span class="detail-key">מזמין</span><span class="detail-val">${o.vendor_name || 'לקוח כללי'}</span></div>
+      <div class="detail-item"><span class="detail-key">מזמין</span><span class="detail-val">${o.customer_name || o.vendor_name || 'לקוח כללי'}</span></div>
       <div class="detail-item"><span class="detail-key">קוד הזמנה</span><span class="detail-val">${code}</span></div>
       <div class="detail-item"><span class="detail-key">סוג מוצר</span><span class="detail-val">${getProductType(o)}</span></div>
       <div class="detail-item"><span class="detail-key">תת מוצר</span><span class="detail-val">${getSubProduct(o)}</span></div>
@@ -651,6 +652,64 @@ window.openDetail = function(id) {
     }
     if (o.config.orderNum) html += `<div style="font-size:0.81rem;color:#888;margin-bottom:0.3rem;">מספר הזמנה: <strong>${o.config.orderNum}</strong></div>`;
     if (o.config.ralCode)  html += `<div style="font-size:0.81rem;color:#888;margin-bottom:0.8rem;">גוון RAL: <strong>${o.config.ralCode}</strong></div>`;
+
+  } else if (o.config && Array.isArray(o.config.systems) && o.config.systems.length > 0) {
+    const cfg = o.config;
+
+    // פרטי פרויקט
+    if (cfg.projectName || cfg.customerName) {
+      html += `<div style="margin-bottom:1rem;padding:0.75rem;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">`;
+      if (cfg.projectName) html += `<div style="font-size:0.82rem;margin-bottom:0.25rem;"><span style="color:#888;font-weight:600;">שם פרויקט: </span><strong>${cfg.projectName}</strong></div>`;
+      if (cfg.customerName) html += `<div style="font-size:0.82rem;"><span style="color:#888;font-weight:600;">שם לקוח: </span><strong>${cfg.customerName}</strong></div>`;
+      html += `</div>`;
+    }
+
+    // מערכות
+    cfg.systems.forEach((sys, i) => {
+      const aColor = sys.aluminumColorCustom || sys.aluminumColor || '—';
+      const pvc    = sys.pvcColor === 'white' ? 'לבן' : (sys.pvcColor || '—');
+      html += `<div style="margin-bottom:0.9rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem;">
+          מערכת ${i+1}${sys.name ? ' — ' + sys.name : ''}
+        </div>
+        <table style="width:100%;border-collapse:collapse;font-size:0.82rem;">
+          <tbody>
+            <tr style="border-top:1px solid #e8edf2;">
+              <td style="padding:5px 8px;color:#888;font-weight:600;">מידות</td>
+              <td style="padding:5px 8px;">${sys.width} × ${sys.depth} ס"מ</td>
+              <td style="padding:5px 8px;color:#888;font-weight:600;">גובה התקנה</td>
+              <td style="padding:5px 8px;">${sys.installHeight} ס"מ</td>
+            </tr>
+            <tr style="background:#f8fafc;border-top:1px solid #e8edf2;">
+              <td style="padding:5px 8px;color:#888;font-weight:600;">צבע אלומיניום</td>
+              <td style="padding:5px 8px;">RAL ${aColor}</td>
+              <td style="padding:5px 8px;color:#888;font-weight:600;">צבע PVC</td>
+              <td style="padding:5px 8px;">${pvc}</td>
+            </tr>
+            <tr style="border-top:1px solid #e8edf2;">
+              <td style="padding:5px 8px;color:#888;font-weight:600;">גובה ביבה</td>
+              <td style="padding:5px 8px;" colspan="3">${sys.gutterHeight} ס"מ</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>`;
+    });
+
+    // תוספות ושיטת תמיכה
+    const addons = cfg.addons || {};
+    const chips = [];
+    if (addons.led)    chips.push('תאורת LED');
+    if (addons.remote) chips.push('שלט סומפי');
+    if (addons.tahoma) chips.push('TaHoma');
+    if (addons.dimmer) chips.push('דימר');
+    chips.push(cfg.supportType === 'tension' ? 'תמיכת תלייה' : 'רגליים');
+
+    html += `<div style="margin-bottom:1rem;">
+      <div style="font-size:0.78rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem;">תוספות ומפרט</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;">
+        ${chips.map(c => `<span style="padding:0.2rem 0.65rem;border-radius:20px;background:#f0f4f8;border:1px solid #e2e8f0;font-size:0.78rem;font-weight:600;color:#475569;">${c}</span>`).join('')}
+      </div>
+    </div>`;
   }
 
   html += `<div class="detail-totals">
@@ -680,73 +739,55 @@ window.openDetail = function(id) {
 };
 
 /* ── GENERATE PDF ── */
-window.generatePDF = function(id) {
-  console.log('[PDF] generatePDF called for id:', id);
+window.generatePDF = async function(id) {
   const o = allOrders.find(x => x.id === id);
-  if (!o || !window.jspdf) { console.warn('[PDF] missing order or jspdf'); return; }
+  if (!o || !window.jspdf) return;
+
+  const code = getCode(o);
+  const detailBody = document.getElementById('detailBody');
+
+  // הסתר כפתורים לפני הצילום
+  const btns = detailBody.querySelectorAll('button');
+  btns.forEach(b => b.style.display = 'none');
 
   try {
-    const code = getCode(o);
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+    const canvas = await html2canvas(detailBody, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff',
+      logging: false
+    });
 
-    const L = 20;
-    const R = 190;
+    const imgData   = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const doc       = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+    const pageW   = 210;
+    const marginX = 10;
+    const imgW    = pageW - marginX * 2;
+    const imgH    = canvas.height * imgW / canvas.width;
 
     // Header bar
     doc.setFillColor(26, 95, 170);
     doc.rect(0, 0, 210, 18, 'F');
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(14); doc.setFont('helvetica', 'bold');
-    doc.text('ALUM-IL', R, 12, { align: 'right' });
+    doc.text('ALUM-IL', 190, 12, { align: 'right' });
     doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.text('Order Confirmation', L, 12);
+    doc.text('Order Confirmation | ' + code, 20, 12);
 
-    // Order code + date
-    doc.setTextColor(26, 38, 64);
-    doc.setFontSize(16); doc.setFont('helvetica', 'bold');
-    doc.text(code, R, 30, { align: 'right' });
-    doc.setFontSize(10); doc.setFont('helvetica', 'normal');
-    doc.setTextColor(107, 122, 153);
-    const _d = new Date(o.created_at);
-    const dateStr = String(_d.getDate()).padStart(2,'0') + '/' + String(_d.getMonth()+1).padStart(2,'0') + '/' + _d.getFullYear();
-    doc.text(dateStr, R, 37, { align: 'right' });
-
-    // Details table — English labels, data values as-is
-    doc.setTextColor(26, 38, 64);
-    const buyer    = o.vendor_name || 'General Customer';
-    const category = o.category    || '—';
-    const subprod  = o.sub_product  || '—';
-    const total    = 'ILS ' + Number(o.subtotal || o.total_price || 0).toLocaleString();
-    const fields = [
-      ['Buyer',        buyer],
-      ['Category',     category],
-      ['Sub-Product',  subprod],
-      ['Date',         dateStr],
-      ['Total',        total],
-    ];
-    let y = 50;
-    doc.setDrawColor(221, 228, 240);
-    fields.forEach(([k, v]) => {
-      doc.setFontSize(9); doc.setFont('helvetica', 'bold');
-      doc.setTextColor(107, 122, 153);
-      doc.text(k, L, y);
-      doc.setFont('helvetica', 'normal');
-      doc.setTextColor(26, 38, 64);
-      doc.text(String(v), L + 40, y);
-      doc.line(L, y + 2, R, y + 2);
-      y += 10;
-    });
+    // תוכן הפאנל כתמונה
+    doc.addImage(imgData, 'PNG', marginX, 22, imgW, imgH);
 
     // Footer
-    doc.setFontSize(8); doc.setFont('helvetica', 'normal');
+    doc.setFontSize(8);
     doc.setTextColor(150, 160, 180);
     doc.text('Generated by ALUM-IL Platform', 105, 285, { align: 'center' });
 
     doc.save('order_' + code + '.pdf');
-    console.log('[PDF] saved successfully');
-  } catch(err) {
-    console.error('[PDF] generation failed:', err);
+  } finally {
+    // החזר כפתורים
+    btns.forEach(b => b.style.display = '');
   }
 };
 
