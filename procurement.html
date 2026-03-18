@@ -7,6 +7,7 @@
   <title>מרכז הרכש | ALUM-IL</title>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <style>
     :root {
       --bg: #f5f7fa;
@@ -1215,6 +1216,49 @@
     .screw-cart-total-row { display: flex; justify-content: space-between; font-size: 13px; padding: 3px 0; }
     .screw-cart-total-row.grand { font-weight: 700; font-size: 15px; color: var(--blue); }
 
+    /* ── SIDEBAR LAYOUT ── */
+    .proc-wrapper { display: flex; flex: 1; min-height: calc(100vh - 57px); }
+    .proc-sidebar {
+      width: 220px; flex-shrink: 0;
+      background: var(--surface); border-left: 1px solid var(--border);
+      padding: 1.25rem 0.9rem; display: flex; flex-direction: column; gap: 0.15rem;
+      position: sticky; top: 57px; height: calc(100vh - 57px); overflow-y: auto;
+    }
+    .proc-main { flex: 1; overflow-y: auto; min-width: 0; }
+    .proc-sidebar-label {
+      font-size: 0.72rem; font-weight: 700; color: var(--muted);
+      text-transform: uppercase; letter-spacing: 1px;
+      padding: 0 0.75rem; margin-bottom: 0.5rem;
+    }
+    .proc-nav { list-style: none; display: flex; flex-direction: column; gap: 0.1rem; }
+    .proc-nav a {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0.55rem 0.75rem; border-radius: 8px;
+      font-size: 0.88rem; font-weight: 500; color: var(--muted);
+      cursor: pointer; transition: all 0.18s; text-decoration: none;
+    }
+    .proc-nav a:hover { background: #eef4ff; color: var(--blue-light); }
+    .proc-nav a.active { background: #eef4ff; color: var(--blue); font-weight: 700; }
+    .proc-nav a i { font-size: 1.1rem; }
+    .proc-divider { height: 1px; background: var(--border); margin: 0.85rem 0; }
+    .proc-user-footer {
+      margin-top: auto; padding-top: 1rem;
+      border-top: 1px solid var(--border);
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .proc-user-name { font-size: 0.88rem; font-weight: 700; color: var(--text); padding: 0 0.25rem; }
+    .proc-user-email { font-size: 0.74rem; color: var(--muted); padding: 0 0.25rem; word-break: break-all; }
+    .proc-logout-btn {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 0.75rem; margin-top: 0.25rem;
+      background: transparent; border: 1.5px solid var(--border);
+      border-radius: 8px; font-family: 'Heebo', sans-serif;
+      font-size: 0.85rem; font-weight: 600; color: var(--muted);
+      cursor: pointer; transition: all 0.18s; width: 100%;
+    }
+    .proc-logout-btn:hover { border-color: var(--blue-light); color: var(--blue); }
+    @media (max-width: 768px) { .proc-sidebar { display: none; } }
+
     @media print {
       body * {
         visibility: hidden;
@@ -1275,6 +1319,38 @@
       </button>
     </div>
   </div>
+
+  <div class="proc-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="proc-sidebar">
+    <div class="proc-sidebar-label">תפריט פעולות</div>
+    <ul class="proc-nav">
+      <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
+      <li><a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a></li>
+      <li><a href="#"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a></li>
+      <li><a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a></li>
+      <li><a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+    </ul>
+    <div class="proc-divider"></div>
+    <div class="proc-sidebar-label">כלים</div>
+    <ul class="proc-nav">
+      <li><a href="configurator.html"><i class="ph ph-sliders"></i> קונפיגורטור פרגולות</a></li>
+      <li><a href="window-configurator.html"><i class="ph ph-browser"></i> קונפיגורטור חלונות</a></li>
+      <li><a href="kits.html"><i class="ph ph-package"></i> קיטים</a></li>
+      <li><a href="tenders.html"><i class="ph ph-briefcase"></i> מכרזים</a></li>
+      <li><a href="procurement.html" class="active"><i class="ph ph-storefront"></i> מרכז הרכש</a></li>
+    </ul>
+    <div class="proc-user-footer">
+      <div class="proc-user-name" id="procSidebarUserName"></div>
+      <div class="proc-user-email" id="procSidebarUserEmail"></div>
+      <button class="proc-logout-btn" id="procLogoutBtn">
+        <i class="ph ph-sign-out"></i> יציאה
+      </button>
+    </div>
+  </aside>
+
+  <div class="proc-main">
 
   <!-- Main Categories View -->
   <div id="view-categories" class="view-section active">
@@ -1463,6 +1539,9 @@
 
   <!-- Footer -->
   <div class="footer">מחיר לק"ג מתעדכן שבועית | ALUM-IL</div>
+
+  </div><!-- /proc-main -->
+  </div><!-- /proc-wrapper -->
 
   <!-- Modal -->
   <div class="modal-overlay" id="specModal">
@@ -1729,6 +1808,23 @@
       'https://exfdjelwyrspfspcevvm.supabase.co',
       'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
     );
+
+    // Populate sidebar user info
+    (async () => {
+      try {
+        const { data: { user } } = await _supabase.auth.getUser();
+        if (user) {
+          const n = document.getElementById('procSidebarUserName');
+          const e = document.getElementById('procSidebarUserEmail');
+          if (n) n.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
+          if (e) e.textContent = user.email || '';
+        }
+      } catch(err) {}
+    })();
+    document.getElementById('procLogoutBtn')?.addEventListener('click', async () => {
+      await _supabase.auth.signOut();
+      window.location.href = 'login.html';
+    });
 
     // ── TRANSLATIONS ──
     const TRANSLATIONS = {
