@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | היסטוריית משתמש</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
+    .admin-sidebar {
+      width:220px; flex-shrink:0;
+      background:var(--surface-dark);
+      border-left:1px solid var(--border);
+      padding:1.5rem 1rem;
+    }
+
+    /* Page header */
+    .history-header {
+      display:flex; align-items:center; justify-content:space-between;
+      padding:1.5rem 2rem 1rem;
+      border-bottom:1px solid var(--border);
+    }
+    .history-header-left { display:flex; align-items:center; gap:1rem; }
+    .btn-back {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.38rem 0.9rem; border-radius:8px; text-decoration:none;
+      font-size:0.82rem; font-weight:700; color:var(--silver-dark);
+      background:rgba(100,100,100,0.07); border:1.5px solid var(--border);
+      transition:all 0.18s;
+    }
+    .btn-back:hover { color:var(--electric-blue); border-color:rgba(26,95,170,0.3); background:var(--blue-dim); }
+    .history-user-name { font-size:1.2rem; font-weight:800; color:var(--industrial-silver); }
+    .history-user-biz  { font-size:0.82rem; color:var(--silver-dark); margin-top:0.1rem; }
+    .history-header-stats {
+      display:flex; gap:0.75rem;
+    }
+    .hstat {
+      text-align:center; padding:0.55rem 1.1rem; border-radius:10px;
+      background:rgba(100,100,100,0.05); border:1px solid var(--border);
+    }
+    .hstat-num { font-size:1.1rem; font-weight:800; color:var(--industrial-silver); }
+    .hstat-lbl { font-size:0.65rem; font-weight:700; color:var(--silver-dark); margin-top:0.1rem; }
+    .hstat--blue { background:var(--blue-dim); border-color:rgba(26,95,170,0.2); }
+    .hstat--green { background:rgba(22,163,74,0.06); border-color:rgba(22,163,74,0.22); }
+
+    /* Tabs */
+    .tab-bar {
+      display:flex; align-items:center; gap:0.15rem;
+      padding:1rem 2rem 0;
+      border-bottom:1px solid var(--border);
+    }
+    .tab-btn {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.55rem 1.1rem; border-radius:8px 8px 0 0;
+      font-family:'Heebo',sans-serif; font-size:0.88rem; font-weight:700;
+      cursor:pointer; border:none; background:transparent;
+      color:var(--silver-dark); transition:all 0.18s;
+      border-bottom:2px solid transparent; margin-bottom:-1px;
+    }
+    .tab-btn:hover { color:var(--electric-blue); }
+    .tab-btn.active {
+      color:var(--electric-blue);
+      border-bottom:2px solid var(--electric-blue);
+      background:var(--blue-dim);
+    }
+    .tab-count {
+      background:rgba(26,95,170,0.15); color:var(--electric-blue);
+      font-size:0.68rem; font-weight:800; padding:0.1rem 0.45rem;
+      border-radius:20px; min-width:20px; text-align:center;
+    }
+
+    /* Table */
+    .table-wrap { padding:1.5rem 2rem; }
+    .hist-table {
+      width:100%; border-collapse:collapse;
+      font-family:'Heebo',sans-serif; font-size:0.88rem;
+    }
+    .hist-table th {
+      text-align:right; padding:0.6rem 0.9rem;
+      font-size:0.68rem; font-weight:800; text-transform:uppercase;
+      letter-spacing:0.5px; color:var(--silver-dark);
+      border-bottom:1px solid var(--border);
+    }
+    .hist-table td {
+      padding:0.7rem 0.9rem; color:var(--industrial-silver);
+      border-bottom:1px solid rgba(255,255,255,0.04);
+      vertical-align:middle;
+    }
+    .hist-table tr:hover td { background:rgba(26,95,170,0.03); }
+
+    .status-pill {
+      display:inline-flex; align-items:center; gap:0.25rem;
+      padding:0.18rem 0.6rem; border-radius:20px;
+      font-size:0.71rem; font-weight:700; white-space:nowrap;
+    }
+    .sp-pending    { background:rgba(245,158,11,0.1);color:#b45309;border:1px solid rgba(245,158,11,0.25); }
+    .sp-in_production { background:rgba(26,95,170,0.1);color:#1a5faa;border:1px solid rgba(26,95,170,0.2); }
+    .sp-ready_for_delivery { background:rgba(107,70,193,0.1);color:#6b46c1;border:1px solid rgba(107,70,193,0.2); }
+    .sp-delivered  { background:rgba(22,163,74,0.1);color:#16a34a;border:1px solid rgba(22,163,74,0.22); }
+    .sp-cancelled  { background:rgba(220,38,38,0.08);color:#dc2626;border:1px solid rgba(220,38,38,0.2); }
+    .sp-dispute    { background:rgba(239,68,68,0.06);color:#ef4444;border:1px solid rgba(239,68,68,0.18); }
+    .sp-default    { background:rgba(100,100,100,0.07);color:var(--silver-dark);border:1px solid var(--border); }
+
+    .amount-cell { font-weight:700; direction:ltr; text-align:right; }
+    .ref-code { font-family:monospace; font-size:0.8rem; color:var(--silver-dark); }
+
+    .tab-panel { display:none; }
+    .tab-panel.active { display:block; }
+
+    .empty-state { text-align:center;padding:4rem 2rem;color:var(--silver-dark); }
+    .empty-state i { font-size:2.5rem;opacity:0.25;display:block;margin-bottom:0.75rem; }
+    .empty-state p { font-size:0.92rem;font-weight:600; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite; display:inline-block; }
+  </style>
+</head>
+<body>
+  <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+        <i class="ph ph-shield-star"></i> פאנל ניהול
+      </span>
+      <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
+        <i class="ph ph-arrow-right"></i> אזור אישי
+      </a>
+    </div>
+  </header>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <div id="admin-sidebar-placeholder"></div>
+    </aside>
+
+    <main class="admin-content" style="flex:1;overflow:auto;">
+
+      <!-- Page Header -->
+      <div class="history-header">
+        <div class="history-header-left">
+          <a class="btn-back" href="approved-users.html">
+            <i class="ph ph-arrow-right"></i> חזרה ל-CRM
+          </a>
+          <div>
+            <div class="history-user-name" id="userName">טוען...</div>
+            <div class="history-user-biz" id="userBiz"></div>
+          </div>
+        </div>
+        <div class="history-header-stats">
+          <div class="hstat hstat--blue">
+            <div class="hstat-num" id="statQuotes">—</div>
+            <div class="hstat-lbl">הצעות מחיר</div>
+          </div>
+          <div class="hstat hstat--green">
+            <div class="hstat-num" id="statOrders">—</div>
+            <div class="hstat-lbl">הזמנות</div>
+          </div>
+          <div class="hstat">
+            <div class="hstat-num" id="statSpent">—</div>
+            <div class="hstat-lbl">סה"כ עסקאות</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="switchTab('orders')" id="tab-orders-btn">
+          <i class="ph ph-shopping-cart"></i> הזמנות
+          <span class="tab-count" id="orders-count">0</span>
+        </button>
+        <button class="tab-btn" onclick="switchTab('quotes')" id="tab-quotes-btn">
+          <i class="ph ph-file-text"></i> הצעות מחיר
+          <span class="tab-count" id="quotes-count">0</span>
+        </button>
+      </div>
+
+      <!-- Orders Tab -->
+      <div class="tab-panel active" id="panel-orders">
+        <div class="table-wrap">
+          <table class="hist-table">
+            <thead>
+              <tr>
+                <th>קוד הזמנה</th>
+                <th>תאריך</th>
+                <th>פרויקט / תיאור</th>
+                <th>סטטוס</th>
+                <th>סכום</th>
+              </tr>
+            </thead>
+            <tbody id="orders-body">
+              <tr><td colspan="5" style="text-align:center;padding:2.5rem;color:var(--silver-dark);">
+                <i class="ph ph-circle-notch spin" style="font-size:1.4rem;display:block;margin-bottom:0.5rem;"></i>
+                טוען...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Quotes Tab -->
+      <div class="tab-panel" id="panel-quotes">
+        <div class="table-wrap">
+          <table class="hist-table">
+            <thead>
+              <tr>
+                <th>קוד הצעה</th>
+                <th>תאריך</th>
+                <th>לקוח / פרויקט</th>
+                <th>סטטוס</th>
+                <th>סכום</th>
+              </tr>
+            </thead>
+            <tbody id="quotes-body">
+              <tr><td colspan="5" style="text-align:center;padding:2.5rem;color:var(--silver-dark);">
+                <i class="ph ph-circle-notch spin" style="font-size:1.4rem;display:block;margin-bottom:0.5rem;"></i>
+                טוען...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+/* ── Sidebar ── */
+const sidebarScript = document.createElement('script');
+sidebarScript.src = 'js/admin-sidebar.js';
+document.body.appendChild(sidebarScript);
+
+/* ── Helpers ── */
+const params = new URLSearchParams(location.search);
+const userId = params.get('id');
+
+function formatDate(iso) {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+}
+
+const STATUS_LABELS = {
+  pending:             'ממתין',
+  in_production:       'בייצור',
+  ready_for_delivery:  'מוכן למשלוח',
+  delivered:           'נמסר',
+  cancelled:           'בוטל',
+  dispute:             'מחלוקת',
+};
+
+function statusPill(status) {
+  const lbl = STATUS_LABELS[status] || status || '—';
+  const cls  = `sp-${status || 'default'}`;
+  return `<span class="status-pill ${cls}">${lbl}</span>`;
+}
+
+/* ── Tab switch ── */
+window.switchTab = function(tab) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(`panel-${tab}`).classList.add('active');
+  document.getElementById(`tab-${tab}-btn`).classList.add('active');
+};
+
+/* ── Load ── */
+async function init() {
+  if (!userId) {
+    document.getElementById('userName').textContent = 'משתמש לא נמצא';
+    return;
+  }
+
+  /* Profile */
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('full_name, business_name, total_quotes_count, total_orders, total_spent')
+    .eq('id', userId)
+    .single();
+
+  if (profile) {
+    document.getElementById('userName').textContent = profile.full_name || '—';
+    document.getElementById('userBiz').textContent  = profile.business_name || '';
+    document.getElementById('statQuotes').textContent = profile.total_quotes_count ?? '—';
+    document.getElementById('statOrders').textContent = profile.total_orders ?? '—';
+    const spent = Number(profile.total_spent ?? 0).toLocaleString('he-IL');
+    document.getElementById('statSpent').textContent  = `₪${spent}`;
+    document.title = `היסטוריה — ${profile.business_name || profile.full_name || 'משתמש'}`;
+  }
+
+  /* Orders */
+  const { data: orders, error: ordErr } = await supabase
+    .from('orders')
+    .select('id, created_at, category, sub_product, status, total_price, subtotal, grand_total, order_code')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  const oBody = document.getElementById('orders-body');
+  if (ordErr || !orders || orders.length === 0) {
+    oBody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ph ph-shopping-cart"></i><p>אין הזמנות</p></div></td></tr>`;
+  } else {
+    document.getElementById('orders-count').textContent = orders.length;
+    oBody.innerHTML = orders.map(o => {
+      const amount = o.grand_total ?? o.total_price ?? o.subtotal;
+      const amtHtml = amount != null
+        ? `<span class="amount-cell">₪${Number(amount).toLocaleString('he-IL')}</span>`
+        : '<span style="color:var(--silver-dark);">—</span>';
+      const code = o.order_code || o.id?.slice(0, 8).toUpperCase() || '—';
+      const desc = [o.category, o.sub_product].filter(Boolean).join(' — ') || '—';
+      return `<tr>
+        <td><span class="ref-code">${code}</span></td>
+        <td>${formatDate(o.created_at)}</td>
+        <td>${desc}</td>
+        <td>${statusPill(o.status)}</td>
+        <td>${amtHtml}</td>
+      </tr>`;
+    }).join('');
+  }
+
+  /* Quotes */
+  const { data: quotes, error: qErr } = await supabase
+    .from('quotes')
+    .select('id, created_at, client_name, project_type, status, total_price, subtotal, total_amount, quote_code')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false });
+
+  const qBody = document.getElementById('quotes-body');
+  if (qErr || !quotes || quotes.length === 0) {
+    qBody.innerHTML = `<tr><td colspan="5"><div class="empty-state"><i class="ph ph-file-text"></i><p>אין הצעות מחיר</p></div></td></tr>`;
+  } else {
+    document.getElementById('quotes-count').textContent = quotes.length;
+    qBody.innerHTML = quotes.map(q => {
+      const amount = q.total_amount ?? q.total_price ?? q.subtotal;
+      const amtHtml = amount != null
+        ? `<span class="amount-cell">₪${Number(amount).toLocaleString('he-IL')}</span>`
+        : '<span style="color:var(--silver-dark);">—</span>';
+      const code = q.quote_code || q.id?.slice(0, 8).toUpperCase() || '—';
+      const label = [q.client_name, q.project_type].filter(Boolean).join(' — ') || '—';
+      return `<tr>
+        <td><span class="ref-code">${code}</span></td>
+        <td>${formatDate(q.created_at)}</td>
+        <td>${label}</td>
+        <td>${statusPill(q.status)}</td>
+        <td>${amtHtml}</td>
+      </tr>`;
+    }).join('');
+  }
+}
+
+init();
+</script>
+</body>
+</html>

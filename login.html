@@ -114,9 +114,15 @@
                     errorMessage.style.display = 'block';
                 } else {
                     const [{ data: profile }, { data: adminRow }] = await Promise.all([
-                        supabase.from('profiles').select('is_approved').eq('id', data.user.id).maybeSingle(),
+                        supabase.from('profiles').select('is_approved, is_blocked').eq('id', data.user.id).maybeSingle(),
                         supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).maybeSingle()
                     ]);
+                    if (profile?.is_blocked && !adminRow) {
+                        await supabase.auth.signOut();
+                        errorMessage.textContent = 'הגישה שלך הוגבלה. פנה למנהל המערכת.';
+                        errorMessage.style.display = 'block';
+                        return;
+                    }
                     window.location.href = (profile?.is_approved || adminRow) ? 'dashboard.html' : 'pending-approval.html';
                 }
             } catch (err) {

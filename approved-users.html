@@ -153,34 +153,104 @@
     .btn-expand:hover { border-color:var(--electric-blue);color:var(--electric-blue); }
     .btn-expand.open { border-color:var(--electric-blue);color:var(--electric-blue);background:var(--blue-dim); }
 
-    /* ─── Expand panel ─── */
-    .expand-row td { padding:0;border-bottom:1px solid var(--border);background:rgba(248,250,255,0.8); }
-    .expand-panel {
-      padding:1.5rem 1.75rem;
-      display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.25rem 2rem;
+    /* ─── Expand panel v2 ─── */
+    .expand-row td { padding:0; border-bottom:2px solid var(--electric-blue); background:var(--surface-dark); }
+    .expand-panel { display:flex; flex-direction:column; }
+    .ep-section { padding:1.25rem 1.75rem; border-bottom:1px solid var(--border); }
+    .ep-section:last-of-type { border-bottom:none; }
+    .ep-section-title {
+      display:flex; align-items:center; gap:0.45rem;
+      font-size:0.7rem; font-weight:800; text-transform:uppercase;
+      letter-spacing:0.8px; color:var(--silver-dark); margin-bottom:1rem;
     }
+    .ep-pin-note { font-size:0.62rem; font-weight:400; opacity:0.65; margin-right:0.5rem; }
+
+    /* Info grid (section 1) */
+    .ep-info-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:0.85rem 1.5rem; }
+    .ep-info-item { display:flex; flex-direction:column; gap:0.18rem; }
+    .ep-info-label { font-size:0.62rem; font-weight:700; color:var(--silver-dark); text-transform:uppercase; letter-spacing:0.4px; }
+    .ep-info-val { font-size:0.9rem; font-weight:600; color:var(--industrial-silver); }
+
+    /* Stats row (section 2) */
+    .ep-stats-row { display:flex; gap:0.75rem; flex-wrap:wrap; margin-bottom:0.9rem; }
+    .ep-stat-box {
+      flex:1; min-width:90px; padding:0.7rem 0.9rem; border-radius:10px;
+      background:rgba(100,100,100,0.05); border:1px solid var(--border); text-align:center;
+    }
+    .ep-stat-box--blue { background:var(--blue-dim); border-color:rgba(26,95,170,0.2); }
+    .ep-stat-box--green { background:rgba(22,163,74,0.06); border-color:rgba(22,163,74,0.22); }
+    .ep-stat-num { font-size:1.15rem; font-weight:800; color:var(--industrial-silver); }
+    .ep-stat-num--sm { font-size:0.78rem !important; }
+    .ep-stat-lbl { font-size:0.67rem; font-weight:600; color:var(--silver-dark); margin-top:0.2rem; }
+    .btn-history {
+      display:inline-flex; align-items:center; gap:0.4rem;
+      padding:0.38rem 0.95rem; border-radius:8px;
+      font-size:0.8rem; font-weight:700;
+      color:var(--electric-blue); background:var(--blue-dim);
+      border:1.5px solid rgba(26,95,170,0.2); text-decoration:none; transition:all 0.18s;
+    }
+    .btn-history:hover { background:rgba(26,95,170,0.15); }
+
+    /* Admin settings (section 3) */
+    .ep-admin-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1rem; }
     .ep-field label {
-      display:block;font-size:0.7rem;font-weight:800;color:var(--silver-dark);
-      text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.35rem;
+      display:block; font-size:0.68rem; font-weight:800; color:var(--silver-dark);
+      text-transform:uppercase; letter-spacing:0.5px; margin-bottom:0.35rem;
     }
     .ep-field input[type="text"],
     .ep-field input[type="date"],
-    .ep-field input[type="number"],
     .ep-field select,
     .ep-field textarea {
-      width:100%;padding:0.42rem 0.8rem;
-      border:1.5px solid var(--border);border-radius:8px;
-      font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--industrial-silver);
-      background:#fff;resize:vertical;
+      width:100%; padding:0.42rem 0.8rem;
+      border:1.5px solid var(--border); border-radius:8px;
+      font-family:'Heebo',sans-serif; font-size:0.88rem; color:var(--industrial-silver);
+      background:var(--surface-dark); resize:vertical;
     }
     .ep-field input:focus, .ep-field select:focus, .ep-field textarea:focus {
-      outline:none;border-color:var(--electric-blue);
+      outline:none; border-color:var(--electric-blue);
     }
-    .ep-stat { font-size:1.1rem;font-weight:800;color:var(--industrial-silver); }
-    .ep-stat-sub { font-size:0.75rem;color:var(--silver-dark);margin-top:0.15rem; }
+    .ep-admin-grid input[type="date"],
+    .ep-admin-grid select {
+      width:100%; padding:0.42rem 0.8rem;
+      border:1.5px solid var(--border); border-radius:8px;
+      font-family:'Heebo',sans-serif; font-size:0.88rem; color:var(--industrial-silver);
+      background:var(--surface-dark);
+    }
+    .ep-admin-grid input:focus, .ep-admin-grid select:focus { outline:none; border-color:var(--electric-blue); }
+    .spec-check-wrap { display:flex; flex-wrap:wrap; gap:0.4rem; }
+    .spec-ck {
+      display:inline-flex; align-items:center; gap:0.35rem;
+      padding:0.28rem 0.65rem; border-radius:20px; cursor:pointer;
+      font-size:0.76rem; font-weight:600;
+      border:1.5px solid var(--border); background:rgba(100,100,100,0.04);
+      transition:all 0.15s; user-select:none;
+    }
+    .spec-ck input { display:none; }
+    .spec-ck:has(input:checked) { background:var(--blue-dim); border-color:rgba(26,95,170,0.3); color:var(--electric-blue); }
+
+    /* Notes (section 4) */
+    .notes-log {
+      background:rgba(100,100,100,0.04); border:1px solid var(--border); border-radius:8px;
+      padding:0.7rem 1rem; font-size:0.82rem; color:var(--silver-dark);
+      white-space:pre-wrap; max-height:110px; overflow-y:auto;
+      margin-bottom:0.65rem; direction:rtl; text-align:right;
+      font-family:'Heebo',sans-serif; line-height:1.6;
+    }
+    .notes-log-empty { color:rgba(150,150,150,0.5); font-style:italic; font-size:0.75rem; }
+    .new-note-input {
+      width:100%; padding:0.45rem 0.85rem;
+      border:1.5px solid var(--border); border-radius:8px;
+      font-family:'Heebo',sans-serif; font-size:0.88rem;
+      color:var(--industrial-silver); background:var(--surface-dark);
+      resize:vertical;
+    }
+    .new-note-input:focus { outline:none; border-color:var(--electric-blue); }
+
+    /* Actions bar */
     .ep-actions {
-      grid-column:1/-1;display:flex;align-items:center;justify-content:flex-end;gap:0.6rem;
-      padding-top:0.5rem;border-top:1px solid var(--border);
+      display:flex; align-items:center; justify-content:flex-end; gap:0.6rem;
+      padding:0.9rem 1.75rem; background:rgba(248,250,255,0.04);
+      border-top:1px solid var(--border);
     }
     .btn-save-crm {
       display:inline-flex;align-items:center;gap:0.3rem;
@@ -191,6 +261,13 @@
     }
     .btn-save-crm:hover { opacity:0.88; }
     .btn-save-crm:disabled { opacity:0.4;pointer-events:none; }
+    .blocked-badge { display:inline-flex;align-items:center;gap:0.25rem;padding:0.18rem 0.6rem;border-radius:20px;font-size:0.71rem;font-weight:700;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25); }
+    .btn-block { display:inline-flex;align-items:center;gap:0.3rem;padding:0.38rem 0.9rem;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:1.5px solid rgba(220,38,38,0.3);background:rgba(220,38,38,0.07);color:#dc2626;transition:all 0.18s; }
+    .btn-block:hover { background:rgba(220,38,38,0.15); }
+    .btn-unblock { border-color:rgba(22,163,74,0.3) !important;background:rgba(22,163,74,0.07) !important;color:#16a34a !important; }
+    .btn-unblock:hover { background:rgba(22,163,74,0.15) !important; }
+    .btn-delete-user { display:inline-flex;align-items:center;gap:0.3rem;padding:0.38rem 0.9rem;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:1.5px solid rgba(220,38,38,0.5);background:transparent;color:#dc2626;transition:all 0.18s; }
+    .btn-delete-user:hover { background:rgba(220,38,38,0.1); }
     .save-ok { font-size:0.8rem;color:#16a34a;font-weight:700;display:none;align-items:center;gap:0.3rem; }
 
     /* ─── Stars ─── */
@@ -531,9 +608,9 @@ function buildMainRow(u) {
   const isExp = expandedId === u.id;
   const wa    = waLink(u.phone);
 
-  return `<tr class="data-row${isExp?' is-expanded':''}" onclick="toggleExpand('${u.id}')">
+  return `<tr class="data-row${isExp?' is-expanded':''}${u.is_blocked?' blocked-row':''}" onclick="toggleExpand('${u.id}')">
     <td class="biz-cell">
-      <div class="biz-name">${u.business_name || '—'}</div>
+      <div class="biz-name">${u.business_name || '—'} ${u.is_blocked ? '<span class="blocked-badge"><i class="ph ph-prohibit"></i> חסום</span>' : ''}</div>
       <div class="biz-meta">
         <span class="full-name">${u.full_name || ''}</span>
         ${u.created_at ? `<span class="join-date"><i class="ph ph-calendar-blank"></i>${formatDate(u.created_at)}</span>` : ''}
@@ -559,72 +636,137 @@ function buildMainRow(u) {
 /* ── Expand row ── */
 function buildExpandRow(u) {
   const expiry  = u.subscription_expiry ? u.subscription_expiry.split('T')[0] : '';
-  const notes   = (u.internal_notes || '').replace(/</g,'&lt;');
   const rating  = parseInt(u.rating) || 0;
-  const quotes  = u.total_quotes_count ?? '—';
+  const quotes  = u.total_quotes_count ?? 0;
+  const orders  = u.total_orders ?? 0;
+  const spent   = Number(u.total_spent ?? 0).toLocaleString('he-IL');
   const lastAct = u.last_activity ? new Date(u.last_activity).toLocaleString('he-IL') : '—';
+  const rawNotes = (u.internal_notes || '').trim();
 
   const stars = [1,2,3,4,5].map(n =>
     `<button class="star-btn${rating>=n?' lit':''}" data-n="${n}" onclick="setRating('${u.id}',${n})" title="${n} כוכבים">★</button>`
   ).join('');
 
+  const expertArr = [...new Set([...toArr(u.expertise), ...toArr(u.specialties)])];
+
+  const notesLogHtml = rawNotes
+    ? rawNotes.replace(/</g,'&lt;').replace(/\n/g,'<br>')
+    : '<span class="notes-log-empty">אין הערות עדיין</span>';
+
   return `<tr class="expand-row" id="expand-${u.id}">
     <td colspan="7">
       <div class="expand-panel">
 
-        <div class="ep-field" style="grid-column:1/-1;">
-          <label><i class="ph ph-graduation-cap"></i> תחומי התמחות</label>
+        <!-- Section 1: פרטי עסק -->
+        <div class="ep-section">
+          <div class="ep-section-title"><i class="ph ph-buildings"></i> פרטי עסק</div>
+          <div class="ep-info-grid">
+            <div class="ep-info-item">
+              <span class="ep-info-label"><i class="ph ph-envelope"></i> אימייל</span>
+              <span class="ep-info-val">${u.email || '—'}</span>
+            </div>
+            <div class="ep-info-item">
+              <span class="ep-info-label"><i class="ph ph-phone"></i> טלפון</span>
+              <span class="ep-info-val" style="direction:ltr;text-align:right;">${u.phone || '—'}</span>
+            </div>
+            <div class="ep-info-item">
+              <span class="ep-info-label"><i class="ph ph-map-pin"></i> עיר</span>
+              <span class="ep-info-val">${u.city || '—'}</span>
+            </div>
+            <div class="ep-info-item">
+              <span class="ep-info-label"><i class="ph ph-map-trifold"></i> כתובת</span>
+              <span class="ep-info-val">${u.business_address || '—'}</span>
+            </div>
+            <div class="ep-info-item">
+              <span class="ep-info-label"><i class="ph ph-identification-card"></i> ח.פ / עוסק מורשה</span>
+              <span class="ep-info-val">${u.business_id || '—'}</span>
+            </div>
+            <div class="ep-info-item">
+              <span class="ep-info-label"><i class="ph ph-clock-countdown"></i> שנות ניסיון</span>
+              <span class="ep-info-val">${u.experience_years != null ? u.experience_years : '—'}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: סטטיסטיקות שימוש -->
+        <div class="ep-section">
+          <div class="ep-section-title"><i class="ph ph-chart-bar"></i> סטטיסטיקות שימוש</div>
+          <div class="ep-stats-row">
+            <div class="ep-stat-box ep-stat-box--blue">
+              <div class="ep-stat-num">${quotes}</div>
+              <div class="ep-stat-lbl">הצעות מחיר</div>
+            </div>
+            <div class="ep-stat-box ep-stat-box--green">
+              <div class="ep-stat-num">${orders}</div>
+              <div class="ep-stat-lbl">הזמנות</div>
+            </div>
+            <div class="ep-stat-box ep-stat-box--blue">
+              <div class="ep-stat-num">₪${spent}</div>
+              <div class="ep-stat-lbl">סה"כ עסקאות</div>
+            </div>
+            <div class="ep-stat-box" style="background:rgba(107,70,193,0.06);border-color:rgba(107,70,193,0.2);">
+              <div class="ep-stat-num ep-stat-num--sm">${lastAct}</div>
+              <div class="ep-stat-lbl">פעילות אחרונה</div>
+            </div>
+          </div>
+          <a class="btn-history" href="admin-user-history.html?id=${u.id}" target="_blank">
+            <i class="ph ph-list-bullets"></i> היסטוריה מלאה
+          </a>
+        </div>
+
+        <!-- Section 3: הגדרות אדמין -->
+        <div class="ep-section">
+          <div class="ep-section-title"><i class="ph ph-gear"></i> הגדרות אדמין</div>
+          <div class="ep-admin-grid">
+            <div>
+              <div class="ep-label" style="font-size:0.7rem;color:var(--silver-dark);margin-bottom:0.5rem;"><i class="ph ph-credit-card"></i> סטטוס מנוי</div>
+              <select id="sub-${u.id}">
+                <option value="" ${!u.subscription_status?'selected':''}>— לא הוגדר</option>
+                <option value="trial"   ${ u.subscription_status==='trial'  ?'selected':''}>ניסיון</option>
+                <option value="active"  ${ u.subscription_status==='active' ?'selected':''}>פעיל</option>
+                <option value="expired" ${ u.subscription_status==='expired'?'selected':''}>פג תוקף</option>
+              </select>
+            </div>
+            <div>
+              <div class="ep-label" style="font-size:0.7rem;color:var(--silver-dark);margin-bottom:0.5rem;"><i class="ph ph-calendar"></i> תפוגת מנוי</div>
+              <input type="date" id="expiry-${u.id}" value="${expiry}">
+            </div>
+            <div>
+              <div class="ep-label" style="font-size:0.7rem;color:var(--silver-dark);margin-bottom:0.5rem;"><i class="ph ph-star"></i> דירוג פנימי</div>
+              <div class="star-row" id="stars-${u.id}">${stars}</div>
+              <input type="hidden" id="rating-${u.id}" value="${rating}">
+            </div>
+          </div>
+          <div class="ep-label" style="font-size:0.7rem;color:var(--silver-dark);margin-bottom:0.6rem;margin-top:0.75rem;display:flex;align-items:center;gap:0.35rem;"><i class="ph ph-graduation-cap"></i> תחומי התמחות</div>
           <div class="spec-check-wrap">
             ${Object.entries(SPEC_LABELS).map(([k, lbl]) =>
-              `<label class="spec-ck"><input type="checkbox" name="spec-${u.id}" value="${k}"${toArr(u.specialties).includes(k) ? ' checked' : ''}><span>${lbl}</span></label>`
+              `<label class="spec-ck"><input type="checkbox" name="spec-${u.id}" value="${k}"${expertArr.includes(k) ? ' checked' : ''}><span>${lbl}</span></label>`
             ).join('')}
           </div>
         </div>
 
-        <div class="ep-field" style="grid-column:1/-1;">
-          <label><i class="ph ph-note-pencil"></i> הערות פנימיות <span style="font-size:0.68rem;color:var(--silver-dark);margin-right:0.4rem;"><i class="ph ph-lock-key"></i> מחיקה מוגנת קוד 1503</span></label>
-          <textarea id="notes-${u.id}" rows="3" data-original="${notes}">${notes}</textarea>
-        </div>
-
-        <div class="ep-field">
-          <label><i class="ph ph-credit-card"></i> סטטוס מנוי</label>
-          <select id="sub-${u.id}">
-            <option value="" ${!u.subscription_status?'selected':''}>— לא הוגדר</option>
-            <option value="trial"   ${ u.subscription_status==='trial'  ?'selected':''}>ניסיון</option>
-            <option value="active"  ${ u.subscription_status==='active' ?'selected':''}>פעיל</option>
-            <option value="expired" ${ u.subscription_status==='expired'?'selected':''}>פג תוקף</option>
-          </select>
-        </div>
-
-        <div class="ep-field">
-          <label><i class="ph ph-calendar"></i> תפוגת מנוי</label>
-          <input type="date" id="expiry-${u.id}" value="${expiry}">
-        </div>
-
-        <div class="ep-field">
-          <label><i class="ph ph-star"></i> דירוג פנימי</label>
-          <div class="star-row" id="stars-${u.id}">${stars}</div>
-          <input type="hidden" id="rating-${u.id}" value="${rating}">
-        </div>
-
-        <div class="ep-field">
-          <label><i class="ph ph-shopping-cart"></i> הזמנות במערכת</label>
-          <div class="ep-stat">${u.total_orders ?? 0}</div>
-          <div class="ep-stat-sub">₪${Number(u.total_spent ?? 0).toLocaleString('he-IL')}</div>
-        </div>
-
-        <div class="ep-field">
-          <label><i class="ph ph-clock"></i> פעילות אחרונה</label>
-          <div class="ep-stat" style="font-size:0.88rem;">${lastAct}</div>
-        </div>
-
-        <div class="ep-field">
-          <label><i class="ph ph-phone"></i> טלפון</label>
-          <div class="ep-stat" style="font-size:0.88rem;direction:ltr;text-align:right;">${u.phone||'—'}</div>
+        <!-- Section 4: הערות פנימיות -->
+        <div class="ep-section" style="border-bottom:none;">
+          <div class="ep-section-title">
+            <i class="ph ph-note-pencil"></i> הערות פנימיות
+            <span style="font-size:0.68rem;color:var(--silver-dark);font-weight:400;text-transform:none;letter-spacing:0;"><i class="ph ph-lock-key"></i> מחיקה מוגנת קוד 1503</span>
+          </div>
+          <div class="notes-log" id="notes-log-${u.id}">${notesLogHtml}</div>
+          <div style="margin-top:0.75rem;">
+            <div style="font-size:0.7rem;color:var(--silver-dark);margin-bottom:0.4rem;display:flex;align-items:center;gap:0.3rem;"><i class="ph ph-plus-circle"></i> הוסף הערה חדשה</div>
+            <textarea class="new-note-input" id="new-note-${u.id}" rows="2" placeholder="כתוב הערה חדשה..."></textarea>
+          </div>
         </div>
 
         <div class="ep-actions">
           <span class="save-ok" id="save-ok-${u.id}"><i class="ph ph-check-circle"></i> נשמר בהצלחה</span>
+          <button class="btn-block${u.is_blocked ? ' btn-unblock' : ''}" onclick="toggleBlock('${u.id}', ${!!u.is_blocked})">
+            <i class="ph ph-${u.is_blocked ? 'lock-open' : 'prohibit'}"></i>
+            ${u.is_blocked ? 'בטל חסימה' : 'חסום משתמש'}
+          </button>
+          <button class="btn-delete-user" onclick="deleteUser('${u.id}')">
+            <i class="ph ph-trash"></i> מחק משתמש
+          </button>
           <button class="btn-save-crm" id="save-btn-${u.id}" onclick="saveUser('${u.id}')">
             <i class="ph ph-floppy-disk"></i> שמור שינויים
           </button>
@@ -665,25 +807,20 @@ window.saveUser = async function(id) {
   btn.disabled = true;
   btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
 
-  const notesEl      = document.getElementById(`notes-${id}`);
-  const originalNotes = notesEl?.dataset.original || '';
-  let   notes         = notesEl?.value ?? '';
+  /* existing notes from local cache */
+  const userIdx    = allUsers.findIndex(u => u.id === id);
+  const existingNotes = (userIdx !== -1 ? allUsers[userIdx].internal_notes : '') || '';
 
-  /* Deletion protection: PIN required if existing text was removed */
-  if (originalNotes && !notes.includes(originalNotes)) {
-    const code = prompt('קוד אישור נדרש למחיקת הערות קיימות:');
-    if (code !== '1503') {
-      if (code !== null) alert('קוד שגוי — ההערות לא שונו');
-      notes = originalNotes;
-      if (notesEl) notesEl.value = originalNotes;
-    }
-  }
+  /* new note to append */
+  const newNoteEl  = document.getElementById(`new-note-${id}`);
+  const newNoteRaw = newNoteEl?.value?.trim() || '';
 
-  /* Auto timestamp when notes are changed */
-  if (notes && notes !== originalNotes) {
+  let notes = existingNotes;
+  if (newNoteRaw) {
     const now = new Date();
     const ts = `[${String(now.getDate()).padStart(2,'0')}/${String(now.getMonth()+1).padStart(2,'0')}/${now.getFullYear()} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}] `;
-    if (!notes.trimStart().startsWith('[')) notes = ts + notes;
+    const newLine = ts + newNoteRaw;
+    notes = existingNotes ? existingNotes + '\n' + newLine : newLine;
   }
 
   const subSt  = document.getElementById(`sub-${id}`)?.value    ?? '';
@@ -709,24 +846,58 @@ window.saveUser = async function(id) {
   }
 
   /* update local cache */
-  const idx = allUsers.findIndex(u => u.id === id);
-  if (idx !== -1) {
-    Object.assign(allUsers[idx], {
+  if (userIdx !== -1) {
+    Object.assign(allUsers[userIdx], {
       internal_notes: notes,
       specialties,
-      subscription_status: subSt || allUsers[idx].subscription_status,
-      subscription_expiry: expiry || allUsers[idx].subscription_expiry,
-      rating: rating || allUsers[idx].rating,
+      subscription_status: subSt || allUsers[userIdx].subscription_status,
+      subscription_expiry: expiry || allUsers[userIdx].subscription_expiry,
+      rating: rating || allUsers[userIdx].rating,
     });
   }
-  /* update textarea baseline so re-saves don't re-trigger timestamp */
-  if (notesEl) { notesEl.dataset.original = notes; notesEl.value = notes; }
+
+  /* update notes log in DOM + clear new-note field */
+  if (newNoteEl) newNoteEl.value = '';
+  const logEl = document.getElementById(`notes-log-${id}`);
+  if (logEl) {
+    logEl.innerHTML = notes
+      ? notes.replace(/</g,'&lt;').replace(/\n/g,'<br>')
+      : '<span class="notes-log-empty">אין הערות עדיין</span>';
+  }
 
   updateStats();
   const ok = document.getElementById(`save-ok-${id}`);
   if (ok) { ok.style.display = 'flex'; setTimeout(() => { ok.style.display = 'none'; }, 2500); }
   btn.disabled = false;
   btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור שינויים';
+};
+
+/* ── Block / Unblock ── */
+window.toggleBlock = async function(id, isBlocked) {
+  const code = prompt(isBlocked ? 'קוד לביטול חסימה:' : 'קוד לחסימת משתמש:');
+  if (code !== 'ALUM2026') { if (code !== null) alert('קוד שגוי'); return; }
+  const reason = !isBlocked ? (prompt('סיבת החסימה (אופציונלי):') || '') : null;
+  const { error } = await supabase.from('profiles').update({
+    is_blocked: !isBlocked,
+    blocked_reason: reason
+  }).eq('id', id);
+  if (error) { alert('שגיאה: ' + error.message); return; }
+  const idx = allUsers.findIndex(u => u.id === id);
+  if (idx !== -1) { allUsers[idx].is_blocked = !isBlocked; allUsers[idx].blocked_reason = reason; }
+  applyFilters();
+};
+
+/* ── Delete user ── */
+window.deleteUser = async function(id) {
+  const code = prompt('קוד אדמין למחיקת משתמש:');
+  if (code !== 'ALUM2026') { if (code !== null) alert('קוד שגוי'); return; }
+  const confirmTxt = prompt('כתוב "מחק" לאישור סופי:');
+  if (confirmTxt !== 'מחק') return;
+  const { error } = await supabase.from('profiles').delete().eq('id', id);
+  if (error) { alert('שגיאה: ' + error.message); return; }
+  allUsers = allUsers.filter(u => u.id !== id);
+  expandedId = null;
+  applyFilters();
 };
 
 init();

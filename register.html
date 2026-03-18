@@ -110,6 +110,24 @@
         .tag-checkbox span:hover {
             border-color: var(--electric-blue);
         }
+        .form-control.is-invalid {
+            border-color: #dc2626 !important;
+            background: rgba(220,38,38,0.04);
+        }
+        .field-error-msg {
+            color: #dc2626;
+            font-size: 0.78rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+        .field-error-msg.visible { display: block; }
+        .regions-error-msg {
+            color: #dc2626;
+            font-size: 0.82rem;
+            margin-bottom: 0.75rem;
+            display: none;
+        }
+        .regions-error-msg.visible { display: block; }
     </style>
 </head>
 
@@ -156,11 +174,13 @@
                                 <label class="form-label" for="fullName">שם מלא</label>
                                 <input type="text" id="fullName" class="form-control" required
                                     placeholder="ישראל ישראלי">
+                                <p class="field-error-msg" id="fullName-error"></p>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="businessName">שם העסק</label>
                                 <input type="text" id="businessName" class="form-control" required
                                     placeholder="אלומיניום הצפון">
+                                <p class="field-error-msg" id="businessName-error"></p>
                             </div>
                         </div>
                         <div class="form-row">
@@ -173,6 +193,7 @@
                                 <label class="form-label" for="phone">טלפון נייד</label>
                                 <input type="tel" id="phone" class="form-control" required placeholder="050-0000000"
                                     dir="ltr">
+                                <p class="field-error-msg" id="phone-error"></p>
                             </div>
                         </div>
                         <div class="form-row">
@@ -180,17 +201,25 @@
                                 <label class="form-label" for="email">כתובת דוא"ל</label>
                                 <input type="email" id="email" class="form-control" required
                                     placeholder="info@company.co.il" dir="ltr">
+                                <p class="field-error-msg" id="email-error"></p>
                             </div>
                             <div class="form-group">
                                 <label class="form-label" for="password">סיסמה</label>
                                 <input type="password" id="password" class="form-control" required
                                     placeholder="לפחות 6 תווים" dir="ltr">
+                                <p class="field-error-msg" id="password-error"></p>
                             </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="businessAddress">כתובת העסק</label>
-                            <input type="text" id="businessAddress" class="form-control" required
-                                placeholder="עיר, רחוב ומספר">
+                            <label class="form-label" for="businessCity">עיר</label>
+                            <input type="text" id="businessCity" class="form-control" required
+                                placeholder="לדוגמה: תל אביב">
+                            <p class="field-error-msg" id="businessCity-error"></p>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="businessAddress">רחוב ומספר</label>
+                            <input type="text" id="businessAddress" class="form-control"
+                                placeholder="לדוגמה: הרצל 12">
                         </div>
                         <button type="button" class="btn btn-primary btn-large btn-block mt-4" onclick="nextStep(2)">
                             המשך לשלב הבא <i class="ph ph-arrow-left"></i>
@@ -204,6 +233,7 @@
                         </div>
                         <p style="color:var(--silver-dark); font-size:0.9rem; margin-bottom:1rem;">סמן את כל אזורי
                             הפעילות בהם אתה מעניק שירות (בחירה מרובה).</p>
+                        <p class="regions-error-msg" id="regions-error">יש לבחור לפחות אזור פעילות אחד.</p>
 
                         <div class="tag-cloud">
                             <label class="tag-checkbox">
@@ -345,33 +375,55 @@ window.toggleSubmitBtn = function() {
 
 /* ── STEP NAVIGATION ── */
 window.nextStep = function(step) {
-  // Validate before leaving current step
   if (step === 2) {
-    const required = [
-      { id: 'fullName',        label: 'שם מלא' },
-      { id: 'businessName',    label: 'שם העסק' },
-      { id: 'phone',           label: 'טלפון' },
-      { id: 'email',           label: 'דוא"ל' },
-      { id: 'password',        label: 'סיסמה' },
-      { id: 'businessAddress', label: 'כתובת העסק' },
+    const fields = [
+      { id: 'fullName',     label: 'שם מלא' },
+      { id: 'businessName', label: 'שם העסק' },
+      { id: 'phone',        label: 'טלפון' },
+      { id: 'email',        label: 'דוא"ל' },
+      { id: 'password',     label: 'סיסמה' },
+      { id: 'businessCity', label: 'עיר' },
     ];
-    const missing = required.filter(f => !document.getElementById(f.id)?.value.trim()).map(f => f.label);
-    if (missing.length) {
-      alert('יש למלא את השדות הבאים: ' + missing.join(', '));
+    let hasError = false;
+    fields.forEach(f => {
+      const el    = document.getElementById(f.id);
+      const errEl = document.getElementById(f.id + '-error');
+      if (!el?.value.trim()) {
+        el?.classList.add('is-invalid');
+        if (errEl) { errEl.textContent = `שדה "${f.label}" הוא חובה`; errEl.classList.add('visible'); }
+        hasError = true;
+      } else {
+        el?.classList.remove('is-invalid');
+        if (errEl) errEl.classList.remove('visible');
+      }
+    });
+    if (hasError) {
+      document.querySelector('#step-1 .is-invalid')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
       return;
     }
   }
   if (step === 3) {
     const regions = document.querySelectorAll('input[name="regions"]:checked');
+    const errEl   = document.getElementById('regions-error');
     if (!regions.length) {
-      alert('יש לבחור לפחות אזור פעילות אחד.');
+      if (errEl) errEl.classList.add('visible');
       return;
     }
+    if (errEl) errEl.classList.remove('visible');
   }
   document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
   document.getElementById('step-' + step).classList.add('active');
   updateIndicators(step);
 };
+
+/* clear field errors on input */
+['fullName','businessName','phone','email','password','businessCity'].forEach(id => {
+  document.getElementById(id)?.addEventListener('input', function() {
+    this.classList.remove('is-invalid');
+    const errEl = document.getElementById(id + '-error');
+    if (errEl) errEl.classList.remove('visible');
+  });
+});
 
 window.prevStep = function(step) {
   document.querySelectorAll('.step-container').forEach(el => el.classList.remove('active'));
@@ -397,6 +449,7 @@ window.handleRegistration = async function() {
   const businessName    = document.getElementById('businessName').value.trim();
   const businessId      = document.getElementById('businessId').value.trim();
   const phone           = document.getElementById('phone').value.trim();
+  const businessCity    = document.getElementById('businessCity').value.trim();
   const businessAddress = document.getElementById('businessAddress').value.trim();
 
   const regions     = Array.from(document.querySelectorAll('input[name="regions"]:checked')).map(el => el.value);
@@ -406,8 +459,8 @@ window.handleRegistration = async function() {
   console.log('[REGISTER] email captured:', email || '⚠️ EMPTY');
   console.log('[REGISTER] fullName:', fullName, '| phone:', phone);
 
-  if (!email || !password || !fullName || !businessName || !phone || !businessAddress) {
-    const missing = [!email&&'דוא"ל', !password&&'סיסמה', !fullName&&'שם מלא', !businessName&&'שם העסק', !phone&&'טלפון', !businessAddress&&'כתובת העסק'].filter(Boolean);
+  if (!email || !password || !fullName || !businessName || !phone || !businessCity) {
+    const missing = [!email&&'דוא"ל', !password&&'סיסמה', !fullName&&'שם מלא', !businessName&&'שם העסק', !phone&&'טלפון', !businessCity&&'עיר'].filter(Boolean);
     console.warn('[REGISTER] Missing fields:', missing);
     showError('יש למלא את כל השדות החובה: ' + missing.join(', '));
     return;
@@ -425,6 +478,8 @@ window.handleRegistration = async function() {
 
     const profilePayload = {
       id:               authData.user.id,
+      email:            authData.user.email,
+      city:             businessCity,
       full_name:        fullName,
       business_name:    businessName,
       business_id:      businessId || null,

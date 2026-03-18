@@ -156,15 +156,16 @@
             <tr>
               <th>תאריך הרשמה</th>
               <th>שם עסק</th>
+              <th>אימייל</th>
               <th>ח"פ / ע"מ</th>
               <th>טלפון</th>
               <th>סוג גורם</th>
-              <th>התמחויות</th>
+              <th>התמחויות ואזורים</th>
               <th>פעולות</th>
             </tr>
           </thead>
           <tbody id="usersBody">
-            <tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);">
               <i class="ph ph-circle-notch spin"></i> טוען...
             </td></tr>
           </tbody>
@@ -209,12 +210,23 @@ async function requireAdmin() {
 let allUsers = [];
 
 const TYPE_LABELS = {
-  contractor: 'קבלן',
-  installer: 'מתקין',
-  architect: 'אדריכל',
-  designer: 'מעצב',
-  supplier: 'ספק',
-  other: 'אחר'
+  installer:    'מתקין',
+  manufacturer: 'יצרן אלומיניום',
+  importer:     'יבואן',
+  metalworker:  'מסגר',
+  warehouse:    'מחסן חומרי גלם',
+  gardening:    'גינון ופיתוח',
+  contractor:   'קבלן',
+  architect:    'אדריכל',
+  entrepreneur: 'יזם',
+  designer:     'מעצב',
+  supplier:     'ספק',
+  other:        'אחר'
+};
+
+const REGION_LABELS = {
+  north: 'צפון', haifa: 'חיפה והסביבה', sharon: 'שרון',
+  center: 'מרכז', jerusalem: 'ירושלים', south: 'דרום', eilat: 'אילת והערבה'
 };
 
 const SPEC_LABELS = {
@@ -246,7 +258,7 @@ async function loadUsers() {
 
   if (error) {
     console.error('[USERS] Supabase error:', error.message, error.code, error.details);
-    document.getElementById('usersBody').innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
+    document.getElementById('usersBody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
     return;
   }
 
@@ -255,12 +267,18 @@ async function loadUsers() {
   renderTable(allUsers);
 }
 
+function toArr(v) {
+  if (Array.isArray(v)) return v;
+  if (!v) return [];
+  try { const p = JSON.parse(v); return Array.isArray(p) ? p : [p]; } catch { return [v]; }
+}
+
 function renderTable(users) {
   document.getElementById('countLabel').textContent = `${users.length} ממתינים לאישור`;
 
   const tbody = document.getElementById('usersBody');
   if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7">
+    tbody.innerHTML = `<tr><td colspan="8">
       <div class="all-clear">
         <i class="ph ph-check-circle"></i>
         <p>אין בקשות ממתינות — הכל מעודכן!</p>
@@ -273,11 +291,13 @@ function renderTable(users) {
     try {
       const date = u.created_at ? new Date(u.created_at).toLocaleDateString('he-IL') : '—';
 
-      const typeArr = Array.isArray(u.user_type) ? u.user_type : (u.user_type ? [u.user_type] : []);
-      const specArr = Array.isArray(u.specialties) ? u.specialties : (u.specialties ? [u.specialties] : []);
+      const typeArr   = toArr(u.user_type);
+      const specArr   = toArr(u.specialties);
+      const regionArr = toArr(u.regions);
 
-      const types = typeArr.map(t => `<span class="type-badge">${TYPE_LABELS[t] || t}</span>`).join('');
-      const specs = specArr.map(s => `<span class="spec-tag">${SPEC_LABELS[s] || s}</span>`).join('');
+      const types   = typeArr.map(t   => `<span class="type-badge">${TYPE_LABELS[t]   || t}</span>`).join('');
+      const specs   = specArr.map(s   => `<span class="spec-tag">${SPEC_LABELS[s]     || s}</span>`).join('');
+      const regions = regionArr.map(r => `<span class="spec-tag">${REGION_LABELS[r]   || r}</span>`).join('');
 
       return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()}" data-bid="${(u.business_id||'').toLowerCase()}">
         <td class="date-cell">${date}</td>
@@ -285,10 +305,11 @@ function renderTable(users) {
           <div class="biz-name">${u.business_name || '—'}</div>
           <div style="font-size:0.78rem;color:var(--silver-dark)">${u.full_name || ''}</div>
         </td>
+        <td style="font-size:0.82rem;color:var(--silver-dark);">${u.email || '—'}</td>
         <td class="biz-id">${u.business_id || '—'}</td>
         <td class="phone-cell">${u.phone || '—'}</td>
         <td>${types || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
-        <td>${specs || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
+        <td>${specs}${regions ? (specs ? '<br>' : '') + regions : ''}</td>
         <td>
           <div class="actions-cell">
             <button class="btn-approve" id="approve-${u.id}" onclick="handleAction('${u.id}','approved')">
@@ -302,7 +323,7 @@ function renderTable(users) {
       </tr>`;
     } catch (rowErr) {
       console.error('[USERS] renderTable row error for id:', u?.id, rowErr);
-      return `<tr><td colspan="7" style="color:#dc2626;padding:0.5rem 1rem;">שגיאה בשורה: ${u?.business_name || u?.id || '?'}</td></tr>`;
+      return `<tr><td colspan="8" style="color:#dc2626;padding:0.5rem 1rem;">שגיאה בשורה: ${u?.business_name || u?.id || '?'}</td></tr>`;
     }
   }).join('');
 }
@@ -335,7 +356,7 @@ window.handleAction = async function(id, newStatus) {
       allUsers = allUsers.filter(u => u.id !== id);
       document.getElementById('countLabel').textContent = `${allUsers.length} ממתינים לאישור`;
       if (allUsers.length === 0) {
-        document.getElementById('usersBody').innerHTML = `<tr><td colspan="7">
+        document.getElementById('usersBody').innerHTML = `<tr><td colspan="8">
           <div class="all-clear">
             <i class="ph ph-check-circle"></i>
             <p>אין בקשות ממתינות — הכל מעודכן!</p>

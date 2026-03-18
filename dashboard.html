@@ -247,7 +247,7 @@
         <li><a onclick="showSection('documents')" id="nav-documents"><i class="ph ph-files"></i> חשבוניות ומסמכים</a></li>
         <li><a onclick="showSection('settings')" id="nav-settings"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
         <li class="nav-admin-link" id="adminNavItem" style="display:none;">
-          <a href="admin.html"><i class="ph ph-shield-star"></i> פאנל ניהול</a>
+          <a href="admin-overview.html"><i class="ph ph-shield-star"></i> פאנל ניהול</a>
         </li>
       </ul>
     </aside>
@@ -400,10 +400,11 @@ async function init() {
   localStorage.setItem('alumCartUserId', user.id);
 
   const [{ data: profile }, { data: adminRow }] = await Promise.all([
-    supabase.from('profiles').select('is_approved').eq('id', user.id).maybeSingle(),
+    supabase.from('profiles').select('is_approved, is_blocked').eq('id', user.id).maybeSingle(),
     supabase.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle()
   ]);
   if (!profile?.is_approved && !adminRow) { window.location.href = 'pending-approval.html'; return; }
+  if (profile?.is_blocked && !adminRow) { await supabase.auth.signOut(); window.location.href = 'login.html'; return; }
 
   document.getElementById('userEmail').textContent = user.email;
 
