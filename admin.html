@@ -484,15 +484,17 @@ window.updateStatus = async function(sel) {
 
   /* Determine if password is needed */
   let needsPassword = false;
-  if (isExitingSpecial) {
-    needsPassword = true; // exiting cancelled/dispute always needs password
-  } else if (!isEnteringSpecial && !isForward) {
+  if (isEnteringSpecial || isExitingSpecial) {
+    needsPassword = true; // entering or exiting cancelled/dispute always needs password
+  } else if (!isForward) {
     needsPassword = true; // backward or skipping steps
   }
 
   if (needsPassword) {
     const reason = isExitingSpecial
       ? `יציאה מסטטוס "${prevStatus === 'cancelled' ? 'בוטל' : 'מחלוקת'}" מצריכה אישור.`
+      : isEnteringSpecial
+      ? 'ביטול / מחלוקת מצריכים אישור מנהל.'
       : 'שינוי שלב שאינו רצוף מצריך אישור מנהל.';
     const pwd = window.prompt(`${reason}\nהכנס סיסמה:`);
     if (pwd !== ADMIN_PWD) {
