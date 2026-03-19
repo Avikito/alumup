@@ -37,12 +37,20 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: 'Heebo', sans-serif;
-  background: var(--bg);
+  background: linear-gradient(160deg, #d6e4f0 0%, #ddeaf4 40%, #e4eef6 70%, #d8e6f2 100%);
+  background-attachment: fixed;
   color: var(--white);
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   padding-bottom: 80px;
+}
+
+body::before {
+  content: '';
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image: radial-gradient(circle, rgba(150,180,220,0.25) 1px, transparent 1px);
+  background-size: 22px 22px;
 }
 
 a { text-decoration: none; color: inherit; }
@@ -75,6 +83,8 @@ a { text-decoration: none; color: inherit; }
   display: flex;
   flex: 1;
   min-height: 0;
+  position: relative;
+  z-index: 1;
 }
 
 /* ── SIDEBAR ── */
@@ -120,6 +130,8 @@ a { text-decoration: none; color: inherit; }
   max-width: 960px;
   margin-left: auto;
   margin-right: auto;
+  position: relative;
+  z-index: 1;
 }
 
 .breadcrumb {
@@ -135,9 +147,22 @@ a { text-decoration: none; color: inherit; }
 
 /* ── SECTION ── */
 .section {
-  margin-bottom: 2.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-right: 4px solid var(--blue);
-  padding-right: 1rem;
+  border-radius: var(--radius-lg);
+  padding: 1.5rem 1.75rem;
+  margin-bottom: 1.75rem;
+  box-shadow: 0 2px 8px rgba(0,40,100,0.07), 0 8px 32px rgba(0,40,100,0.05);
+  animation: fadeUp 0.35s ease both;
+}
+.section:nth-child(2) { animation-delay: 0.07s; }
+.section:nth-child(3) { animation-delay: 0.14s; }
+.section:nth-child(4) { animation-delay: 0.21s; }
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 .section-header {
   display: flex;
@@ -919,6 +944,27 @@ a { text-decoration: none; color: inherit; }
 }
 .btn-confirm-measure:hover { opacity: 0.88; }
 
+/* ── MEASURE SERVICE CARD ── */
+.measure-service-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-right: 4px solid var(--gold);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.25rem;
+}
+.measure-price-row { display: flex; align-items: baseline; gap: 0.6rem; margin-bottom: 0.75rem; }
+.measure-price-val { font-size: 1.8rem; font-weight: 900; color: var(--gold); }
+.measure-price-note { font-size: 0.8rem; color: var(--silver); }
+.measure-includes { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.4rem; }
+.measure-includes li { font-size: 0.88rem; color: var(--white); display: flex; align-items: center; gap: 0.5rem; }
+.measure-payment-header {
+  font-size: 1rem; font-weight: 700; color: var(--white);
+  display: flex; align-items: center; gap: 0.5rem;
+  margin-bottom: 1.25rem; padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--border);
+}
+
 /* ── LED TONE ── */
 #led-tone-systems {
   margin-top: 0.75rem;
@@ -1077,10 +1123,11 @@ a { text-decoration: none; color: inherit; }
   <aside class="sidebar">
     <div class="sidebar-label">תפריט פעולות</div>
     <a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a>
-    <a href="#"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות</a>
-    <a href="#" class="active"><i class="ph ph-shopping-bag"></i> הזמנות חדשות</a>
-    <a href="#"><i class="ph ph-file-text"></i> חשבוניות ומסמכים</a>
-    <a href="#"><i class="ph ph-gear"></i> הגדרות פרופיל</a>
+    <a href="dashboard.html?section=saved-quotes"><i class="ph ph-note-pencil"></i> הצעות שמורות</a>
+    <a href="dashboard.html?section=in-progress"><i class="ph ph-factory"></i> הזמנות בתהליך</a>
+    <a href="dashboard.html?section=history"><i class="ph ph-clock-counter-clockwise"></i> היסטוריה</a>
+    <a href="dashboard.html?section=documents"><i class="ph ph-files"></i> מסמכים</a>
+    <a href="dashboard.html?section=settings"><i class="ph ph-gear"></i> הגדרות פרופיל</a>
 
     <div class="sidebar-section-divider"></div>
     <div class="sidebar-section-label">כלים</div>
@@ -1172,20 +1219,6 @@ a { text-decoration: none; color: inherit; }
         <li><i class="ph ph-check-circle-fill"></i> כל אביזרי ההרכבה</li>
       </ul>
 
-      <div class="section-header" style="margin-bottom:1rem;">
-        <h3 style="font-size:1rem; font-weight:700; color:var(--silver);">סוג תמיכה קדמית</h3>
-      </div>
-      <div class="support-grid">
-        <div class="support-card active" id="support-legs" onclick="setSupportType('legs')">
-          <div class="title">רגליים קדמיות</div>
-          <div class="desc">פרופיל 100/100 מ"מ | תמיכה סטנדרטית</div>
-        </div>
-        <div class="support-card" id="support-tension" onclick="setSupportType('tension')">
-          <span class="icon">🔗</span>
-          <div class="title">מותחנים לתלייה</div>
-          <div class="desc">תלייה מהמבנה, ללא רגליים קדמיות</div>
-        </div>
-      </div>
     </section>
 
     <div class="section-divider"></div>
@@ -1408,47 +1441,102 @@ a { text-decoration: none; color: inherit; }
       <button class="btn-close-modal" onclick="closeMeasureModal()"><i class="ph ph-x"></i></button>
     </div>
 
-    <div class="measure-field">
-      <label>מה רוצים למדוד?</label>
-      <select id="m-what">
-        <option value="">בחר...</option>
-        <option value="פרגולה חשמלית PVC">פרגולה חשמלית PVC</option>
-        <option value="פרגולה ביוקלימטית">פרגולה ביוקלימטית</option>
-        <option value="חלונות ודלתות">חלונות ודלתות</option>
-        <option value="גדרות ומעקות">גדרות ומעקות</option>
-        <option value="אחר">אחר</option>
-      </select>
+    <!-- שלב 1: פרטים -->
+    <div id="measure-step-1">
+      <div class="measure-service-card">
+        <div class="measure-price-row"><span class="measure-price-val">₪350</span><span class="measure-price-note">כולל מע"מ · תשלום חד פעמי</span></div>
+        <ul class="measure-includes">
+          <li><i class="ph ph-check-circle" style="color:var(--green)"></i> ביקור טכנאי מוסמך בשטח</li>
+          <li><i class="ph ph-check-circle" style="color:var(--green)"></i> מדידות מדויקות לכל הפתחים</li>
+          <li><i class="ph ph-check-circle" style="color:var(--green)"></i> סיכום ממצאים בכתב</li>
+          <li><i class="ph ph-check-circle" style="color:var(--green)"></i> ייעוץ ראשוני לבחירת המוצר</li>
+        </ul>
+      </div>
+
+      <div class="measure-field">
+        <label>מה רוצים למדוד?</label>
+        <select id="m-what">
+          <option value="">בחר...</option>
+          <option value="פרגולה חשמלית PVC">פרגולה חשמלית PVC</option>
+          <option value="פרגולה ביוקלימטית">פרגולה ביוקלימטית</option>
+          <option value="חלונות ודלתות">חלונות ודלתות</option>
+          <option value="גדרות ומעקות">גדרות ומעקות</option>
+          <option value="אחר">אחר</option>
+        </select>
+      </div>
+
+      <div class="measure-field">
+        <label>הערכת שטח (מ"ר)</label>
+        <input type="number" id="m-sqm" placeholder="לדוגמה: 20" min="1">
+      </div>
+
+      <div class="measure-field">
+        <label>סוג הנכס</label>
+        <div class="measure-radio-row">
+          <label class="measure-radio"><input type="radio" name="m-type" value="בית פרטי"> בית פרטי</label>
+          <label class="measure-radio"><input type="radio" name="m-type" value="דירה"> דירה</label>
+          <label class="measure-radio"><input type="radio" name="m-type" value="מסחרי"> מסחרי</label>
+          <label class="measure-radio"><input type="radio" name="m-type" value="אחר"> אחר</label>
+        </div>
+      </div>
+
+      <div class="measure-field">
+        <label>כתובת הנכס</label>
+        <input type="text" id="m-address" placeholder="רחוב, מספר, עיר">
+      </div>
+
+      <button class="btn-confirm-measure" onclick="confirmMeasure()">
+        המשך לתשלום <i class="ph ph-arrow-left"></i>
+      </button>
     </div>
 
-    <div class="measure-field">
-      <label>הערכת שטח (מ"ר)</label>
-      <input type="number" id="m-sqm" placeholder="לדוגמה: 20" min="1">
-    </div>
-
-    <div class="measure-field">
-      <label>סוג הנכס</label>
-      <div class="measure-radio-row">
-        <label class="measure-radio"><input type="radio" name="m-type" value="בית פרטי"> בית פרטי</label>
-        <label class="measure-radio"><input type="radio" name="m-type" value="דירה"> דירה</label>
-        <label class="measure-radio"><input type="radio" name="m-type" value="מסחרי"> מסחרי</label>
-        <label class="measure-radio"><input type="radio" name="m-type" value="אחר"> אחר</label>
+    <!-- שלב 2: תשלום -->
+    <div id="measure-payment-step" style="display:none;">
+      <div class="measure-payment-header">
+        <i class="ph ph-lock-key" style="color:var(--gold)"></i> תשלום ₪350 — שירות מדידה
+      </div>
+      <div class="payment-buttons">
+        <button class="btn-payment" id="mbtn-bank" onclick="showMeasurePayment('bank')">
+          <i class="ph ph-bank"></i> העברה בנקאית
+        </button>
+        <button class="btn-payment" id="mbtn-credit" onclick="showMeasurePayment('credit')">
+          <i class="ph ph-credit-card"></i> תשלום באשראי
+        </button>
+      </div>
+      <div class="payment-panel" id="mpanel-bank">
+        <div class="bank-details">
+          <div class="bank-row"><span class="key">בנק</span><span class="val">הפועלים (12)</span></div>
+          <div class="bank-row"><span class="key">סניף</span><span class="val">123</span></div>
+          <div class="bank-row"><span class="key">מספר חשבון</span><span class="val">123456</span></div>
+          <div class="bank-row"><span class="key">על שם</span><span class="val">אלום-איל בע"מ</span></div>
+        </div>
+        <div class="order-code-box">
+          <div class="order-code-label">קוד הזמנה</div>
+          <div class="order-code-val" id="mOrderCodeDisplay">—</div>
+          <div class="order-code-hint">יש לציין קוד זה בביצוע ההעברה</div>
+        </div>
+        <button class="btn-wa-proof" onclick="sendMeasureProofWA()">
+          <i class="ph ph-whatsapp-logo"></i> שלח אסמכתא ב-WhatsApp
+        </button>
+        <button class="btn-confirm-measure" style="margin-top:1rem;background:var(--green);" onclick="submitMeasureOrder()">
+          <i class="ph ph-check-circle"></i> אישור — שלחתי העברה
+        </button>
+      </div>
+      <div class="payment-panel" id="mpanel-credit">
+        <div class="credit-form">
+          <div class="field"><label>מספר כרטיס</label><input type="text" id="mCcNum" placeholder="XXXX XXXX XXXX XXXX" maxlength="19"></div>
+          <div class="credit-row">
+            <div class="field"><label>תוקף</label><input type="text" id="mCcExp" placeholder="MM/YY" maxlength="5"></div>
+            <div class="field"><label>CVV</label><input type="text" id="mCcCvv" placeholder="CVV" maxlength="4"></div>
+          </div>
+          <div class="field"><label>שם על הכרטיס</label><input type="text" id="mCcName" placeholder="שם מלא"></div>
+          <button class="btn-submit-credit" onclick="submitMeasureOrder()">
+            <i class="ph ph-lock-key"></i> אישור תשלום מאובטח — ₪350
+          </button>
+        </div>
       </div>
     </div>
 
-    <div class="measure-field">
-      <label>כתובת הנכס</label>
-      <input type="text" id="m-address" placeholder="רחוב, מספר, עיר">
-    </div>
-
-    <div class="measure-field">
-      <label>צירוף תמונה (אופציונלי)</label>
-      <input type="file" id="m-photo" accept="image/*">
-      <span class="measure-file-note">תמונת המקום תעזור לטכנאי להגיע מוכן. הקובץ לא נשלח אוטומטית.</span>
-    </div>
-
-    <button class="btn-confirm-measure" onclick="confirmMeasure()">
-      <i class="ph ph-check-circle"></i> אשר הזמנה — ₪350
-    </button>
   </div>
 </div>
 
@@ -1491,7 +1579,7 @@ const PROFILE_PRICES = { '20/20': 50, '30/30': 65, '20/40': 55, '100/100': 310, 
 const PROFILE_NAMES  = { '20/20': 'זווית 20×20', '30/30': 'זווית 30×30', '20/40': 'זווית 20×40', '100/100': 'פרופיל 100×100', '100/40': 'פרופיל 100×40', '120/80': 'פרופיל 120×80 (זכוכית)' };
 
 /* Addon prices — defaults overridden by global_settings */
-const ADDON_PRICES = { perSqm: 380, packaging: 120, led: 30, remote: 400, tahoma: 600, dimmer: 100 };
+const ADDON_PRICES = { perSqm: 380, packaging: 120, led: 30, remote: 400, tahoma: 600, dimmer: 100, levelingBeam: 450 };
 window.prices = ADDON_PRICES; // expose for debugging + external access
 
 let nextId = 2;
@@ -1499,7 +1587,8 @@ const state = {
   projectName: '',
   projectNumber: '',
   supportType: 'legs',
-  addons: { led: false, remote: false, tahoma: false, dimmer: false },
+  addons: { led: false, remote: false, tahoma: false, dimmer: false, levelingBeam: { sides: 0 } },
+  lbFlash: false,
   measureService: false,
   packagingFee: null, // null = use window.prices.kit_pvc_packaging_fee
   markup: 25,           // % profit margin for customer quote
@@ -1527,7 +1616,8 @@ function newSystemObj(id) {
     ledColorCustom: '',
     lightingColor: '9016',
     lightingColorCustom: '',
-    ledTone: 'warm'
+    ledTone: 'warm',
+    levelingBeamLength: null
   };
 }
 
@@ -1553,6 +1643,8 @@ function calcTotal() {
   if (state.addons.remote) subtotal += ADDON_PRICES.remote;
   if (state.addons.tahoma) subtotal += ADDON_PRICES.tahoma;
   if (state.addons.dimmer) subtotal += ADDON_PRICES.dimmer;
+  if (state.addons.levelingBeam?.sides > 0)
+    subtotal += state.addons.levelingBeam.sides * ADDON_PRICES.levelingBeam * state.systems.length;
   if (state.measureService) subtotal += 350;
   // Packaging fee — per system, overridable per project
   const pkgFee = state.packagingFee !== null ? Number(state.packagingFee) : ADDON_PRICES.packaging;
@@ -1720,6 +1812,48 @@ function buildSystemCard(s) {
         </div>
       </div>
 
+      <!-- Support type toggle -->
+      <div style="display:flex;gap:0.5rem;margin-bottom:0.5rem;">
+        <div class="support-card ${state.supportType==='legs'?'active':''}" id="support-legs" onclick="setSupportType('legs')" style="flex:1;">
+          <div class="title">רגליים קדמיות</div>
+        </div>
+        <div class="support-card ${state.supportType==='tension'?'active':''}" id="support-tension" onclick="setSupportType('tension')" style="flex:1;">
+          <div class="title">מותחנים לתלייה</div>
+        </div>
+      </div>
+      <div id="tension-warn-${s.id}"></div>
+
+      <!-- Leveling beam panel -->
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:0.65rem 0.8rem;margin-bottom:0.75rem;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.4rem;">
+          <div>
+            <span style="font-size:0.83rem;font-weight:700;color:var(--silver);">קורת פילוס 120×80</span>
+            <span style="font-size:0.74rem;color:var(--silver-dark);margin-right:0.4rem;">| קורה עם חריצים לחיזוק וסגירת משולשים</span>
+          </div>
+          <span style="font-size:0.78rem;font-weight:700;color:var(--gold);">₪450 / צד</span>
+        </div>
+        <div style="display:flex;gap:0.4rem;margin-bottom:${state.addons.levelingBeam.sides>0?'0.5rem':'0'};">
+          ${[{v:0,l:'ללא'},{v:1,l:'צד אחד'},{v:2,l:'שני צדדים'}].map(opt=>`
+          <div onclick="setLevelingBeamSides(${opt.v})" data-lb-v="${opt.v}"
+            style="flex:1;text-align:center;padding:0.3rem 0;border-radius:7px;cursor:pointer;font-size:0.8rem;font-weight:600;
+                   border:1.5px solid ${state.addons.levelingBeam.sides===opt.v?'var(--gold)':'var(--border)'};
+                   background:${state.addons.levelingBeam.sides===opt.v?'rgba(212,175,55,0.12)':'transparent'};
+                   color:${state.addons.levelingBeam.sides===opt.v?'var(--gold)':'var(--silver)'};">
+            ${opt.l}
+          </div>`).join('')}
+        </div>
+        <div id="lb-length-${s.id}" style="display:${state.addons.levelingBeam.sides>0?'flex':'none'};align-items:center;gap:0.5rem;margin-top:0.4rem;">
+          <label style="font-size:0.78rem;color:var(--silver-dark);">אורך קורה:</label>
+          <input type="number" min="50" max="2000" step="10"
+            value="${s.levelingBeamLength || s.depth}"
+            oninput="updateLevelingBeamLength(${s.id}, this.value)"
+            style="width:75px;background:var(--surface);border:1px solid var(--border);border-radius:6px;
+                   padding:0.25rem 0.4rem;color:var(--white);font-family:'Heebo',sans-serif;font-size:0.82rem;text-align:center;">
+          <span style="font-size:0.78rem;color:var(--silver-dark);">ס"מ</span>
+          <span style="font-size:0.74rem;color:var(--silver-dark);margin-right:auto;">(ברירת מחדל: ${s.depth} ס"מ)</span>
+        </div>
+      </div>
+
       <!-- SVG PREVIEWS -->
       <div class="preview-row">
         <div class="preview-box">
@@ -1803,54 +1937,145 @@ function svgIsometric(s) {
   const sbLTB= pt(-w/2,   d,   hB+bm), sbLTF= pt(-w/2,   0, hF+bm);
   const sbLBB= pt(-w/2,   d,   hB),    sbLBF= pt(-w/2,   0, hF);
 
-  // ── PVC louver slats (run front→back with slope) ──
-  const nSlats = 10;
-  const slats = [];
-  for(let i = 0; i < nSlats; i++) {
-    const t  = (i + 0.5) / nSlats;
-    const x  = -w/2 + w * t;
-    const sw = 3.2;
-    // top face
-    const s1 = pt(x-sw, 0, hF+bm+1), s2 = pt(x+sw, 0, hF+bm+1);
-    const s3 = pt(x+sw, d, hB+bm+1), s4 = pt(x-sw, d, hB+bm+1);
-    // front edge face
-    const sf1= pt(x-sw, 0, hF+bm), sf2= pt(x+sw, 0, hF+bm);
-    slats.push(
-      `<polygon points="${P([s1,s2,s3,s4])}" fill="${pvcHex}" opacity="0.88" stroke="${alHex}" stroke-width="0.5"/>`,
-      `<polygon points="${P([sf1,sf2,s2,s1])}" fill="${pvcHex}" opacity="0.55" stroke="${alHex}" stroke-width="0.3"/>`
-    );
+  // ── PVC Roof (solid panel — full width) ──
+  const roofTL = pt(-w/2, 0,   hF+bm+1);
+  const roofTR = pt( w/2, 0,   hF+bm+1);
+  const roofBR = pt( w/2, d-1, hB+bm+1);
+  const roofBL = pt(-w/2, d-1, hB+bm+1);
+  const roofStr = `<polygon points="${P([roofTL,roofTR,roofBR,roofBL])}"
+    fill="url(#pvcGrad)" opacity="0.97" stroke="${darken(pvcHex,8)}" stroke-width="0.5"/>
+  <polygon points="${P([roofTL,roofTR,roofBR,roofBL])}"
+    fill="rgba(255,255,255,0.06)" pointer-events="none"/>`;
+
+  // ── Animated open/close arrow on roof ──
+  const roofMidZ = hF + (hB - hF) * 0.5 + bm + 2;
+  const arCtr = pt(0, d * 0.5, roofMidZ);
+  const ux = -0.866, uy = -0.5;           // iso unit vec front→back
+  const px = -uy,    py =  ux;            // perpendicular = (0.5, -0.866)
+  const aLen = 16, ah = 5.5, aw = 3.2;   // arrow half-len, head length, head width
+  const ax1 = arCtr.x + ux * aLen, ay1 = arCtr.y + uy * aLen; // back tip
+  const ax2 = arCtr.x - ux * aLen, ay2 = arCtr.y - uy * aLen; // front tip
+  const bbL = `${(ax1 - ux*ah + px*aw).toFixed(1)},${(ay1 - uy*ah + py*aw).toFixed(1)}`;
+  const bbR = `${(ax1 - ux*ah - px*aw).toFixed(1)},${(ay1 - uy*ah - py*aw).toFixed(1)}`;
+  const fbL = `${(ax2 + ux*ah + px*aw).toFixed(1)},${(ay2 + uy*ah + py*aw).toFixed(1)}`;
+  const fbR = `${(ax2 + ux*ah - px*aw).toFixed(1)},${(ay2 + uy*ah - py*aw).toFixed(1)}`;
+  const _pr = parseInt(pvcHex.slice(1,3),16), _pg = parseInt(pvcHex.slice(3,5),16), _pb = parseInt(pvcHex.slice(5,7),16);
+  const _lum = 0.299*_pr + 0.587*_pg + 0.114*_pb;
+  const arrowColor = _lum > 140 ? '#1a1a1a' : '#ffffff';
+  const aDx = (ux * 5).toFixed(2), aDy = (uy * 5).toFixed(2);
+  const arrowStr = `<g opacity="0.85">
+    <line x1="${ax1.toFixed(1)}" y1="${ay1.toFixed(1)}" x2="${ax2.toFixed(1)}" y2="${ay2.toFixed(1)}"
+      stroke="${arrowColor}" stroke-width="1.8" stroke-linecap="round"/>
+    <polygon points="${ax1.toFixed(1)},${ay1.toFixed(1)} ${bbL} ${bbR}" fill="${arrowColor}"/>
+    <polygon points="${ax2.toFixed(1)},${ay2.toFixed(1)} ${fbL} ${fbR}" fill="${arrowColor}"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0,0; ${aDx},${aDy}; 0,0; ${(-parseFloat(aDx)).toFixed(2)},${(-parseFloat(aDy)).toFixed(2)}; 0,0"
+      dur="2.4s" repeatCount="indefinite" calcMode="ease-in-out"/>
+  </g>`;
+
+  // ── Leveling beam (horizontal, runs front→back along sides at z=hF) ──
+  let levelingBeamStr = '';
+  const lbSides = state.addons?.levelingBeam?.sides || 0;
+  if (lbSides > 0) {
+    const lbH   = Math.max(2, 8 * sc);
+    const lbZ   = hF - lbH * 2.5;   // lower the beam below the gutter line
+    const lbLen = ((state.systems.find(sys=>sys.id===s.id)?.levelingBeamLength) || s.depth) * sc;
+    const lbD   = Math.min(lbLen, d); // cap to structure depth
+    // Left side (near/prominent face in isometric view)
+    const lbLBF  = pt(-w/2,    0,    lbZ),       lbLBFi = pt(-w/2+bm, 0,    lbZ);
+    const lbLBB  = pt(-w/2,    lbD,  lbZ),       lbLBBi = pt(-w/2+bm, lbD,  lbZ);
+    const lbLTF  = pt(-w/2,    0,    lbZ+lbH),   lbLTFi = pt(-w/2+bm, 0,    lbZ+lbH);
+    const lbLTB  = pt(-w/2,    lbD,  lbZ+lbH),   lbLTBi = pt(-w/2+bm, lbD,  lbZ+lbH);
+    // Right side (far face)
+    const lbRBF  = pt(w/2-bm, 0,    lbZ),       lbRBFr = pt(w/2, 0,    lbZ);
+    const lbRBB  = pt(w/2-bm, lbD,  lbZ),       lbRBBr = pt(w/2, lbD,  lbZ);
+    const lbRTF  = pt(w/2-bm, 0,    lbZ+lbH),   lbRTFr = pt(w/2, 0,    lbZ+lbH);
+    const lbRTB  = pt(w/2-bm, lbD,  lbZ+lbH),   lbRTBr = pt(w/2, lbD,  lbZ+lbH);
+    // Left side always shown (lbSides >= 1) — 3 visible faces
+    levelingBeamStr = `
+      <polygon points="${P([lbLBF,lbLBB,lbLTB,lbLTF])}" fill="${darken(alHex,22)}" opacity="0.85"/>
+      <polygon points="${P([lbLTF,lbLTB,lbLTBi,lbLTFi])}" fill="${lighten(alHex,18)}" opacity="0.92"/>
+      <polygon points="${P([lbLBF,lbLTF,lbLTFi,lbLBFi])}" fill="${alHex}" opacity="0.90"/>`;
+    // Flash marker — bright glow fades out in 1.5s to highlight the beam
+    if (state.lbFlash) {
+      levelingBeamStr += `
+      <polygon points="${P([lbLBF,lbLBB,lbLTB,lbLTF])}"
+        fill="#facc15" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round" opacity="0.82">
+        <animate attributeName="opacity" from="0.82" to="0" dur="1.5s" begin="0s" fill="freeze"/>
+      </polygon>
+      <polygon points="${P([lbLBF,lbLTF,lbLTFi,lbLBFi])}"
+        fill="#facc15" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round" opacity="0.82">
+        <animate attributeName="opacity" from="0.82" to="0" dur="1.5s" begin="0s" fill="freeze"/>
+      </polygon>
+      <polygon points="${P([lbLTF,lbLTB,lbLTBi,lbLTFi])}"
+        fill="#facc15" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round" opacity="0.82">
+        <animate attributeName="opacity" from="0.82" to="0" dur="1.5s" begin="0s" fill="freeze"/>
+      </polygon>`;
+    }
+    // Right side shown for two sides
+    if (lbSides >= 2) {
+      levelingBeamStr += `
+      <polygon points="${P([lbRTF,lbRTFr,lbRTBr,lbRTB])}" fill="${lighten(alHex,18)}" opacity="0.92"/>
+      <polygon points="${P([lbRBFr,lbRBBr,lbRTBr,lbRTFr])}" fill="${alDk}" opacity="0.82"/>
+      <polygon points="${P([lbRBF,lbRBFr,lbRTFr,lbRTF])}" fill="${alHex}" opacity="0.90"/>`;
+      if (state.lbFlash) {
+        levelingBeamStr += `
+      <polygon points="${P([lbRTF,lbRTFr,lbRTBr,lbRTB])}"
+        fill="#facc15" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round" opacity="0.82">
+        <animate attributeName="opacity" from="0.82" to="0" dur="1.5s" begin="0s" fill="freeze"/>
+      </polygon>
+      <polygon points="${P([lbRBF,lbRBFr,lbRTFr,lbRTF])}"
+        fill="#facc15" stroke="#facc15" stroke-width="1.5" stroke-linejoin="round" opacity="0.82">
+        <animate attributeName="opacity" from="0.82" to="0" dur="1.5s" begin="0s" fill="freeze"/>
+      </polygon>`;
+      }
+    }
   }
 
   // ── Front support: legs or tension cables ──
   let support = '';
   if(state.supportType === 'legs') {
-    const lg = 5;
-    // Right leg (front face + side face)
-    const rla = pt(w/2-lg, 0, 0),  rlb = pt(w/2+lg, 0, 0);
-    const rlc = pt(w/2+lg, 0, hF+bm), rld = pt(w/2-lg, 0, hF+bm);
-    const rlsa= pt(w/2+lg, 0,    0),  rlsb= pt(w/2+lg, lg, 0);
-    const rlsc= pt(w/2+lg, lg,   hF+bm), rlsd= pt(w/2+lg, 0, hF+bm);
-    // Left leg
-    const lla = pt(-w/2-lg, 0, 0),  llb = pt(-w/2+lg, 0, 0);
-    const llc = pt(-w/2+lg, 0, hF+bm), lld = pt(-w/2-lg, 0, hF+bm);
-    support = `
-      <polygon points="${P([rla,rlb,rlc,rld])}" fill="${alHex}" opacity="0.95"/>
-      <polygon points="${P([rlsa,rlsb,rlsc,rlsd])}" fill="${alDk}" opacity="0.82"/>
-      <polygon points="${P([lla,llb,llc,lld])}" fill="${alHex}" opacity="0.95"/>`;
+    const lg = 7;
+    // helper: draw one square column with front + side + top faces + base plate
+    function drawLeg(cx, cy, h) {
+      const lBL = pt(cx-lg, cy,    0),  lBR = pt(cx+lg, cy,    0);
+      const lTL = pt(cx-lg, cy,    h),  lTR = pt(cx+lg, cy,    h);
+      const lSBR= pt(cx+lg, cy+lg, 0),  lSTR= pt(cx+lg, cy+lg, h);
+      // top cap
+      const tcTL = pt(cx-lg, cy,    h),  tcTR = pt(cx+lg, cy,    h);
+      const tcSTR= pt(cx+lg, cy+lg, h),  tcSTL= pt(cx-lg, cy+lg, h);
+      return `
+        <polygon points="${P([lBL, lBR, lTR, lTL])}"    fill="${alHex}" opacity="0.96"/>
+        <polygon points="${P([lBR, lSBR, lSTR, lTR])}"  fill="${darken(alHex,35)}" opacity="0.88"/>
+        <polygon points="${P([tcTL,tcTR,tcSTR,tcSTL])}" fill="${lighten(alHex,18)}" opacity="0.9"/>`;
+    }
+    const numLegs = s.width > 800 ? 4 : s.width > 450 ? 3 : 2;
+    const legPositions = Array.from({length: numLegs}, (_, i) =>
+      numLegs === 1 ? 0 : -w/2 + (w / (numLegs - 1)) * i
+    );
+    support = legPositions.map(lx => drawLeg(lx, 0, hF+bm)).join('');
   } else {
-    const cr = pt(w/2, 0, hF+bm), cl = pt(-w/2, 0, hF+bm);
-    const tr = pt(w/2, d*0.25, hB+bm+22), tl = pt(-w/2, d*0.25, hB+bm+22);
-    support = `
-      <line x1="${cr.x}" y1="${cr.y}" x2="${tr.x}" y2="${tr.y}" stroke="${alHex}" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.8"/>
-      <line x1="${cl.x}" y1="${cl.y}" x2="${tl.x}" y2="${tl.y}" stroke="${alHex}" stroke-width="1.5" stroke-dasharray="3,2" opacity="0.8"/>`;
+    const numCables = s.width >= 800 ? 4 : s.width >= 400 ? 3 : 2;
+    const cableXPositions = Array.from({length: numCables}, (_, i) =>
+      numCables === 1 ? 0 : -w/2 + (w / (numCables - 1)) * i
+    );
+    support = cableXPositions.map(cx => {
+      const bot = pt(cx, 0, hF+bm);
+      const anc = pt(cx, d-1, hB+bm+28);
+      return `<line x1="${bot.x.toFixed(1)}" y1="${bot.y.toFixed(1)}" x2="${anc.x.toFixed(1)}" y2="${anc.y.toFixed(1)}" stroke="${alHex}" stroke-width="1.6" stroke-dasharray="4,2.5" opacity="0.75"/>
+      <circle cx="${anc.x.toFixed(1)}" cy="${anc.y.toFixed(1)}" r="2.5" fill="${alDk}" opacity="0.9"/>`;
+    }).join('');
   }
 
   // Ground
   const gL = pt(-w/2-12, 0, 0), gR = pt(w/2+12, 0, 0);
   const gBR= pt(w/2+12, d+wt+4, 0), gBL= pt(-w/2-12, d+wt+4, 0);
 
-  // Motor indicator on wall
-  const mpt = pt(w/2 - 9, d - 1, hB + bm + 3);
+  // Motor box — back right end of structure
+  const mBx = w/2 - bm, mBy = d - 1;
+  const mTL = pt(mBx-5, mBy, hB+bm+1), mTR = pt(mBx+1, mBy, hB+bm+1);
+  const mBL = pt(mBx-5, mBy, hB+bm+8), mBR2= pt(mBx+1, mBy, hB+bm+8);
+  const mSR = pt(mBx+1, mBy+3, hB+bm+1), mSRb= pt(mBx+1, mBy+3, hB+bm+8);
 
   return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">
     <defs>
@@ -1859,8 +2084,8 @@ function svgIsometric(s) {
         <stop offset="100%" stop-color="#f2f5f9"/>
       </linearGradient>
       <linearGradient id="groundGrad" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="#e2e8f2"/>
-        <stop offset="100%" stop-color="#cdd5e0"/>
+        <stop offset="0%" stop-color="#82c46a"/>
+        <stop offset="100%" stop-color="#4e8f3c"/>
       </linearGradient>
       <linearGradient id="wallGrad" x1="0" y1="0" x2="1" y2="0">
         <stop offset="0%" stop-color="#c8cfd9"/>
@@ -1880,8 +2105,50 @@ function svgIsometric(s) {
     <!-- Sky background -->
     <rect width="${W}" height="${H}" fill="url(#skyGrad)"/>
 
-    <!-- Ground -->
+    <!-- Ground (grass) -->
     <polygon points="${P([gL,gR,gBR,gBL])}" fill="url(#groundGrad)"/>
+
+    <!-- Paved tiles under pergola -->
+    ${(() => {
+      const tc='#d6d6d4', tg='#bcbab8';
+      const base=[pt(-w/2,0,0.4),pt(w/2,0,0.4),pt(w/2,d-1,0.4),pt(-w/2,d-1,0.4)];
+      let g=`<polygon points="${P(base)}" fill="${tc}" opacity="0.92"/>`;
+      for(let i=1;i<5;i++){
+        const tx=-w/2+w*i/5;
+        const p1=pt(tx,0,0.6),p2=pt(tx,d-1,0.6);
+        g+=`<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="${tg}" stroke-width="0.55" opacity="0.5"/>`;
+      }
+      for(let i=1;i<4;i++){
+        const ty=d*i/4;
+        const p1=pt(-w/2,ty,0.6),p2=pt(w/2,ty,0.6);
+        g+=`<line x1="${p1.x.toFixed(1)}" y1="${p1.y.toFixed(1)}" x2="${p2.x.toFixed(1)}" y2="${p2.y.toFixed(1)}" stroke="${tg}" stroke-width="0.55" opacity="0.5"/>`;
+      }
+      return g;
+    })()}
+
+    <!-- Grass blades + flowers (outside pergola) -->
+    ${(() => {
+      const grassSpots = [
+        [-w/2+4,-6],[-w/4,-7],[0,-5],[w/4,-6],[w/2-4,-5],[-w/3,-3],[w/3,-3],
+        [-w/2+5,d+2],[w/2-5,d+2]
+      ];
+      const flowers = [
+        {x:-w/2+10,y:-5,c:'#ff8fab'},{x:w/4+4,y:-7,c:'#ffe566'}
+      ];
+      let g='';
+      grassSpots.forEach(([gx,gy])=>{
+        const b=pt(gx,gy,0),t1=pt(gx-1,gy,4),t2=pt(gx+0.5,gy,5);
+        g+=`<line x1="${b.x.toFixed(1)}" y1="${b.y.toFixed(1)}" x2="${t1.x.toFixed(1)}" y2="${t1.y.toFixed(1)}" stroke="#3a7d34" stroke-width="1.2" opacity="0.85"/>`;
+        g+=`<line x1="${b.x.toFixed(1)}" y1="${b.y.toFixed(1)}" x2="${t2.x.toFixed(1)}" y2="${t2.y.toFixed(1)}" stroke="#4ea844" stroke-width="1" opacity="0.75"/>`;
+      });
+      flowers.forEach(({x:fx,y:fy,c})=>{
+        const fp=pt(fx,fy,3);
+        g+=`<circle cx="${fp.x.toFixed(1)}" cy="${fp.y.toFixed(1)}" r="2.8" fill="${c}" opacity="0.88"/>`;
+        g+=`<circle cx="${fp.x.toFixed(1)}" cy="${fp.y.toFixed(1)}" r="1.1" fill="white" opacity="0.65"/>`;
+      });
+      return g;
+    })()}
+
     <!-- Ground shadow under pergola -->
     <ellipse cx="${((pt(0,d/2,0).x)).toFixed(1)}" cy="${((pt(0,d/2,0).y)+2).toFixed(1)}"
       rx="${(w*0.55).toFixed(1)}" ry="${(w*0.12).toFixed(1)}"
@@ -1903,11 +2170,10 @@ function svgIsometric(s) {
     <!-- Left side beam (back shadow face) -->
     <polygon points="${P([sbLBB,sbLBF,sbLTF,sbLTB])}" fill="${alDk}" opacity="0.7"/>
 
-    <!-- PVC Slats -->
-    ${slats.join('')}
-    <!-- Slat sheen overlay -->
-    <polygon points="${P([pt(-w/2+1,0,hF+bm+1), pt(w/2*0.3,0,hF+bm+1), pt(w/2*0.3,d,hB+bm+1), pt(-w/2+1,d,hB+bm+1)])}"
-      fill="rgba(255,255,255,0.07)" pointer-events="none"/>
+    <!-- PVC Roof (solid panel) -->
+    ${roofStr}
+    <!-- Open/close direction arrow -->
+    ${arrowStr}
 
     <!-- Right side beam top face -->
     <polygon points="${P([sbRTB,sbRTF,sbRTFr,sbRTBr])}" fill="url(#alTopGrad)" opacity="0.92"/>
@@ -1929,18 +2195,23 @@ function svgIsometric(s) {
 
     <!-- Legs / cables -->
     ${support}
+    <!-- Leveling beams -->
+    ${levelingBeamStr}
 
-    <!-- Motor indicator -->
-    <rect x="${(mpt.x - 6).toFixed(1)}" y="${(mpt.y - 5).toFixed(1)}" width="12" height="9" rx="2.5"
-          fill="#0077cc" opacity="0.95"/>
-    <rect x="${(mpt.x - 4).toFixed(1)}" y="${(mpt.y - 3).toFixed(1)}" width="8" height="5" rx="1.5"
-          fill="#4fb3ff" opacity="0.55"/>
-    <!-- Motor label -->
-    <text x="${(mpt.x).toFixed(1)}" y="${(mpt.y + 10).toFixed(1)}" fill="#5a7a9a" font-size="6.5"
-      text-anchor="middle" font-family="Heebo">מנוע</text>
+    <!-- Motor box (back-right) -->
+    <polygon points="${P([mTL,mTR,mBR2,mBL])}" fill="${darken(alHex,25)}" opacity="0.92"/>
+    <polygon points="${P([mTR,mSR,mSRb,mBR2])}" fill="${darken(alHex,40)}" opacity="0.82"/>
+    <text x="${((mTL.x+mTR.x)/2).toFixed(1)}" y="${(mBL.y+3).toFixed(1)}" fill="#8899aa" font-size="6" text-anchor="middle" font-family="Heebo">מנוע</text>
+
+    <!-- Glass side panels (if addon) -->
+    ${state.addons?.glass ? `
+    <polygon points="${P([pt(-w/2,0,0), pt(-w/2,d,0), pt(-w/2,d,hB+bm), pt(-w/2,0,hF+bm)])}"
+      fill="#c8e8f8" opacity="0.18" stroke="#88b8d8" stroke-width="0.7"/>
+    <polygon points="${P([pt(w/2,0,0), pt(w/2,d,0), pt(w/2,d,hB+bm), pt(w/2,0,hF+bm)])}"
+      fill="#c8e8f8" opacity="0.14" stroke="#88b8d8" stroke-width="0.7"/>` : ''}
 
     <!-- Label -->
-    <text x="${W/2}" y="${H - 4}" fill="#8899aa" font-size="8" text-anchor="middle" font-family="Heebo">פרגולה חשמלית PVC – מקיר מבנה</text>
+    <text x="${W/2}" y="${H - 4}" fill="#8899aa" font-size="8" text-anchor="middle" font-family="Heebo">פרגולה חשמלית PVC</text>
   </svg>`;
 }
 
@@ -2106,6 +2377,11 @@ function renderSummary() {
   if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪${ADDON_PRICES.remote.toLocaleString()}</span></div>`;
   if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪${ADDON_PRICES.tahoma.toLocaleString()}</span></div>`;
   if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪${ADDON_PRICES.dimmer.toLocaleString()}</span></div>`;
+  if(state.addons.levelingBeam?.sides > 0) {
+    const lbLabel = state.addons.levelingBeam.sides === 1 ? 'צד אחד' : 'שני צדדים';
+    const lbCost  = state.addons.levelingBeam.sides * ADDON_PRICES.levelingBeam * state.systems.length;
+    rows += `<div class="total-row"><span class="label">קורת פילוס 120×80 (${lbLabel})</span><span class="val">₪${lbCost.toLocaleString()}</span></div>`;
+  }
   if(state.measureService) rows += `<div class="total-row"><span class="label">שירות מדידה בשטח</span><span class="val">₪350</span></div>`;
   // Packaging — always visible, editable per project
   const pkgFee = state.packagingFee !== null ? Number(state.packagingFee) : ADDON_PRICES.packaging;
@@ -2363,6 +2639,18 @@ function updateGutter(id, val) {
   refreshPreviews(id);
 }
 
+function refreshTensionWarning(id) {
+  const s = state.systems.find(s => s.id === id);
+  const el = document.getElementById(`tension-warn-${id}`);
+  if(!el || !s) return;
+  el.innerHTML = state.supportType === 'tension' && s.depth > 400
+    ? `<div style="margin-bottom:0.75rem;padding:0.5rem 0.75rem;background:#fef2f2;border:1px solid #fca5a5;border-radius:8px;display:flex;align-items:center;gap:0.5rem;font-size:0.82rem;color:#dc2626;">
+        <i class="ph ph-warning-circle" style="font-size:1rem;flex-shrink:0;"></i>
+        <span>חריגה: עומק ${s.depth} ס"מ עולה על מקסימום 400 ס"מ לתלייה במותחנים. נדרשת בדיקה לפני אישור.</span>
+       </div>`
+    : '';
+}
+
 function refreshPreviews(id) {
   const s = state.systems.find(s => s.id === id);
   if(!s) return;
@@ -2371,6 +2659,7 @@ function refreshPreviews(id) {
   const boxes = card.querySelectorAll('.preview-box');
   if(boxes[0]) boxes[0].innerHTML = `<div class="preview-box-label"><i class="ph ph-cube"></i> הדמיה איזומטרית</div>${svgIsometric(s)}`;
   if(boxes[1]) boxes[1].innerHTML = `<div class="preview-box-label"><i class="ph ph-ruler"></i> שרטוט טכני</div>${svgTechnical(s)}`;
+  refreshTensionWarning(id);
 }
 
 function setAlColor(id, code) {
@@ -2426,8 +2715,39 @@ function setSupportType(type) {
   state.supportType = type;
   document.getElementById('support-legs').classList.toggle('active', type==='legs');
   document.getElementById('support-tension').classList.toggle('active', type==='tension');
-  // refresh all SVGs
-  state.systems.forEach(s => refreshPreviews(s.id));
+  state.systems.forEach(s => { refreshPreviews(s.id); refreshTensionWarning(s.id); });
+}
+
+function setLevelingBeamSides(count) {
+  state.addons.levelingBeam.sides = count;
+  // Update button styles in all rendered cards
+  document.querySelectorAll('[data-lb-v]').forEach(el => {
+    const v = parseInt(el.dataset.lbV);
+    const active = v === count;
+    el.style.borderColor  = active ? 'var(--gold)' : 'var(--border)';
+    el.style.background   = active ? 'rgba(212,175,55,0.12)' : 'transparent';
+    el.style.color        = active ? 'var(--gold)' : 'var(--silver)';
+  });
+  // Trigger flash marker when beam is active
+  if (count > 0) {
+    state.lbFlash = true;
+    setTimeout(() => { state.lbFlash = false; }, 1600);
+  }
+  // Show/hide length input row per system
+  state.systems.forEach(s => {
+    const row = document.getElementById(`lb-length-${s.id}`);
+    if(row) row.style.display = count > 0 ? 'flex' : 'none';
+    refreshPreviews(s.id);
+  });
+  renderSummary();
+  updateStickyPrice();
+}
+
+function updateLevelingBeamLength(id, val) {
+  const s = state.systems.find(s => s.id === id);
+  if(!s) return;
+  s.levelingBeamLength = parseFloat(val) || s.depth;
+  refreshPreviews(id);
 }
 
 function toggleAddon(key) {
@@ -2514,29 +2834,81 @@ function closeMeasureModal(e) {
   }
 }
 function confirmMeasure() {
-  const what    = document.getElementById('m-what').value || 'לא צוין';
-  const sqm     = document.getElementById('m-sqm').value  || 'לא צוין';
-  const address = document.getElementById('m-address').value || 'לא צוינה';
-  const typeEl  = document.querySelector('input[name="m-type"]:checked');
-  const propType = typeEl ? typeEl.value : 'לא צוין';
+  const what    = document.getElementById('m-what').value;
+  const address = document.getElementById('m-address').value.trim();
+  if (!what)    { alert('יש לבחור מה למדוד'); return; }
+  if (!address) { alert('יש להזין כתובת הנכס'); return; }
+  // מעבר לשלב תשלום
+  document.getElementById('measure-step-1').style.display = 'none';
+  document.getElementById('measure-payment-step').style.display = 'block';
+  // הצג קוד הזמנה
   const code = getOrderCode();
+  const el = document.getElementById('mOrderCodeDisplay');
+  if (el) el.textContent = code;
+}
 
-  const body = encodeURIComponent(
-    `שלום, אני מעוניין בשירות מדידה מקצועית בשטח.\n\n` +
-    `קוד הזמנה: ${code}\n` +
-    `מה למדוד: ${what}\n` +
-    `הערכת שטח: ${sqm} מ"ר\n` +
-    `סוג נכס: ${propType}\n` +
-    `כתובת: ${address}\n\n` +
-    `מחיר שירות: ₪350`
-  );
-  const subject = encodeURIComponent(`בקשת מדידה – ${code}`);
-  window.open(`mailto:info@alum-il.co.il?subject=${subject}&body=${body}`, '_blank');
+let mActivePayment = null;
+function showMeasurePayment(type) {
+  ['bank','credit'].forEach(t => {
+    document.getElementById(`mpanel-${t}`).classList.remove('show');
+    document.getElementById(`mbtn-${t}`).classList.remove('active-pay');
+  });
+  if (mActivePayment === type) { mActivePayment = null; return; }
+  document.getElementById(`mpanel-${type}`).classList.add('show');
+  document.getElementById(`mbtn-${type}`).classList.add('active-pay');
+  mActivePayment = type;
+}
 
+function sendMeasureProofWA() {
+  const code = document.getElementById('mOrderCodeDisplay')?.textContent || getOrderCode();
+  const msg = encodeURIComponent(`שלום, שלחתי העברה בנקאית עבור שירות מדידה, קוד הזמנה ${code}, סכום ₪350. מצורפת האסמכתא.`);
+  window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
+}
+
+async function submitMeasureOrder() {
+  const btn = event?.target;
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch"></i> שולח...'; }
+
+  const { data:{ user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+
+  const what     = document.getElementById('m-what')?.value || '';
+  const sqm      = document.getElementById('m-sqm')?.value  || '';
+  const address  = document.getElementById('m-address')?.value || '';
+  const typeEl   = document.querySelector('input[name="m-type"]:checked');
+  const propType = typeEl ? typeEl.value : '';
+  const code     = document.getElementById('mOrderCodeDisplay')?.textContent || getOrderCode();
+
+  const { error } = await supabase.from('orders').insert({
+    user_id:     user.id,
+    order_code:  code,
+    status:      'pending_payment',
+    category:    'שירות מדידה',
+    sub_product: 'מדידה מקצועית בשטח',
+    width: 0, depth: 0,
+    config: { what, sqm, propType, address, price: 350 },
+    subtotal: 297, vat: 53, total_price: 350,
+    shipping_method: 'none',
+    is_read: false, vendor_name: ''
+  });
+
+  if (error) {
+    alert('שגיאה: ' + error.message);
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-check-circle"></i> אישור ושליחה'; }
+    return;
+  }
+
+  document.getElementById('measure-payment-step').innerHTML =
+    `<div style="text-align:center;padding:2rem 1rem;">
+      <i class="ph ph-check-circle" style="font-size:3rem;color:var(--green)"></i>
+      <div style="font-size:1.1rem;font-weight:700;margin-top:1rem;color:var(--white);">ההזמנה התקבלה!</div>
+      <div style="font-size:0.85rem;color:var(--silver);margin-top:0.4rem;">קוד: <strong>${code}</strong></div>
+      <div style="font-size:0.82rem;margin-top:0.75rem;color:var(--silver);">נציג ייצור קשר בתוך 24 שעות לתיאום מועד הביקור.</div>
+      <button onclick="closeMeasureModal()" style="margin-top:1.5rem;padding:0.65rem 2rem;border-radius:var(--radius);background:var(--blue);color:#fff;border:none;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;">סגור</button>
+    </div>`;
   state.measureService = true;
-  document.getElementById('measureModalOverlay').classList.remove('show');
-  renderSummary();
-  updateStickyPrice();
+  renderSummary && renderSummary();
+  updateStickyPrice && updateStickyPrice();
 }
 
 /* ══════════════════════════════════════
@@ -2702,6 +3074,12 @@ async function placeOrder() {
   if (isTension)  subProduct += ' תלייה';
 
   const firstSys = state.systems[0] || {};
+  const svgPreviews = state.systems.map(sys => ({
+    id: sys.id,
+    isometric: svgIsometric(sys),
+    technical: svgTechnical(sys)
+  }));
+  const configToSave = { ...JSON.parse(JSON.stringify(state)), svgPreviews };
   const orderPayload = {
     user_id:     user.id,
     order_code:  code,
@@ -2710,7 +3088,7 @@ async function placeOrder() {
     sub_product: subProduct,
     width:       firstSys.width  || 0,
     depth:       firstSys.depth  || 0,
-    config:           JSON.parse(JSON.stringify(state)),
+    config:      configToSave,
     subtotal,
     vat,
     total_price:      finalPriceValue,
@@ -2752,6 +3130,8 @@ window.setPvcColor         = setPvcColor;
 window.setLedColor         = setLedColor;
 window.setLedCustom        = setLedCustom;
 window.setSupportType      = setSupportType;
+window.setLevelingBeamSides     = setLevelingBeamSides;
+window.updateLevelingBeamLength = updateLevelingBeamLength;
 window.toggleAddon         = toggleAddon;
 window.setLedTone          = setLedTone;
 window.setProfileQty       = setProfileQty;

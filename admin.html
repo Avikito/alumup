@@ -695,13 +695,29 @@ window.openDetail = function(id) {
       </div>`;
     });
 
+    // חריגת עומק — מותחנים מעל 400 ס"מ
+    if (cfg.supportType === 'tension') {
+      const overDepth = cfg.systems.filter(sys => (sys.depth || 0) > 400);
+      if (overDepth.length > 0) {
+        html += `<div style="margin-bottom:1rem;padding:0.65rem 0.9rem;background:#fef2f2;border:1px solid #fca5a5;border-radius:10px;display:flex;align-items:flex-start;gap:0.5rem;">
+          <i class="ph ph-warning-circle" style="color:#dc2626;font-size:1.2rem;flex-shrink:0;margin-top:2px;"></i>
+          <div>
+            <div style="font-weight:700;color:#dc2626;font-size:0.85rem;margin-bottom:0.2rem;">חריגה — נדרשת בדיקה לפני אישור</div>
+            ${overDepth.map(sys => `<div style="font-size:0.82rem;color:#b91c1c;">מערכת ${cfg.systems.indexOf(sys)+1}: עומק ${sys.depth} ס"מ עולה על מקסימום 400 ס"מ לתלייה במותחנים.</div>`).join('')}
+          </div>
+        </div>`;
+      }
+    }
+
     // תוספות ושיטת תמיכה
     const addons = cfg.addons || {};
     const chips = [];
-    if (addons.led)    chips.push('תאורת LED');
-    if (addons.remote) chips.push('שלט סומפי');
-    if (addons.tahoma) chips.push('TaHoma');
-    if (addons.dimmer) chips.push('דימר');
+    if (addons.led)           chips.push('תאורת LED');
+    if (addons.remote)        chips.push('שלט סומפי');
+    if (addons.tahoma)        chips.push('TaHoma');
+    if (addons.dimmer)        chips.push('דימר');
+    if (addons.levelingBeam?.sides > 0)
+      chips.push(`קורת פילוס 120×80 — ${addons.levelingBeam.sides === 1 ? 'צד אחד' : 'שני צדדים'}`);
     chips.push(cfg.supportType === 'tension' ? 'תמיכת תלייה' : 'רגליים');
 
     html += `<div style="margin-bottom:1rem;">
@@ -710,6 +726,67 @@ window.openDetail = function(id) {
         ${chips.map(c => `<span style="padding:0.2rem 0.65rem;border-radius:20px;background:#f0f4f8;border:1px solid #e2e8f0;font-size:0.78rem;font-weight:600;color:#475569;">${c}</span>`).join('')}
       </div>
     </div>`;
+
+    // ── הדמיות SVG ──
+    if (o.config?.svgPreviews?.length > 0) {
+      html += `<div style="margin-top:1rem;">
+        <div style="font-size:0.78rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.6rem;">הדמיות טכניות</div>`;
+      o.config.svgPreviews.forEach((p, i) => {
+        html += `<div style="margin-bottom:0.75rem;">
+          <div style="font-size:0.75rem;color:#94a3b8;margin-bottom:0.3rem;font-weight:600;">מערכת ${i + 1}</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;">
+            <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">${p.isometric || ''}</div>
+            <div style="border:1px solid #e2e8f0;border-radius:8px;overflow:hidden;">${p.technical || ''}</div>
+          </div>
+        </div>`;
+      });
+      html += `</div>`;
+    }
+
+  // ── חלונות ויטרינה ──
+  } else if (o.config && Array.isArray(o.config.windows) && o.config.windows.length > 0) {
+    const cfg = o.config;
+    const glassMap = { triplex:'טריפלקס 3+3', milky:'חלבית/אנטי-סאן', insulating:'בידודית 4-12-4' };
+    const openMap  = { sliding:'הזזה', casement:'ציר', tilt:'קיפ', fixed:'קבוע', fold:'קיפול', 'door-single':'דלת יחידה', 'door-double':'דלת כפולה', 'door-side':'דלת+קבוע' };
+
+    if (cfg.projectName || cfg.customerName || cfg.customerAddress) {
+      html += `<div style="margin-bottom:1rem;padding:0.75rem;background:#f8fafc;border-radius:10px;border:1px solid #e2e8f0;">`;
+      if (cfg.projectName)     html += `<div style="font-size:0.82rem;margin-bottom:0.2rem;"><span style="color:#888;font-weight:600;">שם פרויקט: </span><strong>${cfg.projectName}</strong></div>`;
+      if (cfg.customerName)    html += `<div style="font-size:0.82rem;margin-bottom:0.2rem;"><span style="color:#888;font-weight:600;">לקוח: </span><strong>${cfg.customerName}</strong></div>`;
+      if (cfg.customerAddress) html += `<div style="font-size:0.82rem;"><span style="color:#888;font-weight:600;">כתובת: </span>${cfg.customerAddress}</div>`;
+      html += `</div>`;
+    }
+
+    html += `<div style="font-size:0.78rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem;">פירוט חלונות</div>`;
+    html += `<table style="width:100%;border-collapse:collapse;font-size:0.81rem;">
+      <thead><tr style="background:#f0f4f8;text-align:right;">
+        <th style="padding:5px 8px;">מיקום</th>
+        <th style="padding:5px 8px;">סדרה</th>
+        <th style="padding:5px 8px;">מידות (ס"מ)</th>
+        <th style="padding:5px 8px;">פתיחה</th>
+        <th style="padding:5px 8px;">זכוכית</th>
+        <th style="padding:5px 8px;">תוספות</th>
+      </tr></thead><tbody>` +
+    cfg.windows.map((w, i) => {
+      const count  = Math.max(1, parseInt(w.sectionCount)||1);
+      const unitW  = w.width / count;
+      const dims   = count > 1 ? `${count}×${Math.round(unitW)}×${w.height}` : `${w.width}×${w.height}`;
+      const extras = [
+        w.blind ? (w.blind==='pull'?'תריס משוך':'תריס מוקצף') : null,
+        w.screen ? 'רשת' : null,
+        w.blindMotor ? '⚡ מנוע' : null
+      ].filter(Boolean).join(', ') || '—';
+      return `<tr style="border-top:1px solid #e8edf2;background:${i%2===0?'transparent':'#f8fafc'}">
+        <td style="padding:5px 8px;">${w.location||`חלון ${i+1}`}</td>
+        <td style="padding:5px 8px;">סדרה ${w.series||'7000'}</td>
+        <td style="padding:5px 8px;font-family:monospace;">${dims}</td>
+        <td style="padding:5px 8px;">${openMap[w.openingType]||w.openingType||'הזזה'}</td>
+        <td style="padding:5px 8px;">${glassMap[w.glass]||w.glass||'—'}</td>
+        <td style="padding:5px 8px;font-size:0.76rem;">${extras}</td>
+      </tr>`;
+    }).join('') + `</tbody></table>`;
+
+    if (cfg.notes) html += `<div style="margin-top:0.75rem;font-size:0.81rem;color:#64748b;"><strong>הערות:</strong> ${cfg.notes}</div>`;
   }
 
   html += `<div class="detail-totals">

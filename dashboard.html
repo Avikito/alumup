@@ -433,6 +433,9 @@ async function init() {
   if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
 
   await loadAll();
+
+  const urlSection = new URLSearchParams(window.location.search).get('section');
+  if (urlSection) showSection(urlSection);
 }
 
 /* ── NAVIGATION ── */
@@ -503,9 +506,13 @@ function itemCard(o, showApprove) {
   // Approve button only for orders with status quote/draft (not legacy quotes table rows)
   const canApprove = showApprove && o._type === 'order' && ['quote', 'draft'].includes(o.status);
   const isProcurement = cfg.type === 'procurement';
+  const isWindows     = o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows);
+  const windowCount   = isWindows ? ((cfg.windows||[]).length || 1) : 0;
   const descText = isProcurement
     ? `פרופילי אלומיניום · ${(cfg.profiles||[]).length + (cfg.screws||[]).length} פריטים`
-    : `פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}`;
+    : isWindows
+      ? `חלונות ויטרינה · ${windowCount} חלון${windowCount > 1 ? 'ות' : ''}`
+      : `פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}`;
 
   return `<div class="order-card" onclick="openModal('${o._id}')">
     <div class="order-card-info">
@@ -594,6 +601,64 @@ window.openModal = function(id) {
     if (cfg.orderNum) html += `<div style="font-size:0.82rem;color:var(--silver-dark);margin-bottom:0.4rem;">מספר הזמנה: <strong>${cfg.orderNum}</strong></div>`;
     if (cfg.ralCode) html += `<div style="font-size:0.82rem;color:var(--silver-dark);margin-bottom:1rem;">גוון RAL: <strong>${cfg.ralCode}</strong></div>`;
 
+    html += `<div class="modal-totals">
+      <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
+      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
+      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+    </div>`;
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('orderModalOverlay').classList.add('open');
+    return;
+  }
+
+  // ── חלונות ויטרינה ──
+  if (o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows)) {
+    const glassMap = { triplex:'טריפלקס 3+3', milky:'חלבית / אנטי-סאן', insulating:'בידודית 4-12-4' };
+    const openMap  = { sliding:'הזזה', casement:'ציר', tilt:'קיפ', fixed:'קבוע', fold:'קיפול',
+                       'door-single':'דלת יחידה', 'door-double':'דלת כפולה', 'door-side':'דלת + קבוע' };
+    const tintMap  = { clear:'שקוף', bronze:'ברונזה', gray:'אפרפר', green:'ירקרק', blue:'כחלחל', white:'חלבי' };
+
+    // פרטי פרויקט
+    if (cfg.projectName || cfg.customerName || cfg.customerAddress) {
+      html += `<div style="margin-bottom:1.1rem;padding:0.85rem 1rem;background:var(--surface-elevated,#f8fafc);border-radius:10px;border:1px solid var(--border-color,#e2e8f0);">`;
+      if (cfg.projectName)     html += `<div style="font-size:0.83rem;margin-bottom:0.25rem;"><span style="color:var(--silver-dark);font-weight:600;">שם פרויקט: </span><strong>${cfg.projectName}</strong></div>`;
+      if (cfg.customerName)    html += `<div style="font-size:0.83rem;margin-bottom:0.25rem;"><span style="color:var(--silver-dark);font-weight:600;">לקוח: </span><strong>${cfg.customerName}</strong></div>`;
+      if (cfg.customerAddress) html += `<div style="font-size:0.83rem;"><span style="color:var(--silver-dark);font-weight:600;">כתובת: </span>${cfg.customerAddress}</div>`;
+      html += `</div>`;
+    }
+
+    // כרטיס לכל חלון
+    (cfg.windows || []).forEach((w, i) => {
+      const count  = Math.max(1, parseInt(w.sectionCount)||1);
+      const unitW  = w.width / count;
+      const sqm    = (Math.max((unitW/100)*(w.height/100), 1.0) * count).toFixed(2);
+      const dims   = count > 1 ? `${count} × ${Math.round(unitW)} × ${w.height} ס"מ` : `${w.width} × ${w.height} ס"מ`;
+      const extras = [
+        w.blind ? (w.blind==='pull' ? 'תריס משוך' : 'תריס מוקצף') : null,
+        w.blindMotor ? '⚡ מנוע' : null,
+        w.screen === 'sliding' ? 'רשת הזזה' : w.screen === 'fixed' ? 'רשת קבועה' : null,
+      ].filter(Boolean);
+
+      html += `<div class="modal-sys-card" style="margin-bottom:0.85rem;">
+        <div class="modal-sys-title">
+          <i class="ph ph-frame-corners"></i>
+          ${w.location || `חלון ${i+1}`}
+          <span style="font-weight:400;color:var(--silver-dark);font-size:0.78rem;margin-right:0.5rem;">סדרה ${w.series||'7000'}</span>
+        </div>
+        <div class="modal-grid">
+          <div class="modal-item"><span class="modal-key">מידות</span><span class="modal-val">${dims}</span></div>
+          <div class="modal-item"><span class="modal-key">שטח</span><span class="modal-val">${sqm} מ"ר</span></div>
+          <div class="modal-item"><span class="modal-key">סוג פתיחה</span><span class="modal-val">${openMap[w.openingType]||w.openingType||'הזזה'}</span></div>
+          <div class="modal-item"><span class="modal-key">זכוכית</span><span class="modal-val">${glassMap[w.glass]||w.glass||'—'}${w.glassTint&&w.glassTint!=='clear'?' · '+tintMap[w.glassTint]:''}</span></div>
+          <div class="modal-item"><span class="modal-key">צבע פרופיל</span><span class="modal-val">RAL ${w.alColor||'9016'}${w.alColorCustom?' ('+w.alColorCustom+')':''}</span></div>
+          ${extras.length ? `<div class="modal-item"><span class="modal-key">תוספות</span><span class="modal-val">${extras.join(' · ')}</span></div>` : ''}
+          ${w.notes ? `<div class="modal-item" style="grid-column:1/-1;"><span class="modal-key">הערות</span><span class="modal-val" style="font-weight:400;font-size:0.82rem;">${w.notes}</span></div>` : ''}
+        </div>
+      </div>`;
+    });
+
+    // סיכום
     html += `<div class="modal-totals">
       <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
       <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
@@ -726,6 +791,7 @@ window.generateDashboardPDF = async function(id) {
 
     // Build description from config
     const cfg = o.config || {};
+    const isWin2 = o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows);
     const sysCount = (cfg.systems || []).length || 1;
     const firstSys = cfg.systems?.[0] || {};
     const dims = (firstSys.width && firstSys.depth) ? `${firstSys.width}×${firstSys.depth} ס"מ` : '';
@@ -735,7 +801,10 @@ window.generateDashboardPDF = async function(id) {
       cfg.addons?.tahoma && 'TaHoma',
       cfg.addons?.dimmer && 'דימר',
     ].filter(Boolean).join(', ');
-    const desc = `פרגולה PVC${dims ? ' · ' + dims : ''}${addonsStr ? ' · ' + addonsStr : ''}`;
+    const winCount2 = (cfg.windows||[]).length || 1;
+    const desc = isWin2
+      ? `חלונות ויטרינה · ${winCount2} חלון`
+      : `פרגולה PVC${dims ? ' · ' + dims : ''}${addonsStr ? ' · ' + addonsStr : ''}`;
 
     // Profile header
     const bizName  = profile.business_name || profile.full_name || 'הצעת מחיר';

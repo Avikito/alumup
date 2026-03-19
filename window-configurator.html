@@ -52,7 +52,7 @@
 
     body {
       background:
-        linear-gradient(160deg, #b8c8e0 0%, #c8d4e6 35%, #d0d9e8 65%, #c6d0e2 100%);
+        linear-gradient(160deg, #d6e4f0 0%, #ddeaf4 40%, #e4eef6 70%, #d8e6f2 100%);
       background-attachment: fixed;
       font-family: 'Heebo', sans-serif;
       color: var(--ink);
@@ -64,7 +64,7 @@
     body::before {
       content: '';
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background-image: radial-gradient(circle, rgba(255,255,255,0.35) 1px, transparent 1px);
+      background-image: radial-gradient(circle, rgba(150,180,220,0.25) 1px, transparent 1px);
       background-size: 22px 22px;
     }
 
@@ -510,8 +510,15 @@
       display: flex; align-items: center; gap: 0.5rem;
       padding: 0.75rem 1.25rem; background: var(--surface2);
       font-size: 0.82rem; font-weight: 700; color: var(--silver);
-      border-bottom: 1px solid var(--border);
+      cursor: pointer; user-select: none;
+      transition: background var(--trans);
     }
+    .terms-title:hover { background: #e8eef8; }
+    .terms-title .terms-caret { margin-right: auto; font-size: 0.75rem; transition: transform 0.2s; }
+    .terms-title.open .terms-caret { transform: rotate(180deg); }
+    .terms-title.open { border-bottom: 1px solid var(--border); }
+    .terms-body { display: none; }
+    .terms-body.open { display: block; }
     .terms-text {
       padding: 1rem 1.25rem; font-size: 0.78rem; line-height: 1.85;
       color: var(--silver); background: var(--surface); max-height: 160px; overflow-y: auto;
@@ -715,6 +722,88 @@
       content: ''; flex: 1; height: 1px; background: var(--border-light);
     }
 
+    /* ── MEASURE MODAL ── */
+    .measure-modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 500; display: none;
+      align-items: center; justify-content: center;
+    }
+    .measure-modal-overlay.show { display: flex; }
+    .measure-modal {
+      background: var(--surface); border-radius: var(--radius-xl);
+      padding: 2rem; width: 500px; max-width: 94vw;
+      animation: fadeUp 0.2s ease; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    }
+    .measure-modal-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;
+    }
+    .measure-modal-title { font-size: 1.1rem; font-weight: 800; color: var(--ink); display:flex; align-items:center; gap:0.5rem; }
+    .btn-close-modal { background:none; border:none; cursor:pointer; color:var(--silver); font-size:1.3rem; display:flex; align-items:center; }
+    .btn-close-modal:hover { color: var(--ink); }
+    .measure-service-card {
+      background: var(--surface2); border: 1px solid var(--border);
+      border-right: 4px solid var(--gold); border-radius: var(--radius);
+      padding: 1rem 1.25rem; margin-bottom: 1.25rem;
+    }
+    .measure-price-row { display:flex; align-items:baseline; gap:0.6rem; margin-bottom:0.75rem; }
+    .measure-price-val { font-size:1.8rem; font-weight:900; color:var(--gold); }
+    .measure-price-note { font-size:0.8rem; color:var(--silver); }
+    .measure-includes { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:0.4rem; }
+    .measure-includes li { font-size:0.88rem; color:var(--ink); display:flex; align-items:center; gap:0.5rem; }
+    .measure-field { display:flex; flex-direction:column; gap:0.4rem; margin-bottom:1rem; }
+    .measure-field label { font-size:0.82rem; font-weight:600; color:var(--silver); }
+    .measure-field input, .measure-field select {
+      background: var(--surface2); border: 1.5px solid var(--border);
+      border-radius: var(--radius); padding: 0.65rem 0.85rem;
+      color: var(--ink); font-family:'Heebo',sans-serif; font-size:0.95rem; width:100%;
+    }
+    .measure-field input:focus, .measure-field select:focus { outline:none; border-color:var(--gold); }
+    .measure-radio-row { display:flex; gap:1rem; flex-wrap:wrap; }
+    .measure-radio { display:flex; align-items:center; gap:0.4rem; cursor:pointer; font-size:0.9rem; color:var(--ink); }
+    .measure-radio input[type=radio] { accent-color:var(--gold); cursor:pointer; }
+    .btn-confirm-measure {
+      width:100%; padding:0.9rem; background:var(--gold); color:#fff;
+      border:none; border-radius:var(--radius); font-family:'Heebo',sans-serif;
+      font-size:1rem; font-weight:800; cursor:pointer; margin-top:0.75rem;
+      display:flex; align-items:center; justify-content:center; gap:0.5rem; transition:opacity 0.2s;
+    }
+    .btn-confirm-measure:hover { opacity:0.88; }
+    .measure-payment-header {
+      font-size:1rem; font-weight:700; color:var(--ink);
+      display:flex; align-items:center; gap:0.5rem;
+      margin-bottom:1.25rem; padding-bottom:0.75rem; border-bottom:1px solid var(--border);
+    }
+    .payment-buttons { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1.5rem; }
+    .btn-payment {
+      padding:1rem; border-radius:var(--radius); border:2px solid var(--border);
+      background:var(--surface2); color:var(--ink); font-family:'Heebo',sans-serif;
+      font-size:0.95rem; font-weight:700; cursor:pointer;
+      display:flex; flex-direction:column; align-items:center; gap:0.4rem; transition:all 0.2s;
+    }
+    .btn-payment i { font-size:1.5rem; }
+    .btn-payment:hover, .btn-payment.active-pay { border-color:var(--blue); background:var(--blue-dim); color:var(--blue); }
+    .payment-panel { display:none; background:var(--surface2); border:1px solid var(--border); border-radius:var(--radius); padding:1.5rem; margin-bottom:1.5rem; }
+    .payment-panel.show { display:block; }
+    .bank-details { display:flex; flex-direction:column; gap:0.75rem; }
+    .bank-row { display:flex; justify-content:space-between; padding:0.6rem 0; border-bottom:1px solid var(--border); font-size:0.9rem; }
+    .bank-row:last-child { border-bottom:none; }
+    .bank-row .key { color:var(--silver); }
+    .bank-row .val { font-weight:700; color:var(--ink); }
+    .order-code-box { margin-top:1rem; padding:1rem; background:var(--surface3); border:1.5px solid var(--blue); border-radius:var(--radius); text-align:center; }
+    .order-code-label { font-size:0.8rem; color:var(--silver); margin-bottom:0.35rem; }
+    .order-code-val { font-size:1.4rem; font-weight:800; color:var(--blue); letter-spacing:2px; }
+    .order-code-hint { font-size:0.8rem; color:var(--silver); margin-top:0.5rem; }
+    .btn-wa-proof { display:flex; align-items:center; justify-content:center; gap:0.6rem; margin-top:1rem; padding:0.75rem; background:#25d366; color:#fff; border:none; border-radius:var(--radius); font-family:'Heebo',sans-serif; font-size:0.95rem; font-weight:700; cursor:pointer; width:100%; }
+    .credit-form { display:flex; flex-direction:column; gap:0.75rem; }
+    .credit-row { display:grid; grid-template-columns:1fr 1fr; gap:0.75rem; }
+    .credit-form .field { display:flex; flex-direction:column; gap:0.3rem; }
+    .credit-form .field label { font-size:0.8rem; font-weight:600; color:var(--silver); }
+    .credit-form .field input { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:0.55rem 0.75rem; color:var(--ink); font-family:'Heebo',sans-serif; font-size:0.9rem; width:100%; }
+    .btn-submit-credit { padding:0.85rem; background:var(--blue); color:#fff; border:none; border-radius:var(--radius); font-family:'Heebo',sans-serif; font-size:0.95rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 640px) {
       .cfg-header { padding: 0 1rem; }
@@ -752,11 +841,11 @@
   <div class="sidebar-section-label">איזור אישי</div>
   <ul class="snav">
     <li><a href="dashboard.html"><i class="ph ph-house"></i> דף הבית</a></li>
-    <li><a href="dashboard.html"><i class="ph ph-note-pencil"></i> הצעות שמורות</a></li>
-    <li><a href="dashboard.html"><i class="ph ph-factory"></i> הזמנות בתהליך</a></li>
-    <li><a href="dashboard.html"><i class="ph ph-clock-counter-clockwise"></i> היסטוריה</a></li>
-    <li><a href="dashboard.html"><i class="ph ph-files"></i> מסמכים</a></li>
-    <li><a href="dashboard.html"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
+    <li><a href="dashboard.html?section=saved-quotes"><i class="ph ph-note-pencil"></i> הצעות שמורות</a></li>
+    <li><a href="dashboard.html?section=in-progress"><i class="ph ph-factory"></i> הזמנות בתהליך</a></li>
+    <li><a href="dashboard.html?section=history"><i class="ph ph-clock-counter-clockwise"></i> היסטוריה</a></li>
+    <li><a href="dashboard.html?section=documents"><i class="ph ph-files"></i> מסמכים</a></li>
+    <li><a href="dashboard.html?section=settings"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
   </ul>
   <div class="snav-divider"></div>
   <div class="sidebar-section-label" style="margin-top:0.5rem;">כלים</div>
@@ -858,10 +947,10 @@
           <i class="ph ph-file-pdf"></i> ייצא PDF
         </button>
         <button class="btn-secondary" id="btnSaveQuote" onclick="saveOrder()">
-          <i class="ph ph-floppy-disk"></i> שמור כהצעה
+          <i class="ph ph-bookmark"></i> העבר להצעות שמורות
         </button>
         <button class="btn-primary" id="btnPlaceOrder" onclick="placeOrder()">
-          שלח לבדיקה טכנית <i class="ph ph-paper-plane-tilt"></i>
+          שלח להזמנה <i class="ph ph-paper-plane-tilt"></i>
         </button>
       </div>
       <div class="save-msg" id="saveMsg"></div>
@@ -923,7 +1012,7 @@ const state = {
 };
 
 function newWindowObj(id) {
-  return { id, location:'', series:'7000', width:120, height:140, openingType:'sliding', hingeSide:'right', gridCols:1, gridRows:1, glass:'triplex', glassTint:'clear', glassOpen:false, blind:null, blindMotor:false, blindWidth:null, blindHeight:null, blindColor:'white', blindPosition:'external', blindMotorType:'none', screen:null, handleType:'standard', handleOpen:false, trackType:'single', trackOpen:false, alColor:'9016', alColorCustom:'', notes:'' };
+  return { id, location:'', series:'7000', width:120, height:140, openingType:'sliding', hingeSide:'right', hingeCount:3, handleHeight:'middle', sectionCount:1, glass:'triplex', glassTint:'clear', glassOpen:false, blind:null, blindMotor:false, blindWidth:null, blindHeight:null, blindColor:'white', blindPosition:'external', blindMotorType:'none', screen:null, handleType:'standard', handleOpen:false, trackType:'single', trackOpen:false, alColor:'9016', alColorCustom:'', notes:'' };
 }
 
 // ── LOAD PRICES ──
@@ -946,16 +1035,18 @@ async function loadPrices() {
 
 // ── PRICING ──
 function calcWindowPrice(w) {
-  const sqm = Math.max((w.width/100)*(w.height/100), 1.0);
-  const base = w.series === '9000' ? PRICES.series9000 : w.series === '4400' ? PRICES.series4400 : PRICES.series7000;
-  let price = sqm * base;
-  if (w.glass === 'milky')      price += sqm * PRICES.glassMilky;
-  if (w.glass === 'insulating') price += sqm * PRICES.glassInsulating;
-  if (w.blind === 'pull')       price += sqm * PRICES.blindPull;
-  if (w.blind === 'foam')       price += sqm * PRICES.blindFoam;
-  if (w.screen)                 price += sqm * PRICES.screen;
-  if (w.blindMotor)             price += PRICES.motor;
-  return Math.round(price);
+  const count   = Math.max(1, parseInt(w.sectionCount)||1);
+  const unitW   = w.width / count;
+  const sqm     = Math.max((unitW/100)*(w.height/100), 1.0);
+  const base    = w.series === '9000' ? PRICES.series9000 : w.series === '4400' ? PRICES.series4400 : PRICES.series7000;
+  let unitPrice = sqm * base;
+  if (w.glass === 'milky')      unitPrice += sqm * PRICES.glassMilky;
+  if (w.glass === 'insulating') unitPrice += sqm * PRICES.glassInsulating;
+  if (w.blind === 'pull')       unitPrice += sqm * PRICES.blindPull;
+  if (w.blind === 'foam')       unitPrice += sqm * PRICES.blindFoam;
+  if (w.screen)                 unitPrice += sqm * PRICES.screen;
+  if (w.blindMotor)             unitPrice += PRICES.motor;
+  return Math.round(unitPrice * count);
 }
 
 function calcTotal() {
@@ -998,10 +1089,13 @@ function svgFront(w) {
   const tint = GLASS_TINTS[w.glassTint||'clear'];
 
   // ── פרופורציה נכונה לפי מידות אמיתיות ──
+  const sCount  = Math.max(1, parseInt(w.sectionCount)||1);
+  const SEC_GAP = sCount > 1 ? 4 : 0;
   const blindH = w.blind ? 32 : 0;
   const margin = 10;
   const maxFW  = VW - margin*2;
   const maxFH  = VH - blindH - margin*2 - 8;
+  // ratio uses total section width
   const ratio  = (w.width||120) / (w.height||140);
   let fW, fH;
   if (ratio >= maxFW / maxFH) { fW = maxFW; fH = fW / ratio; }
@@ -1009,13 +1103,16 @@ function svgFront(w) {
   fW = Math.round(fW); fH = Math.round(fH);
   const fX = Math.round((VW - fW) / 2);
   const fY = blindH + margin + Math.round((maxFH - fH) / 2);
+  // width of one unit frame when section is divided
+  const unitFW = Math.round((fW - SEC_GAP*(sCount-1)) / sCount);
 
   // מספר כנפיים לפי סוג פתיחה
   const isDoorType = w.openingType === 'door-single' || w.openingType === 'door-double' || w.openingType === 'door-side';
   const isDoor = isDoorType; // alias
   const isDoorSide = w.openingType === 'door-side';
   const hingeS = w.hingeSide || 'right';
-  const wingCount = w.openingType === 'fixed' ? 1 :
+  const wingCount = sCount > 1 ? 1 :
+                    w.openingType === 'fixed' ? 1 :
                     w.openingType === 'casement' ? 1 :
                     w.openingType === 'tilt' ? 1 :
                     w.openingType === 'fold' ? 2 :
@@ -1027,18 +1124,17 @@ function svgFront(w) {
   // wing 0 = leftmost in SVG, wing 1 = rightmost
   // RTL: hinge on right means door on right = wing 1; hinge on left = door on left = wing 0
   const doorPanelIdx = isDoorSide ? (hingeS === 'right' ? 1 : 0) : -1;
-  const wingW = (fW - FRAME*2 - DIVIDER*(wingCount-1)) / wingCount;
+  const wingW = (unitFW - FRAME*2 - DIVIDER*(wingCount-1)) / wingCount;
 
   let s = `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">`;
 
   // ── דפס חיצוני background ──
   s += `<rect x="0" y="0" width="${VW}" height="${VH}" fill="#f8f9fb"/>`;
 
-  // ── תריס ──
+  // ── תריס ── (spans full section width)
   if (w.blind) {
     const bColor = darken(frameHex, 10);
     s += `<rect x="${fX}" y="0" width="${fW}" height="${blindH}" fill="${bColor}" rx="2" stroke="${frameDark}" stroke-width="1.5"/>`;
-    // lamella lines
     for (let ly=4; ly<blindH-2; ly+=5) {
       s += `<line x1="${fX+2}" y1="${ly}" x2="${fX+fW-2}" y2="${ly}" stroke="${darken(frameHex,50)}" stroke-width="0.6" opacity="0.5"/>`;
     }
@@ -1062,17 +1158,20 @@ function svgFront(w) {
     </linearGradient>
   </defs>`;
 
-  // מסגרת גוף — horizontal gradient + vertical shadow overlay
-  s += `<rect x="${fX}" y="${fY}" width="${fW}" height="${fH}" fill="url(#fg-${w.id})" rx="3" stroke="${frameDark}" stroke-width="1.5"/>`;
-  s += `<rect x="${fX}" y="${fY}" width="${fW}" height="${fH}" fill="url(#fgv-${w.id})" rx="3"/>`;
-  // רקע זכוכית — כחול-אפור לעומק
-  s += `<rect x="${fX+FRAME}" y="${fY+FRAME}" width="${fW-FRAME*2}" height="${fH-FRAME*2}" fill="#b8c8dc" rx="1"/>`;
-  // שכבת גוון זכוכית
-  s += `<rect x="${fX+FRAME}" y="${fY+FRAME}" width="${fW-FRAME*2}" height="${fH-FRAME*2}" fill="${tint.fill}" rx="1"/>`;
+  // ── לולאה על יחידות מקטע ──
+  for (let si = 0; si < sCount; si++) {
+    const sfX = fX + si * (unitFW + SEC_GAP);
+
+    // מסגרת גוף — horizontal gradient + vertical shadow overlay
+    s += `<rect x="${sfX}" y="${fY}" width="${unitFW}" height="${fH}" fill="url(#fg-${w.id})" rx="3" stroke="${frameDark}" stroke-width="1.5"/>`;
+    s += `<rect x="${sfX}" y="${fY}" width="${unitFW}" height="${fH}" fill="url(#fgv-${w.id})" rx="3"/>`;
+    // רקע זכוכית
+    s += `<rect x="${sfX+FRAME}" y="${fY+FRAME}" width="${unitFW-FRAME*2}" height="${fH-FRAME*2}" fill="#b8c8dc" rx="1"/>`;
+    s += `<rect x="${sfX+FRAME}" y="${fY+FRAME}" width="${unitFW-FRAME*2}" height="${fH-FRAME*2}" fill="${tint.fill}" rx="1"/>`;
 
   // ── כנפיים ──
   for (let i = 0; i < wingCount; i++) {
-    const gX = fX + FRAME + i * (wingW + DIVIDER);
+    const gX = sfX + FRAME + i * (wingW + DIVIDER);
     const gY = fY + FRAME;
     const gH = fH - FRAME * 2;
 
@@ -1103,19 +1202,25 @@ function svgFront(w) {
       s += `<rect x="${gX+inset}" y="${kickY+inset}" width="${wingW-inset*2}" height="${kickH-inset*2}" fill="none" stroke="${frameDark}" stroke-width="0.7" opacity="0.35"/>`;
       // threshold bar at very bottom
       if (i === 0) {
-        s += `<rect x="${fX+FRAME}" y="${fY+fH-FRAME-2}" width="${fW-FRAME*2}" height="${FRAME+2}" fill="${frameDark}" opacity="0.55" rx="1"/>`;
+        s += `<rect x="${sfX+FRAME}" y="${fY+fH-FRAME-2}" width="${unitFW-FRAME*2}" height="${FRAME+2}" fill="${frameDark}" opacity="0.55" rx="1"/>`;
       }
-      // 3 hinges on myHinge side
+      // צירים — כמות ומיקום לפי bhingeCount
+      const dHingePos = (w.hingeCount||3) === 2 ? [0.2, 0.8] : [0.15, 0.50, 0.85];
       const hingeEdgeX = myHinge === 'right' ? gX+wingW-3 : gX-1;
-      [0.18, 0.50, 0.82].forEach(r => {
+      const hingeLabelX = myHinge === 'right' ? gX+wingW+3 : gX-13;
+      dHingePos.forEach(r => {
         const hy = gY + gH*r - 5;
         s += `<rect x="${hingeEdgeX}" y="${hy}" width="5" height="10" rx="1.5" fill="${frameDark}" opacity="0.9"/>`;
+        s += `<text x="${hingeLabelX}" y="${hy+8}" font-size="6.5" fill="#64748b" font-family="Heebo,sans-serif">ציר</text>`;
       });
-      // handle on opposite side
+      // ידית — מיקום גובה לפי handleHeight
+      const hRatio = {top:0.22, middle:0.44, bottom:0.72}[w.handleHeight||'middle'];
       const handleX = myHinge === 'right' ? gX + 12 : gX + wingW - 12;
-      const handleY = gY + gH * 0.44;
+      const handleY = gY + gH * hRatio;
       s += `<rect x="${handleX-2.5}" y="${handleY-12}" width="5" height="24" rx="2.5" fill="${frameDark}" opacity="0.85"/>`;
       s += `<rect x="${handleX-5}" y="${handleY-3}" width="10" height="6" rx="3" fill="${frameDark}" opacity="0.6"/>`;
+      const hLabelX = myHinge === 'right' ? gX+3 : gX+wingW-18;
+      s += `<text x="${hLabelX}" y="${handleY+20}" font-size="6.5" fill="#64748b" font-family="Heebo,sans-serif">ידית</text>`;
       // swing diagonal dashed line
       const swingFromX = myHinge === 'right' ? gX+wingW : gX;
       const swingToX2  = myHinge === 'right' ? gX : gX+wingW;
@@ -1134,25 +1239,6 @@ function svgFront(w) {
       s += `<rect x="${divX}" y="${fY}" width="${DIVIDER}" height="${fH}" fill="${frameHex}" stroke="${frameDark}" stroke-width="0.5"/>`;
     }
 
-    // ── חלוקה לתאים (grid dividers בתוך הזכוכית) ──
-    const gCols = Math.max(1, parseInt(w.gridCols)||1);
-    const gRows = Math.max(1, parseInt(w.gridRows)||1);
-    const gridDivW = 3.5;
-    if (gCols > 1) {
-      const colStep = wingW / gCols;
-      for (let c = 1; c < gCols; c++) {
-        const cx2 = gX + c * colStep - gridDivW/2;
-        s += `<rect x="${cx2}" y="${gY}" width="${gridDivW}" height="${gH}" fill="${frameHex}" stroke="${frameDark}" stroke-width="0.4" opacity="0.9"/>`;
-      }
-    }
-    if (gRows > 1) {
-      const rowStep = gH / gRows;
-      for (let r = 1; r < gRows; r++) {
-        const ry2 = gY + r * rowStep - gridDivW/2;
-        s += `<rect x="${gX}" y="${ry2}" width="${wingW}" height="${gridDivW}" fill="${frameHex}" stroke="${frameDark}" stroke-width="0.4" opacity="0.9"/>`;
-      }
-    }
-
     // חץ פתיחה (לא לחלון קבוע, לא לדלת, לא לפנל קבוע)
     if (w.openingType !== 'fixed' && !isDoorType && !isFixedPanel) {
       const cx = gX + wingW / 2, cy2 = gY + gH / 2;
@@ -1166,38 +1252,53 @@ function svgFront(w) {
         const hingeX = hingeS === 'left' ? gX+4      : gX+wingW-4;
         const openX  = hingeS === 'left' ? gX+wingW-4 : gX+4;
         s += `<path d="M${hingeX},${gY+4} L${openX},${cy2} L${hingeX},${gY+gH-4}" fill="none" stroke="${tint.stroke}" stroke-width="1" stroke-dasharray="3,2" opacity="0.55"/>`;
-        // hinge marks
-        [0.2, 0.5, 0.8].forEach(r => {
+        // hinge marks — כמות ומיקום לפי hingeCount
+        const cHingePos = (w.hingeCount||3) === 2 ? [0.2, 0.8] : [0.15, 0.50, 0.85];
+        const cHingeX   = hingeS === 'left' ? gX+1 : gX+wingW-4;
+        const cHingeLX  = hingeS === 'left' ? gX-13 : gX+wingW+3;
+        cHingePos.forEach(r => {
           const hy = gY + gH*r - 4;
-          const hx = hingeS === 'left' ? gX+1 : gX+wingW-4;
-          s += `<rect x="${hx}" y="${hy}" width="3" height="8" rx="1" fill="${tint.stroke}" opacity="0.6"/>`;
+          s += `<rect x="${cHingeX}" y="${hy}" width="3" height="8" rx="1" fill="${tint.stroke}" opacity="0.7"/>`;
+          s += `<text x="${cHingeLX}" y="${hy+7}" font-size="6.5" fill="#64748b" font-family="Heebo,sans-serif">ציר</text>`;
         });
-        // handle indicator
+        // handle indicator — מיקום גובה לפי handleHeight
+        const cHRatio = {top:0.22, middle:0.50, bottom:0.72}[w.handleHeight||'middle'];
         const hdX = hingeS === 'left' ? gX+wingW-8 : gX+8;
-        s += `<rect x="${hdX-2}" y="${cy2-6}" width="4" height="12" rx="2" fill="${tint.stroke}" opacity="0.6"/>`;
+        const hdY = gY + gH * cHRatio;
+        s += `<rect x="${hdX-2}" y="${hdY-6}" width="4" height="12" rx="2" fill="${tint.stroke}" opacity="0.6"/>`;
+        const hLX = hingeS === 'left' ? gX+wingW-20 : gX+3;
+        s += `<text x="${hLX}" y="${hdY+12}" font-size="6.5" fill="#64748b" font-family="Heebo,sans-serif">ידית</text>`;
       } else if (w.openingType === 'tilt') {
         s += `<path d="M${gX+4},${gY+gH-4} L${cx},${gY+4} L${gX+wingW-4},${gY+gH-4}" fill="none" stroke="${tint.stroke}" stroke-width="1" stroke-dasharray="3,2" opacity="0.55"/>`;
       }
     }
-  }
+  } // end wingCount loop
 
-  // ── רשת ──
-  if (w.screen) {
-    const sx = fX + fW - 30, sy = fY + fH - 22;
-    s += `<rect x="${sx}" y="${sy}" width="24" height="16" rx="2" fill="rgba(200,210,225,0.6)" stroke="#94a3b8" stroke-width="0.8"/>`;
-    // mesh lines
-    for (let mx=sx+3; mx<sx+22; mx+=4) s += `<line x1="${mx}" y1="${sy+1}" x2="${mx}" y2="${sy+15}" stroke="#94a3b8" stroke-width="0.4" opacity="0.7"/>`;
-    for (let my=sy+3; my<sy+15; my+=4) s += `<line x1="${sx+1}" y1="${my}" x2="${sx+23}" y2="${my}" stroke="#94a3b8" stroke-width="0.4" opacity="0.7"/>`;
-  }
+    // ── רשת (על יחידה אחרונה) ──
+    if (w.screen && si === sCount - 1) {
+      const sx = sfX + unitFW - 30, sy = fY + fH - 22;
+      s += `<rect x="${sx}" y="${sy}" width="24" height="16" rx="2" fill="rgba(200,210,225,0.6)" stroke="#94a3b8" stroke-width="0.8"/>`;
+      for (let mx=sx+3; mx<sx+22; mx+=4) s += `<line x1="${mx}" y1="${sy+1}" x2="${mx}" y2="${sy+15}" stroke="#94a3b8" stroke-width="0.4" opacity="0.7"/>`;
+      for (let my=sy+3; my<sy+15; my+=4) s += `<line x1="${sx+1}" y1="${my}" x2="${sx+23}" y2="${my}" stroke="#94a3b8" stroke-width="0.4" opacity="0.7"/>`;
+    }
 
-  // ── ידית ──
-  const hx = fX + FRAME - 3, hy = fY + fH * 0.42;
-  s += `<rect x="${hx}" y="${hy}" width="4" height="12" rx="2" fill="${darken(frameHex,20)}" stroke="${frameDark}" stroke-width="0.5"/>`;
+    // ── ידית ──
+    const hx = sfX + FRAME - 3, hy = fY + fH * 0.42;
+    s += `<rect x="${hx}" y="${hy}" width="4" height="12" rx="2" fill="${darken(frameHex,20)}" stroke="${frameDark}" stroke-width="0.5"/>`;
+
+    // ── מספר יחידה (כשיש יותר מאחת) ──
+    if (sCount > 1) {
+      s += `<text x="${sfX + unitFW/2}" y="${fY + fH + 10}" text-anchor="middle" font-size="7" fill="#6b7a99" font-family="Heebo,sans-serif">${Math.round(w.width/sCount)} ס"מ</text>`;
+    }
+  } // end sCount loop
 
   // ── מידה תחתית ──
   const sqm = Math.max((w.width/100)*(w.height/100),1.0).toFixed(2);
   const warn = w.height > 220 || w.width > 200;
-  s += `<text x="${VW/2}" y="${VH-6}" text-anchor="middle" font-size="8" fill="#6b7a99" font-family="Heebo,sans-serif">${w.width}\u00d7${w.height} ס"מ | ${sqm} מ"ר</text>`;
+  const dimLabel = sCount > 1
+    ? `${sCount}×${Math.round(w.width/sCount)} ס"מ (סה"כ ${w.width}) | גובה ${w.height} ס"מ`
+    : `${w.width}×${w.height} ס"מ | ${sqm} מ"ר`;
+  s += `<text x="${VW/2}" y="${VH-6}" text-anchor="middle" font-size="8" fill="#6b7a99" font-family="Heebo,sans-serif">${dimLabel}</text>`;
   if (warn) s += `<text x="${VW/2}" y="${VH-16}" text-anchor="middle" font-size="7.5" fill="#c47c00" font-family="Heebo,sans-serif">\u26a0 חריגה ממפרט יצרן</text>`;
 
   s += `</svg>`;
@@ -1288,9 +1389,11 @@ function svgSide(w) {
 
 // ── RENDER WINDOW CARD ──
 function renderWindowCard(w) {
-  const price = calcWindowPrice(w);
-  const sqm   = Math.max((w.width/100)*(w.height/100),1.0).toFixed(2);
-  const warn  = w.height > 220 || w.width > 200;
+  const price    = calcWindowPrice(w);
+  const sCount2  = Math.max(1, parseInt(w.sectionCount)||1);
+  const unitW2   = w.width / sCount2;
+  const sqm      = (Math.max((unitW2/100)*(w.height/100), 1.0) * sCount2).toFixed(2);
+  const warn     = w.height > 220 || w.width > 200;
 
   const glassOpts = [
     { k:'triplex',    v:'טריפלקס 3+3' },
@@ -1397,42 +1500,73 @@ function renderWindowCard(w) {
 
       <!-- צד ציר/ידית — מוצג רק לסוגי פתיחה עם ציר -->
       ${['casement','door-single','door-double','door-side'].includes(w.openingType) ? `
-      <div style="margin-top:0.1rem;">
-        <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.45rem;"><i class="ph ph-arrows-left-right" style="font-size:0.85rem;"></i> צד צירים / ידית</label>
-        <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content;">
-          <button onclick="updateWindow(${w.id},'hingeSide','right')"
-            style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;font-family:'Heebo',sans-serif;transition:all var(--trans);
-              background:${w.hingeSide==='right'?'var(--blue)':'var(--surface2)'};
-              color:${w.hingeSide==='right'?'#fff':'var(--silver)'};">
-            <i class="ph ph-arrow-right"></i> ימין
-          </button>
-          <button onclick="updateWindow(${w.id},'hingeSide','left')"
-            style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border:none;border-right:1.5px solid var(--border);cursor:pointer;font-family:'Heebo',sans-serif;transition:all var(--trans);
-              background:${w.hingeSide==='left'?'var(--blue)':'var(--surface2)'};
-              color:${w.hingeSide==='left'?'#fff':'var(--silver)'};">
-            שמאל <i class="ph ph-arrow-left"></i>
-          </button>
+      <div style="margin-top:0.1rem;display:flex;flex-direction:column;gap:0.7rem;">
+
+        <!-- צד צירים -->
+        <div>
+          <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">
+            <i class="ph ph-arrows-left-right" style="font-size:0.85rem;"></i> צד צירים
+          </label>
+          <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content;">
+            <button onclick="updateWindow(${w.id},'hingeSide','right')"
+              style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;font-family:'Heebo',sans-serif;transition:all var(--trans);
+                background:${w.hingeSide==='right'?'var(--blue)':'var(--surface2)'};
+                color:${w.hingeSide==='right'?'#fff':'var(--silver)'};">
+              <i class="ph ph-arrow-right"></i> ימין
+            </button>
+            <button onclick="updateWindow(${w.id},'hingeSide','left')"
+              style="padding:0.4rem 1rem;font-size:0.82rem;font-weight:700;border:none;border-right:1.5px solid var(--border);cursor:pointer;font-family:'Heebo',sans-serif;transition:all var(--trans);
+                background:${w.hingeSide==='left'?'var(--blue)':'var(--surface2)'};
+                color:${w.hingeSide==='left'?'#fff':'var(--silver)'};">
+              שמאל <i class="ph ph-arrow-left"></i>
+            </button>
+          </div>
         </div>
+
+        <!-- כמות צירים -->
+        <div>
+          <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">
+            <i class="ph ph-exclude" style="font-size:0.85rem;"></i> כמות צירים
+          </label>
+          <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content;">
+            ${[2,3].map(n => `<button onclick="updateWindow(${w.id},'hingeCount',${n})"
+              style="padding:0.4rem 1.1rem;font-size:0.88rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Mono',monospace;transition:all var(--trans);${n>2?'border-right:1.5px solid var(--border);':''}
+                background:${(w.hingeCount||3)===n?'var(--blue)':'var(--surface2)'};
+                color:${(w.hingeCount||3)===n?'#fff':'var(--silver)'};
+              ">${n}</button>`).join('')}
+          </div>
+        </div>
+
+        <!-- גובה ידית -->
+        <div>
+          <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">
+            <i class="ph ph-hand" style="font-size:0.85rem;"></i> גובה ידית
+          </label>
+          <div style="display:flex;gap:0;border:1.5px solid var(--border);border-radius:var(--radius);overflow:hidden;width:fit-content;">
+            ${[['top','עליון'],['middle','אמצע'],['bottom','תחתון']].map(([k,lbl],idx) => `<button onclick="updateWindow(${w.id},'handleHeight','${k}')"
+              style="padding:0.4rem 0.85rem;font-size:0.82rem;font-weight:700;border:none;cursor:pointer;font-family:'Heebo',sans-serif;transition:all var(--trans);${idx>0?'border-right:1.5px solid var(--border);':''}
+                background:${(w.handleHeight||'middle')===k?'var(--blue)':'var(--surface2)'};
+                color:${(w.handleHeight||'middle')===k?'#fff':'var(--silver)'};
+              ">${lbl}</button>`).join('')}
+          </div>
+        </div>
+
       </div>` : ''}
 
-      <!-- חלוקה לתאים -->
+      <!-- חלוקה לחלונות במקטע -->
       <div class="field-group" style="margin-top:0.25rem;">
-        <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">חלוקה לתאים</label>
-        <div style="display:flex;gap:0.75rem;align-items:center;">
-          <div style="display:flex;align-items:center;gap:0.4rem;">
-            <input type="number" min="1" max="6" value="${w.gridCols||1}"
-              oninput="updateWindowDim(${w.id},'gridCols',this.value)"
-              style="width:58px;text-align:center;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.88rem;background:var(--surface2);font-family:'DM Mono',monospace;color:var(--ink);outline:none;">
-            <span style="font-size:0.78rem;color:var(--silver);">עמודות</span>
-          </div>
-          <span style="color:var(--border);font-size:1rem;">×</span>
-          <div style="display:flex;align-items:center;gap:0.4rem;">
-            <input type="number" min="1" max="4" value="${w.gridRows||1}"
-              oninput="updateWindowDim(${w.id},'gridRows',this.value)"
-              style="width:58px;text-align:center;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.88rem;background:var(--surface2);font-family:'DM Mono',monospace;color:var(--ink);outline:none;">
-            <span style="font-size:0.78rem;color:var(--silver);">שורות</span>
-          </div>
+        <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.4rem;">
+          <i class="ph ph-columns" style="font-size:0.85rem;"></i> חלוקה לחלונות
+        </label>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <input type="number" min="1" max="8" value="${w.sectionCount||1}"
+            oninput="updateWindowDim(${w.id},'sectionCount',this.value)"
+            style="width:62px;text-align:center;padding:0.35rem 0.5rem;border:1.5px solid var(--border);border-radius:var(--radius);font-size:0.88rem;background:var(--surface2);font-family:'DM Mono',monospace;color:var(--ink);outline:none;">
+          <span style="font-size:0.78rem;color:var(--silver);">חלונות במקטע</span>
         </div>
+        ${(w.sectionCount||1) > 1 ? `<div style="margin-top:0.4rem;font-size:0.78rem;color:var(--blue);font-family:'DM Mono',monospace;">
+          ↳ כל חלון: <strong>${Math.round(w.width/(w.sectionCount||1))} ס"מ</strong> רוחב
+        </div>` : ''}
       </div>
 
       <!-- זכוכית — collapsible -->
@@ -1574,7 +1708,7 @@ function renderWindowCard(w) {
     </div>
 
     <div class="window-card-footer">
-      <div style="font-size:0.85rem;color:var(--silver);">${w.width}&times;${w.height} ס"מ &nbsp;|&nbsp; ${sqm} מ"ר &nbsp;|&nbsp; סדרה ${w.series}</div>
+      <div style="font-size:0.85rem;color:var(--silver);">${sCount2>1?`${sCount2}×${Math.round(unitW2)} ס"מ`:w.width+'×'+w.height+' ס"מ'} &nbsp;|&nbsp; ${sqm} מ"ר &nbsp;|&nbsp; סדרה ${w.series}</div>
       <div class="footer-price">מחיר: <strong>\u20aa${price.toLocaleString()}</strong></div>
     </div>
   </div>`;
@@ -1587,8 +1721,10 @@ function renderSummary() {
   const openNames = { sliding:'הזזה', casement:'ציר', tilt:'קיפ', fixed:'קבוע', fold:'קיפול', 'door-single':'דלת יחידה', 'door-double':'דלת כפולה', 'door-side':'דלת + חלק קבוע' };
   const tbody = document.getElementById('summaryBody');
   tbody.innerHTML = state.windows.map(w => {
-    const sqm   = Math.max((w.width/100)*(w.height/100),1.0).toFixed(2);
-    const price = calcWindowPrice(w);
+    const count  = Math.max(1, parseInt(w.sectionCount)||1);
+    const unitW  = w.width / count;
+    const sqm    = (Math.max((unitW/100)*(w.height/100), 1.0) * count).toFixed(2);
+    const price  = calcWindowPrice(w);
     const ralEntry2 = RAL_COLORS.find(r => r.code === w.alColor);
     const colorLabel = ralEntry2 ? `RAL ${w.alColor} – ${ralEntry2.name}` : (w.alColor||'—');
     const blindLabel = w.blind ? [
@@ -1602,7 +1738,7 @@ function renderSummary() {
     return `<tr>
       <td>${w.location || 'חלון ' + w.id}</td>
       <td>סדרה ${w.series}</td>
-      <td>${w.width}\u00d7${w.height}</td>
+      <td>${count > 1 ? `${count}×${Math.round(unitW)} ס"מ` : `${w.width}×${w.height}`}</td>
       <td class="num">${sqm}</td>
       <td>${openNames[w.openingType]||w.openingType||'הזזה'}</td>
       <td>${glassMap[w.glass]||w.glass}</td>
@@ -1629,15 +1765,20 @@ function renderSummary() {
     termsDiv.className = 'terms-box';
     termsDiv.id = 'termsBox';
     termsDiv.innerHTML = `
-      <div class="terms-title"><i class="ph ph-scroll"></i> תקנון ותנאי הזמנה</div>
-      <div class="terms-text">
-        <p>1. הצעת המחיר תקפה ל-30 יום מתאריך הפקתה.</p>
-        <p>2. המחירים אינם כוללים עבודת התקנה אלא אם צוין אחרת.</p>
-        <p>3. אספקה תוך 21–35 ימי עבודה מיום אישור ותשלום מקדמה.</p>
-        <p>4. שינויים בהזמנה לאחר אישור כפופים לאגרת שינוי בהתאם לשלב הייצור.</p>
-        <p>5. אחריות על המוצרים: 5 שנים על פרופיל אלומיניום, 2 שנים על אביזרים ומנגנונים, 1 שנה על זכוכית.</p>
-        <p>6. ביטול הזמנה לאחר תחילת ייצור — חיוב של עד 30% מערך ההזמנה.</p>
-        <p>7. החברה שומרת את הזכות לבצע שינויים טכניים שאינם משפיעים על המפרט הסופי.</p>
+      <div class="terms-title" id="termsTitle" onclick="toggleTerms()">
+        <i class="ph ph-scroll"></i> תקנון ותנאי הזמנה
+        <i class="ph ph-caret-down terms-caret"></i>
+      </div>
+      <div class="terms-body" id="termsBodyContent">
+        <div class="terms-text">
+          <p>1. הצעת המחיר תקפה ל-30 יום מתאריך הפקתה.</p>
+          <p>2. המחירים אינם כוללים עבודת התקנה אלא אם צוין אחרת.</p>
+          <p>3. אספקה תוך 21–35 ימי עבודה מיום אישור ותשלום מקדמה.</p>
+          <p>4. שינויים בהזמנה לאחר אישור כפופים לאגרת שינוי בהתאם לשלב הייצור.</p>
+          <p>5. אחריות על המוצרים: 5 שנים על פרופיל אלומיניום, 2 שנים על אביזרים ומנגנונים, 1 שנה על זכוכית.</p>
+          <p>6. ביטול הזמנה לאחר תחילת ייצור — חיוב של עד 30% מערך ההזמנה.</p>
+          <p>7. החברה שומרת את הזכות לבצע שינויים טכניים שאינם משפיעים על המפרט הסופי.</p>
+        </div>
       </div>
       <label class="terms-checkbox">
         <input type="checkbox" id="termsCheck" onchange="updateTermsCheck()">
@@ -1647,6 +1788,14 @@ function renderSummary() {
   }
   updateTermsCheck();
 }
+
+window.toggleTerms = function() {
+  const title = document.getElementById('termsTitle');
+  const body  = document.getElementById('termsBodyContent');
+  if (!title || !body) return;
+  const isOpen = body.classList.toggle('open');
+  title.classList.toggle('open', isOpen);
+};
 
 window.updateTermsCheck = function() {
   const cb = document.getElementById('termsCheck');
@@ -1673,7 +1822,75 @@ window.updateWindow = function(id, field, value) {
 
 // עדכון שדה מלל בלי re-render (משמר פוקוס + קורסור)
 window.openMeasureInfo = function() {
-  showMsg('לתיאום שירות מדידה מקצועית צרו קשר: 050-000-0000 \u2014 טכנאי מוסמך יגיע אליכם לשטח');
+  document.getElementById('wMeasureModalOverlay').classList.add('show');
+};
+window.closeMeasureModal = function(e) {
+  if (!e || e.target === document.getElementById('wMeasureModalOverlay')) {
+    document.getElementById('wMeasureModalOverlay').classList.remove('show');
+    // reset modal to step 1
+    const s1 = document.getElementById('w-measure-step-1');
+    const s2 = document.getElementById('w-measure-payment-step');
+    if (s1) s1.style.display = 'block';
+    if (s2) { s2.style.display = 'none'; s2.innerHTML = wMeasurePaymentHTML; }
+    wMActivePayment = null;
+  }
+};
+window.confirmMeasure = function() {
+  const what    = document.getElementById('wm-what')?.value;
+  const address = document.getElementById('wm-address')?.value.trim();
+  if (!what)    { alert('יש לבחור מה למדוד'); return; }
+  if (!address) { alert('יש להזין כתובת הנכס'); return; }
+  document.getElementById('w-measure-step-1').style.display = 'none';
+  document.getElementById('w-measure-payment-step').style.display = 'block';
+  const code = getOrderCode();
+  const el = document.getElementById('wmOrderCodeDisplay');
+  if (el) el.textContent = code;
+};
+let wMActivePayment = null;
+window.showMeasurePayment = function(type) {
+  ['bank','credit'].forEach(t => {
+    document.getElementById(`wmpanel-${t}`)?.classList.remove('show');
+    document.getElementById(`wmbtn-${t}`)?.classList.remove('active-pay');
+  });
+  if (wMActivePayment === type) { wMActivePayment = null; return; }
+  document.getElementById(`wmpanel-${type}`)?.classList.add('show');
+  document.getElementById(`wmbtn-${type}`)?.classList.add('active-pay');
+  wMActivePayment = type;
+};
+window.sendMeasureProofWA = function() {
+  const code = document.getElementById('wmOrderCodeDisplay')?.textContent || getOrderCode();
+  const msg = encodeURIComponent(`שלום, שלחתי העברה בנקאית עבור שירות מדידה, קוד הזמנה ${code}, סכום ₪350. מצורפת האסמכתא.`);
+  window.open(`https://wa.me/972503494755?text=${msg}`, '_blank');
+};
+window.submitMeasureOrder = async function() {
+  const btn = document.querySelector('#w-measure-payment-step .btn-confirm-measure');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch"></i> שולח...'; }
+  const { data:{ user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+  const what     = document.getElementById('wm-what')?.value || '';
+  const sqm      = document.getElementById('wm-sqm')?.value  || '';
+  const address  = document.getElementById('wm-address')?.value || '';
+  const typeEl   = document.querySelector('input[name="wm-type"]:checked');
+  const propType = typeEl ? typeEl.value : '';
+  const code     = document.getElementById('wmOrderCodeDisplay')?.textContent || getOrderCode();
+  const { error } = await supabase.from('orders').insert({
+    user_id: user.id, order_code: code,
+    status: 'pending_payment', category: 'שירות מדידה',
+    sub_product: 'מדידה מקצועית בשטח',
+    width: 0, depth: 0,
+    config: { what, sqm, propType, address, price: 350 },
+    subtotal: 297, vat: 53, total_price: 350,
+    shipping_method: 'none', is_read: false, vendor_name: ''
+  });
+  if (error) { alert('שגיאה: ' + error.message); if (btn) { btn.disabled=false; btn.innerHTML='<i class="ph ph-check-circle"></i> אישור ושליחה'; } return; }
+  document.getElementById('w-measure-payment-step').innerHTML =
+    `<div style="text-align:center;padding:2rem 1rem;">
+      <i class="ph ph-check-circle" style="font-size:3rem;color:#16a34a"></i>
+      <div style="font-size:1.1rem;font-weight:700;margin-top:1rem;">ההזמנה התקבלה!</div>
+      <div style="font-size:0.85rem;color:#6b7a99;margin-top:0.4rem;">קוד: <strong>${code}</strong></div>
+      <div style="font-size:0.82rem;margin-top:0.75rem;color:#6b7a99;">נציג ייצור קשר בתוך 24 שעות לתיאום מועד הביקור.</div>
+      <button onclick="closeMeasureModal()" style="margin-top:1.5rem;padding:0.65rem 2rem;border-radius:10px;background:#0077cc;color:#fff;border:none;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;">סגור</button>
+    </div>`;
 };
 
 window.updateWindowText = function(id, field, value) {
@@ -1788,7 +2005,7 @@ window.saveOrder = async function() {
     if (error) { showMsg('שגיאה בשמירה: ' + error.message, true); return; }
     showMsg(`ההצעה נשמרה בהצלחה \u2014 ${code}`);
   } finally {
-    btn.disabled = false; btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור כהצעה';
+    btn.disabled = false; btn.innerHTML = '<i class="ph ph-bookmark"></i> העבר להצעות שמורות';
   }
 };
 
@@ -1817,7 +2034,7 @@ window.placeOrder = async function() {
     showMsg(`ההזמנה נשלחה לבדיקה טכנית \u2014 ${code}`);
     setTimeout(() => window.location.href = 'dashboard.html', 2500);
   } finally {
-    btn.disabled = false; btn.innerHTML = 'שלח לבדיקה טכנית <i class="ph ph-paper-plane-tilt"></i>';
+    btn.disabled = false; btn.innerHTML = 'שלח להזמנה <i class="ph ph-paper-plane-tilt"></i>';
   }
 };
 
@@ -2058,6 +2275,108 @@ document.addEventListener('click', function(e) {
       <button class="btn-primary" onclick="saveBlindModal()"><i class="ph ph-check"></i> שמור</button>
       <button class="btn-ghost" onclick="closeBlindModal()">ביטול</button>
     </div>
+  </div>
+</div>
+
+<!-- MEASURE MODAL -->
+<div class="measure-modal-overlay" id="wMeasureModalOverlay" onclick="closeMeasureModal(event)">
+  <div class="measure-modal" onclick="event.stopPropagation()">
+    <div class="measure-modal-hdr">
+      <div class="measure-modal-title"><i class="ph ph-ruler" style="color:#c47c00"></i> תיאום שירות מדידה מקצועית</div>
+      <button class="btn-close-modal" onclick="closeMeasureModal()"><i class="ph ph-x"></i></button>
+    </div>
+
+    <!-- שלב 1 -->
+    <div id="w-measure-step-1">
+      <div class="measure-service-card">
+        <div class="measure-price-row"><span class="measure-price-val">₪350</span><span class="measure-price-note">כולל מע"מ · תשלום חד פעמי</span></div>
+        <ul class="measure-includes">
+          <li><i class="ph ph-check-circle" style="color:#16a34a"></i> ביקור טכנאי מוסמך בשטח</li>
+          <li><i class="ph ph-check-circle" style="color:#16a34a"></i> מדידות מדויקות לכל הפתחים</li>
+          <li><i class="ph ph-check-circle" style="color:#16a34a"></i> סיכום ממצאים בכתב</li>
+          <li><i class="ph ph-check-circle" style="color:#16a34a"></i> ייעוץ ראשוני לבחירת המוצר</li>
+        </ul>
+      </div>
+      <div class="measure-field">
+        <label>מה רוצים למדוד?</label>
+        <select id="wm-what">
+          <option value="">בחר...</option>
+          <option value="חלונות ויטרינה">חלונות ויטרינה</option>
+          <option value="דלתות אלומיניום">דלתות אלומיניום</option>
+          <option value="פרגולה">פרגולה</option>
+          <option value="גדרות ומעקות">גדרות ומעקות</option>
+          <option value="אחר">אחר</option>
+        </select>
+      </div>
+      <div class="measure-field">
+        <label>הערכת שטח (מ"ר)</label>
+        <input type="number" id="wm-sqm" placeholder="לדוגמה: 20" min="1">
+      </div>
+      <div class="measure-field">
+        <label>סוג הנכס</label>
+        <div class="measure-radio-row">
+          <label class="measure-radio"><input type="radio" name="wm-type" value="בית פרטי"> בית פרטי</label>
+          <label class="measure-radio"><input type="radio" name="wm-type" value="דירה"> דירה</label>
+          <label class="measure-radio"><input type="radio" name="wm-type" value="מסחרי"> מסחרי</label>
+          <label class="measure-radio"><input type="radio" name="wm-type" value="אחר"> אחר</label>
+        </div>
+      </div>
+      <div class="measure-field">
+        <label>כתובת הנכס</label>
+        <input type="text" id="wm-address" placeholder="רחוב, מספר, עיר">
+      </div>
+      <button class="btn-confirm-measure" onclick="confirmMeasure()">
+        המשך לתשלום <i class="ph ph-arrow-left"></i>
+      </button>
+    </div>
+
+    <!-- שלב 2 -->
+    <div id="w-measure-payment-step" style="display:none;">
+      <div class="measure-payment-header">
+        <i class="ph ph-lock-key" style="color:#c47c00"></i> תשלום ₪350 — שירות מדידה
+      </div>
+      <div class="payment-buttons">
+        <button class="btn-payment" id="wmbtn-bank" onclick="showMeasurePayment('bank')">
+          <i class="ph ph-bank"></i> העברה בנקאית
+        </button>
+        <button class="btn-payment" id="wmbtn-credit" onclick="showMeasurePayment('credit')">
+          <i class="ph ph-credit-card"></i> תשלום באשראי
+        </button>
+      </div>
+      <div class="payment-panel" id="wmpanel-bank">
+        <div class="bank-details">
+          <div class="bank-row"><span class="key">בנק</span><span class="val">הפועלים (12)</span></div>
+          <div class="bank-row"><span class="key">סניף</span><span class="val">123</span></div>
+          <div class="bank-row"><span class="key">מספר חשבון</span><span class="val">123456</span></div>
+          <div class="bank-row"><span class="key">על שם</span><span class="val">אלום-איל בע"מ</span></div>
+        </div>
+        <div class="order-code-box">
+          <div class="order-code-label">קוד הזמנה</div>
+          <div class="order-code-val" id="wmOrderCodeDisplay">—</div>
+          <div class="order-code-hint">יש לציין קוד זה בביצוע ההעברה</div>
+        </div>
+        <button class="btn-wa-proof" onclick="sendMeasureProofWA()">
+          <i class="ph ph-whatsapp-logo"></i> שלח אסמכתא ב-WhatsApp
+        </button>
+        <button class="btn-confirm-measure" style="margin-top:1rem;background:#16a34a;" onclick="submitMeasureOrder()">
+          <i class="ph ph-check-circle"></i> אישור — שלחתי העברה
+        </button>
+      </div>
+      <div class="payment-panel" id="wmpanel-credit">
+        <div class="credit-form">
+          <div class="field"><label>מספר כרטיס</label><input type="text" id="wmCcNum" placeholder="XXXX XXXX XXXX XXXX" maxlength="19"></div>
+          <div class="credit-row">
+            <div class="field"><label>תוקף</label><input type="text" id="wmCcExp" placeholder="MM/YY" maxlength="5"></div>
+            <div class="field"><label>CVV</label><input type="text" id="wmCcCvv" placeholder="CVV" maxlength="4"></div>
+          </div>
+          <div class="field"><label>שם על הכרטיס</label><input type="text" id="wmCcName" placeholder="שם מלא"></div>
+          <button class="btn-submit-credit" onclick="submitMeasureOrder()">
+            <i class="ph ph-lock-key"></i> אישור תשלום מאובטח — ₪350
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
