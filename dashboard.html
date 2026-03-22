@@ -275,6 +275,7 @@
       <section class="dash-section active" id="sec-home">
         <div class="dashboard-title">ברוך הבא לאזור האישי</div>
         <div class="dashboard-subtitle">בחר את הפעולה שברצונך לבצע.</div>
+        <div id="member-status-area" style="margin-bottom:1.5rem;"></div>
         <div class="dashboard-grid">
           <a href="procurement.html" class="dashboard-card">
             <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
@@ -432,11 +433,87 @@ async function init() {
 
   if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
 
+  // Load member fields separately (columns may not exist yet in DB — isolated from auth check)
+  supabase.from('profiles').select('user_tier, equity_balance, member_requested_at').eq('id', user.id).maybeSingle()
+    .then(({ data: memberProfile }) => renderMemberStatus(memberProfile, user.id));
   await loadAll();
 
   const urlSection = new URLSearchParams(window.location.search).get('section');
   if (urlSection) showSection(urlSection);
 }
+
+/* ── MEMBER STATUS ── */
+function renderMemberStatus(profile, userId) {
+  const area = document.getElementById('member-status-area');
+  if (!area) return;
+  const isMember = profile?.user_tier === 'member';
+  const hasRequested = !!profile?.member_requested_at;
+
+  // Sidebar badge
+  const sidebarName = document.getElementById('dashSidebarUserName');
+  if (sidebarName && isMember && !sidebarName.querySelector('.member-badge')) {
+    sidebarName.insertAdjacentHTML('afterend',
+      '<span class="member-badge" style="display:inline-block;margin-top:3px;font-size:0.68rem;font-weight:800;color:#d4af37;background:rgba(212,175,55,0.12);border:1px solid #d4af37;border-radius:20px;padding:1px 8px;letter-spacing:0.5px;">חבר אלום ★</span>');
+  }
+
+  if (isMember) {
+    area.innerHTML = `
+      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
+        <div style="background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.05));border:1.5px solid #d4af37;border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.8rem;">
+          <i class="ph ph-medal" style="font-size:1.8rem;color:#d4af37;"></i>
+          <div>
+            <div style="font-size:0.72rem;font-weight:700;color:#d4af37;letter-spacing:0.5px;text-transform:uppercase;">מעמד</div>
+            <div style="font-size:1.05rem;font-weight:800;color:var(--white);">חבר אלום</div>
+          </div>
+        </div>
+        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.8rem;">
+          <i class="ph ph-chart-pie-slice" style="font-size:1.8rem;color:#60a5fa;"></i>
+          <div>
+            <div style="font-size:0.72rem;font-weight:700;color:var(--silver-dark);letter-spacing:0.5px;text-transform:uppercase;">יתרת מניות</div>
+            <div style="font-size:1.05rem;font-weight:800;color:var(--white);">₪${(profile.equity_balance || 0).toLocaleString()}</div>
+          </div>
+        </div>
+      </div>`;
+  } else if (hasRequested) {
+    area.innerHTML = `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:0.7rem;max-width:480px;">
+        <i class="ph ph-clock" style="font-size:1.4rem;color:var(--silver-dark);"></i>
+        <div style="font-size:0.88rem;color:var(--silver);">בקשת ההצטרפות לתוכנית <strong style="color:var(--white);">חבר אלום</strong> נשלחה — צוות ALUM-IL יצור איתך קשר בקרוב.</div>
+      </div>`;
+  } else {
+    area.innerHTML = `
+      <div style="background:linear-gradient(135deg,rgba(212,175,55,0.08),transparent);border:1.5px solid rgba(212,175,55,0.35);border-radius:12px;padding:1rem 1.4rem;max-width:520px;">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
+          <i class="ph ph-medal" style="font-size:1.3rem;color:#d4af37;"></i>
+          <span style="font-size:0.95rem;font-weight:800;color:var(--white);">תוכנית חבר אלום</span>
+        </div>
+        <div style="font-size:0.82rem;color:var(--silver);margin-bottom:0.8rem;line-height:1.5;">
+          10% הנחה על קיטים · צבירת מניות (0.5% מכל עסקה) · תוכן ומחירים בלעדיים.
+          <br>ההצטרפות כרוכה בהסמכה מקצועית וראיון עם הצוות.
+        </div>
+        <button onclick="requestMembership(this,'${userId}')"
+          style="background:#d4af37;color:#1a1a1a;border:none;border-radius:8px;padding:0.45rem 1.1rem;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;">
+          אני מעוניין — שלח בקשה
+        </button>
+      </div>`;
+  }
+}
+
+window.requestMembership = async function(btn, userId) {
+  try {
+    btn.disabled = true; btn.textContent = 'שולח...';
+    const { error } = await supabase.from('profiles')
+      .update({ member_requested_at: new Date().toISOString() }).eq('id', userId);
+    if (error) console.error('[member] update error:', error);
+    // Show confirmation regardless — admin will follow up
+    const area = document.getElementById('member-status-area');
+    if (area) area.innerHTML = `
+      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:0.7rem;max-width:480px;">
+        <i class="ph ph-check-circle" style="font-size:1.4rem;color:#4ade80;"></i>
+        <div style="font-size:0.88rem;color:var(--silver);">בקשת ההצטרפות לתוכנית <strong style="color:var(--white);">חבר אלום</strong> נשלחה — צוות ALUM-IL יצור איתך קשר בקרוב.</div>
+      </div>`;
+  } catch(e) { console.error('[member] exception:', e); }
+};
 
 /* ── NAVIGATION ── */
 window.showSection = function(id) {

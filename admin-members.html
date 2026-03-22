@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALUM-IL | אישור משתמשים</title>
+  <title>ALUM-IL | בקשות חבר אלום</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
@@ -26,7 +26,7 @@
       transition:all 0.18s ease;text-decoration:none;
     }
     .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
-    .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+    .admin-nav a.active { background:rgba(212,175,55,0.1);color:#d4af37;font-weight:700; }
 
     .admin-content { flex:1;padding:2rem;overflow-y:auto; }
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
@@ -41,7 +41,7 @@
       font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--industrial-silver);
       background:var(--surface-dark);min-width:240px;
     }
-    .search-input:focus { outline:none;border-color:var(--electric-blue); }
+    .search-input:focus { outline:none;border-color:#d4af37; }
     .count-label { font-size:0.82rem;color:var(--silver-dark); }
 
     /* ── TABLE ── */
@@ -54,15 +54,9 @@
     }
     .users-table td { padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle; }
     .users-table tr:last-child td { border-bottom:none; }
-    .users-table tr:hover td { background:var(--blue-dim); }
+    .users-table tr:hover td { background:rgba(212,175,55,0.04); }
 
     /* ── BADGES ── */
-    .type-badge {
-      display:inline-flex;align-items:center;padding:0.15rem 0.55rem;
-      border-radius:20px;font-size:0.72rem;font-weight:700;margin:0.15rem 0.15rem 0.15rem 0;
-      background:rgba(26,95,170,0.09);color:var(--electric-blue);
-      border:1px solid rgba(26,95,170,0.2);
-    }
     .spec-tag {
       display:inline-block;padding:0.12rem 0.45rem;
       border-radius:5px;font-size:0.7rem;font-weight:600;margin:0.1rem 0.1rem 0.1rem 0;
@@ -78,10 +72,10 @@
       cursor:pointer;transition:all 0.18s ease;
     }
     .btn-approve {
-      background:rgba(22,163,74,0.1);color:#16a34a;
-      border:1.5px solid rgba(22,163,74,0.25);
+      background:rgba(212,175,55,0.1);color:#d4af37;
+      border:1.5px solid rgba(212,175,55,0.3);
     }
-    .btn-approve:hover { background:rgba(22,163,74,0.18); }
+    .btn-approve:hover { background:rgba(212,175,55,0.2); }
     .btn-reject {
       background:rgba(220,38,38,0.08);color:#dc2626;
       border:1.5px solid rgba(220,38,38,0.22);
@@ -108,16 +102,14 @@
 
     .date-cell { color:var(--silver-dark);font-size:0.82rem; }
     .biz-name  { font-weight:700;color:var(--industrial-silver); }
-    .biz-id    { font-size:0.78rem;color:var(--silver-dark); }
     .phone-cell { direction:ltr;text-align:right;font-size:0.85rem; }
 
-    /* empty approved state */
     .all-clear {
       text-align:center;padding:3rem 2rem;
-      background:rgba(22,163,74,0.04);border-radius:12px;
-      border:1px dashed rgba(22,163,74,0.25);
+      background:rgba(212,175,55,0.04);border-radius:12px;
+      border:1px dashed rgba(212,175,55,0.3);
     }
-    .all-clear i { font-size:2.5rem;color:#16a34a;opacity:0.6;display:block;margin-bottom:0.5rem; }
+    .all-clear i { font-size:2.5rem;color:#d4af37;opacity:0.6;display:block;margin-bottom:0.5rem; }
     .all-clear p { color:var(--silver-dark);font-size:0.92rem;font-weight:600; }
   </style>
 </head>
@@ -142,11 +134,11 @@
     </aside>
 
     <main class="admin-content">
-      <div class="page-title">אישור משתמשים</div>
-      <div class="page-subtitle">בקשות הצטרפות הממתינות לאישור</div>
+      <div class="page-title"><i class="ph ph-medal" style="color:#d4af37;margin-left:0.4rem;"></i>בקשות חבר אלום</div>
+      <div class="page-subtitle">מתקינים שביקשו להצטרף לתוכנית החברות — ממתינים לאישור</div>
 
       <div class="toolbar">
-        <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או ח\"פ..." id="searchInput" oninput="filterRows()">
+        <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או שם מלא..." id="searchInput" oninput="filterRows()">
         <span class="count-label" id="countLabel"></span>
       </div>
 
@@ -154,18 +146,16 @@
         <table class="users-table" id="usersTable">
           <thead>
             <tr>
-              <th>תאריך הרשמה</th>
+              <th>תאריך בקשה</th>
               <th>שם עסק</th>
-              <th>אימייל</th>
-              <th>ח"פ / ע"מ</th>
               <th>טלפון</th>
-              <th>סוג גורם</th>
+              <th>אימייל</th>
               <th>התמחויות ואזורים</th>
               <th>פעולות</th>
             </tr>
           </thead>
           <tbody id="usersBody">
-            <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--silver-dark);">
               <i class="ph ph-circle-notch spin"></i> טוען...
             </td></tr>
           </tbody>
@@ -204,26 +194,11 @@ async function requireAdmin() {
   ];
   const el = document.getElementById('admin-sidebar-placeholder');
   if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
-    items.map(i => `<li><a href="${i.href}" class="${i.id==='users'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
+    items.map(i => `<li><a href="${i.href}" class="${i.id==='members'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
   }</ul>`;
 })();
 
 let allUsers = [];
-
-const TYPE_LABELS = {
-  installer:    'מתקין',
-  manufacturer: 'יצרן אלומיניום',
-  importer:     'יבואן',
-  metalworker:  'מסגר',
-  warehouse:    'מחסן חומרי גלם',
-  gardening:    'גינון ופיתוח',
-  contractor:   'קבלן',
-  architect:    'אדריכל',
-  entrepreneur: 'יזם',
-  designer:     'מעצב',
-  supplier:     'ספק',
-  other:        'אחר'
-};
 
 const REGION_LABELS = {
   north: 'צפון', haifa: 'חיפה והסביבה', sharon: 'שרון',
@@ -248,22 +223,19 @@ async function init() {
 }
 
 async function loadUsers() {
-  console.log('[USERS] loadUsers() called');
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
-    .or('is_approved.is.null,is_approved.eq.false')
-    .order('created_at', { ascending: false });
-
-  console.log('[USERS] query result — data:', data, '| error:', error);
+    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at')
+    .not('member_requested_at', 'is', null)
+    .neq('user_tier', 'member')
+    .order('member_requested_at', { ascending: false });
 
   if (error) {
-    console.error('[USERS] Supabase error:', error.message, error.code, error.details);
-    document.getElementById('usersBody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
+    console.error('[MEMBERS] Supabase error:', error.message);
+    document.getElementById('usersBody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
     return;
   }
 
-  console.log('[USERS] rows returned:', data?.length ?? 0);
   allUsers = data || [];
   renderTable(allUsers);
 }
@@ -279,9 +251,9 @@ function renderTable(users) {
 
   const tbody = document.getElementById('usersBody');
   if (users.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="8">
+    tbody.innerHTML = `<tr><td colspan="6">
       <div class="all-clear">
-        <i class="ph ph-check-circle"></i>
+        <i class="ph ph-medal"></i>
         <p>אין בקשות ממתינות — הכל מעודכן!</p>
       </div>
     </td></tr>`;
@@ -290,31 +262,27 @@ function renderTable(users) {
 
   tbody.innerHTML = users.map(u => {
     try {
-      const date = u.created_at ? new Date(u.created_at).toLocaleDateString('he-IL') : '—';
+      const date = u.member_requested_at ? new Date(u.member_requested_at).toLocaleDateString('he-IL') : '—';
 
-      const typeArr   = toArr(u.user_type);
       const specArr   = toArr(u.specialties);
       const regionArr = toArr(u.regions);
 
-      const types   = typeArr.map(t   => `<span class="type-badge">${TYPE_LABELS[t]   || t}</span>`).join('');
-      const specs   = specArr.map(s   => `<span class="spec-tag">${SPEC_LABELS[s]     || s}</span>`).join('');
-      const regions = regionArr.map(r => `<span class="spec-tag">${REGION_LABELS[r]   || r}</span>`).join('');
+      const specs   = specArr.map(s   => `<span class="spec-tag">${SPEC_LABELS[s]   || s}</span>`).join('');
+      const regions = regionArr.map(r => `<span class="spec-tag">${REGION_LABELS[r] || r}</span>`).join('');
 
-      return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()}" data-bid="${(u.business_id||'').toLowerCase()}">
+      return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()} ${(u.full_name||'').toLowerCase()}">
         <td class="date-cell">${date}</td>
         <td>
           <div class="biz-name">${u.business_name || '—'}</div>
           <div style="font-size:0.78rem;color:var(--silver-dark)">${u.full_name || ''}</div>
         </td>
-        <td style="font-size:0.82rem;color:var(--silver-dark);">${u.email || '—'}</td>
-        <td class="biz-id">${u.business_id || '—'}</td>
         <td class="phone-cell">${u.phone || '—'}</td>
-        <td>${types || '<span style="color:var(--silver-dark);font-size:0.8rem;">—</span>'}</td>
+        <td style="font-size:0.82rem;color:var(--silver-dark);">${u.email || '—'}</td>
         <td>${specs}${regions ? (specs ? '<br>' : '') + regions : ''}</td>
         <td>
           <div class="actions-cell">
             <button class="btn-approve" id="approve-${u.id}" onclick="handleAction('${u.id}','approved')">
-              <i class="ph ph-check"></i> אשר
+              <i class="ph ph-medal"></i> אשר חבר
             </button>
             <button class="btn-reject" id="reject-${u.id}" onclick="handleAction('${u.id}','rejected')">
               <i class="ph ph-x"></i> דחה
@@ -323,22 +291,25 @@ function renderTable(users) {
         </td>
       </tr>`;
     } catch (rowErr) {
-      console.error('[USERS] renderTable row error for id:', u?.id, rowErr);
-      return `<tr><td colspan="8" style="color:#dc2626;padding:0.5rem 1rem;">שגיאה בשורה: ${u?.business_name || u?.id || '?'}</td></tr>`;
+      console.error('[MEMBERS] row error for id:', u?.id, rowErr);
+      return `<tr><td colspan="6" style="color:#dc2626;padding:0.5rem 1rem;">שגיאה בשורה: ${u?.business_name || u?.id || '?'}</td></tr>`;
     }
   }).join('');
 }
 
-window.handleAction = async function(id, newStatus) {
+window.handleAction = async function(id, action) {
   const approveBtn = document.getElementById(`approve-${id}`);
   const rejectBtn  = document.getElementById(`reject-${id}`);
   if (approveBtn) approveBtn.disabled = true;
   if (rejectBtn)  rejectBtn.disabled = true;
 
-  const approved = (newStatus === 'approved');
+  const update = action === 'approved'
+    ? { user_tier: 'member', member_approved_at: new Date().toISOString() }
+    : { member_requested_at: null };
+
   const { error } = await supabase
     .from('profiles')
-    .update({ is_approved: approved })
+    .update(update)
     .eq('id', id);
 
   if (error) {
@@ -348,7 +319,6 @@ window.handleAction = async function(id, newStatus) {
     return;
   }
 
-  // Fade out the row
   const row = document.getElementById(`row-${id}`);
   if (row) {
     row.classList.add('fading-out');
@@ -357,9 +327,9 @@ window.handleAction = async function(id, newStatus) {
       allUsers = allUsers.filter(u => u.id !== id);
       document.getElementById('countLabel').textContent = `${allUsers.length} ממתינים לאישור`;
       if (allUsers.length === 0) {
-        document.getElementById('usersBody').innerHTML = `<tr><td colspan="8">
+        document.getElementById('usersBody').innerHTML = `<tr><td colspan="6">
           <div class="all-clear">
-            <i class="ph ph-check-circle"></i>
+            <i class="ph ph-medal"></i>
             <p>אין בקשות ממתינות — הכל מעודכן!</p>
           </div>
         </td></tr>`;
@@ -373,8 +343,8 @@ window.filterRows = function() {
   if (!q) { renderTable(allUsers); return; }
   const filtered = allUsers.filter(u =>
     (u.business_name || '').toLowerCase().includes(q) ||
-    (u.business_id || '').toLowerCase().includes(q) ||
-    (u.full_name || '').toLowerCase().includes(q)
+    (u.full_name || '').toLowerCase().includes(q) ||
+    (u.email || '').toLowerCase().includes(q)
   );
   renderTable(filtered);
 };

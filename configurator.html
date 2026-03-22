@@ -1583,6 +1583,8 @@ const ADDON_PRICES = { perSqm: 380, packaging: 120, led: 30, remote: 400, tahoma
 window.prices = ADDON_PRICES; // expose for debugging + external access
 
 let nextId = 2;
+let currentUserProfile = null; // loaded on init — user_tier + certifications for member discount
+
 const state = {
   projectName: '',
   projectNumber: '',
@@ -1633,11 +1635,17 @@ function calcArea(w, d) {
 function calcKitPrice(area) {
   return Math.round(Math.max(area, 12) * ADDON_PRICES.perSqm);
 }
+function applyMemberDiscount(price) {
+  if (currentUserProfile?.user_tier === 'member' &&
+      currentUserProfile?.certifications?.includes('electric_pergolas'))
+    return Math.round(price * 0.90);
+  return price;
+}
 function calcTotal() {
   let subtotal = 0;
   for (const s of state.systems) {
     const area = calcArea(s.width, s.depth);
-    subtotal += calcKitPrice(area);
+    subtotal += applyMemberDiscount(calcKitPrice(area));
     if (state.addons.led) subtotal += Math.round(area * ADDON_PRICES.led);
   }
   if (state.addons.remote) subtotal += ADDON_PRICES.remote;
@@ -2374,6 +2382,11 @@ function renderSummary() {
   // Totals
   const totalsDiv = document.getElementById('summaryTotals');
   let rows = `<div class="total-row"><span class="label">סה"כ מערכות</span><span class="val">₪${grand.toLocaleString()}</span></div>`;
+  if (currentUserProfile?.user_tier === 'member' && currentUserProfile?.certifications?.includes('electric_pergolas')) {
+    const kitTotal = state.systems.reduce((sum, s) => sum + calcKitPrice(calcArea(s.width, s.depth)), 0);
+    const disc = kitTotal - Math.round(kitTotal * 0.90);
+    rows += `<div class="total-row" style="color:#4ade80;"><span class="label"><i class="ph ph-medal" style="margin-left:4px;"></i>הנחת חבר אלום (10%)</span><span class="val">−₪${disc.toLocaleString()}</span></div>`;
+  }
   if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪${ADDON_PRICES.remote.toLocaleString()}</span></div>`;
   if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪${ADDON_PRICES.tahoma.toLocaleString()}</span></div>`;
   if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪${ADDON_PRICES.dimmer.toLocaleString()}</span></div>`;
@@ -3182,6 +3195,10 @@ loadGlobalPrices().then(() => renderAll());
       const email = document.getElementById('cfgSidebarUserEmail');
       if (name) name.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
       if (email) email.textContent = user.email || '';
+      // Load member profile for discount logic
+      const { data: prof } = await supabase.from('profiles')
+        .select('user_tier, certifications').eq('id', user.id).single();
+      if (prof) { currentUserProfile = prof; renderSummary(); updateStickyPrice(); }
     }
   } catch(e) {}
 })();

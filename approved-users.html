@@ -404,6 +404,7 @@ const supabase = createClient(
   const items = [
     { id: 'overview', icon: 'ph-chart-bar',     label: 'סקירה כללית',    href: 'admin-overview.html' },
     { id: 'users',    icon: 'ph-users',          label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'members',  icon: 'ph-medal',          label: 'חבר אלום',       href: 'admin-members.html' },
     { id: 'crm',      icon: 'ph-address-book',   label: 'קהילה ו-CRM',   href: 'approved-users.html' },
     { id: 'orders',   icon: 'ph-list-bullets',   label: 'הזמנות',         href: 'admin.html' },
     { id: 'quotes',   icon: 'ph-file-text',      label: 'הצעות מחיר',     href: 'admin-quotes.html' },
@@ -610,7 +611,11 @@ function buildMainRow(u) {
 
   return `<tr class="data-row${isExp?' is-expanded':''}${u.is_blocked?' blocked-row':''}" onclick="toggleExpand('${u.id}')">
     <td class="biz-cell">
-      <div class="biz-name">${u.business_name || '—'} ${u.is_blocked ? '<span class="blocked-badge"><i class="ph ph-prohibit"></i> חסום</span>' : ''}</div>
+      <div class="biz-name">${u.business_name || '—'}
+        ${u.is_blocked ? '<span class="blocked-badge"><i class="ph ph-prohibit"></i> חסום</span>' : ''}
+        ${u.user_tier === 'member' ? '<span style="background:rgba(212,175,55,0.2);color:#d4af37;border:1px solid #d4af37;border-radius:20px;font-size:0.68rem;font-weight:800;padding:1px 7px;margin-right:3px;">★ חבר אלום</span>' : ''}
+        ${u.member_requested_at && u.user_tier !== 'member' ? '<span style="background:rgba(212,175,55,0.08);color:#d4af37;border:1px solid rgba(212,175,55,0.4);border-radius:20px;font-size:0.68rem;font-weight:700;padding:1px 7px;margin-right:3px;">⭐ ממתין לחבר אלום</span>' : ''}
+      </div>
       <div class="biz-meta">
         <span class="full-name">${u.full_name || ''}</span>
         ${u.created_at ? `<span class="join-date"><i class="ph ph-calendar-blank"></i>${formatDate(u.created_at)}</span>` : ''}
@@ -712,6 +717,36 @@ function buildExpandRow(u) {
           <a class="btn-history" href="admin-user-history.html?id=${u.id}" target="_blank">
             <i class="ph ph-list-bullets"></i> היסטוריה מלאה
           </a>
+        </div>
+
+        <!-- Section: חבר אלום -->
+        <div class="ep-section">
+          <div class="ep-section-title"><i class="ph ph-medal"></i> חבר אלום</div>
+          ${u.member_requested_at ? `<div style="font-size:0.78rem;color:var(--silver);margin-bottom:0.6rem;"><i class="ph ph-clock" style="margin-left:3px;"></i>בקשה הוגשה: ${new Date(u.member_requested_at).toLocaleDateString('he-IL')}</div>` : '<div style="font-size:0.78rem;color:var(--silver-dark);margin-bottom:0.6rem;">לא הוגשה בקשה</div>'}
+          <div style="display:flex;gap:0.5rem;margin-bottom:0.75rem;">
+            <button onclick="event.stopPropagation();setMemberTier('${u.id}','standard')"
+              style="flex:1;padding:0.35rem 0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:1.5px solid ${u.user_tier!=='member'?'var(--electric-blue)':'var(--border)'};background:${u.user_tier!=='member'?'rgba(26,95,170,0.15)':'transparent'};color:${u.user_tier!=='member'?'#60a5fa':'var(--silver)'};">
+              מתקין רגיל
+            </button>
+            <button onclick="event.stopPropagation();setMemberTier('${u.id}','member')"
+              style="flex:1;padding:0.35rem 0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;border:1.5px solid ${u.user_tier==='member'?'#d4af37':'var(--border)'};background:${u.user_tier==='member'?'rgba(212,175,55,0.15)':'transparent'};color:${u.user_tier==='member'?'#d4af37':'var(--silver)'};">
+              ★ חבר אלום
+            </button>
+          </div>
+          ${u.user_tier === 'member' ? `
+          <div style="font-size:0.72rem;color:var(--silver-dark);margin-bottom:0.4rem;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;">קטגוריות הסמכה</div>
+          <div style="display:flex;gap:0.6rem;flex-wrap:wrap;margin-bottom:0.6rem;">
+            ${[{k:'electric_pergolas',l:'פרגולות חשמליות'},{k:'fixed_pergolas',l:'פרגולות קבועות'},{k:'windows',l:'חלונות וויטרינות'},{k:'gates_fences',l:'גדרות ושערים'}].map(c=>`
+            <label style="cursor:pointer;font-size:0.8rem;display:flex;align-items:center;gap:4px;color:var(--silver);">
+              <input type="checkbox" data-cert="${c.k}" data-uid="${u.id}"
+                ${(u.certifications||[]).includes(c.k)?'checked':''}
+                onclick="event.stopPropagation()"
+                onchange="saveCertifications('${u.id}')">
+              ${c.l}
+            </label>`).join('')}
+          </div>
+          <div style="font-size:0.82rem;color:var(--silver);">יתרת מניות: <strong style="color:var(--white);">₪${(u.equity_balance||0).toLocaleString()}</strong></div>
+          ` : ''}
         </div>
 
         <!-- Section 3: הגדרות אדמין -->
@@ -898,6 +933,26 @@ window.deleteUser = async function(id) {
   allUsers = allUsers.filter(u => u.id !== id);
   expandedId = null;
   applyFilters();
+};
+
+/* ── חבר אלום ── */
+window.setMemberTier = async function(userId, tier) {
+  const update = { user_tier: tier };
+  if (tier === 'member') update.member_approved_at = new Date().toISOString();
+  const { error } = await supabase.from('profiles').update(update).eq('id', userId);
+  if (error) { alert('שגיאה: ' + error.message); return; }
+  const idx = allUsers.findIndex(u => u.id === userId);
+  if (idx !== -1) Object.assign(allUsers[idx], update);
+  applyFilters();
+};
+
+window.saveCertifications = async function(userId) {
+  const checked = [...document.querySelectorAll(`input[data-uid="${userId}"][data-cert]:checked`)]
+    .map(el => el.dataset.cert);
+  const { error } = await supabase.from('profiles').update({ certifications: checked }).eq('id', userId);
+  if (error) { alert('שגיאה בשמירת הסמכות: ' + error.message); return; }
+  const idx = allUsers.findIndex(u => u.id === userId);
+  if (idx !== -1) allUsers[idx].certifications = checked;
 };
 
 init();
