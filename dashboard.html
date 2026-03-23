@@ -607,7 +607,7 @@ async function init() {
 
   const [{ data: profile }, { data: adminRow }] = await Promise.all([
     supabase.from('profiles').select('is_approved, is_blocked').eq('id', user.id).maybeSingle(),
-    supabase.from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle()
+    supabase.from('admin_users').select('user_id, role').eq('user_id', user.id).maybeSingle()
   ]);
   if (!profile?.is_approved && !adminRow) { window.location.href = 'pending-approval.html'; return; }
   if (profile?.is_blocked && !adminRow) { await supabase.auth.signOut(); window.location.href = 'login.html'; return; }
@@ -619,7 +619,14 @@ async function init() {
   if (sidebarName) sidebarName.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
   if (sidebarEmail) sidebarEmail.textContent = user.email || '';
 
-  if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
+  if (adminRow) {
+    const navItem = document.getElementById('adminNavItem');
+    navItem.style.display = 'list-item';
+    if (adminRow.role === 'college') {
+      navItem.querySelector('a').href = 'admin-college.html';
+      navItem.querySelector('a').innerHTML = '<i class="ph ph-graduation-cap"></i> ממשק מכללה';
+    }
+  }
 
   // Load member fields separately (columns may not exist yet in DB — isolated from auth check)
   supabase.from('profiles').select('user_tier, equity_balance, member_requested_at, member_status').eq('id', user.id).maybeSingle()
@@ -664,14 +671,32 @@ function renderMemberStatus(profile, userId) {
       </div>`;
   } else if (hasRequested) {
     const st = profile?.member_status || 'new_application';
+
+    // שלב 3 דינמי לפי המסלול שהוקצה
+    const trackStep = st === 'experienced_pending_cert'
+      ? { key: 'experienced_pending_cert', icon: 'ph-exam',            label: 'מבחן הסמכה' }
+      : st === 'in_professional_training'
+        ? { key: 'in_professional_training', icon: 'ph-graduation-cap', label: 'הכשרה מקצועית' }
+        : st === 'completing_docs'
+          ? { key: 'completing_docs',         icon: 'ph-files',          label: 'השלמת מסמכים' }
+          : { key: '_track',                  icon: 'ph-path',           label: 'הכשרה / מבחן' };
+
     const steps = [
-      { key: 'new_application',       icon: 'ph-paper-plane-tilt', label: 'הגשת מועמדות' },
-      { key: 'under_review',          icon: 'ph-magnifying-glass', label: 'בתהליך בדיקה' },
-      { key: 'professional_training', icon: 'ph-graduation-cap',   label: 'הכשרה מקצועית' },
-      { key: 'approved',              icon: 'ph-medal',             label: 'אישור חברות' },
+      { key: 'new_application', icon: 'ph-paper-plane-tilt', label: 'הגשת מועמדות' },
+      { key: 'under_review',    icon: 'ph-magnifying-glass', label: 'בתהליך בדיקה' },
+      trackStep,
+      { key: 'approved',        icon: 'ph-medal',            label: 'אישור חברות' },
     ];
-    const flowOrder = steps.map(s => s.key);
-    const currentIdx = flowOrder.indexOf(st);
+
+    const trackKeys = ['experienced_pending_cert','in_professional_training','completing_docs'];
+    const normalizeIdx = (s) => {
+      if (s === 'new_application') return 0;
+      if (s === 'under_review')    return 1;
+      if (trackKeys.includes(s))   return 2;
+      if (s === 'approved')        return 3;
+      return 0;
+    };
+    const currentIdx = normalizeIdx(st);
 
     const stepsHtml = steps.map((s, i) => {
       const isDone   = i < currentIdx;
@@ -697,7 +722,8 @@ function renderMemberStatus(profile, userId) {
 
     area.innerHTML = `
       <div style="background:#ffffff;border:1px solid #e8edf5;border-right:3px solid #1a5faa;border-radius:12px;padding:0.9rem 1.2rem;max-width:560px;box-shadow:0 2px 8px rgba(26,53,100,0.07);">
-        <div style="font-size:0.75rem;font-weight:700;color:#1a5faa;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.3rem;">
+        <div style="font-size:0.8rem;font-weight:800;color:#1a2640;margin-bottom:0.2rem;">בקשה למעמד חבר ALUM-IL</div>
+        <div style="font-size:0.72rem;font-weight:600;color:#1a5faa;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.3rem;">
           <i class="ph ph-clock"></i> בקשתך בתהליך — עוקבים אחרי ההתקדמות
         </div>
         <div style="display:flex;align-items:flex-start;gap:0;padding:0 0.3rem;">${stepsHtml}</div>

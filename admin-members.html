@@ -125,6 +125,8 @@
     .sb-new        { background:rgba(26,95,170,0.08);color:#1a5faa;border-color:rgba(26,95,170,0.22); }
     .sb-review     { background:rgba(234,88,12,0.08);color:#c2540a;border-color:rgba(234,88,12,0.22); }
     .sb-training   { background:rgba(124,58,237,0.08);color:#6d28d9;border-color:rgba(124,58,237,0.22); }
+    .sb-experienced{ background:rgba(14,116,144,0.08);color:#0e7490;border-color:rgba(14,116,144,0.22); }
+    .sb-docs       { background:rgba(161,98,7,0.08);color:#a16207;border-color:rgba(161,98,7,0.22); }
     .sb-approved   { background:rgba(22,163,74,0.08);color:#15803d;border-color:rgba(22,163,74,0.22); }
     .sb-rejected   { background:rgba(220,38,38,0.08);color:#dc2626;border-color:rgba(220,38,38,0.22); }
 
@@ -251,15 +253,24 @@ const BYPASS_CODE = 'ALUM2580'; // שנה לפני פריסה!
 
 const STATUS_FLOW   = ['new_application','under_review','professional_training'];
 const STATUS_LABELS = {
-  new_application:      'בקשה חדשה',
-  under_review:         'בתהליך בדיקה',
-  professional_training:'הכשרה מקצועית',
-  approved:             'מאושר',
-  rejected:             'נדחה',
+  new_application:          'בקשה חדשה',
+  under_review:             'בתהליך בדיקה',
+  professional_training:    'הכשרה מקצועית',
+  experienced_pending_cert: 'בעל נסיון — ממתין להסמכה',
+  in_professional_training: 'בתהליך הכשרה מקצועית',
+  completing_docs:          'השלמת מסמכים',
+  approved:                 'מאושר',
+  rejected:                 'נדחה',
 };
 const STATUS_CLASS = {
-  new_application: 'sb-new', under_review: 'sb-review',
-  professional_training: 'sb-training', approved: 'sb-approved', rejected: 'sb-rejected',
+  new_application:          'sb-new',
+  under_review:             'sb-review',
+  professional_training:    'sb-training',
+  experienced_pending_cert: 'sb-experienced',
+  in_professional_training: 'sb-training',
+  completing_docs:          'sb-docs',
+  approved:                 'sb-approved',
+  rejected:                 'sb-rejected',
 };
 
 let allUsers = [];
