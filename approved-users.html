@@ -84,6 +84,10 @@
     .crm-table tbody tr:last-child > td { border-bottom:none; }
     .crm-table tbody tr.data-row:hover > td { background:rgba(26,95,170,0.03);cursor:pointer; }
     .crm-table tbody tr.data-row.is-expanded > td { background:rgba(26,95,170,0.05); }
+    .crm-table tbody tr.data-row.member-gold > td { background:rgba(212,175,55,0.07); }
+    .crm-table tbody tr.data-row.member-gold:hover > td { background:rgba(212,175,55,0.13); }
+    .crm-table tbody tr.data-row.member-gold.is-expanded > td { background:rgba(212,175,55,0.11); }
+    .crm-table tbody tr.data-row.member-gold { box-shadow:inset 3px 0 0 #d4af37; }
 
     /* ─── Business name cell ─── */
     .biz-cell .biz-name { font-weight:700;font-size:0.92rem;color:var(--industrial-silver); }
@@ -539,7 +543,7 @@ async function loadUsers() {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
-    .eq('is_approved', true)
+    .or('is_approved.eq.true,member_requested_at.not.is.null')
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -647,7 +651,7 @@ function buildMainRow(u) {
   const isExp = expandedId === u.id;
   const wa    = waLink(u.phone);
 
-  return `<tr class="data-row${isExp?' is-expanded':''}${u.is_blocked?' blocked-row':''}" onclick="toggleExpand('${u.id}')">
+  return `<tr class="data-row${isExp?' is-expanded':''}${u.is_blocked?' blocked-row':''}${u.user_tier==='member'?' member-gold':''}" onclick="toggleExpand('${u.id}')">
     <td class="biz-cell">
       <div class="biz-name">${u.business_name || '—'}
         ${u.is_blocked ? '<span class="blocked-badge"><i class="ph ph-prohibit"></i> חסום</span>' : ''}

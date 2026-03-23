@@ -136,6 +136,14 @@
 
     /* ── COLLEGE BADGE ── */
     .college-badge { display:inline-flex;align-items:center;gap:0.4rem;font-size:0.75rem;background:rgba(124,58,237,0.08);color:#6d28d9;border:1px solid rgba(124,58,237,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700; }
+
+    /* ── ACTIVITY LOG ── */
+    .log-section { margin-top:0.9rem;border-top:1px solid #e8edf5;padding-top:0.8rem; }
+    .log-entries { display:flex;flex-direction:column;gap:0.3rem;max-height:180px;overflow-y:auto; }
+    .log-entry { display:flex;justify-content:space-between;align-items:flex-start;padding:0.4rem 0.6rem;background:#fff;border-radius:6px;border:1px solid #e5eaf5;font-size:0.8rem;gap:0.5rem; }
+    .log-label { color:#1a2640;font-weight:600;flex:1; }
+    .log-meta { color:#9aa3b5;font-size:0.7rem;white-space:nowrap; }
+    .log-empty { color:var(--silver-dark);font-size:0.78rem;font-style:italic;padding:0.3rem 0; }
   </style>
 </head>
 <body>
@@ -260,17 +268,39 @@ const SPEC_LABELS = {
 
 let allUsers = [];
 let currentTab = 'all';
+let currentUserEmail = '';
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleString('he-IL', {
+    day:'2-digit', month:'2-digit', year:'2-digit',
+    hour:'2-digit', minute:'2-digit'
+  });
+}
+
+async function logActivity(userId, action, oldStatus, newStatus, label) {
+  const { data: profile } = await supabase
+    .from('profiles').select('member_activity_log').eq('id', userId).single();
+  const log = [...(profile?.member_activity_log || []), {
+    action, old_status: oldStatus, new_status: newStatus,
+    by_email: currentUserEmail, by_role: 'college',
+    at: new Date().toISOString(), label
+  }];
+  await supabase.from('profiles').update({ member_activity_log: log }).eq('id', userId);
+  const u = allUsers.find(x => x.id === userId);
+  if (u) u.member_activity_log = log;
+}
 
 async function init() {
   const user = await requireCollegeAdmin();
   if (!user) return;
+  currentUserEmail = user.email || 'college';
   await loadUsers();
 }
 
 async function loadUsers() {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at, application_data, member_status, member_notes')
+    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at, application_data, member_status, member_notes, member_activity_log')
     .not('member_requested_at', 'is', null)
     .in('member_status', ['new_application','under_review','experienced_pending_cert','in_professional_training','completing_docs'])
     .order('member_requested_at', { ascending: false });
@@ -421,6 +451,20 @@ function renderTable(users) {
               <button class="note-save-btn" onclick="saveNote('${u.id}')"><i class="ph ph-paper-plane-right"></i></button>
             </div>
           </div>
+
+          <div class="log-section">
+            <div class="notes-title"><i class="ph ph-clock-countdown"></i> יומן פעולות</div>
+            <div class="log-entries">
+              ${(u.member_activity_log||[]).length === 0
+                ? '<div class="log-empty">אין פעולות מתועדות עדיין</div>'
+                : [...(u.member_activity_log||[])].reverse().map(e => `
+                  <div class="log-entry">
+                    <span class="log-label">${e.label || e.action}</span>
+                    <span class="log-meta">${e.by_email || ''} · ${formatDate(e.at)}</span>
+                  </div>`).join('')
+              }
+            </div>
+          </div>
         </td>
       </tr>`;
     } catch (rowErr) {
@@ -436,40 +480,51 @@ window.toggleDetails = function(id) {
 };
 
 window.handleAdvance = async function(id) {
+  const u = allUsers.find(x => x.id === id);
+  const oldStatus = u?.member_status || 'new_application';
   const btn = document.getElementById(`advance-${id}`);
   if (btn) btn.disabled = true;
   const { error } = await supabase.from('profiles')
     .update({ member_status: 'under_review' }).eq('id', id);
   if (error) { if (btn) btn.disabled = false; alert('שגיאה בעדכון שלב'); return; }
-  const u = allUsers.find(x => x.id === id);
+  await logActivity(id, 'status_changed', oldStatus, 'under_review', 'קידום שלב: בקשה חדשה → בתהליך בדיקה');
   if (u) u.member_status = 'under_review';
   renderTable(getFiltered());
 };
 
 window.setTrack = async function(id, trackStatus) {
+  const u = allUsers.find(x => x.id === id);
+  const oldStatus = u?.member_status || '';
+  const trackLabel = STATUS_LABELS[trackStatus] || trackStatus;
   const { error } = await supabase.from('profiles')
     .update({ member_status: trackStatus }).eq('id', id);
   if (error) { alert('שגיאה בעדכון מסלול'); return; }
-  const u = allUsers.find(x => x.id === id);
+  await logActivity(id, 'track_assigned', oldStatus, trackStatus, `הוקצה מסלול: ${trackLabel}`);
   if (u) u.member_status = trackStatus;
   renderTable(getFiltered());
 };
 
 window.handleApprove = async function(id) {
   if (!confirm('לאשר את המועמד כחבר אלום?')) return;
+  const u = allUsers.find(x => x.id === id);
+  const oldStatus = u?.member_status || '';
   const { error } = await supabase.from('profiles')
     .update({ member_status: 'approved', user_tier: 'member', member_approved_at: new Date().toISOString() })
     .eq('id', id);
   if (error) { alert('שגיאה באישור'); return; }
+  await logActivity(id, 'approved', oldStatus, 'approved', '✅ אושר כחבר אלום');
   allUsers = allUsers.filter(x => x.id !== id);
   renderTable(getFiltered());
 };
 
 window.handleReject = async function(id) {
   if (!confirm('לדחות את המועמד?')) return;
+  const u = allUsers.find(x => x.id === id);
+  const oldStatus = u?.member_status || '';
   const { error } = await supabase.from('profiles')
     .update({ member_status: 'rejected' }).eq('id', id);
   if (error) { alert('שגיאה בדחייה'); return; }
+  await logActivity(id, 'rejected', oldStatus, 'rejected', '❌ בקשה נדחתה');
   allUsers = allUsers.filter(x => x.id !== id);
   renderTable(getFiltered());
 };
@@ -487,7 +542,7 @@ window.saveNote = async function(id) {
     .eq('id', id);
 
   if (error) { alert('שגיאה בשמירת הערה'); return; }
-
+  await logActivity(id, 'note_added', null, null, '📝 נוספה הערה');
   if (u) u.member_notes = notes;
   input.value = '';
 

@@ -162,6 +162,14 @@
     }
     .all-clear i { font-size:2.5rem;color:#d4af37;opacity:0.6;display:block;margin-bottom:0.5rem; }
     .all-clear p { color:var(--silver-dark);font-size:0.92rem;font-weight:600; }
+
+    /* ── ACTIVITY LOG ── */
+    .log-section { margin-top:0.9rem;border-top:1px solid #e8edf5;padding-top:0.8rem; }
+    .log-entries { display:flex;flex-direction:column;gap:0.3rem;max-height:180px;overflow-y:auto; }
+    .log-entry { display:flex;justify-content:space-between;align-items:flex-start;padding:0.4rem 0.6rem;background:#fff;border-radius:6px;border:1px solid #e5eaf5;font-size:0.8rem;gap:0.5rem; }
+    .log-label { color:#1a2640;font-weight:600;flex:1; }
+    .log-meta { color:#9aa3b5;font-size:0.7rem;white-space:nowrap; }
+    .log-empty { color:var(--silver-dark);font-size:0.78rem;font-style:italic;padding:0.3rem 0; }
   </style>
 </head>
 <body>
@@ -275,6 +283,27 @@ const STATUS_CLASS = {
 
 let allUsers = [];
 let _bypassId = null, _bypassTarget = null;
+let currentUserEmail = '';
+
+function formatDate(iso) {
+  return new Date(iso).toLocaleString('he-IL', {
+    day:'2-digit', month:'2-digit', year:'2-digit',
+    hour:'2-digit', minute:'2-digit'
+  });
+}
+
+async function logActivity(userId, action, oldStatus, newStatus, label) {
+  const { data: profile } = await supabase
+    .from('profiles').select('member_activity_log').eq('id', userId).single();
+  const log = [...(profile?.member_activity_log || []), {
+    action, old_status: oldStatus, new_status: newStatus,
+    by_email: currentUserEmail, by_role: 'admin',
+    at: new Date().toISOString(), label
+  }];
+  await supabase.from('profiles').update({ member_activity_log: log }).eq('id', userId);
+  const u = allUsers.find(x => x.id === userId);
+  if (u) u.member_activity_log = log;
+}
 
 const REGION_LABELS = {
   north: 'צפון', haifa: 'חיפה והסביבה', sharon: 'שרון',
@@ -302,13 +331,17 @@ const SPEC_LABELS = {
 async function init() {
   const user = await requireAdmin();
   if (!user) return;
+  currentUserEmail = user.email || 'admin';
   await loadUsers();
+  supabase.channel('member-status-sync')
+    .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'profiles' }, () => loadUsers())
+    .subscribe();
 }
 
 async function loadUsers() {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at, application_data, member_status, member_notes')
+    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at, application_data, member_status, member_notes, member_activity_log')
     .not('member_requested_at', 'is', null)
     .not('member_status', 'in', '("approved","rejected")')
     .order('member_requested_at', { ascending: false });
@@ -448,6 +481,21 @@ function renderTable(users) {
               <button class="note-save-btn" onclick="saveNote('${u.id}')"><i class="ph ph-paper-plane-right"></i></button>
             </div>
           </div>
+
+          <!-- ── ACTIVITY LOG ── -->
+          <div class="log-section">
+            <div class="notes-title"><i class="ph ph-clock-countdown"></i> יומן פעולות</div>
+            <div class="log-entries">
+              ${(u.member_activity_log||[]).length === 0
+                ? '<div class="log-empty">אין פעולות מתועדות עדיין</div>'
+                : [...(u.member_activity_log||[])].reverse().map(e => `
+                  <div class="log-entry">
+                    <span class="log-label">${e.label || e.action}</span>
+                    <span class="log-meta">${e.by_email || ''} · ${formatDate(e.at)}</span>
+                  </div>`).join('')
+              }
+            </div>
+          </div>
         </td>
       </tr>`;
     } catch (rowErr) {
@@ -476,7 +524,8 @@ window.handleAdvance = async function(id, currentStatus) {
     .eq('id', id);
 
   if (error) { if (btn) btn.disabled = false; alert('שגיאה בעדכון שלב'); return; }
-
+  await logActivity(id, 'status_changed', currentStatus, next,
+    `קידום שלב: ${STATUS_LABELS[currentStatus]||currentStatus} → ${STATUS_LABELS[next]||next}`);
   const u = allUsers.find(x => x.id === id);
   if (u) u.member_status = next;
   renderTable(allUsers);
@@ -485,26 +534,30 @@ window.handleAdvance = async function(id, currentStatus) {
 window.handleApprove = async function(id) {
   const btn = document.getElementById(`advance-${id}`);
   if (btn) btn.disabled = true;
+  const u = allUsers.find(x => x.id === id);
+  const oldStatus = u?.member_status || '';
 
   const { error } = await supabase.from('profiles')
     .update({ user_tier: 'member', member_approved_at: new Date().toISOString(), member_status: 'approved' })
     .eq('id', id);
 
   if (error) { if (btn) btn.disabled = false; alert('שגיאה באישור חברות'); return; }
-
+  await logActivity(id, 'approved', oldStatus, 'approved', '✅ אושר כחבר אלום');
   _removeRow(id, 'מאושר כחבר אלום');
 };
 
 window.handleReject = async function(id) {
   const btn = document.getElementById(`reject-${id}`);
   if (btn) btn.disabled = true;
+  const u = allUsers.find(x => x.id === id);
+  const oldStatus = u?.member_status || '';
 
   const { error } = await supabase.from('profiles')
     .update({ member_status: 'rejected' })
     .eq('id', id);
 
   if (error) { if (btn) btn.disabled = false; alert('שגיאה בדחיית הבקשה'); return; }
-
+  await logActivity(id, 'rejected', oldStatus, 'rejected', '❌ בקשה נדחתה');
   _removeRow(id, 'נדחה');
 };
 
@@ -554,8 +607,10 @@ window.bypassConfirm = function() {
   const idx  = STATUS_FLOW.indexOf(targetStatus || '');
   const skip = STATUS_FLOW[idx + 2];
   if (!skip) { handleApprove(targetId); return; }
-  supabase.from('profiles').update({ member_status: skip }).eq('id', targetId).then(({ error }) => {
+  supabase.from('profiles').update({ member_status: skip }).eq('id', targetId).then(async ({ error }) => {
     if (error) { alert('שגיאה בדילוג שלב'); return; }
+    await logActivity(targetId, 'bypassed', targetStatus, skip,
+      `⚡ עקיפת שלב: ${STATUS_LABELS[targetStatus]||targetStatus} → ${STATUS_LABELS[skip]||skip}`);
     const u = allUsers.find(x => x.id === targetId);
     if (u) u.member_status = skip;
     renderTable(allUsers);
@@ -576,7 +631,7 @@ window.saveNote = async function(id) {
     .eq('id', id);
 
   if (error) { alert('שגיאה בשמירת הערה'); return; }
-
+  await logActivity(id, 'note_added', null, null, '📝 נוספה הערה');
   if (u) u.member_notes = notes;
   input.value = '';
 
