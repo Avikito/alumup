@@ -1634,11 +1634,51 @@ function calcArea(w, d) {
 function calcKitPrice(area) {
   return Math.round(Math.max(area, 12) * ADDON_PRICES.perSqm);
 }
+let currentUserProfile = null;
+function applyMemberDiscount(price) {
+  if (currentUserProfile?.user_tier === 'member') return Math.round(price * 0.90);
+  return price;
+}
+const isMember = () => currentUserProfile?.user_tier === 'member';
+function renderMemberPriceBox(regularSubtotal) {
+  const memberSubtotal = Math.round(regularSubtotal * 0.90);
+  const saving = regularSubtotal - memberSubtotal;
+  const memberGrand = memberSubtotal + Math.round(memberSubtotal * 0.18);
+  const regularGrand = regularSubtotal + Math.round(regularSubtotal * 0.18);
+  if (isMember()) {
+    return `<div style="margin-top:0.75rem;border-top:2px solid #dde4f0;padding-top:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+        <span style="font-size:0.75rem;color:#9aa3b5;text-decoration:line-through;">מחיר רגיל: ₪${regularGrand.toLocaleString()}</span>
+        <span style="font-size:0.7rem;background:#dcfce7;color:#15803d;border-radius:20px;padding:2px 8px;font-weight:700;">חסכת ₪${saving.toLocaleString()} ✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#f0f9f4;border:1.5px solid #bbf7d0;border-radius:10px;padding:0.6rem 0.8rem;">
+        <span style="font-size:0.82rem;font-weight:700;color:#15803d;display:flex;align-items:center;gap:0.35rem;"><i class="ph ph-medal" style="color:#c47c00;"></i>מחיר חבר אלום</span>
+        <span style="font-size:1.1rem;font-weight:800;color:#15803d;">₪${memberGrand.toLocaleString()}</span>
+      </div>
+    </div>`;
+  } else {
+    return `<div style="margin-top:0.75rem;border-top:2px solid #dde4f0;padding-top:0.75rem;">
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:0.7rem 0.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:700;color:#92400e;display:flex;align-items:center;gap:0.3rem;"><i class="ph ph-medal" style="color:#c47c00;"></i>מחיר חבר אלום ★</div>
+            <div style="font-size:0.68rem;color:#a16207;margin-top:2px;">חסכון של ₪${saving.toLocaleString()} בהזמנה זו</div>
+          </div>
+          <span style="font-size:1.05rem;font-weight:800;color:#c47c00;">₪${memberGrand.toLocaleString()}</span>
+        </div>
+        <a href="dashboard.html" style="display:block;text-align:center;background:#c47c00;color:#fff;border-radius:7px;padding:0.4rem 0.8rem;font-size:0.78rem;font-weight:800;text-decoration:none;"
+          onmouseover="this.style.background='#a66800'" onmouseout="this.style.background='#c47c00'">
+          הגש בקשה למסלול חבר אלום <i class="ph ph-arrow-left" style="font-size:0.7rem;"></i>
+        </a>
+      </div>
+    </div>`;
+  }
+}
 function calcTotal() {
   let subtotal = 0;
   for (const s of state.systems) {
     const area = calcArea(s.width, s.depth);
-    subtotal += calcKitPrice(area);
+    subtotal += applyMemberDiscount(calcKitPrice(area));
     if (state.addons.led) subtotal += Math.round(area * ADDON_PRICES.led);
   }
   if (state.addons.remote) subtotal += ADDON_PRICES.remote;
@@ -2406,6 +2446,10 @@ function renderSummary() {
   rows += `<div class="total-row subtotal-row"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${subtotal.toLocaleString()}</span></div>`;
   rows += `<div class="total-row vat-row"><span class="label">מע"מ (18%)</span><span class="val">₪${vat.toLocaleString()}</span></div>`;
   rows += `<div class="total-row grand"><span class="label">סה"כ כולל מע"מ</span><span class="val">₪${grandTotal.toLocaleString()}</span></div>`;
+  const regularSubtotal = isMember()
+    ? subtotal + state.systems.reduce((s, sys) => { const k = calcKitPrice(calcArea(sys.width, sys.depth)); return s + k - applyMemberDiscount(k); }, 0)
+    : subtotal;
+  rows += renderMemberPriceBox(regularSubtotal);
   totalsDiv.innerHTML = rows;
   renderQuoteCard();
 }
@@ -3182,6 +3226,8 @@ loadGlobalPrices().then(() => renderAll());
       const email = document.getElementById('cfgSidebarUserEmail');
       if (name) name.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || '';
       if (email) email.textContent = user.email || '';
+      const { data: prof } = await supabase.from('profiles').select('user_tier').eq('id', user.id).single();
+      if (prof) { currentUserProfile = prof; renderSummary(); updateStickyPrice(); }
     }
   } catch(e) {}
 })();

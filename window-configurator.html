@@ -1033,6 +1033,44 @@ async function loadPrices() {
   } catch(e) { console.warn('[PRICES]', e.message); }
 }
 
+// ── MEMBER DISCOUNT ──
+let currentUserProfile = null;
+const isMember = () => currentUserProfile?.user_tier === 'member';
+function renderMemberPriceBox(regularSubtotal) {
+  const memberSubtotal = Math.round(regularSubtotal * 0.90);
+  const saving = regularSubtotal - memberSubtotal;
+  const memberGrand = memberSubtotal + Math.round(memberSubtotal * 0.18);
+  const regularGrand = regularSubtotal + Math.round(regularSubtotal * 0.18);
+  if (isMember()) {
+    return `<div style="margin-top:0.75rem;border-top:2px solid #dde4f0;padding-top:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+        <span style="font-size:0.75rem;color:#9aa3b5;text-decoration:line-through;">מחיר רגיל: ₪${regularGrand.toLocaleString()}</span>
+        <span style="font-size:0.7rem;background:#dcfce7;color:#15803d;border-radius:20px;padding:2px 8px;font-weight:700;">חסכת ₪${saving.toLocaleString()} ✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#f0f9f4;border:1.5px solid #bbf7d0;border-radius:10px;padding:0.6rem 0.8rem;">
+        <span style="font-size:0.82rem;font-weight:700;color:#15803d;display:flex;align-items:center;gap:0.35rem;"><i class="ph ph-medal" style="color:#c47c00;"></i>מחיר חבר אלום</span>
+        <span style="font-size:1.1rem;font-weight:800;color:#15803d;">₪${memberGrand.toLocaleString()}</span>
+      </div>
+    </div>`;
+  } else {
+    return `<div style="margin-top:0.75rem;border-top:2px solid #dde4f0;padding-top:0.75rem;">
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:0.7rem 0.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:700;color:#92400e;display:flex;align-items:center;gap:0.3rem;"><i class="ph ph-medal" style="color:#c47c00;"></i>מחיר חבר אלום ★</div>
+            <div style="font-size:0.68rem;color:#a16207;margin-top:2px;">חסכון של ₪${saving.toLocaleString()} בהזמנה זו</div>
+          </div>
+          <span style="font-size:1.05rem;font-weight:800;color:#c47c00;">₪${memberGrand.toLocaleString()}</span>
+        </div>
+        <a href="dashboard.html" style="display:block;text-align:center;background:#c47c00;color:#fff;border-radius:7px;padding:0.4rem 0.8rem;font-size:0.78rem;font-weight:800;text-decoration:none;"
+          onmouseover="this.style.background='#a66800'" onmouseout="this.style.background='#c47c00'">
+          הגש בקשה למסלול חבר אלום <i class="ph ph-arrow-left" style="font-size:0.7rem;"></i>
+        </a>
+      </div>
+    </div>`;
+  }
+}
+
 // ── PRICING ──
 function calcWindowPrice(w) {
   const count   = Math.max(1, parseInt(w.sectionCount)||1);
@@ -1050,9 +1088,10 @@ function calcWindowPrice(w) {
 }
 
 function calcTotal() {
-  const subtotal = state.windows.reduce((s,w) => s + calcWindowPrice(w), 0);
+  const rawSubtotal = state.windows.reduce((s,w) => s + calcWindowPrice(w), 0);
+  const subtotal = isMember() ? Math.round(rawSubtotal * 0.90) : rawSubtotal;
   const vat = Math.round(subtotal * 0.18);
-  return { subtotal, vat, grandTotal: subtotal + vat };
+  return { rawSubtotal, subtotal, vat, grandTotal: subtotal + vat };
 }
 
 // ── מפת גוון זכוכית ──
@@ -1751,11 +1790,12 @@ function renderSummary() {
     </tr>`;
   }).join('');
 
-  const { subtotal, vat, grandTotal } = calcTotal();
+  const { rawSubtotal, subtotal, vat, grandTotal } = calcTotal();
   document.getElementById('summaryTotals').innerHTML = `
     <div class="total-row"><span class="tlabel">סה"כ לפני מע"מ</span><span class="tval">\u20aa${subtotal.toLocaleString()}</span></div>
     <div class="total-row"><span class="tlabel">מע"מ (18%)</span><span class="tval">\u20aa${vat.toLocaleString()}</span></div>
     <div class="total-row grand"><span class="tlabel">סה"כ כולל מע"מ</span><span class="tval">\u20aa${grandTotal.toLocaleString()}</span></div>
+    ${renderMemberPriceBox(rawSubtotal)}
   `;
   document.getElementById('stickyTotal').textContent = '\u20aa' + grandTotal.toLocaleString();
   // ensure terms box exists
@@ -2131,6 +2171,8 @@ window.handleLogout = async function() {
 async function init() {
   const { data:{ user } } = await supabase.auth.getUser();
   if (!user) { window.location.href = 'login.html'; return; }
+  const { data: prof } = await supabase.from('profiles').select('user_tier').eq('id', user.id).single();
+  if (prof) currentUserProfile = prof;
   await loadPrices();
   renderAll();
 }

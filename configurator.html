@@ -1636,10 +1636,44 @@ function calcKitPrice(area) {
   return Math.round(Math.max(area, 12) * ADDON_PRICES.perSqm);
 }
 function applyMemberDiscount(price) {
-  if (currentUserProfile?.user_tier === 'member' &&
-      currentUserProfile?.certifications?.includes('electric_pergolas'))
+  if (currentUserProfile?.user_tier === 'member')
     return Math.round(price * 0.90);
   return price;
+}
+const isMember = () => currentUserProfile?.user_tier === 'member';
+function renderMemberPriceBox(regularSubtotal) {
+  const memberSubtotal = Math.round(regularSubtotal * 0.90);
+  const saving = regularSubtotal - memberSubtotal;
+  const memberGrand = memberSubtotal + Math.round(memberSubtotal * 0.18);
+  const regularGrand = regularSubtotal + Math.round(regularSubtotal * 0.18);
+  if (isMember()) {
+    return `<div style="margin-top:0.75rem;border-top:2px solid #dde4f0;padding-top:0.75rem;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem;">
+        <span style="font-size:0.75rem;color:#9aa3b5;text-decoration:line-through;">מחיר רגיל: ₪${regularGrand.toLocaleString()}</span>
+        <span style="font-size:0.7rem;background:#dcfce7;color:#15803d;border-radius:20px;padding:2px 8px;font-weight:700;">חסכת ₪${saving.toLocaleString()} ✓</span>
+      </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;background:#f0f9f4;border:1.5px solid #bbf7d0;border-radius:10px;padding:0.6rem 0.8rem;">
+        <span style="font-size:0.82rem;font-weight:700;color:#15803d;display:flex;align-items:center;gap:0.35rem;"><i class="ph ph-medal" style="color:#c47c00;"></i>מחיר חבר אלום</span>
+        <span style="font-size:1.1rem;font-weight:800;color:#15803d;">₪${memberGrand.toLocaleString()}</span>
+      </div>
+    </div>`;
+  } else {
+    return `<div style="margin-top:0.75rem;border-top:2px solid #dde4f0;padding-top:0.75rem;">
+      <div style="background:#fffbeb;border:1.5px solid #fde68a;border-radius:10px;padding:0.7rem 0.8rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.5rem;">
+          <div>
+            <div style="font-size:0.75rem;font-weight:700;color:#92400e;display:flex;align-items:center;gap:0.3rem;"><i class="ph ph-medal" style="color:#c47c00;"></i>מחיר חבר אלום ★</div>
+            <div style="font-size:0.68rem;color:#a16207;margin-top:2px;">חסכון של ₪${saving.toLocaleString()} בהזמנה זו</div>
+          </div>
+          <span style="font-size:1.05rem;font-weight:800;color:#c47c00;">₪${memberGrand.toLocaleString()}</span>
+        </div>
+        <a href="dashboard.html" style="display:block;text-align:center;background:#c47c00;color:#fff;border-radius:7px;padding:0.4rem 0.8rem;font-size:0.78rem;font-weight:800;text-decoration:none;"
+          onmouseover="this.style.background='#a66800'" onmouseout="this.style.background='#c47c00'">
+          הגש בקשה למסלול חבר אלום <i class="ph ph-arrow-left" style="font-size:0.7rem;"></i>
+        </a>
+      </div>
+    </div>`;
+  }
 }
 function calcTotal() {
   let subtotal = 0;
@@ -2382,11 +2416,6 @@ function renderSummary() {
   // Totals
   const totalsDiv = document.getElementById('summaryTotals');
   let rows = `<div class="total-row"><span class="label">סה"כ מערכות</span><span class="val">₪${grand.toLocaleString()}</span></div>`;
-  if (currentUserProfile?.user_tier === 'member' && currentUserProfile?.certifications?.includes('electric_pergolas')) {
-    const kitTotal = state.systems.reduce((sum, s) => sum + calcKitPrice(calcArea(s.width, s.depth)), 0);
-    const disc = kitTotal - Math.round(kitTotal * 0.90);
-    rows += `<div class="total-row" style="color:#4ade80;"><span class="label"><i class="ph ph-medal" style="margin-left:4px;"></i>הנחת חבר אלום (10%)</span><span class="val">−₪${disc.toLocaleString()}</span></div>`;
-  }
   if(state.addons.remote) rows += `<div class="total-row"><span class="label">שלט רב ערוצי Somfy</span><span class="val">₪${ADDON_PRICES.remote.toLocaleString()}</span></div>`;
   if(state.addons.tahoma) rows += `<div class="total-row"><span class="label">בית חכם TaHoma</span><span class="val">₪${ADDON_PRICES.tahoma.toLocaleString()}</span></div>`;
   if(state.addons.dimmer) rows += `<div class="total-row"><span class="label">שלט תאורה / דימר</span><span class="val">₪${ADDON_PRICES.dimmer.toLocaleString()}</span></div>`;
@@ -2419,6 +2448,10 @@ function renderSummary() {
   rows += `<div class="total-row subtotal-row"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${subtotal.toLocaleString()}</span></div>`;
   rows += `<div class="total-row vat-row"><span class="label">מע"מ (18%)</span><span class="val">₪${vat.toLocaleString()}</span></div>`;
   rows += `<div class="total-row grand"><span class="label">סה"כ כולל מע"מ</span><span class="val">₪${grandTotal.toLocaleString()}</span></div>`;
+  const regularSubtotal = isMember()
+    ? subtotal + state.systems.reduce((s, sys) => { const k = calcKitPrice(calcArea(sys.width, sys.depth)); return s + k - applyMemberDiscount(k); }, 0)
+    : subtotal;
+  rows += renderMemberPriceBox(regularSubtotal);
   totalsDiv.innerHTML = rows;
   renderQuoteCard();
 }
@@ -3197,7 +3230,7 @@ loadGlobalPrices().then(() => renderAll());
       if (email) email.textContent = user.email || '';
       // Load member profile for discount logic
       const { data: prof } = await supabase.from('profiles')
-        .select('user_tier, certifications').eq('id', user.id).single();
+        .select('user_tier').eq('id', user.id).single();
       if (prof) { currentUserProfile = prof; renderSummary(); updateStickyPrice(); }
     }
   } catch(e) {}
