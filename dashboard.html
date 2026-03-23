@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
   <style>
     /* ── DASHBOARD LAYOUT ── */
     .dashboard-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
@@ -462,9 +463,8 @@
       <section class="dash-section active" id="sec-home">
         <div class="dashboard-title">ברוך הבא לאזור האישי</div>
         <div class="dashboard-subtitle">בחר את הפעולה שברצונך לבצע.</div>
-        <div id="member-status-area" style="margin-bottom:1.5rem;"></div>
-
-<div class="dashboard-grid">
+        <div id="member-top-cards" style="margin-bottom:1.2rem;"></div>
+        <div class="dashboard-grid">
           <a href="procurement.html" class="dashboard-card">
             <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
             <h3>מרכז הרכש</h3>
@@ -482,6 +482,7 @@
             <h3>מכללת ALUM-IL</h3>
           </a>
         </div>
+        <div id="member-status-area" style="margin-top:1.5rem;margin-bottom:1.5rem;"></div>
       </section>
 
       <!-- ── SAVED QUOTES ── -->
@@ -652,23 +653,46 @@ function renderMemberStatus(profile, userId) {
   }
 
   if (isMember) {
+    // Top cards — between title and grid
+    const topCards = document.getElementById('member-top-cards');
+    if (topCards) {
+      topCards.innerHTML = `
+        <div style="background:#fff;border:1.5px solid #dde4f0;border-top:3px solid #1a5faa;border-radius:14px;display:flex;align-items:stretch;overflow:hidden;box-shadow:0 2px 16px rgba(26,95,170,0.08);flex-wrap:wrap;">
+          <div style="background:#1a5faa;padding:1rem 1.5rem;display:flex;align-items:center;gap:0.85rem;flex-shrink:0;">
+            <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph ph-medal" style="font-size:1.25rem;color:#c47c00;"></i>
+            </div>
+            <div>
+              <div style="font-size:0.68rem;font-weight:600;color:rgba(255,255,255,0.7);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.15rem;">מעמד חברות</div>
+              <div style="font-size:1rem;font-weight:800;color:#fff;">חבר אלום ★</div>
+            </div>
+          </div>
+          <div style="width:1px;background:#dde4f0;flex-shrink:0;"></div>
+          <div id="savings-summary-cards" style="display:contents;">
+            <div style="padding:1rem 1.5rem;display:flex;align-items:center;gap:0.5rem;color:#6b7a99;font-size:0.82rem;">
+              <i class="ph ph-circle-notch spin"></i> טוען נתונים...
+            </div>
+          </div>
+        </div>`;
+    }
+    // Savings chart — below the grid
     area.innerHTML = `
-      <div style="display:flex;gap:1rem;flex-wrap:wrap;">
-        <div style="background:linear-gradient(135deg,rgba(212,175,55,0.15),rgba(212,175,55,0.05));border:1.5px solid #d4af37;border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.8rem;">
-          <i class="ph ph-medal" style="font-size:1.8rem;color:#d4af37;"></i>
-          <div>
-            <div style="font-size:0.72rem;font-weight:700;color:#d4af37;letter-spacing:0.5px;text-transform:uppercase;">מעמד</div>
-            <div style="font-size:1.05rem;font-weight:800;color:var(--white);">חבר אלום</div>
-          </div>
+      <div style="background:#fff;border:1.5px solid #dde4f0;border-radius:16px;padding:1.4rem;">
+        <div style="font-size:0.95rem;font-weight:800;color:#1a2640;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+          <i class="ph ph-trend-up" style="color:#d4af37;font-size:1.1rem;"></i>
+          <span>צבירת קופת מניות</span>
+          <span style="margin-right:auto;font-size:0.65rem;background:#1a2640;color:#d4af37;border-radius:20px;padding:3px 10px;font-weight:700;letter-spacing:0.3px;">0.5% מכל רכישה שנמסרה</span>
         </div>
-        <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:1rem 1.4rem;display:flex;align-items:center;gap:0.8rem;">
-          <i class="ph ph-chart-pie-slice" style="font-size:1.8rem;color:#60a5fa;"></i>
-          <div>
-            <div style="font-size:0.72rem;font-weight:700;color:var(--silver-dark);letter-spacing:0.5px;text-transform:uppercase;">יתרת מניות</div>
-            <div style="font-size:1.05rem;font-weight:800;color:var(--white);">₪${(profile.equity_balance || 0).toLocaleString()}</div>
-          </div>
+        <div style="height:270px;position:relative;">
+          <canvas id="alum-savings-chart"></canvas>
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:1.5rem;flex-wrap:wrap;font-size:0.72rem;color:#6b7a99;padding-top:0.75rem;border-top:1px solid #eaf0f9;">
+          <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;background:#1a5faa;border-radius:3px;"></span>רכישות — רבעון זכאי (מעל ₪45K)</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:3px;"></span>רכישות — רבעון לא-זכאי</span>
+          <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:20px;height:3px;background:#b8920f;border-radius:2px;"></span>צבירה מצטברת</span>
         </div>
       </div>`;
+    loadAndRenderSavingsChart(userId);
   } else if (hasRequested) {
     const st = profile?.member_status || 'new_application';
 
@@ -759,6 +783,258 @@ function renderMemberStatus(profile, userId) {
         </button>
       </div>`;
   }
+}
+
+/* ── MEMBER SAVINGS CHART ── */
+async function loadAndRenderSavingsChart(userId) {
+  const canvas = document.getElementById('alum-savings-chart');
+  if (!canvas) return;
+
+  const { data: orders } = await supabase
+    .from('orders')
+    .select('id, created_at, subtotal, total_price, grand_total')
+    .eq('user_id', userId)
+    .eq('status', 'delivered')
+    .order('created_at', { ascending: true });
+
+  const showEmpty = (msg) => {
+    const summaryEl = document.getElementById('savings-summary-cards');
+    if (summaryEl) summaryEl.innerHTML = '';
+    canvas.parentElement.innerHTML = `
+      <div style="text-align:center;padding:3rem 1rem;">
+        <div style="width:56px;height:56px;background:#eaf0f9;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;">
+          <i class="ph ph-chart-bar" style="font-size:1.8rem;color:#6b7a99;"></i>
+        </div>
+        <div style="font-size:0.95rem;font-weight:700;color:#1a2640;margin-bottom:0.4rem;">אין עדיין הזמנות שנמסרו</div>
+        <div style="font-size:0.8rem;color:#6b7a99;">${msg}</div>
+      </div>`;
+  };
+
+  if (!orders || orders.length === 0) {
+    showEmpty('הגרף יופיע לאחר שהזמנות יסומנו כ"נמסר" במערכת');
+    return;
+  }
+
+  // Group by month and quarter — use first available price field
+  const byMonth = {};
+  const byQuarter = {};
+  for (const o of orders) {
+    const amount = o.subtotal || o.total_price || o.grand_total || 0;
+    const monthKey = o.created_at.slice(0, 7);
+    byMonth[monthKey] = (byMonth[monthKey] || 0) + amount;
+    const [oY, oM] = o.created_at.slice(0, 7).split('-').map(Number);
+    const qKey = `${oY}-Q${Math.ceil(oM / 3)}`;
+    byQuarter[qKey] = (byQuarter[qKey] || 0) + amount;
+  }
+
+  // Build full month range — timezone-safe string comparison
+  const today = new Date();
+  const todayMonthStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}`;
+  const allMonths = [];
+  let [curY, curM] = orders[0].created_at.slice(0, 7).split('-').map(Number);
+  const [endY, endM] = todayMonthStr.split('-').map(Number);
+  while (curY * 12 + curM <= endY * 12 + endM) {
+    allMonths.push(`${curY}-${String(curM).padStart(2, '0')}`);
+    curM++;
+    if (curM > 12) { curM = 1; curY++; }
+  }
+
+  const purchaseData = allMonths.map(m => byMonth[m] || 0);
+
+  if (!purchaseData.some(v => v > 0)) {
+    showEmpty('הסכומים בהזמנות אינם זמינים עדיין');
+    return;
+  }
+
+  let running = 0;
+  const cumulativeData = purchaseData.map(v => (running += Math.round(v * 0.005), running));
+
+  // Bar colors by quarter eligibility (timezone-safe)
+  const monthQKey = m => { const [y, mo] = m.split('-').map(Number); return `${y}-Q${Math.ceil(mo / 3)}`; };
+  const bgColors    = allMonths.map(m => (byQuarter[monthQKey(m)] || 0) >= 45000 ? '#1a5faa' : '#ef4444');
+  const borderColors = allMonths.map(m => (byQuarter[monthQKey(m)] || 0) >= 45000 ? '#1a4f8f' : '#dc2626');
+
+  // Current quarter summary
+  const nowQ = `${today.getFullYear()}-Q${Math.ceil((today.getMonth() + 1) / 3)}`;
+  const currentQTotal = byQuarter[nowQ] || 0;
+  const totalAccumulated = cumulativeData[cumulativeData.length - 1] || 0;
+  const isEligible = currentQTotal >= 45000;
+
+  // Update summary cards
+  const summaryEl = document.getElementById('savings-summary-cards');
+  if (summaryEl) {
+    const progressPct = Math.min(100, Math.round(currentQTotal / 45000 * 100));
+    const eligibleColor = isEligible ? '#15803d' : '#b91c1c';
+    const eligibleBg    = isEligible ? 'rgba(22,163,74,0.05)' : 'rgba(220,38,38,0.04)';
+    summaryEl.innerHTML = `
+      <div style="width:1px;background:#dde4f0;flex-shrink:0;align-self:stretch;"></div>
+      <div style="padding:0.9rem 1.5rem;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:140px;gap:0.18rem;">
+        <div style="font-size:0.72rem;font-weight:700;color:#4a5a78;letter-spacing:0.5px;">נצבר לקופה</div>
+        <div style="font-size:1.35rem;font-weight:800;color:#c47c00;line-height:1.2;">₪${totalAccumulated.toLocaleString('he-IL')}</div>
+        <div style="font-size:0.71rem;color:#6b7a99;">0.5% מרכישות שנמסרו</div>
+      </div>
+      <div style="width:1px;background:#dde4f0;flex-shrink:0;align-self:stretch;"></div>
+      <div style="padding:0.9rem 1.5rem;display:flex;flex-direction:column;justify-content:center;flex:1.6;min-width:190px;gap:0.18rem;">
+        <div style="font-size:0.72rem;font-weight:700;color:#4a5a78;letter-spacing:0.5px;">רבעון נוכחי</div>
+        <div style="font-size:1.35rem;font-weight:800;color:#1a2640;line-height:1.2;">₪${currentQTotal.toLocaleString('he-IL')}</div>
+        <div style="margin:0.25rem 0 0.1rem;height:4px;background:#eaf0f9;border-radius:2px;overflow:hidden;">
+          <div style="height:100%;width:${progressPct}%;background:${isEligible ? '#16a34a' : '#1a5faa'};border-radius:2px;transition:width 0.7s ease;"></div>
+        </div>
+        <div style="font-size:0.71rem;color:#6b7a99;">${progressPct}% מיעד ₪45,000 לפני מע"מ</div>
+      </div>
+      <div style="width:1px;background:#dde4f0;flex-shrink:0;align-self:stretch;"></div>
+      <div style="padding:0.9rem 1.5rem;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:150px;gap:0.18rem;background:${eligibleBg};">
+        <div style="font-size:0.72rem;font-weight:700;color:#4a5a78;letter-spacing:0.5px;">זכאות הפקדה</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.1rem;">
+          <i class="ph ${isEligible ? 'ph-check-circle-fill' : 'ph-x-circle-fill'}" style="font-size:1.1rem;color:${isEligible ? '#16a34a' : '#ef4444'};flex-shrink:0;"></i>
+          <span style="font-size:0.95rem;font-weight:800;color:${eligibleColor};">${isEligible ? 'זכאי להפקדה' : 'טרם הגעת ליעד'}</span>
+        </div>
+        <div style="font-size:0.71rem;color:${eligibleColor};opacity:0.85;">${isEligible ? 'עמדת ביעד הרבעוני ✓' : `חסר ₪${(45000 - currentQTotal).toLocaleString('he-IL')}`}</div>
+      </div>`;
+  }
+
+  // Fetch S&P 500 data (silent fail)
+  let sp500Data = null;
+  try {
+    const resp = await fetch('https://query1.finance.yahoo.com/v8/finance/chart/%5EGSPC?interval=1mo&range=20y');
+    const json = await resp.json();
+    const result = json?.chart?.result?.[0];
+    if (result) {
+      const spMap = {};
+      const timestamps = result.timestamp;
+      const closes = result.indicators.quote[0].close;
+      for (let i = 0; i < timestamps.length; i++) {
+        if (closes[i] == null) continue;
+        const d = new Date(timestamps[i] * 1000);
+        const k = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        spMap[k] = closes[i];
+      }
+      const baseKey = allMonths[0];
+      const baseVal = spMap[baseKey] || spMap[Object.keys(spMap).sort().find(k => k >= baseKey)];
+      if (baseVal) {
+        sp500Data = allMonths.map(m => {
+          const v = spMap[m];
+          return v != null ? +((v - baseVal) / baseVal * 100).toFixed(2) : null;
+        });
+      }
+    }
+  } catch (_) { /* silent */ }
+
+  // Build datasets
+  const datasets = [
+    {
+      type: 'bar',
+      label: 'רכישות חודשיות (₪)',
+      data: purchaseData,
+      backgroundColor: bgColors,
+      borderColor: borderColors,
+      borderWidth: 0,
+      borderRadius: 4,
+      yAxisID: 'yPurchase',
+      order: 2,
+    },
+    {
+      type: 'line',
+      label: 'צבירה מצטברת (₪)',
+      data: cumulativeData,
+      borderColor: '#b8920f',
+      backgroundColor: 'rgba(184,146,15,0.08)',
+      borderWidth: 3,
+      pointRadius: 4,
+      pointBackgroundColor: '#b8920f',
+      pointBorderColor: '#fff',
+      pointBorderWidth: 2,
+      fill: false,
+      tension: 0.35,
+      yAxisID: 'yPurchase',
+      order: 1,
+    }
+  ];
+
+  if (sp500Data) {
+    datasets.push({
+      type: 'line',
+      label: 'S&P 500 (% שינוי)',
+      data: sp500Data,
+      borderColor: '#94a3b8',
+      backgroundColor: 'transparent',
+      borderWidth: 2,
+      pointRadius: 0,
+      fill: false,
+      tension: 0.3,
+      yAxisID: 'ySP500',
+      order: 3,
+      borderDash: [5, 4],
+    });
+  }
+
+  const MONTHS_HE = ['ינו','פבר','מרץ','אפר','מאי','יוני','יולי','אוג','ספט','אוק','נוב','דצ'];
+  const labels = allMonths.map(m => {
+    const [yr, mo] = m.split('-');
+    return `${MONTHS_HE[+mo - 1]} ${yr.slice(2)}`;
+  });
+
+  const scales = {
+    x: {
+      grid: { color: 'rgba(26,38,64,0.06)', drawBorder: false },
+      ticks: { color: '#6b7a99', font: { size: 11, family: 'Heebo' }, maxRotation: 45 },
+      border: { display: false }
+    },
+    yPurchase: {
+      type: 'linear',
+      position: 'right',
+      grid: { color: 'rgba(26,38,64,0.07)', drawBorder: false },
+      ticks: {
+        color: '#6b7a99',
+        font: { size: 11, family: 'Heebo' },
+        callback: v => '₪' + v.toLocaleString('he-IL')
+      },
+      border: { display: false }
+    }
+  };
+  if (sp500Data) {
+    scales.ySP500 = {
+      type: 'linear',
+      position: 'left',
+      grid: { display: false },
+      ticks: { color: '#94a3b8', font: { size: 11, family: 'Heebo' }, callback: v => v + '%' },
+      border: { display: false }
+    };
+  }
+
+  new Chart(canvas, {
+    data: { labels, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      interaction: { mode: 'index', intersect: false },
+      plugins: {
+        legend: {
+          display: true,
+          position: 'top',
+          align: 'end',
+          labels: { color: '#1a2640', font: { size: 11, family: 'Heebo', weight: '600' }, boxWidth: 12, padding: 12 }
+        },
+        tooltip: {
+          rtl: true,
+          textDirection: 'rtl',
+          backgroundColor: '#1a2640',
+          titleColor: '#d4af37',
+          bodyColor: '#e2e8f0',
+          borderColor: 'rgba(212,175,55,0.3)',
+          borderWidth: 1,
+          padding: 10,
+          callbacks: {
+            label: ctx => {
+              if (ctx.dataset.yAxisID === 'ySP500') return ` S&P 500: ${ctx.parsed.y?.toFixed(1)}%`;
+              return ` ${ctx.dataset.label}: ₪${(ctx.parsed.y || 0).toLocaleString('he-IL')}`;
+            }
+          }
+        }
+      },
+      scales
+    }
+  });
 }
 
 /* ── MEMBER APPLICATION MODAL ── */
