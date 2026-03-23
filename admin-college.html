@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | ממשק מנהלת המכללה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
+
+    .admin-sidebar {
+      width:220px; flex-shrink:0;
+      background:var(--surface-dark);
+      border-left:1px solid var(--border);
+      padding:1.5rem 1rem;
+    }
+    .sidebar-label { font-size:0.72rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;padding:0 0.75rem;margin-bottom:0.75rem; }
+    .admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+    .admin-nav a {
+      display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;
+      font-size:0.9rem;font-weight:500;color:var(--silver-dark);cursor:pointer;
+      transition:all 0.18s ease;text-decoration:none;
+    }
+    .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .admin-nav a.active { background:rgba(212,175,55,0.1);color:#d4af37;font-weight:700; }
+
+    .admin-content { flex:1;padding:2rem;overflow-y:auto; }
+    .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
+    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.5rem; }
+
+    /* ── TOOLBAR ── */
+    .toolbar { display:flex;align-items:center;gap:0.75rem;margin-bottom:1rem;flex-wrap:wrap; }
+    .search-input {
+      padding:0.45rem 1rem;border:1.5px solid var(--border);border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--industrial-silver);
+      background:var(--surface-dark);min-width:240px;
+    }
+    .search-input:focus { outline:none;border-color:#d4af37; }
+    .count-label { font-size:0.82rem;color:var(--silver-dark); }
+
+    /* ── TAB FILTERS ── */
+    .tab-bar { display:flex;gap:0.4rem;margin-bottom:1.25rem;flex-wrap:wrap; }
+    .tab-btn {
+      padding:0.35rem 1rem;border-radius:20px;border:1.5px solid var(--border);
+      font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;
+      background:var(--surface-dark);color:var(--silver-dark);cursor:pointer;transition:all 0.15s;
+    }
+    .tab-btn:hover { border-color:#d4af37;color:#d4af37; }
+    .tab-btn.active { background:rgba(212,175,55,0.12);border-color:rgba(212,175,55,0.4);color:#d4af37; }
+
+    /* ── TABLE ── */
+    .users-table-wrap { overflow-x:auto;border-radius:12px;border:1px solid var(--border); }
+    .users-table { width:100%;border-collapse:collapse;font-size:0.88rem; }
+    .users-table th {
+      background:#f7f9fd;padding:0.75rem 1rem;
+      text-align:right;font-size:0.72rem;font-weight:700;color:var(--silver-dark);
+      text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid var(--border);
+    }
+    .users-table td { padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle; }
+    .users-table tr:last-child td { border-bottom:none; }
+    .users-table tr:hover td { background:rgba(212,175,55,0.04); }
+
+    /* ── SPEC TAGS ── */
+    .spec-tag {
+      display:inline-block;padding:0.12rem 0.45rem;
+      border-radius:5px;font-size:0.7rem;font-weight:600;margin:0.1rem 0.1rem 0.1rem 0;
+      background:rgba(26,95,170,0.05);color:var(--silver-dark);
+      border:1px solid var(--border);
+    }
+
+    /* ── ACTION BUTTONS ── */
+    .actions-cell { display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap; }
+    .btn-details { background:rgba(26,95,170,0.07);color:#1a5faa;border:1px solid rgba(26,95,170,0.18);border-radius:7px;padding:0.28rem 0.65rem;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:background 0.15s; }
+    .btn-details:hover { background:rgba(26,95,170,0.14); }
+    .btn-advance { background:rgba(124,58,237,0.1);color:#6d28d9;border:1.5px solid rgba(124,58,237,0.28);border-radius:7px;padding:0.3rem 0.75rem;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:0.3rem; }
+    .btn-advance:hover { background:rgba(124,58,237,0.18); }
+    .btn-advance:disabled { opacity:0.4;pointer-events:none; }
+
+    /* ── FADE OUT ── */
+    .fading-out { animation: fadeRowOut 0.4s ease forwards; }
+    @keyframes fadeRowOut { from { opacity:1;transform:translateX(0); } to { opacity:0;transform:translateX(20px); } }
+
+    .date-cell { color:var(--silver-dark);font-size:0.82rem; }
+    .biz-name  { font-weight:700;color:var(--industrial-silver); }
+    .phone-cell { direction:ltr;text-align:right;font-size:0.85rem; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite;display:inline-block; }
+
+    /* ── STATUS BADGE ── */
+    .status-badge { display:inline-flex;align-items:center;gap:0.25rem;padding:0.18rem 0.55rem;border-radius:20px;font-size:0.7rem;font-weight:800;border:1px solid; }
+    .sb-review   { background:rgba(234,88,12,0.08);color:#c2540a;border-color:rgba(234,88,12,0.22); }
+    .sb-training { background:rgba(124,58,237,0.08);color:#6d28d9;border-color:rgba(124,58,237,0.22); }
+
+    /* ── DETAILS ROW ── */
+    .details-row { display:none; }
+    .details-row.open { display:table-row; }
+    .details-row td { background:#f7f9fd;border-bottom:2px solid rgba(212,175,55,0.2);padding:0.9rem 1.2rem 1rem; }
+    .details-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.6rem 1.4rem; }
+    .detail-item { font-size:0.78rem; }
+    .detail-label { font-size:0.65rem;font-weight:800;color:#9aa3b5;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.18rem; }
+    .detail-value { color:var(--industrial-silver);font-weight:600;line-height:1.4; }
+
+    /* ── NOTES AREA ── */
+    .notes-area { margin-top:0.9rem;border-top:1px solid #e8edf5;padding-top:0.8rem; }
+    .notes-title { font-size:0.8rem;font-weight:700;color:#1a2640;margin-bottom:0.45rem;display:flex;align-items:center;gap:0.3rem; }
+    .notes-list { display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.5rem;max-height:120px;overflow-y:auto; }
+    .note-item { background:#fff;border:1px solid #e5eaf5;border-radius:8px;padding:0.4rem 0.7rem;font-size:0.77rem;color:var(--industrial-silver);line-height:1.45; }
+    .note-date { font-size:0.68rem;color:#9aa3b5;margin-left:0.5rem; }
+    .note-input-row { display:flex;gap:0.4rem; }
+    .note-input { flex:1;padding:0.4rem 0.7rem;border:1.5px solid #dde4f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;color:#1a2640;background:#f7f9fd; }
+    .note-input:focus { outline:none;border-color:#6d28d9; }
+    .note-save-btn { background:#6d28d9;color:#fff;border:none;border-radius:8px;padding:0.4rem 0.75rem;font-size:0.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center; }
+    .note-save-btn:hover { opacity:0.88; }
+
+    .all-clear { text-align:center;padding:3rem;color:var(--silver-dark); }
+    .all-clear i { font-size:2.5rem;color:#d4af37;opacity:0.6;display:block;margin-bottom:0.5rem; }
+    .all-clear p { color:var(--silver-dark);font-size:0.92rem;font-weight:600; }
+
+    /* ── COLLEGE BADGE ── */
+    .college-badge { display:inline-flex;align-items:center;gap:0.4rem;font-size:0.75rem;background:rgba(124,58,237,0.08);color:#6d28d9;border:1px solid rgba(124,58,237,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700; }
+  </style>
+</head>
+<body>
+  <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
+    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span class="college-badge">
+        <i class="ph ph-graduation-cap"></i> מנהלת מכללה
+      </span>
+      <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
+        <i class="ph ph-arrow-right"></i> אזור אישי
+      </a>
+    </div>
+  </header>
+
+  <div class="admin-wrapper">
+    <aside class="admin-sidebar">
+      <div class="sidebar-label">ניהול מכללה</div>
+      <ul class="admin-nav">
+        <li><a href="admin-college.html" class="active"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
+      </ul>
+    </aside>
+
+    <main class="admin-content">
+      <div class="page-title"><i class="ph ph-graduation-cap" style="color:#6d28d9;margin-left:0.4rem;"></i>ממשק מנהלת המכללה</div>
+      <div class="page-subtitle">מועמדים בתהליך הכשרה — ניהול קידום שלבים והערות</div>
+
+      <div class="toolbar">
+        <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או שם מלא..." id="searchInput" oninput="filterRows()">
+        <span class="count-label" id="countLabel"></span>
+      </div>
+
+      <div class="tab-bar">
+        <button class="tab-btn active" onclick="setTab('all')"                   id="tab-all">הכל</button>
+        <button class="tab-btn"        onclick="setTab('new_application')"       id="tab-new_application">בקשה חדשה</button>
+        <button class="tab-btn"        onclick="setTab('under_review')"          id="tab-under_review">בתהליך בדיקה</button>
+        <button class="tab-btn"        onclick="setTab('professional_training')" id="tab-professional_training">הכשרה מקצועית</button>
+      </div>
+
+      <div class="users-table-wrap" id="tableWrap">
+        <table class="users-table" id="usersTable">
+          <thead>
+            <tr>
+              <th>תאריך בקשה</th>
+              <th>שם עסק</th>
+              <th>טלפון</th>
+              <th>אימייל</th>
+              <th>סטטוס</th>
+              <th>פעולות</th>
+            </tr>
+          </thead>
+          <tbody id="usersBody">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+              <i class="ph ph-circle-notch spin"></i> טוען...
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+async function requireCollegeAdmin() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return null; }
+  const { data: adminRow } = await supabase
+    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+  if (!adminRow) { window.location.href = 'login.html'; return null; }
+  return user;
+}
+
+const STATUS_FLOW = ['new_application', 'under_review', 'professional_training'];
+const STATUS_LABELS = {
+  new_application:       'בקשה חדשה',
+  under_review:          'בתהליך בדיקה',
+  professional_training: 'הכשרה מקצועית',
+  approved:              'מאושר',
+  rejected:              'נדחה',
+};
+const STATUS_CLASS = {
+  new_application:       'sb-new',
+  under_review:          'sb-review',
+  professional_training: 'sb-training',
+};
+
+const REGION_LABELS = {
+  north: 'צפון', haifa: 'חיפה והסביבה', sharon: 'שרון',
+  center: 'מרכז', jerusalem: 'ירושלים', south: 'דרום', eilat: 'אילת והערבה'
+};
+const SPEC_LABELS = {
+  pergolas:'פרגולות', 'electric-pergolas':'פרגולות חשמליות', electric_pergolas:'פרגולות חשמליות',
+  fixed_pergolas:'פרגולות קבועות', 'zip-screens':'מסכי זיפ', 'windows-shutters':'חלונות ותריסים',
+  windows:'חלונות וויטרינות', 'gates-fences':'שערים וגדרות', gates_fences:'גדרות ושערים',
+  'curtain-walls':'קירות מסך', curtain_walls:'קירות מסך',
+  'doors-cladding':'דלתות וחיפויים', doors_cladding:'דלתות וחיפויים',
+  bioclimatic:'ביקולימטיק וגליוטינה', 'service-repairs':'שירות ותיקונים',
+};
+
+let allUsers = [];
+let currentTab = 'all';
+
+async function init() {
+  const user = await requireCollegeAdmin();
+  if (!user) return;
+  await loadUsers();
+}
+
+async function loadUsers() {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at, application_data, member_status, member_notes')
+    .not('member_requested_at', 'is', null)
+    .in('member_status', ['under_review', 'professional_training'])
+    .order('member_requested_at', { ascending: false });
+
+  if (error) {
+    console.error('[COLLEGE] Supabase error:', error.message);
+    document.getElementById('usersBody').innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
+    return;
+  }
+
+  allUsers = data || [];
+  renderTable(getFiltered());
+}
+
+function getFiltered() {
+  if (currentTab === 'all') return allUsers;
+  return allUsers.filter(u => (u.member_status || '') === currentTab);
+}
+
+function toArr(v) {
+  if (Array.isArray(v)) return v;
+  if (!v) return [];
+  try { const p = JSON.parse(v); return Array.isArray(p) ? p : [p]; } catch { return [v]; }
+}
+
+function renderTable(users) {
+  document.getElementById('countLabel').textContent = `${users.length} מועמדים`;
+
+  const tbody = document.getElementById('usersBody');
+  if (users.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6">
+      <div class="all-clear">
+        <i class="ph ph-graduation-cap"></i>
+        <p>אין מועמדים בסטטוס זה</p>
+      </div>
+    </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = users.map(u => {
+    try {
+      const date     = u.member_requested_at ? new Date(u.member_requested_at).toLocaleDateString('he-IL') : '—';
+      const specArr  = toArr(u.specialties);
+      const regionArr= toArr(u.regions);
+      const specs    = specArr.map(s  => `<span class="spec-tag">${SPEC_LABELS[s]   || s}</span>`).join('');
+      const regions  = regionArr.map(r => `<span class="spec-tag">${REGION_LABELS[r] || r}</span>`).join('');
+
+      const app = u.application_data || {};
+      const appSpecs    = toArr(app.specialties).map(s => SPEC_LABELS[s] || s).join(', ') || '—';
+      const expYears    = app.experience_years != null ? app.experience_years + ' שנים' : '—';
+      const priorExp    = app.has_prior_experience === 'yes' ? 'כן — מנוסה' : app.has_prior_experience === 'no' ? 'לא — מתחיל' : '—';
+      const heightCert  = app.height_cert === 'yes' ? '✓ כן' : app.height_cert === 'no' ? '✗ לא' : '—';
+      const prevTraining= app.prev_training || '—';
+      const socialLink  = app.social_link ? `<a href="${app.social_link}" target="_blank" style="color:#6d28d9;text-decoration:underline;font-size:0.76rem;">פתח קישור</a>` : '—';
+      const tosDate     = app.tos_accepted_at ? new Date(app.tos_accepted_at).toLocaleDateString('he-IL') : '—';
+
+      const st      = u.member_status || 'under_review';
+      const stClass = STATUS_CLASS[st] || 'sb-review';
+      const stLabel = STATUS_LABELS[st] || st;
+
+      // College can only advance from under_review → professional_training
+      const canAdvance = st === 'under_review';
+      const advanceBtn = canAdvance
+        ? `<button class="btn-advance" id="advance-${u.id}" onclick="handleAdvance('${u.id}','${st}')">
+             <i class="ph ph-arrow-left"></i> הכשרה מקצועית
+           </button>`
+        : `<span style="font-size:0.75rem;color:#6d28d9;font-weight:700;display:inline-flex;align-items:center;gap:0.25rem;">
+             <i class="ph ph-check-circle"></i> בהכשרה מקצועית
+           </span>`;
+
+      return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()} ${(u.full_name||'').toLowerCase()}">
+        <td class="date-cell">${date}</td>
+        <td>
+          <div class="biz-name">${u.business_name || '—'}</div>
+          <div style="font-size:0.78rem;color:var(--silver-dark)">${u.full_name || ''}</div>
+        </td>
+        <td class="phone-cell">${u.phone || '—'}</td>
+        <td style="font-size:0.82rem;color:var(--silver-dark);">${u.email || '—'}</td>
+        <td>
+          <span class="status-badge ${stClass}">${stLabel}</span>
+          <div style="margin-top:0.3rem;">${specs}${regions ? (specs ? '<br>' : '') + regions : ''}</div>
+        </td>
+        <td>
+          <div class="actions-cell">
+            <button class="btn-details" onclick="toggleDetails('${u.id}')">
+              <i class="ph ph-list-bullets"></i> פרטים
+            </button>
+            ${advanceBtn}
+          </div>
+        </td>
+      </tr>
+      <tr id="details-${u.id}" class="details-row">
+        <td colspan="6">
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">תחומי התמחות</div>
+              <div class="detail-value">${appSpecs}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">ניסיון קודם</div>
+              <div class="detail-value">${priorExp}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">שנות ניסיון</div>
+              <div class="detail-value">${expYears}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">אישור עבודה בגובה</div>
+              <div class="detail-value">${heightCert}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">קישור חברתי</div>
+              <div class="detail-value">${socialLink}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">הכשרות קודמות</div>
+              <div class="detail-value">${prevTraining}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">אישור תקנון</div>
+              <div class="detail-value">${tosDate}</div>
+            </div>
+          </div>
+
+          <div class="notes-area">
+            <div class="notes-title"><i class="ph ph-note-pencil"></i> הערות</div>
+            <div class="notes-list" id="notes-list-${u.id}">
+              ${(u.member_notes||[]).length === 0
+                ? `<div style="font-size:0.78rem;color:var(--silver-dark);padding:0.3rem 0;">אין הערות עדיין</div>`
+                : (u.member_notes||[]).map(n => `
+                  <div class="note-item">
+                    <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
+                    ${n.text}
+                  </div>`).join('')
+              }
+            </div>
+            <div class="note-input-row">
+              <input type="text" class="note-input" id="note-input-${u.id}" placeholder="הוסף הערה…" onkeydown="if(event.key==='Enter')saveNote('${u.id}')">
+              <button class="note-save-btn" onclick="saveNote('${u.id}')"><i class="ph ph-paper-plane-right"></i></button>
+            </div>
+          </div>
+        </td>
+      </tr>`;
+    } catch (rowErr) {
+      console.error('[COLLEGE] row error for id:', u?.id, rowErr);
+      return `<tr><td colspan="6" style="color:#dc2626;padding:0.5rem 1rem;">שגיאה בשורה</td></tr>`;
+    }
+  }).join('');
+}
+
+window.toggleDetails = function(id) {
+  const row = document.getElementById('details-' + id);
+  if (row) row.classList.toggle('open');
+};
+
+window.handleAdvance = async function(id, currentStatus) {
+  if (currentStatus !== 'under_review') return; // college can only advance one step
+  const btn = document.getElementById(`advance-${id}`);
+  if (btn) btn.disabled = true;
+
+  const { error } = await supabase.from('profiles')
+    .update({ member_status: 'professional_training' })
+    .eq('id', id);
+
+  if (error) { if (btn) btn.disabled = false; alert('שגיאה בעדכון שלב'); return; }
+
+  const u = allUsers.find(x => x.id === id);
+  if (u) u.member_status = 'professional_training';
+  renderTable(getFiltered());
+};
+
+window.saveNote = async function(id) {
+  const input = document.getElementById(`note-input-${id}`);
+  const text  = (input?.value || '').trim();
+  if (!text) return;
+
+  const u     = allUsers.find(x => x.id === id);
+  const notes = [...(u?.member_notes || []), { text, created_at: new Date().toISOString() }];
+
+  const { error } = await supabase.from('profiles')
+    .update({ member_notes: notes })
+    .eq('id', id);
+
+  if (error) { alert('שגיאה בשמירת הערה'); return; }
+
+  if (u) u.member_notes = notes;
+  input.value = '';
+
+  const list = document.getElementById(`notes-list-${id}`);
+  if (list) {
+    list.innerHTML = notes.map(n => `
+      <div class="note-item">
+        <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
+        ${n.text}
+      </div>`).join('');
+  }
+};
+
+window.setTab = function(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + tab)?.classList.add('active');
+  renderTable(getFiltered());
+};
+
+window.filterRows = function() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase().trim();
+  if (!q) { renderTable(getFiltered()); return; }
+  const base = getFiltered();
+  const filtered = base.filter(u =>
+    (u.business_name || '').toLowerCase().includes(q) ||
+    (u.full_name || '').toLowerCase().includes(q) ||
+    (u.email || '').toLowerCase().includes(q)
+  );
+  renderTable(filtered);
+};
+
+init();
+</script>
+</body>
+</html>

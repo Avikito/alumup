@@ -104,6 +104,55 @@
     .biz-name  { font-weight:700;color:var(--industrial-silver); }
     .phone-cell { direction:ltr;text-align:right;font-size:0.85rem; }
 
+    /* ── DETAILS ROW ── */
+    .details-row { display:none; }
+    .details-row.open { display:table-row; }
+    .details-row td { background:#f7f9fd;border-bottom:2px solid rgba(212,175,55,0.2);padding:0.9rem 1.2rem 1rem; }
+    .details-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:0.6rem 1.4rem; }
+    .detail-item { font-size:0.78rem; }
+    .detail-label { font-size:0.65rem;font-weight:800;color:#9aa3b5;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.18rem; }
+    .detail-value { color:var(--industrial-silver);font-weight:600;line-height:1.4; }
+    .btn-details { background:rgba(26,95,170,0.07);color:#1a5faa;border:1px solid rgba(26,95,170,0.18);border-radius:7px;padding:0.28rem 0.65rem;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;transition:background 0.15s; }
+    .btn-details:hover { background:rgba(26,95,170,0.14); }
+    .btn-advance { background:rgba(26,95,170,0.1);color:#1a5faa;border:1.5px solid rgba(26,95,170,0.28);border-radius:7px;padding:0.3rem 0.75rem;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:0.3rem; }
+    .btn-advance:hover { background:rgba(26,95,170,0.18); }
+    .btn-advance:disabled,.btn-reject:disabled,.btn-approve:disabled { opacity:0.4;pointer-events:none; }
+    .btn-skip { background:none;color:var(--silver-dark);border:1px solid var(--border);border-radius:7px;padding:0.28rem 0.6rem;font-family:'Heebo',sans-serif;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all 0.15s; }
+    .btn-skip:hover { border-color:#d4af37;color:#d4af37; }
+
+    /* ── STATUS BADGE ── */
+    .status-badge { display:inline-flex;align-items:center;gap:0.25rem;padding:0.18rem 0.55rem;border-radius:20px;font-size:0.7rem;font-weight:800;border:1px solid; }
+    .sb-new        { background:rgba(26,95,170,0.08);color:#1a5faa;border-color:rgba(26,95,170,0.22); }
+    .sb-review     { background:rgba(234,88,12,0.08);color:#c2540a;border-color:rgba(234,88,12,0.22); }
+    .sb-training   { background:rgba(124,58,237,0.08);color:#6d28d9;border-color:rgba(124,58,237,0.22); }
+    .sb-approved   { background:rgba(22,163,74,0.08);color:#15803d;border-color:rgba(22,163,74,0.22); }
+    .sb-rejected   { background:rgba(220,38,38,0.08);color:#dc2626;border-color:rgba(220,38,38,0.22); }
+
+    /* ── NOTES AREA ── */
+    .notes-area { margin-top:0.9rem;border-top:1px solid #e8edf5;padding-top:0.8rem; }
+    .notes-list { display:flex;flex-direction:column;gap:0.4rem;margin-bottom:0.5rem;max-height:120px;overflow-y:auto; }
+    .note-item { background:#fff;border:1px solid #e5eaf5;border-radius:8px;padding:0.4rem 0.7rem;font-size:0.77rem;color:var(--industrial-silver);line-height:1.45; }
+    .note-meta { font-size:0.65rem;color:#9aa3b5;margin-top:0.15rem; }
+    .note-input-row { display:flex;gap:0.4rem; }
+    .note-input { flex:1;padding:0.4rem 0.7rem;border:1.5px solid #dde4f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;color:#1a2640;background:#f7f9fd;resize:none; }
+    .note-input:focus { outline:none;border-color:#1a5faa; }
+    .note-save-btn,.btn-save-note { background:#1a5faa;color:#fff;border:none;border-radius:8px;padding:0.4rem 0.75rem;font-size:0.85rem;cursor:pointer;flex-shrink:0;display:flex;align-items:center; }
+    .note-save-btn:hover,.btn-save-note:hover { opacity:0.88; }
+    .notes-title { font-size:0.8rem;font-weight:700;color:#1a2640;margin-bottom:0.45rem;display:flex;align-items:center;gap:0.3rem; }
+    .note-date { font-size:0.68rem;color:#9aa3b5;margin-left:0.5rem; }
+
+    /* ── BYPASS MODAL ── */
+    #bypass-overlay { position:fixed;inset:0;background:rgba(10,20,40,0.55);z-index:3000;display:none;align-items:center;justify-content:center; }
+    #bypass-overlay[style*="flex"] { pointer-events:all; }
+    .bypass-modal { background:#fff;border-radius:16px;padding:1.6rem;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(10,20,60,0.2);direction:rtl; }
+    .bypass-title { font-size:1rem;font-weight:800;color:#1a2640;margin-bottom:0.35rem; }
+    .bypass-sub { font-size:0.8rem;color:#6b7a99;margin-bottom:1rem; }
+    .bypass-input { width:100%;padding:0.55rem 0.8rem;border:1.5px solid #dde4f0;border-radius:9px;font-family:'Heebo',sans-serif;font-size:1rem;letter-spacing:4px;text-align:center;box-sizing:border-box;margin-bottom:0.75rem; }
+    .bypass-input:focus { outline:none;border-color:#1a5faa; }
+    .bypass-btns { display:flex;gap:0.5rem; }
+    .bypass-confirm { flex:1;background:#1a5faa;color:#fff;border:none;border-radius:9px;padding:0.55rem;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer; }
+    .bypass-cancel  { flex:1;background:#f0f2f5;color:#6b7a99;border:none;border-radius:9px;padding:0.55rem;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer; }
+
     .all-clear {
       text-align:center;padding:3rem 2rem;
       background:rgba(212,175,55,0.04);border-radius:12px;
@@ -198,7 +247,23 @@ async function requireAdmin() {
   }</ul>`;
 })();
 
+const BYPASS_CODE = 'ALUM2580'; // שנה לפני פריסה!
+
+const STATUS_FLOW   = ['new_application','under_review','professional_training'];
+const STATUS_LABELS = {
+  new_application:      'בקשה חדשה',
+  under_review:         'בתהליך בדיקה',
+  professional_training:'הכשרה מקצועית',
+  approved:             'מאושר',
+  rejected:             'נדחה',
+};
+const STATUS_CLASS = {
+  new_application: 'sb-new', under_review: 'sb-review',
+  professional_training: 'sb-training', approved: 'sb-approved', rejected: 'sb-rejected',
+};
+
 let allUsers = [];
+let _bypassId = null, _bypassTarget = null;
 
 const REGION_LABELS = {
   north: 'צפון', haifa: 'חיפה והסביבה', sharon: 'שרון',
@@ -208,11 +273,18 @@ const REGION_LABELS = {
 const SPEC_LABELS = {
   pergolas:            'פרגולות',
   'electric-pergolas': 'פרגולות חשמליות',
+  electric_pergolas:   'פרגולות חשמליות',
+  fixed_pergolas:      'פרגולות קבועות',
   'zip-screens':       'מסכי זיפ',
   'windows-shutters':  'חלונות ותריסים',
+  windows:             'חלונות וויטרינות',
   'gates-fences':      'שערים וגדרות',
+  gates_fences:        'גדרות ושערים',
   'curtain-walls':     'קירות מסך',
+  curtain_walls:       'קירות מסך',
   'doors-cladding':    'דלתות וחיפויים',
+  doors_cladding:      'דלתות וחיפויים',
+  bioclimatic:         'ביקולימטיק וגליוטינה',
   'service-repairs':   'שירות ותיקונים',
 };
 
@@ -225,9 +297,9 @@ async function init() {
 async function loadUsers() {
   const { data, error } = await supabase
     .from('profiles')
-    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at')
+    .select('id, full_name, business_name, phone, email, specialties, regions, member_requested_at, application_data, member_status, member_notes')
     .not('member_requested_at', 'is', null)
-    .neq('user_tier', 'member')
+    .not('member_status', 'in', '("approved","rejected")')
     .order('member_requested_at', { ascending: false });
 
   if (error) {
@@ -270,6 +342,21 @@ function renderTable(users) {
       const specs   = specArr.map(s   => `<span class="spec-tag">${SPEC_LABELS[s]   || s}</span>`).join('');
       const regions = regionArr.map(r => `<span class="spec-tag">${REGION_LABELS[r] || r}</span>`).join('');
 
+      const app = u.application_data || {};
+      const appSpecs = toArr(app.specialties).map(s => SPEC_LABELS[s] || s).join(', ') || '—';
+      const expYears = app.experience_years != null ? app.experience_years + ' שנים' : '—';
+      const priorExp = app.has_prior_experience === 'yes' ? 'כן — מנוסה' : app.has_prior_experience === 'no' ? 'לא — מתחיל' : '—';
+      const heightCert = app.height_cert === 'yes' ? '✓ כן' : app.height_cert === 'no' ? '✗ לא' : '—';
+      const prevTraining = app.prev_training || '—';
+      const socialLink = app.social_link ? `<a href="${app.social_link}" target="_blank" style="color:#1a5faa;text-decoration:underline;font-size:0.76rem;">פתח קישור</a>` : '—';
+      const tosDate = app.tos_accepted_at ? new Date(app.tos_accepted_at).toLocaleDateString('he-IL') : '—';
+
+      const st = u.member_status || 'new_application';
+      const stClass = STATUS_CLASS[st] || 'sb-new';
+      const stLabel = STATUS_LABELS[st] || st;
+      const isLast  = STATUS_FLOW.indexOf(st) >= STATUS_FLOW.length - 1;
+      const nextLabel = !isLast ? STATUS_LABELS[STATUS_FLOW[STATUS_FLOW.indexOf(st)+1]] : 'אישור חברות';
+
       return `<tr id="row-${u.id}" data-name="${(u.business_name||'').toLowerCase()} ${(u.full_name||'').toLowerCase()}">
         <td class="date-cell">${date}</td>
         <td>
@@ -278,15 +365,77 @@ function renderTable(users) {
         </td>
         <td class="phone-cell">${u.phone || '—'}</td>
         <td style="font-size:0.82rem;color:var(--silver-dark);">${u.email || '—'}</td>
-        <td>${specs}${regions ? (specs ? '<br>' : '') + regions : ''}</td>
         <td>
-          <div class="actions-cell">
-            <button class="btn-approve" id="approve-${u.id}" onclick="handleAction('${u.id}','approved')">
-              <i class="ph ph-medal"></i> אשר חבר
+          <span class="status-badge ${stClass}">${stLabel}</span>
+          <div style="margin-top:0.3rem;">${specs}${regions ? (specs ? '<br>' : '') + regions : ''}</div>
+        </td>
+        <td>
+          <div class="actions-cell" style="flex-wrap:wrap;">
+            <button class="btn-details" onclick="toggleDetails('${u.id}')">
+              <i class="ph ph-list-bullets"></i> פרטים
             </button>
-            <button class="btn-reject" id="reject-${u.id}" onclick="handleAction('${u.id}','rejected')">
+            <button class="btn-advance" id="advance-${u.id}" onclick="handleAdvance('${u.id}','${st}')">
+              <i class="ph ph-arrow-left"></i> ${nextLabel}
+            </button>
+            <button class="btn-skip" onclick="openBypass('${u.id}','${st}')">
+              <i class="ph ph-fast-forward"></i> דלג
+            </button>
+            <button class="btn-reject" id="reject-${u.id}" onclick="handleReject('${u.id}')">
               <i class="ph ph-x"></i> דחה
             </button>
+          </div>
+        </td>
+      </tr>
+      <tr id="details-${u.id}" class="details-row">
+        <td colspan="6">
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">תחומי התמחות (טופס)</div>
+              <div class="detail-value">${appSpecs}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">ניסיון קודם</div>
+              <div class="detail-value">${priorExp}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">שנות ניסיון</div>
+              <div class="detail-value">${expYears}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">אישור עבודה בגובה</div>
+              <div class="detail-value">${heightCert}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">קישור חברתי</div>
+              <div class="detail-value">${socialLink}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">הכשרות קודמות</div>
+              <div class="detail-value">${prevTraining}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">אישור תקנון</div>
+              <div class="detail-value">${tosDate}</div>
+            </div>
+          </div>
+
+          <!-- ── NOTES ── -->
+          <div class="notes-area">
+            <div class="notes-title"><i class="ph ph-note-pencil"></i> הערות</div>
+            <div class="notes-list" id="notes-list-${u.id}">
+              ${(u.member_notes||[]).length === 0
+                ? `<div style="font-size:0.78rem;color:var(--silver-dark);padding:0.3rem 0;">אין הערות עדיין</div>`
+                : (u.member_notes||[]).map(n => `
+                  <div class="note-item">
+                    <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
+                    ${n.text}
+                  </div>`).join('')
+              }
+            </div>
+            <div class="note-input-row">
+              <input type="text" class="note-input" id="note-input-${u.id}" placeholder="הוסף הערה…" onkeydown="if(event.key==='Enter')saveNote('${u.id}')">
+              <button class="note-save-btn" onclick="saveNote('${u.id}')"><i class="ph ph-paper-plane-right"></i></button>
+            </div>
           </div>
         </td>
       </tr>`;
@@ -297,44 +446,137 @@ function renderTable(users) {
   }).join('');
 }
 
-window.handleAction = async function(id, action) {
-  const approveBtn = document.getElementById(`approve-${id}`);
-  const rejectBtn  = document.getElementById(`reject-${id}`);
-  if (approveBtn) approveBtn.disabled = true;
-  if (rejectBtn)  rejectBtn.disabled = true;
+window.toggleDetails = function(id) {
+  const row = document.getElementById('details-' + id);
+  if (row) row.classList.toggle('open');
+};
 
-  const update = action === 'approved'
-    ? { user_tier: 'member', member_approved_at: new Date().toISOString() }
-    : { member_requested_at: null };
+// ── ADVANCE / APPROVE / REJECT ──────────────────────────────
+window.handleAdvance = async function(id, currentStatus) {
+  const idx  = STATUS_FLOW.indexOf(currentStatus);
+  const next = STATUS_FLOW[idx + 1];
+  if (!next) { handleApprove(id); return; }
 
-  const { error } = await supabase
-    .from('profiles')
-    .update(update)
+  const btn = document.getElementById(`advance-${id}`);
+  if (btn) btn.disabled = true;
+
+  const { error } = await supabase.from('profiles')
+    .update({ member_status: next })
     .eq('id', id);
 
-  if (error) {
-    if (approveBtn) approveBtn.disabled = false;
-    if (rejectBtn)  rejectBtn.disabled = false;
-    alert('שגיאה בעדכון סטטוס');
+  if (error) { if (btn) btn.disabled = false; alert('שגיאה בעדכון שלב'); return; }
+
+  const u = allUsers.find(x => x.id === id);
+  if (u) u.member_status = next;
+  renderTable(allUsers);
+};
+
+window.handleApprove = async function(id) {
+  const btn = document.getElementById(`advance-${id}`);
+  if (btn) btn.disabled = true;
+
+  const { error } = await supabase.from('profiles')
+    .update({ user_tier: 'member', member_approved_at: new Date().toISOString(), member_status: 'approved' })
+    .eq('id', id);
+
+  if (error) { if (btn) btn.disabled = false; alert('שגיאה באישור חברות'); return; }
+
+  _removeRow(id, 'מאושר כחבר אלום');
+};
+
+window.handleReject = async function(id) {
+  const btn = document.getElementById(`reject-${id}`);
+  if (btn) btn.disabled = true;
+
+  const { error } = await supabase.from('profiles')
+    .update({ member_status: 'rejected' })
+    .eq('id', id);
+
+  if (error) { if (btn) btn.disabled = false; alert('שגיאה בדחיית הבקשה'); return; }
+
+  _removeRow(id, 'נדחה');
+};
+
+function _removeRow(id, label) {
+  const row     = document.getElementById(`row-${id}`);
+  const details = document.getElementById(`details-${id}`);
+  [row, details].forEach(r => r && r.classList.add('fading-out'));
+  setTimeout(() => {
+    [row, details].forEach(r => r && r.remove());
+    allUsers = allUsers.filter(u => u.id !== id);
+    document.getElementById('countLabel').textContent = `${allUsers.length} ממתינים לאישור`;
+    if (allUsers.length === 0) {
+      document.getElementById('usersBody').innerHTML = `<tr><td colspan="6">
+        <div class="all-clear"><i class="ph ph-medal"></i><p>אין בקשות ממתינות — הכל מעודכן!</p></div>
+      </td></tr>`;
+    }
+  }, 420);
+}
+
+// ── BYPASS MODAL ─────────────────────────────────────────────
+window.openBypass = function(id, currentStatus) {
+  _bypassId     = id;
+  _bypassTarget = currentStatus;
+  document.getElementById('bypass-input').value = '';
+  document.getElementById('bypass-error').style.display = 'none';
+  document.getElementById('bypass-overlay').style.display = 'flex';
+  setTimeout(() => document.getElementById('bypass-input').focus(), 100);
+};
+
+window.bypassClose = function() {
+  document.getElementById('bypass-overlay').style.display = 'none';
+  _bypassId = _bypassTarget = null;
+};
+
+window.bypassConfirm = function() {
+  const code = document.getElementById('bypass-input').value.trim();
+  if (code !== BYPASS_CODE) {
+    document.getElementById('bypass-error').style.display = 'block';
     return;
   }
+  // capture before close clears them
+  const targetId     = _bypassId;
+  const targetStatus = _bypassTarget;
+  bypassClose();
 
-  const row = document.getElementById(`row-${id}`);
-  if (row) {
-    row.classList.add('fading-out');
-    setTimeout(() => {
-      row.remove();
-      allUsers = allUsers.filter(u => u.id !== id);
-      document.getElementById('countLabel').textContent = `${allUsers.length} ממתינים לאישור`;
-      if (allUsers.length === 0) {
-        document.getElementById('usersBody').innerHTML = `<tr><td colspan="6">
-          <div class="all-clear">
-            <i class="ph ph-medal"></i>
-            <p>אין בקשות ממתינות — הכל מעודכן!</p>
-          </div>
-        </td></tr>`;
-      }
-    }, 420);
+  // skip one full step beyond normal advance
+  const idx  = STATUS_FLOW.indexOf(targetStatus || '');
+  const skip = STATUS_FLOW[idx + 2];
+  if (!skip) { handleApprove(targetId); return; }
+  supabase.from('profiles').update({ member_status: skip }).eq('id', targetId).then(({ error }) => {
+    if (error) { alert('שגיאה בדילוג שלב'); return; }
+    const u = allUsers.find(x => x.id === targetId);
+    if (u) u.member_status = skip;
+    renderTable(allUsers);
+  });
+};
+
+// ── NOTES ────────────────────────────────────────────────────
+window.saveNote = async function(id) {
+  const input = document.getElementById(`note-input-${id}`);
+  const text  = (input?.value || '').trim();
+  if (!text) return;
+
+  const u     = allUsers.find(x => x.id === id);
+  const notes = [...(u?.member_notes || []), { text, created_at: new Date().toISOString() }];
+
+  const { error } = await supabase.from('profiles')
+    .update({ member_notes: notes })
+    .eq('id', id);
+
+  if (error) { alert('שגיאה בשמירת הערה'); return; }
+
+  if (u) u.member_notes = notes;
+  input.value = '';
+
+  // refresh notes list in-place
+  const list = document.getElementById(`notes-list-${id}`);
+  if (list) {
+    list.innerHTML = notes.map(n => `
+      <div class="note-item">
+        <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
+        ${n.text}
+      </div>`).join('');
   }
 };
 
@@ -351,5 +593,19 @@ window.filterRows = function() {
 
 init();
 </script>
+
+<!-- ── BYPASS MODAL ── -->
+<div id="bypass-overlay">
+  <div class="bypass-modal">
+    <div class="bypass-title"><i class="ph ph-lock-key" style="color:#d4af37;margin-left:4px;"></i>קוד אדמין נדרש</div>
+    <div class="bypass-sub">דילוג על שלב מחייב אישור האדמין הראשי. הזן קוד אישור:</div>
+    <input type="password" id="bypass-input" class="bypass-input" placeholder="••••" maxlength="12">
+    <div id="bypass-error" style="font-size:0.78rem;color:#dc2626;margin-bottom:0.5rem;display:none;">קוד שגוי — נסה שנית</div>
+    <div class="bypass-btns">
+      <button class="bypass-confirm" onclick="bypassConfirm()">אשר ועבור</button>
+      <button class="bypass-cancel"  onclick="bypassClose()">ביטול</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>

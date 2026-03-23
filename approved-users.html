@@ -286,6 +286,18 @@
     .sub-expired { background:rgba(220,38,38,0.08);color:#dc2626;border:1px solid rgba(220,38,38,0.2); }
     .sub-none    { background:rgba(100,100,100,0.07);color:var(--silver-dark);border:1px solid var(--border); }
 
+    /* ─── Tier toggle ─── */
+    .tier-toggle { display:flex;gap:0.3rem;background:var(--surface-dark);border:1.5px solid var(--border);border-radius:10px;padding:0.25rem; }
+    .tier-btn {
+      display:inline-flex;align-items:center;gap:0.4rem;
+      padding:0.32rem 0.9rem;border-radius:7px;border:none;
+      font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;
+      cursor:pointer;transition:all 0.18s ease;
+      background:transparent;color:var(--silver-dark);
+    }
+    .tier-btn.active-all  { background:var(--blue-dim);color:var(--electric-blue); }
+    .tier-btn.active-members { background:rgba(212,175,55,0.15);color:#d4af37; }
+
     /* ─── Empty / loading ─── */
     .empty-state { text-align:center;padding:4rem 2rem;color:var(--silver-dark); }
     .empty-state i { font-size:2.5rem;opacity:0.25;display:block;margin-bottom:0.75rem; }
@@ -324,6 +336,20 @@
           <div class="stat-pill"><span class="pill-num" id="statTotal">—</span> סה"כ חברים</div>
           <div class="stat-pill"><span class="pill-num" id="statActive">—</span> מנויים פעילים</div>
           <div class="stat-pill"><span class="pill-num" id="statQuotes">—</span> הצעות מחיר</div>
+        </div>
+      </div>
+
+      <div style="margin-bottom:1rem;">
+        <div class="tier-toggle">
+          <button class="tier-btn active-all" id="tierAll" onclick="setTierFilter('all')">
+            <i class="ph ph-users-three"></i> הכל
+          </button>
+          <button class="tier-btn" id="tierStandard" onclick="setTierFilter('standard')">
+            <i class="ph ph-user"></i> מתקינים
+          </button>
+          <button class="tier-btn" id="tierMembers" onclick="setTierFilter('members')">
+            <i class="ph ph-medal"></i> חברי אלום
+          </button>
         </div>
       </div>
 
@@ -491,6 +517,15 @@ function waLink(phone) {
 let allUsers = [];
 let expandedId = null;
 let pendingRatings = {};
+let currentTierFilter = 'all'; // 'all' | 'members'
+
+window.setTierFilter = function(tier) {
+  currentTierFilter = tier;
+  document.getElementById('tierAll').className      = 'tier-btn' + (tier === 'all'      ? ' active-all'     : '');
+  document.getElementById('tierStandard').className = 'tier-btn' + (tier === 'standard' ? ' active-all'     : '');
+  document.getElementById('tierMembers').className  = 'tier-btn' + (tier === 'members'  ? ' active-members' : '');
+  applyFilters();
+};
 
 /* ── Init ── */
 async function init() {
@@ -535,6 +570,8 @@ window.applyFilters = function() {
   const spec   = document.getElementById('filterSpec').value;
 
   const filtered = allUsers.filter(u => {
+    if (currentTierFilter === 'members'  && u.user_tier !== 'member') return false;
+    if (currentTierFilter === 'standard' && u.user_tier === 'member') return false;
     if (q) {
       const hay = `${u.business_name||''} ${u.full_name||''} ${u.phone||''} ${u.business_id||''}`.toLowerCase();
       if (!hay.includes(q)) return false;
@@ -554,7 +591,8 @@ window.applyFilters = function() {
     return true;
   });
 
-  document.getElementById('countBadge').textContent = `${filtered.length} חברים`;
+  const label = currentTierFilter === 'members' ? 'חברי אלום' : currentTierFilter === 'standard' ? 'מתקינים' : 'סה"כ';
+  document.getElementById('countBadge').textContent = `${filtered.length} ${label}`;
   renderTable(filtered);
 };
 

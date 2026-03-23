@@ -162,6 +162,193 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     .spin { animation: spin 0.8s linear infinite; display: inline-block; }
 
+    /* ── MEMBER APPLICATION MODAL ── */
+    #member-app-overlay {
+      position:fixed;inset:0;background:rgba(10,20,40,0.55);
+      z-index:2000;display:flex;align-items:center;justify-content:center;
+      padding:1rem;opacity:0;pointer-events:none;transition:opacity 0.22s ease;
+    }
+    #member-app-overlay.open { opacity:1;pointer-events:all; }
+    .member-app-modal {
+      background:#fff;border-radius:20px;width:100%;max-width:560px;
+      max-height:90vh;overflow-y:auto;
+      box-shadow:0 24px 80px rgba(10,20,60,0.22);
+      transform:translateY(20px);transition:transform 0.22s ease;
+      direction:rtl;
+    }
+    #member-app-overlay.open .member-app-modal { transform:translateY(0); }
+    .map-header {
+      padding:1.2rem 1.5rem;
+      background:linear-gradient(135deg,#1a2640,#1a3a6e);
+      border-radius:20px 20px 0 0;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .map-header-title { display:flex;align-items:center;gap:0.6rem; }
+    .map-header-title i { font-size:1.5rem;color:#d4af37; }
+    .map-header-title span { font-size:1.05rem;font-weight:800;color:#fff; }
+    .map-header-sub { font-size:0.75rem;color:rgba(255,255,255,0.6);margin-top:0.15rem; }
+    .map-close-btn {
+      background:rgba(255,255,255,0.1);border:none;border-radius:8px;
+      width:32px;height:32px;display:flex;align-items:center;justify-content:center;
+      cursor:pointer;color:#fff;font-size:1.1rem;transition:background 0.15s;
+    }
+    .map-close-btn:hover { background:rgba(255,255,255,0.2); }
+    .map-step { padding:1.5rem; }
+    /* Step 1 — benefits */
+    .map-benefits { display:flex;flex-direction:column;gap:0.75rem;margin-bottom:1.5rem; }
+    .map-benefit-card {
+      display:flex;align-items:flex-start;gap:0.85rem;
+      padding:0.9rem 1rem;border-radius:12px;border:1.5px solid;
+    }
+    .map-benefit-card.gold  { border-color:rgba(212,175,55,0.4);background:rgba(212,175,55,0.06); }
+    .map-benefit-card.blue  { border-color:rgba(26,95,170,0.3);background:rgba(26,95,170,0.05); }
+    .map-benefit-card.green  { border-color:rgba(22,163,74,0.3);background:rgba(22,163,74,0.05); }
+    .map-benefit-card.purple { border-color:rgba(124,58,237,0.3);background:rgba(124,58,237,0.05); }
+    .map-benefit-icon { font-size:1.5rem;flex-shrink:0;margin-top:0.1rem; }
+    .map-benefit-card.gold  .map-benefit-icon { color:#d4af37; }
+    .map-benefit-card.blue  .map-benefit-icon { color:#1a5faa; }
+    .map-benefit-card.green  .map-benefit-icon { color:#16a34a; }
+    .map-benefit-card.purple .map-benefit-icon { color:#7c3aed; }
+    .map-benefit-title { font-size:0.9rem;font-weight:800;color:#1a2640;margin-bottom:0.2rem; }
+    .map-benefit-desc  { font-size:0.8rem;color:#6b7a99;line-height:1.5; }
+    .map-note {
+      font-size:0.78rem;color:#6b7a99;text-align:center;margin-bottom:1.2rem;
+      background:#f7f9fd;border-radius:8px;padding:0.6rem 0.9rem;
+      border:1px solid #dde4f0;
+    }
+    .map-btn-continue {
+      width:100%;padding:0.7rem;border:none;border-radius:10px;
+      background:#d4af37;color:#1a1a1a;
+      font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:800;
+      cursor:pointer;transition:opacity 0.15s;display:flex;align-items:center;justify-content:center;gap:0.4rem;
+    }
+    .map-btn-continue:hover { opacity:0.88; }
+    /* Step 2 — form */
+    .map-field-label {
+      font-size:0.72rem;font-weight:800;color:#6b7a99;
+      text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem;display:block;
+    }
+    .map-field { margin-bottom:1.1rem; }
+    .map-checkboxes { display:grid;grid-template-columns:1fr 1fr;gap:0.4rem; }
+    .map-cb-label {
+      display:flex;align-items:center;gap:0.45rem;
+      padding:0.4rem 0.65rem;border-radius:8px;border:1.5px solid #dde4f0;
+      cursor:pointer;font-size:0.84rem;color:#1a2640;font-weight:600;
+      transition:all 0.15s;
+    }
+    .map-cb-label:has(input:checked) {
+      border-color:#1a5faa;background:rgba(26,95,170,0.07);color:#1a5faa;
+    }
+    .map-cb-label input { display:none; }
+    .map-number-input, .map-textarea {
+      width:100%;padding:0.5rem 0.75rem;
+      border:1.5px solid #dde4f0;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.9rem;color:#1a2640;
+      background:#f7f9fd;transition:border-color 0.15s;box-sizing:border-box;
+    }
+    .map-number-input:focus, .map-textarea:focus { outline:none;border-color:#1a5faa; }
+    .map-textarea { resize:vertical;min-height:72px; }
+    .map-yes-no { display:flex;gap:0.4rem; }
+    .map-yn-btn {
+      flex:1;padding:0.45rem;border:1.5px solid #dde4f0;border-radius:8px;
+      background:#f7f9fd;cursor:pointer;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;
+      color:#6b7a99;transition:all 0.15s;
+    }
+    .map-yn-btn.active-yes { border-color:#16a34a;background:rgba(22,163,74,0.08);color:#16a34a; }
+    .map-yn-btn.active-no  { border-color:#6b7a99;background:rgba(107,122,153,0.08);color:#6b7a99; }
+    .map-upload-area {
+      margin-top:0.5rem;padding:0.6rem 0.85rem;
+      border:1.5px dashed #dde4f0;border-radius:9px;
+      display:flex;align-items:center;gap:0.5rem;cursor:pointer;
+      font-size:0.82rem;color:#6b7a99;background:#f7f9fd;transition:border-color 0.15s;
+    }
+    .map-upload-area:hover { border-color:#1a5faa;color:#1a5faa; }
+    .map-upload-area.has-file { border-color:#16a34a;color:#16a34a;background:rgba(22,163,74,0.05); }
+    .map-upload-area input[type="file"] { display:none; }
+    .map-stepper {
+      display:flex;align-items:center;gap:0.5rem;margin-bottom:1.1rem;
+    }
+    .map-step-dot {
+      width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:0.78rem;font-weight:800;border:2px solid #dde4f0;color:#6b7a99;background:#f7f9fd;
+      transition:all 0.2s;flex-shrink:0;
+    }
+    .map-step-dot.active { border-color:#d4af37;background:#d4af37;color:#fff; }
+    .map-step-dot.done   { border-color:#16a34a;background:#16a34a;color:#fff; }
+    .map-step-line { flex:1;height:2px;background:#dde4f0;border-radius:1px; }
+    .map-step-line.done { background:#16a34a; }
+    .map-step-text { font-size:0.72rem;color:#6b7a99; }
+    .map-step-text.active { color:#d4af37;font-weight:700; }
+    .map-submit-btn {
+      width:100%;padding:0.75rem;border:none;border-radius:10px;
+      background:#1a5faa;color:#fff;
+      font-family:'Heebo',sans-serif;font-size:0.95rem;font-weight:800;
+      cursor:pointer;transition:opacity 0.15s;margin-top:0.5rem;
+    }
+    .map-submit-btn:hover { opacity:0.88; }
+    .map-submit-btn:disabled { opacity:0.45;pointer-events:none; }
+    .map-back-btn {
+      background:none;border:none;color:#6b7a99;font-family:'Heebo',sans-serif;
+      font-size:0.85rem;cursor:pointer;padding:0;margin-bottom:1rem;
+      display:flex;align-items:center;gap:0.3rem;
+    }
+    .map-back-btn:hover { color:#1a2640; }
+    .map-required-mark { color:#dc2626;margin-right:2px; }
+    /* ── MEMBER JOIN BANNER ── */
+    .mjb-tag { display:inline-flex;align-items:center;gap:0.3rem;background:rgba(212,175,55,0.15);border:1px solid rgba(212,175,55,0.4);border-radius:20px;padding:0.2rem 0.65rem;font-size:0.67rem;font-weight:800;color:#d4af37;letter-spacing:0.8px;text-transform:uppercase;margin-bottom:0.55rem; }
+    .mjb-title { font-size:1.12rem;font-weight:900;color:#fff;line-height:1.35;margin-bottom:0.35rem; }
+    .mjb-sub { font-size:0.81rem;color:rgba(255,255,255,0.62);line-height:1.55;margin-bottom:0.9rem; }
+    .mjb-perks { display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem; }
+    .mjb-perk { display:flex;align-items:center;gap:0.3rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.13);border-radius:8px;padding:0.25rem 0.6rem;font-size:0.74rem;color:rgba(255,255,255,0.82);font-weight:600; }
+    .mjb-perk i { color:#d4af37;font-size:0.82rem; }
+    .mjb-btn { display:inline-flex;align-items:center;gap:0.4rem;background:linear-gradient(135deg,#d4af37,#c09a2a);color:#1a1a1a;border:none;border-radius:10px;padding:0.55rem 1.3rem;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:800;cursor:pointer;box-shadow:0 4px 16px rgba(212,175,55,0.35);transition:transform 0.15s,box-shadow 0.15s; }
+    .mjb-btn:hover { transform:translateY(-1px);box-shadow:0 6px 20px rgba(212,175,55,0.5); }
+    /* ── MANIFEST VALUES (Step 1) ── */
+    .map-value-cards { display:flex;flex-direction:column;gap:0.6rem;margin:0.9rem 0 1rem; }
+    .map-value-card { display:flex;align-items:center;gap:0.9rem;padding:0.9rem 1rem;border-radius:14px;border:1.5px solid; }
+    .map-value-card.v-gold { border-color:rgba(212,175,55,0.4);background:linear-gradient(135deg,rgba(212,175,55,0.09),rgba(212,175,55,0.02)); }
+    .map-value-card.v-blue { border-color:rgba(26,95,170,0.3);background:linear-gradient(135deg,rgba(26,95,170,0.07),rgba(26,95,170,0.01)); }
+    .map-value-card.v-teal { border-color:rgba(13,148,136,0.3);background:linear-gradient(135deg,rgba(13,148,136,0.07),rgba(13,148,136,0.01)); }
+    .mvc-icon { width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.35rem;flex-shrink:0; }
+    .map-value-card.v-gold .mvc-icon { background:rgba(212,175,55,0.14);color:#d4af37; }
+    .map-value-card.v-blue .mvc-icon { background:rgba(26,95,170,0.1);color:#1a5faa; }
+    .map-value-card.v-teal .mvc-icon { background:rgba(13,148,136,0.1);color:#0d9488; }
+    .mvc-title { font-size:0.88rem;font-weight:800;color:#1a2640;margin-bottom:0.15rem; }
+    .mvc-desc  { font-size:0.77rem;color:#6b7a99;line-height:1.45; }
+    .map-manifest-hashtag { display:block;text-align:center;margin:0.2rem 0 1rem;font-size:0.85rem;font-weight:900;color:#1a3a6e;letter-spacing:0.5px; }
+    /* ── SPEC TILES (Step 2) ── */
+    .map-spec-tiles { display:grid;grid-template-columns:1fr 1fr;gap:0.5rem; }
+    .map-spec-tile { display:flex;align-items:center;gap:0.5rem;padding:0.68rem 0.85rem;border-radius:12px;border:1.5px solid #dde4f0;cursor:pointer;font-size:0.84rem;color:#1a2640;font-weight:600;background:#f7f9fd;transition:all 0.15s;user-select:none; }
+    .map-spec-tile i { font-size:1.05rem;color:#b0bac9;flex-shrink:0;transition:color 0.15s; }
+    .map-spec-tile.selected { border-color:#1a5faa;background:rgba(26,95,170,0.07);color:#1a5faa; }
+    .map-spec-tile.selected i { color:#1a5faa; }
+    /* ── PROJECT PHOTOS ── */
+    .map-photo-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem; }
+    .map-photo-slot { aspect-ratio:1;border:2px dashed #dde4f0;border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;background:#f7f9fd;transition:all 0.18s;overflow:hidden;position:relative; }
+    .map-photo-slot:hover { border-color:#1a5faa;background:rgba(26,95,170,0.04); }
+    .map-photo-slot.has-photo { border-style:solid;border-color:#16a34a; }
+    .map-photo-slot img { position:absolute;inset:0;width:100%;height:100%;object-fit:cover; }
+    .map-photo-slot input[type="file"] { display:none; }
+    .mps-icon { font-size:1.3rem;color:#c8cfd9;margin-bottom:0.15rem; }
+    .mps-label { font-size:0.65rem;color:#c8cfd9;font-weight:600;text-align:center;line-height:1.3; }
+    /* ── PROCESS STEPS ── */
+    .map-process { display:flex;align-items:flex-start;gap:0.3rem;margin:0.85rem 0 1.1rem; }
+    .map-proc-step { flex:1;display:flex;flex-direction:column;align-items:center;text-align:center; }
+    .map-proc-num { width:26px;height:26px;border-radius:50%;background:#1a2640;color:#fff;font-size:0.7rem;font-weight:800;display:flex;align-items:center;justify-content:center;margin:0 auto 0.3rem;flex-shrink:0; }
+    .map-proc-num.gold { background:linear-gradient(135deg,#d4af37,#b8920f); }
+    .map-proc-label { font-size:0.68rem;font-weight:800;color:#1a2640;line-height:1.25;margin-bottom:0.1rem; }
+    .map-proc-sub { font-size:0.6rem;color:#8a95aa;line-height:1.25; }
+    .map-proc-sep { color:#dde4f0;font-size:0.7rem;margin-top:7px;flex-shrink:0; }
+    /* ── BENEFITS STRIP (Step 2 top) ── */
+    .map-benefits-strip { display:flex;gap:0.5rem;flex-wrap:wrap;background:#f7f9fd;border:1px solid #e5eaf5;border-radius:10px;padding:0.55rem 0.8rem;margin-bottom:1rem; }
+    .map-benefit-pill { display:flex;align-items:center;gap:0.2rem;font-size:0.68rem;font-weight:700;color:#1a3a6e;white-space:nowrap; }
+    .map-benefit-pill i { color:#d4af37;font-size:0.75rem; }
+    /* ── EXPERIENCE MSG ── */
+    .map-exp-msg { border-radius:10px;padding:0.6rem 0.8rem;margin-top:0.5rem;font-size:0.79rem;font-weight:600;line-height:1.5;display:none;align-items:flex-start;gap:0.5rem; }
+    .map-exp-msg.show { display:flex; }
+    .map-exp-msg.expert   { background:rgba(26,95,170,0.07);border:1px solid rgba(26,95,170,0.2);color:#1a3564; }
+    .map-exp-msg.beginner { background:rgba(13,148,136,0.07);border:1px solid rgba(13,148,136,0.22);color:#0d5248; }
+
     /* ── CUSTOMER QUOTE SECTION ── */
     .modal-quote-section {
       border-top: 2px solid var(--electric-blue); margin-top: 1.25rem; padding-top: 1.1rem;
@@ -276,7 +463,8 @@
         <div class="dashboard-title">ברוך הבא לאזור האישי</div>
         <div class="dashboard-subtitle">בחר את הפעולה שברצונך לבצע.</div>
         <div id="member-status-area" style="margin-bottom:1.5rem;"></div>
-        <div class="dashboard-grid">
+
+<div class="dashboard-grid">
           <a href="procurement.html" class="dashboard-card">
             <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
             <h3>מרכז הרכש</h3>
@@ -434,7 +622,7 @@ async function init() {
   if (adminRow) document.getElementById('adminNavItem').style.display = 'list-item';
 
   // Load member fields separately (columns may not exist yet in DB — isolated from auth check)
-  supabase.from('profiles').select('user_tier, equity_balance, member_requested_at').eq('id', user.id).maybeSingle()
+  supabase.from('profiles').select('user_tier, equity_balance, member_requested_at, member_status').eq('id', user.id).maybeSingle()
     .then(({ data: memberProfile }) => renderMemberStatus(memberProfile, user.id));
   await loadAll();
 
@@ -475,44 +663,239 @@ function renderMemberStatus(profile, userId) {
         </div>
       </div>`;
   } else if (hasRequested) {
+    const st = profile?.member_status || 'new_application';
+    const steps = [
+      { key: 'new_application',       icon: 'ph-paper-plane-tilt', label: 'הגשת מועמדות' },
+      { key: 'under_review',          icon: 'ph-magnifying-glass', label: 'בתהליך בדיקה' },
+      { key: 'professional_training', icon: 'ph-graduation-cap',   label: 'הכשרה מקצועית' },
+      { key: 'approved',              icon: 'ph-medal',             label: 'אישור חברות' },
+    ];
+    const flowOrder = steps.map(s => s.key);
+    const currentIdx = flowOrder.indexOf(st);
+
+    const stepsHtml = steps.map((s, i) => {
+      const isDone   = i < currentIdx;
+      const isActive = i === currentIdx;
+      const circleStyle = isDone
+        ? 'background:#15803d;border-color:#15803d;color:#fff;'
+        : isActive
+          ? 'background:#1a5faa;border-color:#1a5faa;color:#fff;box-shadow:0 0 0 4px rgba(26,95,170,0.15);'
+          : 'background:transparent;border-color:#dde4f0;color:#9aa3b5;';
+      const labelColor = isDone ? '#15803d' : isActive ? '#1a2640' : '#9aa3b5';
+      const icon = isDone ? 'ph-check' : s.icon;
+      const connectorColor = isDone ? '#15803d' : '#dde4f0';
+
+      return `
+        <div style="display:flex;flex-direction:column;align-items:center;gap:0.35rem;flex:1;position:relative;">
+          ${i < steps.length - 1 ? `<div style="position:absolute;top:14px;right:calc(50% + 14px);left:calc(-50% + 14px);height:2px;background:${connectorColor};z-index:0;"></div>` : ''}
+          <div style="width:28px;height:28px;border-radius:50%;border:2px solid;display:flex;align-items:center;justify-content:center;font-size:0.82rem;position:relative;z-index:1;${circleStyle}">
+            <i class="ph ${icon}"></i>
+          </div>
+          <div style="font-size:0.68rem;font-weight:700;color:${labelColor};text-align:center;line-height:1.3;">${s.label}</div>
+        </div>`;
+    }).join('');
+
     area.innerHTML = `
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:0.7rem;max-width:480px;">
-        <i class="ph ph-clock" style="font-size:1.4rem;color:var(--silver-dark);"></i>
-        <div style="font-size:0.88rem;color:var(--silver);">בקשת ההצטרפות לתוכנית <strong style="color:var(--white);">חבר אלום</strong> נשלחה — צוות ALUM-IL יצור איתך קשר בקרוב.</div>
+      <div style="background:#ffffff;border:1px solid #e8edf5;border-right:3px solid #1a5faa;border-radius:12px;padding:0.9rem 1.2rem;max-width:560px;box-shadow:0 2px 8px rgba(26,53,100,0.07);">
+        <div style="font-size:0.75rem;font-weight:700;color:#1a5faa;margin-bottom:0.75rem;display:flex;align-items:center;gap:0.3rem;">
+          <i class="ph ph-clock"></i> בקשתך בתהליך — עוקבים אחרי ההתקדמות
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0;padding:0 0.3rem;">${stepsHtml}</div>
       </div>`;
   } else {
     area.innerHTML = `
-      <div style="background:linear-gradient(135deg,rgba(212,175,55,0.08),transparent);border:1.5px solid rgba(212,175,55,0.35);border-radius:12px;padding:1rem 1.4rem;max-width:520px;">
-        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.5rem;">
-          <i class="ph ph-medal" style="font-size:1.3rem;color:#d4af37;"></i>
-          <span style="font-size:0.95rem;font-weight:800;color:var(--white);">תוכנית חבר אלום</span>
+      <div style="background:#ffffff;border:1px solid #e8dfc7;border-right:3px solid #c9a227;border-radius:12px;padding:0.72rem 1rem 0.72rem 1rem;max-width:660px;display:flex;align-items:center;gap:0.85rem;box-shadow:0 2px 10px rgba(180,150,60,0.1),0 1px 3px rgba(0,0,0,0.05);">
+        <div style="width:34px;height:34px;background:linear-gradient(135deg,#d4af37,#b8920f);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 2px 8px rgba(180,140,20,0.28);">
+          <i class="ph ph-medal" style="color:#fff;font-size:1.05rem;"></i>
         </div>
-        <div style="font-size:0.82rem;color:var(--silver);margin-bottom:0.8rem;line-height:1.5;">
-          10% הנחה על קיטים · צבירת מניות (0.5% מכל עסקה) · תוכן ומחירים בלעדיים.
-          <br>ההצטרפות כרוכה בהסמכה מקצועית וראיון עם הצוות.
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:0.85rem;font-weight:800;color:#1a2640;line-height:1.3;margin-bottom:0.25rem;">
+            מקצוענים? הגיע הזמן להרוויח יותר!
+          </div>
+          <div style="font-size:0.76rem;font-weight:600;color:#5a6a85;background:rgba(26,53,100,0.06);border-radius:6px;padding:0.18rem 0.5rem;display:inline-block;margin-bottom:0.25rem;">
+            הצטרפו למהפכה שמשנה את חוקי המשחק ב-ALUM-IL
+          </div>
+          <div style="display:flex;align-items:center;gap:0.45rem;flex-wrap:wrap;">
+            <span style="font-size:0.69rem;color:#7a6a45;font-weight:600;display:flex;align-items:center;gap:0.2rem;"><i class="ph ph-chart-line-up" style="color:#c9a227;"></i>S&amp;P 500</span>
+            <span style="color:#d9c88a;font-size:0.6rem;line-height:1;">●</span>
+            <span style="font-size:0.69rem;color:#7a6a45;font-weight:600;display:flex;align-items:center;gap:0.2rem;"><i class="ph ph-tag" style="color:#c9a227;"></i>10% הנחה</span>
+            <span style="color:#d9c88a;font-size:0.6rem;line-height:1;">●</span>
+            <span style="font-size:0.69rem;color:#7a6a45;font-weight:600;display:flex;align-items:center;gap:0.2rem;"><i class="ph ph-seal-check" style="color:#c9a227;"></i>תו תקן</span>
+            <span style="color:#d9c88a;font-size:0.6rem;line-height:1;">●</span>
+            <span style="font-size:0.69rem;color:#7a6a45;font-weight:600;display:flex;align-items:center;gap:0.2rem;"><i class="ph ph-trophy" style="color:#c9a227;"></i>תיעדוף במכרזים</span>
+          </div>
         </div>
-        <button onclick="requestMembership(this,'${userId}')"
-          style="background:#d4af37;color:#1a1a1a;border:none;border-radius:8px;padding:0.45rem 1.1rem;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;">
-          אני מעוניין — שלח בקשה
+        <button onclick="openMemberApp()" id="memberJoinBtn"
+          style="background:transparent;color:#1a3564;border:1.5px solid #c9a227;border-radius:8px;padding:0.4rem 0.85rem;font-family:'Heebo',sans-serif;font-size:0.79rem;font-weight:800;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:background 0.15s,color 0.15s,border-color 0.15s;"
+          onmouseover="this.style.background='#fef8e6';this.style.borderColor='#b8920f'"
+          onmouseout="this.style.background='transparent';this.style.borderColor='#c9a227'">
+          עוד פרטים <i class="ph ph-arrow-left" style="font-size:0.7rem;"></i>
         </button>
       </div>`;
   }
 }
 
-window.requestMembership = async function(btn, userId) {
+/* ── MEMBER APPLICATION MODAL ── */
+let _heightCertFile = null;
+let _certFile = null;
+let _photoFiles = [null, null, null];
+
+window.openMemberApp = function() {
+  _photoFiles = [null, null, null];
+  document.querySelectorAll('.map-spec-tile').forEach(t => t.classList.remove('selected'));
+  document.getElementById('map-prior-exp-val').value = '';
+  document.getElementById('map-exp-yn-yes').className = 'map-yn-btn';
+  document.getElementById('map-exp-yn-no').className  = 'map-yn-btn';
+  document.getElementById('map-prior-exp-msg').className = 'map-exp-msg';
+  for (let i = 0; i < 3; i++) {
+    const slot = document.getElementById('map-photo-slot-' + i);
+    if (slot) { slot.classList.remove('has-photo'); const img = slot.querySelector('img'); if (img) img.remove(); }
+    const inp = document.getElementById('map-photo-' + i); if (inp) inp.value = '';
+  }
+  document.getElementById('member-app-overlay').classList.add('open');
+  _showMapStep(1);
+};
+window.closeMemberApp = function() {
+  document.getElementById('member-app-overlay').classList.remove('open');
+};
+function _showMapStep(n) {
+  document.getElementById('map-step1').style.display = n === 1 ? '' : 'none';
+  document.getElementById('map-step2').style.display = n === 2 ? '' : 'none';
+  document.getElementById('map-dot1').className = 'map-step-dot' + (n === 1 ? ' active' : ' done');
+  document.getElementById('map-dot2').className = 'map-step-dot' + (n === 2 ? ' active' : '');
+  document.getElementById('map-line1').className = 'map-step-line' + (n === 2 ? ' done' : '');
+}
+window.mapGoStep2 = function() { _showMapStep(2); };
+window.mapGoStep1 = function() { _showMapStep(1); };
+
+window.setHeightCert = function(val) {
+  document.getElementById('map-height-cert-val').value = val;
+  document.getElementById('map-yn-yes').className = 'map-yn-btn' + (val === 'yes' ? ' active-yes' : '');
+  document.getElementById('map-yn-no').className  = 'map-yn-btn' + (val === 'no'  ? ' active-no'  : '');
+  document.getElementById('map-height-upload-wrap').style.display = val === 'yes' ? '' : 'none';
+};
+
+window.mapFileChange = function(inputId, storeVar, labelId) {
+  const file = document.getElementById(inputId).files[0];
+  if (storeVar === 'height') _heightCertFile = file;
+  else _certFile = file;
+  const label = document.getElementById(labelId);
+  if (file) {
+    label.classList.add('has-file');
+    label.querySelector('.map-file-name').textContent = file.name;
+  } else {
+    label.classList.remove('has-file');
+    label.querySelector('.map-file-name').textContent = storeVar === 'height' ? 'העלה קובץ אישור *' : 'העלה תעודות (אופציונלי)';
+  }
+};
+
+window.toggleSpecTile = function(el) { el.classList.toggle('selected'); };
+
+window.setExperienceLevel = function(val) {
+  document.getElementById('map-prior-exp-val').value = val;
+  document.getElementById('map-exp-yn-yes').className = 'map-yn-btn' + (val === 'yes' ? ' active-yes' : '');
+  document.getElementById('map-exp-yn-no').className  = 'map-yn-btn' + (val === 'no'  ? ' active-no'  : '');
+  const msg = document.getElementById('map-prior-exp-msg');
+  if (val === 'yes') {
+    msg.className = 'map-exp-msg show expert';
+    msg.innerHTML = '<i class="ph ph-calendar-check" style="flex-shrink:0;margin-top:1px;font-size:1rem;"></i><span>לאחר השליחה נתאם לך <strong>מבחן הסמכה קצר</strong> — בהתאם לתחומי ההתמחות שבחרת.</span>';
+  } else {
+    msg.className = 'map-exp-msg show beginner';
+    msg.innerHTML = '<i class="ph ph-graduation-cap" style="flex-shrink:0;margin-top:1px;font-size:1rem;"></i><span>נציג המכללה יחזור אליך <strong>להתאמת תוכנית הכשרה</strong> מותאמת אישית.</span>';
+  }
+};
+
+window.mapPhotoChange = function(input, idx) {
+  const file = input.files[0];
+  if (!file) return;
+  _photoFiles[idx] = file;
+  const slot = document.getElementById('map-photo-slot-' + idx);
+  if (!slot) return;
+  slot.classList.add('has-photo');
+  const reader = new FileReader();
+  reader.onload = e => {
+    let img = slot.querySelector('img');
+    if (!img) { img = document.createElement('img'); slot.prepend(img); }
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+window.submitMemberApp = async function() {
+  const specialties = [...document.querySelectorAll('.map-spec-tile.selected')].map(el => el.dataset.value);
+  if (!specialties.length) { alert('יש לבחור לפחות תחום התמחות אחד'); return; }
+  const priorExp = document.getElementById('map-prior-exp-val').value;
+  if (!priorExp) { alert('יש לציין אם יש לך ניסיון קודם בתחום'); return; }
+  const heightCertVal = document.getElementById('map-height-cert-val').value;
+  if (!heightCertVal) { alert('יש לציין אם יש אישור עבודה בגובה'); return; }
+  if (heightCertVal === 'yes' && !_heightCertFile) { alert('יש להעלות קובץ אישור עבודה בגובה'); return; }
+  if (!document.getElementById('map-tos-cb').checked) { alert('יש לאשר את תנאי השימוש ותקנון תוכנית חבר אלום'); return; }
+
+  const btn = document.getElementById('map-submit-btn');
+  btn.disabled = true; btn.textContent = 'שולח...';
+
+  let heightCertUrl = null, certUrl = null;
+  const photoUrls = [null, null, null];
   try {
-    btn.disabled = true; btn.textContent = 'שולח...';
-    const { error } = await supabase.from('profiles')
-      .update({ member_requested_at: new Date().toISOString() }).eq('id', userId);
-    if (error) console.error('[member] update error:', error);
-    // Show confirmation regardless — admin will follow up
-    const area = document.getElementById('member-status-area');
-    if (area) area.innerHTML = `
-      <div style="background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:0.7rem;max-width:480px;">
-        <i class="ph ph-check-circle" style="font-size:1.4rem;color:#4ade80;"></i>
-        <div style="font-size:0.88rem;color:var(--silver);">בקשת ההצטרפות לתוכנית <strong style="color:var(--white);">חבר אלום</strong> נשלחה — צוות ALUM-IL יצור איתך קשר בקרוב.</div>
-      </div>`;
-  } catch(e) { console.error('[member] exception:', e); }
+    if (_heightCertFile) {
+      const ext = _heightCertFile.name.split('.').pop();
+      const { data } = await supabase.storage.from('member-docs')
+        .upload(`${currentUserId}/height-cert-${Date.now()}.${ext}`, _heightCertFile);
+      heightCertUrl = data?.path || null;
+    }
+    if (_certFile) {
+      const ext = _certFile.name.split('.').pop();
+      const { data } = await supabase.storage.from('member-docs')
+        .upload(`${currentUserId}/cert-${Date.now()}.${ext}`, _certFile);
+      certUrl = data?.path || null;
+    }
+    for (let i = 0; i < 3; i++) {
+      if (_photoFiles[i]) {
+        const ext = _photoFiles[i].name.split('.').pop();
+        const { data } = await supabase.storage.from('member-docs')
+          .upload(`${currentUserId}/project-photo-${i+1}-${Date.now()}.${ext}`, _photoFiles[i]);
+        photoUrls[i] = data?.path || null;
+      }
+    }
+  } catch(e) { console.error('[member-upload]', e); }
+
+  const appData = {
+    specialties,
+    has_prior_experience: priorExp,
+    experience_years: +(document.getElementById('map-experience').value) || 0,
+    social_link: document.getElementById('map-social-link').value || null,
+    height_cert: heightCertVal,
+    height_cert_url: heightCertUrl,
+    prev_training: document.getElementById('map-prev-training').value,
+    cert_url: certUrl,
+    project_photo_urls: photoUrls,
+    submitted_at: new Date().toISOString(),
+    tos_version: '1.0',
+    tos_accepted_at: new Date().toISOString()
+  };
+
+  try {
+    const { error } = await supabase.rpc('submit_member_application', { p_data: appData });
+    if (error) console.error('[member-rpc]', error);
+  } catch(e) { console.error('[member-rpc]', e); }
+
+  closeMemberApp();
+  const area = document.getElementById('member-status-area');
+  if (area) area.innerHTML = `
+    <div style="background:#fff;border:1.5px solid rgba(22,163,74,0.3);border-radius:12px;padding:0.9rem 1.2rem;display:flex;align-items:center;gap:0.7rem;max-width:520px;">
+      <i class="ph ph-check-circle" style="font-size:1.5rem;color:#16a34a;"></i>
+      <div>
+        <div style="font-size:0.9rem;font-weight:800;color:#1a2640;">הבקשה נשלחה בהצלחה!</div>
+        <div style="font-size:0.82rem;color:#6b7a99;margin-top:0.15rem;">צוות ALUM-IL יבדוק את הפרטים ויצור איתך קשר בקרוב.</div>
+      </div>
+    </div>`;
+  const joinBtn = document.getElementById('memberJoinBtn');
+  if (joinBtn) {
+    joinBtn.disabled = true;
+    joinBtn.textContent = 'בקשה בבדיקה';
+    joinBtn.style.background = '#6b7a99';
+    joinBtn.style.cursor = 'default';
+  }
 };
 
 /* ── NAVIGATION ── */
@@ -1011,5 +1394,249 @@ window.handleLogout = async function() {
 
 init();
 </script>
+
+<!-- ── MEMBER APPLICATION MODAL ── -->
+<div id="member-app-overlay" onclick="if(event.target===this)closeMemberApp()">
+  <div class="member-app-modal">
+
+    <!-- Header -->
+    <div class="map-header">
+      <div>
+        <div class="map-header-title">
+          <i class="ph ph-medal"></i>
+          <span>תוכנית חבר אלום</span>
+        </div>
+        <div class="map-header-sub">מסלול מתקין מוסמך — הגשת בקשה</div>
+      </div>
+      <button class="map-close-btn" onclick="closeMemberApp()"><i class="ph ph-x"></i></button>
+    </div>
+
+    <!-- Stepper -->
+    <div style="padding:1rem 1.5rem 0;display:flex;align-items:center;gap:0.5rem;">
+      <div id="map-dot1" class="map-step-dot active">1</div>
+      <div id="map-line1" class="map-step-line"></div>
+      <div id="map-dot2" class="map-step-dot">2</div>
+      <div style="flex:1;"></div>
+      <span id="map-step-label" style="font-size:0.75rem;color:#6b7a99;">שלב 1 מתוך 2</span>
+    </div>
+
+    <!-- Step 1 — Clean -->
+    <div id="map-step1" class="map-step" style="padding:1.8rem 1.8rem 1.5rem;">
+
+      <!-- Title -->
+      <div style="margin-bottom:1.6rem;">
+        <div style="font-size:1.08rem;font-weight:900;color:#1a2640;line-height:1.4;margin-bottom:0.25rem;">
+          תהליך הצטרפות למעמד
+          <span style="position:relative;display:inline-block;">
+            חבר
+            <span style="position:absolute;bottom:-2px;right:0;left:0;height:3px;background:#d4af37;border-radius:2px;"></span>
+          </span>
+          בארגון ALUM-IL
+        </div>
+      </div>
+
+      <!-- Benefits block — FIRST -->
+      <div style="margin-bottom:1.7rem;">
+        <div style="font-size:0.7rem;font-weight:800;color:#9aa3b5;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:0.9rem;">מה מחכה לך</div>
+        <div style="display:flex;flex-direction:column;gap:1rem;">
+
+          <div style="display:flex;align-items:flex-start;gap:0.9rem;">
+            <div style="width:36px;height:36px;border-radius:9px;background:#fef8e7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph ph-chart-line-up" style="color:#c9a227;font-size:1.05rem;"></i>
+            </div>
+            <div>
+              <div style="font-size:0.86rem;font-weight:800;color:#1a2640;margin-bottom:0.1rem;">העתיד שלך — הון חוזר</div>
+              <div style="font-size:0.78rem;color:#6b7a99;line-height:1.5;">צבירת 0.5% מכל עסקה למניות S&amp;P 500 — מוצג ישירות באזור האישי שלך.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:0.9rem;">
+            <div style="width:36px;height:36px;border-radius:9px;background:#f0f5ff;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph ph-tag" style="color:#1a5faa;font-size:1.05rem;"></i>
+            </div>
+            <div>
+              <div style="font-size:0.86rem;font-weight:800;color:#1a2640;margin-bottom:0.1rem;">הרווח שלך</div>
+              <div style="font-size:0.78rem;color:#6b7a99;line-height:1.5;">10% הנחה קבועה על כל רכישה במועדון הרכש של ALUM-IL.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:0.9rem;">
+            <div style="width:36px;height:36px;border-radius:9px;background:#f0faf6;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+              <i class="ph ph-seal-check" style="color:#16a34a;font-size:1.05rem;"></i>
+            </div>
+            <div>
+              <div style="font-size:0.86rem;font-weight:800;color:#1a2640;margin-bottom:0.1rem;">המעמד שלך</div>
+              <div style="font-size:0.78rem;color:#6b7a99;line-height:1.5;">תו תקן מקצועי רשמי וגישה מועדפת למערכת המכרזים.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Divider -->
+      <div style="height:1px;background:#f0f2f5;margin-bottom:1.6rem;"></div>
+
+      <!-- Process block — SECOND -->
+      <div style="margin-bottom:1.7rem;">
+        <div style="font-size:0.7rem;font-weight:800;color:#9aa3b5;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:0.85rem;">התהליך — מנוהל ע"י המכללה</div>
+        <div style="display:flex;flex-direction:column;gap:0.6rem;">
+          <div style="display:flex;align-items:center;gap:0.85rem;">
+            <div style="width:24px;height:24px;border-radius:50%;background:#1a2640;color:#fff;font-size:0.68rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</div>
+            <div>
+              <div style="font-size:0.85rem;font-weight:700;color:#1a2640;">הגשת מועמדות</div>
+              <div style="font-size:0.74rem;color:#8a95aa;">מילוי הטופס וצירוף מסמכים</div>
+            </div>
+          </div>
+          <div style="margin-right:11px;width:2px;height:14px;background:#e8eaf0;border-radius:1px;"></div>
+          <div style="display:flex;align-items:center;gap:0.85rem;">
+            <div style="width:24px;height:24px;border-radius:50%;background:#1a2640;color:#fff;font-size:0.68rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</div>
+            <div>
+              <div style="font-size:0.85rem;font-weight:700;color:#1a2640;">אבחון מקצועי</div>
+              <div style="font-size:0.74rem;color:#8a95aa;">מבחן הסמכה למנוסים · תוכנית הדרכה למתחילים</div>
+            </div>
+          </div>
+          <div style="margin-right:11px;width:2px;height:14px;background:#e8eaf0;border-radius:1px;"></div>
+          <div style="display:flex;align-items:center;gap:0.85rem;">
+            <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#d4af37,#b8920f);color:#fff;font-size:0.68rem;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</div>
+            <div>
+              <div style="font-size:0.85rem;font-weight:700;color:#1a2640;">אישור חברות</div>
+              <div style="font-size:0.74rem;color:#8a95aa;">הפעלת כל ההטבות וגישה מלאה למערכת</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button class="map-btn-continue" onclick="mapGoStep2()" style="font-size:0.88rem;">
+        המשך למילוי פרטים והגשת מועמדות <i class="ph ph-arrow-left"></i>
+      </button>
+    </div>
+
+    <!-- Step 2 — Form -->
+    <div id="map-step2" class="map-step" style="display:none;">
+      <button class="map-back-btn" onclick="mapGoStep1()">
+        <i class="ph ph-arrow-right"></i> חזרה
+      </button>
+
+      <!-- Specialties — Tiles -->
+      <div class="map-field">
+        <label class="map-field-label">תחומי התמחות <span class="map-required-mark">*</span></label>
+        <div class="map-spec-tiles">
+          <div class="map-spec-tile" data-value="electric_pergolas" onclick="toggleSpecTile(this)"><i class="ph ph-lightning"></i> פרגולות חשמליות</div>
+          <div class="map-spec-tile" data-value="fixed_pergolas"    onclick="toggleSpecTile(this)"><i class="ph ph-house-line"></i> פרגולות קבועות</div>
+          <div class="map-spec-tile" data-value="windows"           onclick="toggleSpecTile(this)"><i class="ph ph-browser"></i> חלונות וויטרינות</div>
+          <div class="map-spec-tile" data-value="gates_fences"      onclick="toggleSpecTile(this)"><i class="ph ph-git-fork"></i> גדרות ושערים</div>
+          <div class="map-spec-tile" data-value="doors_cladding"    onclick="toggleSpecTile(this)"><i class="ph ph-door"></i> דלתות וחיפויים</div>
+          <div class="map-spec-tile" data-value="bioclimatic"       onclick="toggleSpecTile(this)"><i class="ph ph-wind"></i> ביקולימטיק וגליוטינה</div>
+          <div class="map-spec-tile" data-value="curtain_walls"     onclick="toggleSpecTile(this)"><i class="ph ph-stack"></i> קירות מסך</div>
+        </div>
+      </div>
+
+      <!-- Prior experience -->
+      <div class="map-field">
+        <label class="map-field-label">ניסיון קודם בתחום? <span class="map-required-mark">*</span></label>
+        <input type="hidden" id="map-prior-exp-val" value="">
+        <div class="map-yes-no">
+          <button type="button" id="map-exp-yn-yes" class="map-yn-btn" onclick="setExperienceLevel('yes')">כן, יש לי ניסיון</button>
+          <button type="button" id="map-exp-yn-no"  class="map-yn-btn" onclick="setExperienceLevel('no')">מתחיל / ללא ניסיון</button>
+        </div>
+        <div id="map-prior-exp-msg" class="map-exp-msg"></div>
+      </div>
+
+      <!-- Experience years + social link -->
+      <div class="map-field">
+        <label class="map-field-label" for="map-experience">שנות ניסיון בתחום</label>
+        <div style="display:flex;align-items:center;gap:0.75rem;flex-wrap:wrap;">
+          <input type="number" id="map-experience" class="map-number-input" min="0" max="60" placeholder="למשל: 5" style="max-width:130px;">
+          <div style="display:flex;align-items:center;gap:0.4rem;flex:1;min-width:180px;">
+            <i class="ph ph-link" style="color:#b0bac9;font-size:1rem;flex-shrink:0;"></i>
+            <input type="url" id="map-social-link" class="map-number-input"
+              placeholder="קישור לפרופיל (אופציונלי)"
+              style="max-width:100%;width:100%;font-size:0.82rem;">
+          </div>
+        </div>
+        <div style="font-size:0.68rem;color:#b0bac9;margin-top:0.3rem;">לינקדאין, אינסטגרם, פייסבוק — אופציונלי</div>
+      </div>
+
+      <!-- Height cert -->
+      <div class="map-field">
+        <label class="map-field-label">אישור עבודה בגובה בתוקף? <span class="map-required-mark">*</span></label>
+        <input type="hidden" id="map-height-cert-val" value="">
+        <div class="map-yes-no">
+          <button type="button" id="map-yn-yes" class="map-yn-btn" onclick="setHeightCert('yes')">כן</button>
+          <button type="button" id="map-yn-no"  class="map-yn-btn" onclick="setHeightCert('no')">לא</button>
+        </div>
+        <div id="map-height-upload-wrap" style="display:none;margin-top:0.5rem;">
+          <label id="map-height-upload-label" class="map-upload-area" onclick="document.getElementById('map-height-file').click()">
+            <i class="ph ph-upload-simple" style="font-size:1.1rem;"></i>
+            <span class="map-file-name">העלה קובץ אישור *</span>
+            <input type="file" id="map-height-file" accept=".pdf,.jpg,.jpeg,.png"
+              onchange="mapFileChange('map-height-file','height','map-height-upload-label')">
+          </label>
+          <div style="font-size:0.71rem;color:#6b7a99;margin-top:0.25rem;">PDF / JPG / PNG — חובה אם בחרת "כן"</div>
+        </div>
+      </div>
+
+      <!-- Previous training -->
+      <div class="map-field">
+        <label class="map-field-label" for="map-prev-training">הכשרות קודמות</label>
+        <textarea id="map-prev-training" class="map-textarea" placeholder="פרט הכשרות, קורסים או תעודות רלוונטיות..."></textarea>
+      </div>
+
+      <!-- Cert upload (optional) -->
+      <div class="map-field">
+        <label class="map-field-label">העלאת תעודות (אופציונלי)</label>
+        <label id="map-cert-upload-label" class="map-upload-area" onclick="document.getElementById('map-cert-file').click()">
+          <i class="ph ph-file-text" style="font-size:1.1rem;"></i>
+          <span class="map-file-name">העלה תעודות (אופציונלי)</span>
+          <input type="file" id="map-cert-file" accept=".pdf,.jpg,.jpeg,.png"
+            onchange="mapFileChange('map-cert-file','cert','map-cert-upload-label')">
+        </label>
+      </div>
+
+      <!-- Project photos -->
+      <div class="map-field">
+        <label class="map-field-label">תמונות פרויקטים (עד 3)</label>
+        <div class="map-photo-grid">
+          <label id="map-photo-slot-0" class="map-photo-slot">
+            <i class="ph ph-camera-plus mps-icon"></i>
+            <span class="mps-label">תמונה 1</span>
+            <input type="file" id="map-photo-0" accept="image/*" onchange="mapPhotoChange(this,0)">
+          </label>
+          <label id="map-photo-slot-1" class="map-photo-slot">
+            <i class="ph ph-camera-plus mps-icon"></i>
+            <span class="mps-label">תמונה 2</span>
+            <input type="file" id="map-photo-1" accept="image/*" onchange="mapPhotoChange(this,1)">
+          </label>
+          <label id="map-photo-slot-2" class="map-photo-slot">
+            <i class="ph ph-camera-plus mps-icon"></i>
+            <span class="mps-label">תמונה 3</span>
+            <input type="file" id="map-photo-2" accept="image/*" onchange="mapPhotoChange(this,2)">
+          </label>
+        </div>
+      </div>
+
+      <!-- TOS checkbox -->
+      <div class="map-field" style="margin-top:0.75rem;">
+        <label style="display:flex;align-items:flex-start;gap:0.55rem;cursor:pointer;font-size:0.83rem;color:#1a2640;line-height:1.5;">
+          <input type="checkbox" id="map-tos-cb" style="margin-top:3px;flex-shrink:0;accent-color:#1a5faa;width:15px;height:15px;">
+          <span>
+            קראתי ואני מאשר את
+            <a href="terms.html" target="_blank" style="color:#1a5faa;font-weight:700;text-decoration:underline;">תנאי השימוש</a>
+            ואת
+            <a href="member-terms.html" target="_blank" style="color:#1a5faa;font-weight:700;text-decoration:underline;">תקנון תוכנית חבר אלום</a>
+            — כולל יעד ₪45,000 לרבעון, מנגנון ההשקעה ב-S&amp;P 500, והפניית עודפים לשיקום חברתי בשיתוף שב"ס ולשילוב חיילים משוחררים.
+            <span style="color:#dc2626;">*</span>
+          </span>
+        </label>
+      </div>
+
+      <button id="map-submit-btn" class="map-submit-btn" onclick="submitMemberApp()">
+        <i class="ph ph-paper-plane-tilt" style="margin-left:5px;"></i> שלח בקשה
+      </button>
+    </div>
+
+  </div>
+</div>
+
 </body>
 </html>
