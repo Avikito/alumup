@@ -668,12 +668,17 @@ function renderMemberStatus(profile, userId) {
     }
     // Wealth Simulator
     area.innerHTML = `
-      <div style="background:#fff;border:1.5px solid #dde4f0;border-radius:16px;padding:1.6rem 2rem;" dir="rtl">
+      <div style="background:#fff;border:1.5px solid #dde4f0;border-radius:16px;padding:1.1rem 1.4rem;" dir="rtl">
         <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.3rem;">
           <i class="ph ph-chart-line-up" style="color:#1a5faa;font-size:1.3rem;"></i>
           <span style="font-size:1.05rem;font-weight:800;color:#1a2640;">כך ההכנסה שלך תגדל לאורך זמן עם ALUM-IL</span>
           <span style="margin-right:auto;font-size:0.65rem;background:rgba(26,95,170,0.08);color:#1a5faa;border-radius:20px;padding:3px 10px;font-weight:700;border:1px solid rgba(26,95,170,0.15);">0.5% מכל רכישה | S&P 500 ~10%</span>
+          <button id="sim-toggle-btn" onclick="toggleSimulator()"
+            style="background:none;border:1px solid #dde4f0;border-radius:8px;padding:0.25rem 0.7rem;font-size:0.72rem;font-weight:700;color:#6b7a99;cursor:pointer;display:flex;align-items:center;gap:0.3rem;transition:all 0.2s;white-space:nowrap;">
+            <i class="ph ph-eye-slash" id="sim-toggle-icon"></i> <span id="sim-toggle-label">סגור גרף</span>
+          </button>
         </div>
+        <div id="sim-body">
         <div style="font-size:0.75rem;color:#9aa3b5;margin-bottom:1.3rem;">הזז את הסליידרים וראה כיצד הצבירה שלך גדלה עם הזמן</div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;">
@@ -708,7 +713,7 @@ function renderMemberStatus(profile, userId) {
             <div id="sim-result" style="font-size:1.8rem;font-weight:900;color:#c47c00;line-height:1.1;margin-bottom:0.4rem;">₪0</div>
             <div id="sim-context" style="font-size:0.68rem;color:#6b7a99;font-weight:600;min-height:1.2rem;"></div>
           </div>
-          <div style="position:relative;height:140px;">
+          <div style="position:relative;height:85px;">
             <canvas id="sim-chart"></canvas>
             <div id="sim-highlight" style="position:absolute;top:8px;left:8px;background:#c47c00;color:#fff;font-size:0.68rem;font-weight:800;padding:3px 9px;border-radius:20px;white-space:nowrap;"></div>
           </div>
@@ -717,12 +722,27 @@ function renderMemberStatus(profile, userId) {
         <div style="margin-top:0.8rem;padding-top:0.6rem;border-top:1px solid #eaf0f9;font-size:0.62rem;color:#b0b8cc;line-height:1.5;">
           * החישוב המוצג הינו סימולציה בלבד ומתבסס על נתוני עבר של מדד S&P 500 (כ-10% שנתי). ארגון ALUM-IL אינו מבטיח תשואות עתידיות ואינו נושא באחריות לביצועי הקופה. הזכאות להפקדה כפופה לעמידה ביעד רכש מינימלי של ₪45,000 ברבעון.
         </div>
+        </div><!-- /sim-body -->
       </div>
       <canvas id="alum-savings-chart" style="display:none;position:absolute;"></canvas>`;
 
     // Initialize simulator + load top summary cards
     initSimulator();
     loadAndRenderSavingsChart(userId);
+    // Align simulator top with "כלים" sidebar label
+    requestAnimationFrame(() => {
+      const toolsLabel = Array.from(document.querySelectorAll('.sidebar-label'))
+        .find(el => el.textContent.trim() === 'כלים');
+      const area = document.getElementById('member-status-area');
+      if (toolsLabel && area) {
+        const toolsTop = toolsLabel.getBoundingClientRect().top + window.scrollY;
+        const areaTop  = area.getBoundingClientRect().top  + window.scrollY;
+        const diff = toolsTop - areaTop;
+        if (diff > 0) area.style.marginTop = diff + 'px';
+      }
+    });
+    // Restore closed state
+    if (localStorage.getItem('sim_closed') === '1') setTimeout(toggleSimulator, 50);
   } else if (hasRequested) {
     const st = profile?.member_status || 'new_application';
 
@@ -899,6 +919,26 @@ window.updateSimulator = function() {
     _simChart.data.datasets[1].data = points.map((v, i) => i === hlIdx ? { x: i, y: v, r: 7 } : null);
     _simChart.update();
   }
+};
+
+window.toggleSimulator = function() {
+  const body  = document.getElementById('sim-body');
+  const icon  = document.getElementById('sim-toggle-icon');
+  const label = document.getElementById('sim-toggle-label');
+  const cards = document.getElementById('dashboard-grid-wrap');
+  if (!body) return;
+  const isOpen = body.style.display !== 'none';
+  const area = document.getElementById('member-status-area');
+  body.style.display = isOpen ? 'none' : '';
+  if (area) area.style.marginTop = isOpen ? 'calc(33vh)' : '2rem';
+  if (icon)  icon.className    = isOpen ? 'ph ph-eye' : 'ph ph-eye-slash';
+  if (label) label.textContent = isOpen ? 'הצג גרף' : 'סגור גרף';
+  if (cards) {
+    cards.querySelectorAll('.card-secondary').forEach(c => {
+      c.style.padding = isOpen ? '3rem 1.5rem' : '2rem 1.5rem';
+    });
+  }
+  localStorage.setItem('sim_closed', isOpen ? '1' : '0');
 };
 
 /* ── MEMBER SAVINGS CHART ── */
