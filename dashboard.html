@@ -48,18 +48,21 @@
     .dash-section.active { display: block; }
 
     /* ── HOME GRID ── */
-    .dashboard-grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem;
-    }
-    .dashboard-card {
-      background: var(--surface-dark); border: 1px solid var(--border);
-      border-radius: 14px; padding: 1.75rem 1.25rem;
-      display: flex; flex-direction: column; align-items: center; gap: 0.75rem;
-      text-align: center; transition: all 0.2s ease; cursor: pointer;
-    }
+    /* ── DASHBOARD GRID (legacy kept for other sections) ── */
+    .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; }
+    .dashboard-card { background: var(--surface-dark); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem 1.25rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-align: center; transition: all 0.2s ease; cursor: pointer; }
     .dashboard-card:hover { border-color: var(--electric-blue); box-shadow: 0 4px 20px rgba(26,95,170,0.12); transform: translateY(-2px); }
     .card-icon { font-size: 2rem; color: var(--electric-blue); }
     .dashboard-card h3 { font-size: 0.95rem; font-weight: 700; color: var(--industrial-silver); }
+
+    /* ── NEW HIERARCHY CARDS ── */
+    #main-cta-btn:hover { background:#1a3560!important; box-shadow:0 6px 24px rgba(26,95,170,0.4)!important; transform:translateY(-2px); }
+    .card-primary { padding:1.8rem; border-radius:16px; background:#fff; border:1.5px solid #dde4f0; transition:all 0.25s; text-decoration:none; display:flex; align-items:center; gap:1.2rem; box-shadow:0 2px 12px rgba(26,95,170,0.07); }
+    .card-primary:hover { transform:scale(1.02); box-shadow:0 8px 32px rgba(26,95,170,0.16); border-color:#1a5faa; }
+    .card-secondary { padding:2rem 1.5rem; border-radius:14px; background:#fff; border:1.5px solid #dde4f0; transition:all 0.22s; text-decoration:none; display:flex; flex-direction:column; align-items:center; gap:0.75rem; box-shadow:0 2px 8px rgba(26,95,170,0.05); }
+    .card-secondary:hover { transform:scale(1.025); box-shadow:0 6px 24px rgba(26,95,170,0.12); border-color:#1a5faa; }
+    .card-tertiary { padding:0.9rem 1.2rem; border-radius:12px; background:#f8faff; border:1px solid #e8edf5; transition:all 0.2s; text-decoration:none; display:flex; align-items:center; gap:0.7rem; font-size:0.88rem; }
+    .card-tertiary:hover { transform:scale(1.02); box-shadow:0 4px 16px rgba(26,95,170,0.1); border-color:#1a5faa; }
 
     /* ── ORDER CARDS ── */
     .orders-loading { display: flex; align-items: center; gap: 0.75rem; color: var(--silver-dark); padding: 2rem 0; }
@@ -461,28 +464,16 @@
 
       <!-- ── HOME ── -->
       <section class="dash-section active" id="sec-home">
-        <div class="dashboard-title">ברוך הבא לאזור האישי</div>
-        <div class="dashboard-subtitle">בחר את הפעולה שברצונך לבצע.</div>
-        <div id="member-top-cards" style="margin-bottom:1.2rem;"></div>
-        <div class="dashboard-grid">
-          <a href="procurement.html" class="dashboard-card">
-            <div class="card-icon"><i class="ph ph-shopping-cart"></i></div>
-            <h3>מרכז הרכש</h3>
-          </a>
-          <a href="kits.html" class="dashboard-card">
-            <div class="card-icon"><i class="ph ph-toolbox"></i></div>
-            <h3>קיטים למתקינים</h3>
-          </a>
-          <a href="tenders.html" class="dashboard-card">
-            <div class="card-icon"><i class="ph ph-briefcase"></i></div>
-            <h3>מכרזים והזדמנויות</h3>
-          </a>
-          <a href="academy.html" class="dashboard-card">
-            <div class="card-icon"><i class="ph ph-graduation-cap"></i></div>
-            <h3>מכללת ALUM-IL</h3>
-          </a>
+        <!-- Layer 1: KPI -->
+        <div id="member-top-cards" style="margin-bottom:2.5rem;"></div>
+
+        <!-- Layer 2: CTA + Actions -->
+        <div style="margin-bottom:3rem;">
+          <div id="dashboard-grid-wrap"></div>
         </div>
-        <div id="member-status-area" style="margin-top:1.5rem;margin-bottom:1.5rem;"></div>
+
+        <!-- Layer 3: Analytics -->
+        <div id="member-status-area" style="margin-bottom:1.5rem;"></div>
       </section>
 
       <!-- ── SAVED QUOTES ── -->
@@ -675,23 +666,62 @@ function renderMemberStatus(profile, userId) {
           </div>
         </div>`;
     }
-    // Savings chart — below the grid
+    // Wealth Simulator
     area.innerHTML = `
-      <div style="background:#fff;border:1.5px solid #dde4f0;border-radius:16px;padding:1.4rem;">
-        <div style="font-size:0.95rem;font-weight:800;color:#1a2640;margin-bottom:1rem;display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
-          <i class="ph ph-trend-up" style="color:#d4af37;font-size:1.1rem;"></i>
-          <span>צבירת קופת מניות</span>
-          <span style="margin-right:auto;font-size:0.65rem;background:#1a2640;color:#d4af37;border-radius:20px;padding:3px 10px;font-weight:700;letter-spacing:0.3px;">0.5% מכל רכישה שנמסרה</span>
+      <div style="background:#fff;border:1.5px solid #dde4f0;border-radius:16px;padding:1.6rem 2rem;" dir="rtl">
+        <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.3rem;">
+          <i class="ph ph-chart-line-up" style="color:#1a5faa;font-size:1.3rem;"></i>
+          <span style="font-size:1.05rem;font-weight:800;color:#1a2640;">כך ההכנסה שלך תגדל לאורך זמן עם ALUM-IL</span>
+          <span style="margin-right:auto;font-size:0.65rem;background:rgba(26,95,170,0.08);color:#1a5faa;border-radius:20px;padding:3px 10px;font-weight:700;border:1px solid rgba(26,95,170,0.15);">0.5% מכל רכישה | S&P 500 ~10%</span>
         </div>
-        <div style="height:270px;position:relative;">
-          <canvas id="alum-savings-chart"></canvas>
+        <div style="font-size:0.75rem;color:#9aa3b5;margin-bottom:1.3rem;">הזז את הסליידרים וראה כיצד הצבירה שלך גדלה עם הזמן</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;">
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;color:#4a5a78;display:block;margin-bottom:0.35rem;">
+              רכש חודשי ממוצע: <span id="sim-purchase-val" style="color:#1a5faa;">₪50,000</span>
+            </label>
+            <input type="range" id="sim-purchase" min="0" max="200000" step="5000" value="50000"
+              style="width:100%;accent-color:#1a5faa;height:5px;"
+              oninput="updateSimulator()">
+            <div style="display:flex;justify-content:space-between;font-size:0.63rem;color:#9aa3b5;margin-top:0.2rem;">
+              <span>₪0</span><span>₪200K</span>
+            </div>
+          </div>
+          <div>
+            <label style="font-size:0.72rem;font-weight:700;color:#4a5a78;display:block;margin-bottom:0.35rem;">
+              ציר זמן: <span id="sim-years-val" style="color:#1a5faa;">10 שנים</span>
+            </label>
+            <input type="range" id="sim-years" min="0" max="3" step="1" value="2"
+              style="width:100%;accent-color:#1a5faa;height:5px;"
+              oninput="updateSimulator()">
+            <div style="display:flex;justify-content:space-between;font-size:0.63rem;color:#9aa3b5;margin-top:0.2rem;">
+              <span>1 שנה</span><span>5</span><span>10</span><span>20 שנה</span>
+            </div>
+          </div>
         </div>
-        <div style="margin-top:1rem;display:flex;gap:1.5rem;flex-wrap:wrap;font-size:0.72rem;color:#6b7a99;padding-top:0.75rem;border-top:1px solid #eaf0f9;">
-          <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;background:#1a5faa;border-radius:3px;"></span>רכישות — רבעון זכאי (מעל ₪45K)</span>
-          <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:12px;height:12px;background:#ef4444;border-radius:3px;"></span>רכישות — רבעון לא-זכאי</span>
-          <span style="display:flex;align-items:center;gap:5px;"><span style="display:inline-block;width:20px;height:3px;background:#b8920f;border-radius:2px;"></span>צבירה מצטברת</span>
+
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:1.2rem;align-items:center;">
+          <div style="background:linear-gradient(135deg,rgba(26,95,170,0.05),rgba(212,175,55,0.07));border:1.5px solid #dde4f0;border-radius:12px;padding:1rem 1.1rem;text-align:center;">
+            <i class="ph ph-coin" style="font-size:1.6rem;color:#c47c00;display:block;margin-bottom:0.3rem;"></i>
+            <div style="font-size:0.65rem;font-weight:700;color:#6b7a99;letter-spacing:0.5px;margin-bottom:0.25rem;">שווי צפוי</div>
+            <div id="sim-result" style="font-size:1.8rem;font-weight:900;color:#c47c00;line-height:1.1;margin-bottom:0.4rem;">₪0</div>
+            <div id="sim-context" style="font-size:0.68rem;color:#6b7a99;font-weight:600;min-height:1.2rem;"></div>
+          </div>
+          <div style="position:relative;height:140px;">
+            <canvas id="sim-chart"></canvas>
+            <div id="sim-highlight" style="position:absolute;top:8px;left:8px;background:#c47c00;color:#fff;font-size:0.68rem;font-weight:800;padding:3px 9px;border-radius:20px;white-space:nowrap;"></div>
+          </div>
         </div>
-      </div>`;
+
+        <div style="margin-top:0.8rem;padding-top:0.6rem;border-top:1px solid #eaf0f9;font-size:0.62rem;color:#b0b8cc;line-height:1.5;">
+          * החישוב המוצג הינו סימולציה בלבד ומתבסס על נתוני עבר של מדד S&P 500 (כ-10% שנתי). ארגון ALUM-IL אינו מבטיח תשואות עתידיות ואינו נושא באחריות לביצועי הקופה. הזכאות להפקדה כפופה לעמידה ביעד רכש מינימלי של ₪45,000 ברבעון.
+        </div>
+      </div>
+      <canvas id="alum-savings-chart" style="display:none;position:absolute;"></canvas>`;
+
+    // Initialize simulator + load top summary cards
+    initSimulator();
     loadAndRenderSavingsChart(userId);
   } else if (hasRequested) {
     const st = profile?.member_status || 'new_application';
@@ -784,6 +814,92 @@ function renderMemberStatus(profile, userId) {
       </div>`;
   }
 }
+
+/* ── WEALTH SIMULATOR ── */
+let _simChart = null;
+const SIM_YEARS_MAP = [1, 5, 10, 20];
+const SIM_COMPARISONS = [
+  { limit: 10000,    text: 'כרטיסי טיסה לאירופה' },
+  { limit: 50000,    text: 'חופשה משפחתית יוקרתית' },
+  { limit: 150000,   text: 'מקדמה לרכב חדש' },
+  { limit: 500000,   text: 'מקדמה לדירה' },
+  { limit: Infinity, text: 'עצמאות פיננסית' },
+];
+
+function calcSimulator(monthlyPurchase, years) {
+  const quarterlyDeposit = monthlyPurchase * 3 * 0.005;
+  const r = 0.10, n = 4;
+  const totalQuarters = n * years;
+  const points = [];
+  for (let q = 1; q <= totalQuarters; q++) {
+    const fv = quarterlyDeposit * ((Math.pow(1 + r/n, q) - 1) / (r/n));
+    points.push(fv);
+  }
+  return points;
+}
+
+function initSimulator() {
+  const ctx = document.getElementById('sim-chart');
+  if (!ctx) return;
+  const grad = ctx.getContext('2d').createLinearGradient(0, 0, 0, 240);
+  grad.addColorStop(0, 'rgba(26,95,170,0.18)');
+  grad.addColorStop(1, 'rgba(26,95,170,0)');
+  _simChart = new Chart(ctx, {
+    type: 'line',
+    data: { labels: [], datasets: [
+      { data: [], borderColor: '#1a5faa', backgroundColor: grad, borderWidth: 2.5, tension: 0.4, fill: true, pointRadius: 0 },
+      { data: [], type: 'bubble', backgroundColor: '#c47c00', borderColor: '#fff', borderWidth: 2, pointRadius: 0 }
+    ]},
+    options: {
+      responsive: true, maintainAspectRatio: false, animation: { duration: 300 },
+      layout: { padding: { top: 20, right: 20, bottom: 10, left: 10 } },
+      plugins: { legend: { display: false }, tooltip: {
+        callbacks: { label: c => '₪' + Math.round(c.parsed.y).toLocaleString('he-IL') }
+      }},
+      scales: {
+        x: { grid: { display: false }, ticks: { font: { size: 10 }, color: '#9aa3b5', maxTicksLimit: 6 } },
+        y: { grid: { color: '#f0f4fb' }, ticks: { font: { size: 10 }, color: '#9aa3b5',
+          callback: v => '₪' + (v >= 1000 ? (v/1000).toFixed(0)+'K' : v) } }
+      }
+    }
+  });
+  updateSimulator();
+}
+
+window.updateSimulator = function() {
+  const monthly = parseInt(document.getElementById('sim-purchase').value) || 0;
+  const yearsIdx = parseInt(document.getElementById('sim-years').value);
+  const years = SIM_YEARS_MAP[yearsIdx];
+
+  document.getElementById('sim-purchase-val').textContent = '₪' + monthly.toLocaleString('he-IL');
+  document.getElementById('sim-years-val').textContent = years + ' שנים';
+
+  const points = calcSimulator(monthly, years);
+  const finalAmt = points[points.length - 1] || 0;
+
+  document.getElementById('sim-result').textContent = '₪' + Math.round(finalAmt).toLocaleString('he-IL');
+  const comp = SIM_COMPARISONS.find(c => finalAmt < c.limit);
+  document.getElementById('sim-context').textContent = comp ? '≈ ' + comp.text : '';
+
+  if (_simChart) {
+    const labels = points.map((_, i) => {
+      const q = i + 1;
+      return (q % 4 === 0) ? 'שנה ' + (q/4) : '';
+    });
+    // Highlight point — last data point
+    const hlIdx = points.length - 1;
+    const hlVal = points[hlIdx] || 0;
+    const hlLabel = document.getElementById('sim-highlight');
+    if (hlLabel) hlLabel.textContent = hlIdx >= 0
+      ? `אחרי ${years} שנים: ₪${Math.round(hlVal).toLocaleString('he-IL')}`
+      : '';
+
+    _simChart.data.labels = labels;
+    _simChart.data.datasets[0].data = points;
+    _simChart.data.datasets[1].data = points.map((v, i) => i === hlIdx ? { x: i, y: v, r: 7 } : null);
+    _simChart.update();
+  }
+};
 
 /* ── MEMBER SAVINGS CHART ── */
 async function loadAndRenderSavingsChart(userId) {
@@ -881,6 +997,11 @@ async function loadAndRenderSavingsChart(userId) {
           <div style="height:100%;width:${progressPct}%;background:${isEligible ? '#16a34a' : '#1a5faa'};border-radius:2px;transition:width 0.7s ease;"></div>
         </div>
         <div style="font-size:0.71rem;color:#6b7a99;">${progressPct}% מיעד ₪45,000 לפני מע"מ</div>
+        <div style="font-size:0.67rem;color:#9aa3b5;margin-top:0.15rem;display:flex;gap:0.6rem;">
+          <span>פתיחת רבעון: ${(() => { const q = Math.ceil((today.getMonth()+1)/3); const m = (q-1)*3; return new Date(today.getFullYear(), m, 1).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'}); })()}</span>
+          <span>•</span>
+          <span>סגירת רבעון: ${(() => { const q = Math.ceil((today.getMonth()+1)/3); const m = q*3; return new Date(today.getFullYear(), m, 0).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'}); })()}</span>
+        </div>
       </div>
       <div style="width:1px;background:#dde4f0;flex-shrink:0;align-self:stretch;"></div>
       <div style="padding:0.9rem 1.5rem;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:150px;gap:0.18rem;background:${eligibleBg};">
@@ -890,6 +1011,11 @@ async function loadAndRenderSavingsChart(userId) {
           <span style="font-size:0.95rem;font-weight:800;color:${eligibleColor};">${isEligible ? 'זכאי להפקדה' : 'טרם הגעת ליעד'}</span>
         </div>
         <div style="font-size:0.71rem;color:${eligibleColor};opacity:0.85;">${isEligible ? 'עמדת ביעד הרבעוני ✓' : `חסר ₪${(45000 - currentQTotal).toLocaleString('he-IL')}`}</div>
+        ${!isEligible ? `<span onclick="document.getElementById('quarter-info-popup').style.display='flex'"
+          title="הצבירה תלויה בעמידה ביעד ₪45,000 ברבעון. לחץ לפרטים."
+          style="margin-top:0.4rem;display:inline-flex;align-items:center;gap:0.2rem;font-size:0.68rem;color:#9aa3b5;cursor:pointer;">
+          ❓ מה קורה עם הצבירה?
+        </span>` : ''}
       </div>`;
   }
 
@@ -1211,7 +1337,32 @@ window.showSection = function(id) {
 };
 
 /* ── LOAD BOTH TABLES ── */
+function renderDashboardGrid() {
+  const wrap = document.getElementById('dashboard-grid-wrap');
+  if (!wrap) return;
+  wrap.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+      <a href="procurement.html" class="card-secondary">
+        <i class="ph ph-shopping-cart" style="font-size:2.2rem;color:#1a5faa;"></i>
+        <div style="font-size:0.95rem;font-weight:800;color:#1a2640;text-align:center;">מרכז הרכש</div>
+      </a>
+      <a href="kits.html" class="card-secondary">
+        <i class="ph ph-toolbox" style="font-size:2.2rem;color:#1a5faa;"></i>
+        <div style="font-size:0.95rem;font-weight:800;color:#1a2640;text-align:center;">קיטים למתקינים</div>
+      </a>
+      <a href="tenders.html" class="card-secondary">
+        <i class="ph ph-briefcase" style="font-size:2.2rem;color:#1a5faa;"></i>
+        <div style="font-size:0.95rem;font-weight:800;color:#1a2640;text-align:center;">מכרזים והזדמנויות</div>
+      </a>
+      <a href="academy.html" class="card-secondary">
+        <i class="ph ph-graduation-cap" style="font-size:2.2rem;color:#1a5faa;"></i>
+        <div style="font-size:0.95rem;font-weight:800;color:#1a2640;text-align:center;">מכללת ALUM-IL</div>
+      </a>
+    </div>`;
+}
+
 async function loadAll() {
+  renderDashboardGrid();
   console.log('[DASHBOARD] Loading quotes + orders for user:', currentUserId);
 
   const [quotesRes, ordersRes] = await Promise.all([
@@ -1937,6 +2088,49 @@ init();
       </button>
     </div>
 
+  </div>
+</div>
+
+<!-- Quarter info popup -->
+<div id="quarter-info-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:9999;align-items:center;justify-content:center;"
+  onclick="if(event.target===this)this.style.display='none'">
+  <div style="background:#fff;border-radius:20px;max-width:460px;width:90%;direction:rtl;position:relative;box-shadow:0 16px 60px rgba(0,0,0,0.2);overflow:hidden;">
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#1a3560,#1a5faa);padding:1.4rem 1.8rem 1.2rem;text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.4rem;">💛</div>
+      <div style="font-size:1.05rem;font-weight:800;color:#fff;line-height:1.4;">חבר יקר, הכסף שלך עושה טוב!</div>
+    </div>
+    <!-- Body -->
+    <div style="padding:1.4rem 1.8rem;">
+      <p style="font-size:0.82rem;color:#4a5a78;line-height:1.8;margin:0 0 1rem;">
+        ב-ALUM-IL, אנחנו מאמינים שאף שקל לא הולך לאיבוד. מכיוון שברבעון הנוכחי לא הגעת לרף המינימום לצבירת מניות אישית (45,000 ₪), הנגזרת של ה-0.5% מהרכישות שלך מועברת במלואה למיזם <strong>"אלום לקהילה"</strong>.
+      </p>
+      <div style="font-size:0.82rem;color:#1a2640;font-weight:700;margin-bottom:0.6rem;">התרומה שלך עוזרת לנו:</div>
+      <div style="display:flex;flex-direction:column;gap:0.55rem;">
+        <div style="display:flex;align-items:flex-start;gap:0.7rem;background:#f8faff;border-radius:10px;padding:0.6rem 0.8rem;">
+          <span style="font-size:1.1rem;">🏠</span>
+          <span style="font-size:0.8rem;color:#4a5a78;line-height:1.5;">לשפץ ולהנגיש בתים לקשישים ולנזקקים.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.7rem;background:#f8faff;border-radius:10px;padding:0.6rem 0.8rem;">
+          <span style="font-size:1.1rem;">🎓</span>
+          <span style="font-size:0.8rem;color:#4a5a78;line-height:1.5;">להכשיר בני נוער בסיכון למקצועות האלומיניום.</span>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:0.7rem;background:#f8faff;border-radius:10px;padding:0.6rem 0.8rem;">
+          <span style="font-size:1.1rem;">⚒️</span>
+          <span style="font-size:0.8rem;color:#4a5a78;line-height:1.5;">לתמוך בפרויקטים חברתיים של חברי הארגון ברחבי הארץ.</span>
+        </div>
+      </div>
+      <p style="font-size:0.8rem;color:#6b7a99;line-height:1.7;margin:1rem 0 0;text-align:center;font-weight:600;">
+        תודה שאתה חלק ממשפחה שדואגת גם לאחרים! 🤝
+      </p>
+    </div>
+    <!-- Footer -->
+    <div style="padding:0 1.8rem 1.4rem;">
+      <button onclick="document.getElementById('quarter-info-popup').style.display='none'"
+        style="width:100%;background:linear-gradient(135deg,#1a5faa,#1a3560);color:#fff;border:none;border-radius:10px;padding:0.7rem;font-size:0.85rem;font-weight:800;cursor:pointer;">
+        הבנתי, תודה! &nbsp;(בחזרה לדאשבורד)
+      </button>
+    </div>
   </div>
 </div>
 
