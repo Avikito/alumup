@@ -237,9 +237,22 @@ const supabase = createClient(
 );
 
 /* ── Sidebar ── */
-const sidebarScript = document.createElement('script');
-sidebarScript.src = 'js/admin-sidebar.js';
-document.body.appendChild(sidebarScript);
+(function() {
+  const items = [
+    { id: 'overview',  icon: 'ph-chart-bar',              label: 'סקירה כללית',    href: 'admin-overview.html' },
+    { id: 'users',     icon: 'ph-users',                   label: 'אישור משתמשים', href: 'admin-users.html' },
+    { id: 'members',   icon: 'ph-medal',                   label: 'חבר אלום',       href: 'admin-members.html' },
+    { id: 'crm',       icon: 'ph-address-book',            label: 'קהילה ו-CRM',   href: 'approved-users.html' },
+    { id: 'orders',    icon: 'ph-list-bullets',            label: 'הזמנות',         href: 'admin.html' },
+    { id: 'quotes',    icon: 'ph-file-text',               label: 'הצעות מחיר',     href: 'admin-quotes.html' },
+    { id: 'financial', icon: 'ph-currency-circle-dollar',  label: 'ניהול פיננסי',  href: 'admin-financial.html' },
+    { id: 'settings',  icon: 'ph-gear-six',                label: 'תמחור גלובלי',  href: 'admin-settings.html' },
+  ];
+  const el = document.getElementById('admin-sidebar-placeholder');
+  if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
+    items.map(i => `<li><a href="${i.href}" class="${i.id==='crm'?'active':''}"><i class="ph ${i.icon}"></i> ${i.label}</a></li>`).join('')
+  }</ul>`;
+})();
 
 /* ── Helpers ── */
 const params = new URLSearchParams(location.search);

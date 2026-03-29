@@ -411,6 +411,137 @@
     .section-coming-soon i { font-size: 3.5rem; opacity: 0.25; margin-bottom: 1rem; display: block; }
     .section-coming-soon h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; color: var(--industrial-silver); }
     .section-coming-soon p { font-size: 0.88rem; opacity: 0.7; }
+
+    /* ── SETTINGS SECTION ── */
+    .settings-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem;
+    }
+    .settings-card {
+      background: var(--surface-dark);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+    .scard-header {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 1.1rem 1.4rem;
+      border-bottom: 1px solid var(--border);
+      font-size: 1rem; font-weight: 800;
+      color: var(--industrial-silver);
+    }
+    .scard-header i { font-size: 1.3rem; color: var(--electric-blue); }
+    .scard-body { padding: 1.25rem 1.4rem; flex: 1; }
+    .scard-footer {
+      padding: 1rem 1.4rem;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+    }
+
+    /* Identity fields */
+    .sfield-row {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 0.55rem 0;
+      border-bottom: 1px solid var(--border);
+      gap: 1rem;
+    }
+    .sfield-row:last-child { border-bottom: none; }
+    .sfield-label { font-size: 0.8rem; color: var(--silver-dark); font-weight: 600; flex-shrink: 0; }
+    .sfield-value { font-size: 0.88rem; color: var(--industrial-silver); font-weight: 700; text-align: left; direction: ltr; }
+
+    /* Form elements */
+    .sform-group { margin-bottom: 1rem; }
+    .sform-group:last-child { margin-bottom: 0; }
+    .sform-label { display: block; font-size: 0.78rem; color: var(--silver-dark); font-weight: 600; margin-bottom: 0.35rem; }
+    .sform-input {
+      width: 100%; box-sizing: border-box;
+      padding: 0.55rem 0.85rem; border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--surface-elevated, #f7f9fd);
+      color: var(--industrial-silver);
+      font-size: 0.9rem; font-family: 'Heebo', sans-serif;
+      transition: border-color 0.18s;
+    }
+    .sform-input:focus { outline: none; border-color: var(--electric-blue); }
+    .sform-file {
+      display: block; width: 100%; box-sizing: border-box;
+      font-size: 0.85rem; color: var(--silver-dark);
+      cursor: pointer; margin-top: 0.25rem;
+    }
+
+    /* Password strength */
+    .pw-strength-bar {
+      height: 4px; background: var(--border); border-radius: 4px;
+      margin-top: 0.5rem; overflow: hidden;
+    }
+    .pw-strength-fill {
+      height: 100%; width: 0%; border-radius: 4px;
+      transition: width 0.3s, background 0.3s;
+    }
+    .pw-strength-label { font-size: 0.72rem; margin-top: 0.3rem; font-weight: 700; }
+
+    /* Logo preview */
+    .logo-preview-wrap {
+      width: 100%; height: 120px;
+      border: 1.5px dashed var(--border); border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-elevated, #f7f9fd);
+      overflow: hidden;
+    }
+    .logo-preview-wrap img { max-width: 100%; max-height: 100%; object-fit: contain; }
+    .logo-preview-placeholder {
+      display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+      color: var(--silver-dark); font-size: 0.82rem;
+    }
+    .logo-preview-placeholder i { font-size: 2.5rem; opacity: 0.3; }
+
+    /* Certs */
+    .cert-block-title {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.9rem; font-weight: 700;
+      color: var(--industrial-silver); margin-bottom: 0.75rem;
+    }
+    .cert-block-title i { color: var(--electric-blue); }
+    .cert-status-badge {
+      font-size: 0.7rem; padding: 0.15rem 0.55rem; border-radius: 20px;
+      font-weight: 700; margin-right: auto;
+    }
+    .cert-badge-ok    { background: rgba(22,163,74,0.1); color: #16a34a; border: 1px solid rgba(22,163,74,0.25); }
+    .cert-badge-soon  { background: rgba(234,179,8,0.1);  color: #b45309; border: 1px solid rgba(234,179,8,0.3); }
+    .cert-badge-exp   { background: rgba(220,38,38,0.1);  color: #dc2626; border: 1px solid rgba(220,38,38,0.25); }
+    .cert-badge-none  { background: rgba(100,116,139,0.1); color: #64748b; border: 1px solid rgba(100,116,139,0.2); }
+    .cert-current-link { font-size: 0.78rem; margin-top: 0.35rem; }
+    .cert-current-link a { color: var(--electric-blue); text-decoration: none; }
+    .cert-current-link a:hover { text-decoration: underline; }
+
+    /* Action buttons */
+    .btn-scard-action {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.5rem 1rem; border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: transparent; color: var(--electric-blue);
+      font-size: 0.85rem; font-weight: 600; cursor: pointer;
+      font-family: 'Heebo', sans-serif; transition: all 0.18s;
+    }
+    .btn-scard-action:hover { background: var(--blue-dim); border-color: var(--electric-blue); }
+    .btn-scard-save {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      padding: 0.5rem 1.25rem; border-radius: 8px;
+      border: none; background: var(--electric-blue); color: #fff;
+      font-size: 0.88rem; font-weight: 700; cursor: pointer;
+      font-family: 'Heebo', sans-serif; transition: background 0.18s;
+    }
+    .btn-scard-save:hover { background: #1a3560; }
+    .btn-scard-save:disabled { opacity: 0.6; cursor: default; }
+    .scard-msg { font-size: 0.82rem; font-weight: 600; }
+    .scard-msg.ok  { color: #16a34a; }
+    .scard-msg.err { color: #dc2626; }
+
+    @media (max-width: 640px) {
+      .settings-grid { grid-template-columns: 1fr; }
+    }
   </style>
 </head>
 <body>
@@ -507,14 +638,155 @@
         </div>
       </section>
 
-      <!-- ── SETTINGS (placeholder) ── -->
+      <!-- ── SETTINGS ── -->
       <section class="dash-section" id="sec-settings">
         <div class="dashboard-title">הגדרות פרופיל</div>
-        <div class="section-coming-soon">
-          <i class="ph ph-gear"></i>
-          <h3>בקרוב</h3>
-          <p>עדכון פרטי העסק, לוגו ומידע ליצירת קשר יתאפשר כאן בקרוב.</p>
-        </div>
+        <div class="dashboard-subtitle">עדכון פרטי העסק, אבטחה, מיתוג והסמכות</div>
+
+        <div class="settings-grid">
+
+          <!-- Card 1: פרטי זיהוי -->
+          <div class="settings-card" id="scard-identity">
+            <div class="scard-header">
+              <i class="ph ph-identification-badge"></i>
+              <span>פרטי זיהוי</span>
+            </div>
+            <div class="scard-body">
+              <div class="sfield-row">
+                <label class="sfield-label">שם העסק</label>
+                <div class="sfield-value" id="sf-business-name">—</div>
+              </div>
+              <div class="sfield-row">
+                <label class="sfield-label">ח.פ / ע.מ</label>
+                <div class="sfield-value" id="sf-business-id">—</div>
+              </div>
+              <div class="sfield-row">
+                <label class="sfield-label">כתובת</label>
+                <div class="sfield-value" id="sf-business-address">—</div>
+              </div>
+              <div class="sfield-row">
+                <label class="sfield-label">טלפון</label>
+                <div class="sfield-value" id="sf-phone">—</div>
+              </div>
+              <div class="sfield-row">
+                <label class="sfield-label">אימייל</label>
+                <div class="sfield-value" id="sf-email">—</div>
+              </div>
+            </div>
+            <div class="scard-footer">
+              <button class="btn-scard-action" onclick="openChangeRequest()">
+                <i class="ph ph-envelope"></i> בקשת שינוי פרטים
+              </button>
+            </div>
+          </div>
+
+          <!-- Card 2: אבטחה -->
+          <div class="settings-card" id="scard-security">
+            <div class="scard-header">
+              <i class="ph ph-lock-key"></i>
+              <span>אבטחה</span>
+            </div>
+            <div class="scard-body">
+              <div class="sform-group">
+                <label class="sform-label">סיסמה נוכחית</label>
+                <input type="password" id="pw-current" class="sform-input" placeholder="הזן סיסמה נוכחית">
+              </div>
+              <div class="sform-group">
+                <label class="sform-label">סיסמה חדשה</label>
+                <input type="password" id="pw-new" class="sform-input" placeholder="לפחות 8 תווים" oninput="updatePwStrength(this.value)">
+                <div class="pw-strength-bar"><div class="pw-strength-fill" id="pw-strength-fill"></div></div>
+                <div class="pw-strength-label" id="pw-strength-label"></div>
+              </div>
+              <div class="sform-group">
+                <label class="sform-label">אימות סיסמה חדשה</label>
+                <input type="password" id="pw-confirm" class="sform-input" placeholder="חזור על הסיסמה החדשה">
+              </div>
+            </div>
+            <div class="scard-footer">
+              <button class="btn-scard-save" id="btn-save-pw" onclick="savePassword()">
+                <i class="ph ph-floppy-disk"></i> שמור סיסמה
+              </button>
+              <div class="scard-msg" id="msg-pw"></div>
+            </div>
+          </div>
+
+          <!-- Card 3: מיתוג -->
+          <div class="settings-card" id="scard-branding">
+            <div class="scard-header">
+              <i class="ph ph-image"></i>
+              <span>מיתוג</span>
+            </div>
+            <div class="scard-body">
+              <div class="logo-preview-wrap">
+                <img id="logo-preview-img" src="" alt="לוגו" style="display:none;">
+                <div class="logo-preview-placeholder" id="logo-placeholder">
+                  <i class="ph ph-buildings"></i>
+                  <span>אין לוגו</span>
+                </div>
+              </div>
+              <div class="sform-group" style="margin-top:1rem;">
+                <label class="sform-label">העלה לוגו (PNG / JPG, עד 2MB)</label>
+                <input type="file" id="logo-file-input" accept="image/png,image/jpeg,image/webp" class="sform-file" onchange="previewLogo(event)">
+              </div>
+            </div>
+            <div class="scard-footer">
+              <button class="btn-scard-save" id="btn-save-logo" onclick="saveLogo()">
+                <i class="ph ph-cloud-arrow-up"></i> שמור לוגו
+              </button>
+              <div class="scard-msg" id="msg-logo"></div>
+            </div>
+          </div>
+
+          <!-- Card 4: הסמכות ובטיחות -->
+          <div class="settings-card" id="scard-certs">
+            <div class="scard-header">
+              <i class="ph ph-certificate"></i>
+              <span>הסמכות ובטיחות</span>
+            </div>
+            <div class="scard-body">
+              <!-- תעודת גובה -->
+              <div class="cert-block">
+                <div class="cert-block-title">
+                  <i class="ph ph-ladder"></i> תעודת עבודה בגובה
+                  <span class="cert-status-badge" id="badge-height"></span>
+                </div>
+                <div class="sform-group">
+                  <label class="sform-label">העלה קובץ (PDF / תמונה)</label>
+                  <input type="file" id="height-cert-input" accept="image/*,application/pdf" class="sform-file">
+                  <div class="cert-current-link" id="height-cert-link"></div>
+                </div>
+                <div class="sform-group">
+                  <label class="sform-label">תאריך תפוגה</label>
+                  <input type="date" id="height-cert-expiry" class="sform-input">
+                </div>
+              </div>
+
+              <!-- ביטוח -->
+              <div class="cert-block" style="margin-top:1.25rem;">
+                <div class="cert-block-title">
+                  <i class="ph ph-shield-check"></i> ביטוח צד ג׳
+                  <span class="cert-status-badge" id="badge-insurance"></span>
+                </div>
+                <div class="sform-group">
+                  <label class="sform-label">העלה קובץ (PDF / תמונה)</label>
+                  <input type="file" id="insurance-input" accept="image/*,application/pdf" class="sform-file">
+                  <div class="cert-current-link" id="insurance-link"></div>
+                </div>
+                <div class="sform-group">
+                  <label class="sform-label">תאריך תפוגה</label>
+                  <input type="date" id="insurance-expiry" class="sform-input">
+                </div>
+              </div>
+            </div>
+            <div class="scard-footer">
+              <button class="btn-scard-save" id="btn-save-certs" onclick="saveCerts()">
+                <i class="ph ph-cloud-arrow-up"></i> שמור הסמכות
+              </button>
+              <div class="scard-msg" id="msg-certs"></div>
+            </div>
+          </div>
+
+        </div><!-- /settings-grid -->
       </section>
 
     </main>
@@ -1374,6 +1646,7 @@ window.showSection = function(id) {
   const navEl = document.getElementById('nav-' + id);
   if (navEl) navEl.classList.add('active');
   if (['saved-quotes', 'in-progress', 'history'].includes(id)) loadAll();
+  if (id === 'settings') initSettingsSection();
 };
 
 /* ── LOAD BOTH TABLES ── */
@@ -1883,6 +2156,244 @@ window.approveOrder = async function(id) {
 window.handleLogout = async function() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
+};
+
+/* ──────────────────────────────────────────
+   PROFILE SETTINGS
+   ────────────────────────────────────────── */
+let _settingsLoaded = false;
+let _settingsProfile = {};
+
+async function initSettingsSection() {
+  if (_settingsLoaded) return;
+  _settingsLoaded = true;
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return;
+
+  const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+  _settingsProfile = p || {};
+
+  // Identity card
+  document.getElementById('sf-business-name').textContent    = p?.business_name    || '—';
+  document.getElementById('sf-business-id').textContent      = p?.business_id      || '—';
+  document.getElementById('sf-business-address').textContent = p?.business_address || '—';
+  document.getElementById('sf-phone').textContent            = p?.phone            || '—';
+  document.getElementById('sf-email').textContent            = user.email || '—';
+
+  // Logo
+  if (p?.logo_url) {
+    const { data: { publicUrl } } = supabase.storage.from('member-docs').getPublicUrl(p.logo_url);
+    const img = document.getElementById('logo-preview-img');
+    img.src = publicUrl;
+    img.style.display = 'block';
+    document.getElementById('logo-placeholder').style.display = 'none';
+  }
+
+  // Certs
+  _renderCertLink('height-cert-link', p?.height_cert_url, 'תעודת גובה');
+  _renderCertLink('insurance-link', p?.insurance_url, 'ביטוח');
+  if (p?.height_cert_expiry) document.getElementById('height-cert-expiry').value = p.height_cert_expiry;
+  if (p?.insurance_expiry)   document.getElementById('insurance-expiry').value   = p.insurance_expiry;
+
+  checkExpiryAlert('badge-height',    p?.height_cert_expiry);
+  checkExpiryAlert('badge-insurance', p?.insurance_expiry);
+}
+
+function _renderCertLink(elId, path, label) {
+  const el = document.getElementById(elId);
+  if (!el) return;
+  if (!path) { el.innerHTML = ''; return; }
+  const { data: { publicUrl } } = supabase.storage.from('member-docs').getPublicUrl(path);
+  el.innerHTML = `<a href="${publicUrl}" target="_blank"><i class="ph ph-file-arrow-down"></i> צפה ב${label} הנוכחי</a>`;
+}
+
+function checkExpiryAlert(badgeId, expiryDateStr) {
+  const el = document.getElementById(badgeId);
+  if (!el) return;
+  if (!expiryDateStr) {
+    el.className = 'cert-status-badge cert-badge-none';
+    el.textContent = 'לא הועלה';
+    return;
+  }
+  const expiry = new Date(expiryDateStr);
+  const now = new Date();
+  const daysLeft = Math.floor((expiry - now) / 86400000);
+  if (daysLeft < 0) {
+    el.className = 'cert-status-badge cert-badge-exp';
+    el.textContent = 'פג תוקף';
+  } else if (daysLeft <= 30) {
+    el.className = 'cert-status-badge cert-badge-soon';
+    el.textContent = `פג בעוד ${daysLeft} ימים`;
+  } else {
+    el.className = 'cert-status-badge cert-badge-ok';
+    el.textContent = 'בתוקף';
+  }
+}
+
+window.updatePwStrength = function(val) {
+  const fill  = document.getElementById('pw-strength-fill');
+  const label = document.getElementById('pw-strength-label');
+  let score = 0;
+  if (val.length >= 8) score++;
+  if (/[A-Z]/.test(val)) score++;
+  if (/[0-9]/.test(val)) score++;
+  if (/[^A-Za-z0-9]/.test(val)) score++;
+  const pct   = [0, 25, 50, 75, 100][score];
+  const color = ['#ccc', '#dc2626', '#ea580c', '#ca8a04', '#16a34a'][score];
+  const txt   = ['', 'חלשה', 'בינונית', 'טובה', 'חזקה'][score];
+  fill.style.width      = pct + '%';
+  fill.style.background = color;
+  label.textContent     = txt;
+  label.style.color     = color;
+};
+
+window.previewLogo = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = document.getElementById('logo-preview-img');
+    img.src = e.target.result;
+    img.style.display = 'block';
+    document.getElementById('logo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+};
+
+window.openChangeRequest = function() {
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    const subject = encodeURIComponent('בקשת שינוי פרטי עסק – ALUM-IL');
+    const body = encodeURIComponent(
+      `שלום,\n\nאני מבקש לעדכן את פרטי העסק שלי במערכת ALUM-IL.\n\nמשתמש: ${user?.email || ''}\n\nפרטים לשינוי:\n\n`
+    );
+    window.location.href = `mailto:support@alum-il.co.il?subject=${subject}&body=${body}`;
+  });
+};
+
+window.savePassword = async function() {
+  const btn = document.getElementById('btn-save-pw');
+  const msg = document.getElementById('msg-pw');
+  const current = document.getElementById('pw-current').value.trim();
+  const next    = document.getElementById('pw-new').value;
+  const confirm = document.getElementById('pw-confirm').value;
+
+  msg.className = 'scard-msg'; msg.textContent = '';
+
+  if (!current || !next || !confirm) {
+    msg.className = 'scard-msg err'; msg.textContent = 'יש למלא את כל השדות'; return;
+  }
+  if (next !== confirm) {
+    msg.className = 'scard-msg err'; msg.textContent = 'הסיסמאות אינן תואמות'; return;
+  }
+  if (next.length < 8) {
+    msg.className = 'scard-msg err'; msg.textContent = 'הסיסמה חייבת להכיל לפחות 8 תווים'; return;
+  }
+
+  btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
+
+  const { data: { user } } = await supabase.auth.getUser();
+  const { error: signInErr } = await supabase.auth.signInWithPassword({
+    email: user.email, password: current
+  });
+  if (signInErr) {
+    btn.disabled = false; btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור סיסמה';
+    msg.className = 'scard-msg err'; msg.textContent = 'הסיסמה הנוכחית שגויה'; return;
+  }
+
+  const { error } = await supabase.auth.updateUser({ password: next });
+  btn.disabled = false; btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור סיסמה';
+  if (error) {
+    msg.className = 'scard-msg err'; msg.textContent = 'שגיאה: ' + error.message;
+  } else {
+    msg.className = 'scard-msg ok'; msg.textContent = 'הסיסמה עודכנה בהצלחה';
+    document.getElementById('pw-current').value = '';
+    document.getElementById('pw-new').value = '';
+    document.getElementById('pw-confirm').value = '';
+    updatePwStrength('');
+  }
+};
+
+window.saveLogo = async function() {
+  const btn = document.getElementById('btn-save-logo');
+  const msg = document.getElementById('msg-logo');
+  const fileInput = document.getElementById('logo-file-input');
+  const file = fileInput.files[0];
+
+  msg.className = 'scard-msg'; msg.textContent = '';
+
+  if (!file) { msg.className = 'scard-msg err'; msg.textContent = 'לא נבחר קובץ'; return; }
+  if (file.size > 2 * 1024 * 1024) { msg.className = 'scard-msg err'; msg.textContent = 'הקובץ גדול מ-2MB'; return; }
+
+  btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> מעלה...';
+
+  const ext = file.name.split('.').pop();
+  const path = `${currentUserId}/logo-${Date.now()}.${ext}`;
+  const { data, error: uploadErr } = await supabase.storage.from('member-docs').upload(path, file, { upsert: true });
+  if (uploadErr) {
+    btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור לוגו';
+    msg.className = 'scard-msg err'; msg.textContent = 'שגיאת העלאה: ' + uploadErr.message; return;
+  }
+
+  const { error: updateErr } = await supabase.from('profiles').update({ logo_url: data.path }).eq('id', currentUserId);
+  btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור לוגו';
+  if (updateErr) {
+    msg.className = 'scard-msg err'; msg.textContent = 'שגיאה בשמירה: ' + updateErr.message;
+  } else {
+    msg.className = 'scard-msg ok'; msg.textContent = 'הלוגו עודכן בהצלחה';
+    _settingsProfile.logo_url = data.path;
+  }
+};
+
+window.saveCerts = async function() {
+  const btn = document.getElementById('btn-save-certs');
+  const msg = document.getElementById('msg-certs');
+
+  msg.className = 'scard-msg'; msg.textContent = '';
+  btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
+
+  const heightFile    = document.getElementById('height-cert-input').files[0];
+  const insuranceFile = document.getElementById('insurance-input').files[0];
+  const heightExpiry  = document.getElementById('height-cert-expiry').value || null;
+  const insExpiry     = document.getElementById('insurance-expiry').value || null;
+
+  const updates = {};
+  if (heightExpiry)  updates.height_cert_expiry = heightExpiry;
+  if (insExpiry)     updates.insurance_expiry   = insExpiry;
+
+  try {
+    if (heightFile) {
+      const ext = heightFile.name.split('.').pop();
+      const { data } = await supabase.storage.from('member-docs')
+        .upload(`${currentUserId}/height-cert-${Date.now()}.${ext}`, heightFile, { upsert: true });
+      if (data) { updates.height_cert_url = data.path; _renderCertLink('height-cert-link', data.path, 'תעודת גובה'); }
+    }
+    if (insuranceFile) {
+      const ext = insuranceFile.name.split('.').pop();
+      const { data } = await supabase.storage.from('member-docs')
+        .upload(`${currentUserId}/insurance-${Date.now()}.${ext}`, insuranceFile, { upsert: true });
+      if (data) { updates.insurance_url = data.path; _renderCertLink('insurance-link', data.path, 'ביטוח'); }
+    }
+  } catch(e) {
+    btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור הסמכות';
+    msg.className = 'scard-msg err'; msg.textContent = 'שגיאת העלאה'; return;
+  }
+
+  if (Object.keys(updates).length > 0) {
+    const { error } = await supabase.from('profiles').update(updates).eq('id', currentUserId);
+    if (error) {
+      btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור הסמכות';
+      msg.className = 'scard-msg err'; msg.textContent = 'שגיאה בשמירה: ' + error.message; return;
+    }
+    Object.assign(_settingsProfile, updates);
+  }
+
+  // Re-check expiry badges
+  checkExpiryAlert('badge-height',    updates.height_cert_expiry    ?? _settingsProfile.height_cert_expiry);
+  checkExpiryAlert('badge-insurance', updates.insurance_expiry      ?? _settingsProfile.insurance_expiry);
+
+  btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור הסמכות';
+  msg.className = 'scard-msg ok'; msg.textContent = 'ההסמכות עודכנו בהצלחה';
 };
 
 init();
