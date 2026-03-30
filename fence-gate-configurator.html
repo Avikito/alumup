@@ -908,7 +908,7 @@
       </div>
       <div id="windowsList"></div>
       <button class="btn-add-window" onclick="addWindow()">
-        <i class="ph ph-plus-circle"></i> הוסף מקטע גדר נוסף
+        <i class="ph ph-plus-circle"></i> הוסף פריט נוסף
       </button>
     </div>
   </div>
@@ -925,12 +925,12 @@
           <thead>
             <tr>
               <th>מיקום</th>
-              <th>סוג גדר</th>
+              <th>סוג מוצר</th>
               <th>גובה (ס"מ)</th>
-              <th>אורך (ס"מ)</th>
+              <th>רוחב/אורך (ס"מ)</th>
               <th>מ"ר</th>
               <th>צבע</th>
-              <th>שער</th>
+              <th>תת-סוג</th>
               <th>מנוע</th>
               <th>הערות</th>
               <th>מחיר</th>
@@ -981,11 +981,15 @@ const supabase = createClient(
 
 // ── PRICES ──
 let PRICES = {
-  fencePerSqm: 180,
-  gateSmall:   1200,
-  gateLarge:   2800,
-  motor:       1800,
-  measureService: 350
+  fencePerSqm:     180,
+  gateSmall:       1200,
+  gateLarge:       2800,
+  motor:           1800,
+  pedestrianGate:  2200,
+  parkingSlide:    4500,
+  parkingLift:     5200,
+  parkingDouble:   5800,
+  measureService:  350
 };
 
 // ── RAL COLORS ──
@@ -1012,7 +1016,7 @@ const state = {
 };
 
 function newWindowObj(id) {
-  return { id, location:'', fenceType:'horizontal', height:150, length:500, gateType:'none', gateWidth:100, motor:false, alColor:'9016', alColorCustom:'', notes:'' };
+  return { id, location:'', productType:'fence', parkingGateSubType:'slide', fenceType:'horizontal', height:150, length:500, gateWidth:120, motor:false, alColor:'9016', alColorCustom:'', notes:'' };
 }
 
 // ── LOAD PRICES ──
@@ -1069,12 +1073,20 @@ function renderMemberPriceBox(regularSubtotal) {
 
 // ── PRICING ──
 function calcWindowPrice(f) {
+  if (f.productType === 'pedestrian-gate') {
+    let price = PRICES.pedestrianGate;
+    if (f.motor) price += PRICES.motor;
+    return Math.round(price);
+  }
+  if (f.productType === 'parking-gate') {
+    const base = { slide: PRICES.parkingSlide, lift: PRICES.parkingLift, 'double-swing': PRICES.parkingDouble };
+    let price = base[f.parkingGateSubType] || PRICES.parkingSlide;
+    if (f.motor) price += PRICES.motor;
+    return Math.round(price);
+  }
+  // fence
   const sqm = Math.max((f.height/100) * (f.length/100), 1.0);
-  let price = sqm * PRICES.fencePerSqm;
-  if (f.gateType === 'small-slide' || f.gateType === 'small-swing') price += PRICES.gateSmall;
-  else if (f.gateType === 'large-slide' || f.gateType === 'double-swing') price += PRICES.gateLarge;
-  if (f.motor && f.gateType !== 'none') price += PRICES.motor;
-  return Math.round(price);
+  return Math.round(sqm * PRICES.fencePerSqm);
 }
 
 function calcTotal() {
@@ -1808,111 +1820,319 @@ function svgFence(f) {
   return s;
 }
 
+// ── SVG: שערון הולכי רגל ──
+function svgPedestrianGate(f) {
+  const VW = 280, VH = 160;
+  const ralEntry = RAL_COLORS.find(r => r.code === (f.alColor || '9016'));
+  const frameHex = ralEntry ? ralEntry.hex : '#8f8f8f';
+  const darken = (hex, amt=40) => {
+    const n = parseInt(hex.replace('#',''),16);
+    const r = Math.max(0,Math.min(255,((n>>16)&0xff)-amt));
+    const g = Math.max(0,Math.min(255,((n>>8)&0xff)-amt));
+    const b = Math.max(0,Math.min(255,(n&0xff)-amt));
+    return `rgb(${r},${g},${b})`;
+  };
+  const frameDark = darken(frameHex, 50);
+  const postW = 10, ML = 60, MT = 16, MB = 28;
+  const gW = VW - ML*2, gH = VH - MT - MB;
+  const gX = ML, gY = MT;
+
+  let s = `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">`;
+  s += `<rect width="${VW}" height="${VH}" fill="#fff"/>`;
+  // ground line
+  s += `<line x1="${gX-10}" y1="${gY+gH}" x2="${gX+gW+10}" y2="${gY+gH}" stroke="#bbb" stroke-width="1.5"/>`;
+  // left post
+  s += `<rect x="${gX}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
+  // right post
+  s += `<rect x="${gX+gW-postW}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
+  // door panel (inner area with bars)
+  const panelX = gX + postW, panelW = gW - postW*2;
+  // top rail
+  s += `<rect x="${panelX}" y="${gY+4}" width="${panelW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
+  // bottom rail
+  s += `<rect x="${panelX}" y="${gY+gH-12}" width="${panelW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
+  // mid rail
+  s += `<rect x="${panelX}" y="${gY+Math.round(gH/2)-4}" width="${panelW}" height="7" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.7"/>`;
+  // vertical pickets
+  const pW = 6, pG = 8;
+  for (let px = panelX+6; px + pW <= panelX+panelW-6; px += pW+pG)
+    s += `<rect x="${px}" y="${gY+12}" width="${pW}" height="${gH-24}" fill="${frameHex}" rx="1" opacity="0.8"/>`;
+  // hinge marks (right side)
+  [0.2, 0.5, 0.8].forEach(r => {
+    s += `<rect x="${gX+gW-postW-4}" y="${gY+gH*r-5}" width="6" height="10" rx="1.5" fill="${frameDark}" opacity="0.9"/>`;
+  });
+  // handle (left side)
+  const hY = gY + gH * 0.45;
+  s += `<rect x="${panelX+8}" y="${hY-12}" width="5" height="24" rx="2.5" fill="${frameDark}" opacity="0.85"/>`;
+  s += `<rect x="${panelX+4}" y="${hY-3}" width="10" height="6" rx="3" fill="${frameDark}" opacity="0.6"/>`;
+  // motor badge if applicable
+  if (f.motor) s += `<text x="${VW/2}" y="${gY+gH/2+4}" text-anchor="middle" font-size="7.5" fill="#c47c00" font-family="Heebo,sans-serif" font-weight="700">⚡ מנוע</text>`;
+  // label
+  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">שערון הולכי רגל | ${f.height} ס"מ גובה | ${f.gateWidth||120} ס"מ רוחב</text>`;
+  s += '</svg>';
+  return s;
+}
+
+// ── SVG: שער חניה ──
+function svgParkingGate(f) {
+  const VW = 280, VH = 160;
+  const ralEntry = RAL_COLORS.find(r => r.code === (f.alColor || '9016'));
+  const frameHex = ralEntry ? ralEntry.hex : '#8f8f8f';
+  const darken = (hex, amt=40) => {
+    const n = parseInt(hex.replace('#',''),16);
+    const r = Math.max(0,Math.min(255,((n>>16)&0xff)-amt));
+    const g = Math.max(0,Math.min(255,((n>>8)&0xff)-amt));
+    const b = Math.max(0,Math.min(255,(n&0xff)-amt));
+    return `rgb(${r},${g},${b})`;
+  };
+  const frameDark = darken(frameHex, 50);
+  const postW = 10, ML = 24, MT = 16, MB = 28;
+  const gW = VW - ML*2, gH = VH - MT - MB;
+  const gX = ML, gY = MT;
+  const sub = f.parkingGateSubType || 'slide';
+
+  let s = `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">`;
+  s += `<rect width="${VW}" height="${VH}" fill="#fff"/>`;
+  s += `<line x1="${gX-10}" y1="${gY+gH}" x2="${gX+gW+10}" y2="${gY+gH}" stroke="#bbb" stroke-width="1.5"/>`;
+  // posts
+  s += `<rect x="${gX}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
+  s += `<rect x="${gX+gW-postW}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
+
+  const panelX = gX + postW, panelW = gW - postW*2;
+
+  if (sub === 'double-swing') {
+    // two wings
+    const wingW = Math.round(panelW/2);
+    [0, 1].forEach(i => {
+      const wx = panelX + i * wingW;
+      s += `<rect x="${wx}" y="${gY+4}" width="${wingW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
+      s += `<rect x="${wx}" y="${gY+gH-12}" width="${wingW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
+      s += `<rect x="${wx}" y="${gY+Math.round(gH/2)-4}" width="${wingW}" height="7" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.7"/>`;
+      const pW2=6, pG2=9;
+      for (let px=wx+4; px+pW2<=wx+wingW-4; px+=pW2+pG2)
+        s += `<rect x="${px}" y="${gY+12}" width="${pW2}" height="${gH-24}" fill="${frameHex}" rx="1" opacity="0.8"/>`;
+      // hinge
+      const hingeX = i===0 ? wx+wingW-4 : wx;
+      [0.2,0.5,0.8].forEach(r => s += `<rect x="${hingeX-3}" y="${gY+gH*r-5}" width="6" height="10" rx="1.5" fill="${frameDark}" opacity="0.9"/>`);
+      // swing arc indicator
+      const arcFromX = i===0 ? wx+wingW : wx;
+      const arcToX   = i===0 ? wx+wingW-wingW*0.7 : wx+wingW*0.7;
+      s += `<path d="M${arcFromX},${gY} Q${arcToX},${gY+gH*0.5} ${arcFromX},${gY+gH}" fill="none" stroke="${frameDark}" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.25"/>`;
+    });
+    // center divider
+    s += `<line x1="${panelX+Math.round(panelW/2)}" y1="${gY}" x2="${panelX+Math.round(panelW/2)}" y2="${gY+gH}" stroke="${frameDark}" stroke-width="1.5" opacity="0.4"/>`;
+  } else if (sub === 'lift') {
+    // gate panel with horizontal boards (folded up look)
+    const boardH = 10, boardGap = 3;
+    for (let by = gY+4; by+boardH <= gY+gH-4; by+=boardH+boardGap)
+      s += `<rect x="${panelX}" y="${by}" width="${panelW}" height="${boardH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.6" opacity="0.85"/>`;
+    // top rail (thicker)
+    s += `<rect x="${panelX-4}" y="${gY}" width="${panelW+8}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
+    // lift arrow
+    const cx = panelX + panelW/2;
+    s += `<line x1="${cx}" y1="${gY+gH-16}" x2="${cx}" y2="${gY+8}" stroke="#0077cc" stroke-width="2" stroke-dasharray="4,3" opacity="0.6"/>`;
+    s += `<polygon points="${cx-5},${gY+16} ${cx},${gY+6} ${cx+5},${gY+16}" fill="#0077cc" opacity="0.6"/>`;
+  } else {
+    // slide (default)
+    const boardH = 10, boardGap = 3;
+    for (let by = gY+4; by+boardH <= gY+gH-4; by+=boardH+boardGap)
+      s += `<rect x="${panelX}" y="${by}" width="${panelW}" height="${boardH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.6" opacity="0.85"/>`;
+    // slide rail (top)
+    s += `<rect x="${gX-12}" y="${gY-4}" width="${gW+24}" height="8" fill="${frameHex}" rx="3" stroke="${frameDark}" stroke-width="1"/>`;
+    // slide arrow
+    const cy = gY + gH/2;
+    s += `<line x1="${panelX+16}" y1="${cy}" x2="${panelX+panelW-16}" y2="${cy}" stroke="#0077cc" stroke-width="2" stroke-dasharray="5,3" opacity="0.55"/>`;
+    s += `<polygon points="${panelX+panelW-16},${cy-4} ${panelX+panelW-6},${cy} ${panelX+panelW-16},${cy+4}" fill="#0077cc" opacity="0.55"/>`;
+  }
+
+  // motor
+  if (f.motor) {
+    s += `<rect x="${gX+gW-postW-28}" y="${gY+2}" width="22" height="13" rx="3" fill="#0077cc" opacity="0.9"/>`;
+    s += `<text x="${gX+gW-postW-17}" y="${gY+11}" text-anchor="middle" font-size="7" fill="#fff" font-family="Heebo,sans-serif" font-weight="700">⚡ מנוע</text>`;
+  }
+
+  const subLabels = { slide:'הזזה', lift:'הרמה', 'double-swing':'דו-כנפי' };
+  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">שער חניה — ${subLabels[sub]||''} | ${f.height} ס"מ גובה | ${f.gateWidth||300} ס"מ רוחב</text>`;
+  s += '</svg>';
+  return s;
+}
+
 // ── RENDER FENCE CARD ──
 function renderWindowCard(f) {
   const price = calcWindowPrice(f);
-  const sqm   = ((f.height / 100) * (f.length / 100)).toFixed(2);
-  const fenceTypeLabels = { horizontal:'\u05dc\u05d5\u05d7\u05d5\u05ea \u05d0\u05d5\u05e4\u05e7\u05d9\u05d9\u05dd', vertical:'\u05e4\u05d9\u05e7\u05d9\u05dd \u05d0\u05e0\u05db\u05d9\u05d9\u05dd', railing:'\u05de\u05e2\u05e7\u05d4 \u05d6\u05db\u05d5\u05db\u05d9\u05ea' };
-  const showGate = f.gateType !== 'none';
+  const pt = f.productType || 'fence';
+  const isFence    = pt === 'fence';
+  const isPed      = pt === 'pedestrian-gate';
+  const isParking  = pt === 'parking-gate';
+
+  const sqm = isFence ? ((f.height/100)*(f.length/100)).toFixed(2) : null;
+
+  const tagIcons = { fence:'ph-fence', 'pedestrian-gate':'ph-person-simple-walk', 'parking-gate':'ph-car' };
+  const tagLabels = { fence:'גדר', 'pedestrian-gate':'שערון הולכי רגל', 'parking-gate':'שער חניה' };
+
+  let footerDims = '';
+  if (isFence)   footerDims = `${f.height} ס"מ גובה &nbsp;|&nbsp; ${f.length} ס"מ אורך &nbsp;|&nbsp; ${sqm} מ"ר`;
+  if (isPed)     footerDims = `${f.height} ס"מ גובה &nbsp;|&nbsp; ${f.gateWidth||120} ס"מ רוחב`;
+  if (isParking) {
+    const sl = { slide:'הזזה', lift:'הרמה', 'double-swing':'דו-כנפי' };
+    footerDims = `${f.height} ס"מ גובה &nbsp;|&nbsp; ${f.gateWidth||300} ס"מ רוחב &nbsp;|&nbsp; ${sl[f.parkingGateSubType]||''}`;
+  }
 
   const ralSwatches = RAL_COLORS.map(r =>
     `<div class="ral-swatch ${f.alColor===r.code?'active':''}"
-      style="background:${r.hex}" data-label="RAL ${r.code} \u2013 ${r.name}"
+      style="background:${r.hex}" data-label="RAL ${r.code} – ${r.name}"
       onclick="setWindowAlColor(${f.id},'${r.code}')"></div>`
   ).join('');
 
+  const svgPreview = isFence ? svgFence(f) : isPed ? svgPedestrianGate(f) : svgParkingGate(f);
+
   return `<div class="window-card" id="wcard-${f.id}">
     <div class="window-card-header">
-      <span class="window-tag"><i class="ph ph-fence"></i> \u05de\u05e7\u05d8\u05e2 ${f.id}${f.location?' \u2014 '+f.location:''}</span>
+      <span class="window-tag"><i class="ph ${tagIcons[pt]}"></i> פריט ${f.id}${f.location?' — '+f.location:''} <span style="font-weight:500;opacity:0.7;font-size:0.75rem;">· ${tagLabels[pt]}</span></span>
       <div class="window-header-actions">
-        <button class="btn-icon dup" onclick="duplicateWindow(${f.id})" title="\u05e9\u05db\u05e4\u05dc"><i class="ph ph-copy"></i></button>
-        ${state.windows.length > 1 ? `<button class="btn-remove" onclick="removeWindow(${f.id})"><i class="ph ph-trash"></i> \u05d4\u05e1\u05e8</button>` : ''}
+        <button class="btn-icon dup" onclick="duplicateWindow(${f.id})" title="שכפל"><i class="ph ph-copy"></i></button>
+        ${state.windows.length > 1 ? `<button class="btn-remove" onclick="removeWindow(${f.id})"><i class="ph ph-trash"></i> הסר</button>` : ''}
       </div>
     </div>
 
     <div class="window-card-body">
 
+      <!-- שם / מיקום -->
       <div class="field">
-        <label>\u05e9\u05dd / \u05de\u05d9\u05e7\u05d5\u05dd (\u05d0\u05d5\u05e4\u05e6\u05d9\u05d5\u05e0\u05dc\u05d9)</label>
-        <input type="text" placeholder="\u05dc\u05d3\u05d5\u05d2\u05de\u05d0: \u05d2\u05d3\u05e8 \u05d7\u05e6\u05e8 \u05e7\u05d3\u05de\u05d9\u05ea, \u05e6\u05d3 \u05d9\u05de\u05d9\u05df" value="${f.location}"
+        <label>שם / מיקום (אופציונלי)</label>
+        <input type="text" placeholder="לדוגמה: גדר חצר קדמית, כניסה ראשית" value="${f.location}"
           oninput="updateWindowText(${f.id},'location',this.value)">
       </div>
 
+      <!-- בחירת תת-מוצר -->
       <div>
-        <div class="sub-label"><i class="ph ph-list-bullets"></i> \u05e1\u05d5\u05d2 \u05d2\u05d3\u05e8</div>
+        <div class="sub-label"><i class="ph ph-squares-four"></i> סוג מוצר</div>
         <div class="opt-group">
-          ${[['horizontal','\u05dc\u05d5\u05d7\u05d5\u05ea \u05d0\u05d5\u05e4\u05e7\u05d9\u05d9\u05dd'],['vertical','\u05e4\u05d9\u05e7\u05d9\u05dd \u05d0\u05e0\u05db\u05d9\u05d9\u05dd'],['railing','\u05de\u05e2\u05e7\u05d4 \u05d6\u05db\u05d5\u05db\u05d9\u05ea']].map(([k,lbl]) =>
+          <button class="opt-card ${isFence?'active':''}" onclick="updateWindow(${f.id},'productType','fence')">
+            <i class="ph ph-fence"></i> גדר
+          </button>
+          <button class="opt-card ${isPed?'active':''}" onclick="updateWindow(${f.id},'productType','pedestrian-gate')">
+            <i class="ph ph-person-simple-walk"></i> שער הולכי רגל
+          </button>
+          <button class="opt-card ${isParking?'active':''}" onclick="updateWindow(${f.id},'productType','parking-gate')">
+            <i class="ph ph-car"></i> שער חניה
+          </button>
+        </div>
+      </div>
+
+      ${isFence ? `
+      <!-- שדות גדר -->
+      <div>
+        <div class="sub-label"><i class="ph ph-list-bullets"></i> סוג גדר</div>
+        <div class="opt-group">
+          ${[['horizontal','לוחות אופקיים'],['vertical','פיקים אנכיים'],['railing','מעקה זכוכית']].map(([k,lbl]) =>
             `<button class="opt-card ${f.fenceType===k?'active':''}" onclick="updateWindow(${f.id},'fenceType','${k}')">${lbl}</button>`
           ).join('')}
         </div>
       </div>
-
       <div class="field-row">
         <div class="field">
-          <label>\u05d2\u05d5\u05d1\u05d4 \u05d2\u05d3\u05e8 (\u05e1"\u05de)</label>
+          <label>גובה גדר (ס"מ)</label>
           <select onchange="updateWindowDim(${f.id},'height',this.value)">
             ${[80,100,120,150,180,200,250].map(v =>
-              `<option value="${v}" ${f.height==v?'selected':''}>${v} \u05e1"\u05de</option>`
+              `<option value="${v}" ${f.height==v?'selected':''}>${v} ס"מ</option>`
             ).join('')}
           </select>
         </div>
         <div class="field">
-          <label>\u05d0\u05d5\u05e8\u05da \u05de\u05e7\u05d8\u05e2 (\u05e1"\u05de)</label>
+          <label>אורך מקטע (ס"מ)</label>
           <input type="number" min="50" max="10000" step="10" value="${f.length}"
             oninput="updateWindowDim(${f.id},'length',this.value)">
         </div>
       </div>
-
       <div style="font-size:0.82rem;color:var(--silver);font-family:'DM Mono',monospace;margin-top:-0.5rem;">
-        \u05e9\u05d8\u05d7 \u05d2\u05d3\u05e8: <strong style="color:var(--blue);">${sqm} \u05de"\u05e8</strong>
+        שטח גדר: <strong style="color:var(--blue);">${sqm} מ"ר</strong>
       </div>
+      ` : ''}
 
-      <div>
-        <div class="sub-label"><i class="ph ph-door"></i> \u05e9\u05e2\u05e8 / \u05e9\u05e2\u05e8\u05d5\u05df</div>
-        <div class="opt-group">
-          ${[['none','\u05dc\u05dc\u05d0 \u05e9\u05e2\u05e8'],['small-slide','\u05e9\u05e2\u05e8\u05d5\u05df \u05d4\u05d6\u05d6\u05d4'],['small-swing','\u05e9\u05e2\u05e8\u05d5\u05df \u05e4\u05ea\u05d9\u05d7\u05d4'],['large-slide','\u05e9\u05e2\u05e8 \u05d4\u05d6\u05d6\u05d4 \u05d2\u05d3\u05d5\u05dc'],['double-swing','\u05e9\u05e2\u05e8 \u05db\u05e0\u05e4\u05d9\u05d9\u05dd']].map(([k,lbl]) =>
-            `<button class="opt-card ${f.gateType===k?'active':''}" onclick="updateWindow(${f.id},'gateType','${k}')">${lbl}</button>`
-          ).join('')}
+      ${isPed ? `
+      <!-- שדות שערון הולכי רגל -->
+      <div class="field-row">
+        <div class="field">
+          <label>גובה (ס"מ)</label>
+          <select onchange="updateWindowDim(${f.id},'height',this.value)">
+            ${[80,100,120,150,180,200].map(v =>
+              `<option value="${v}" ${f.height==v?'selected':''}>${v} ס"מ</option>`
+            ).join('')}
+          </select>
         </div>
-        ${showGate ? `
-        <div class="field" style="margin-top:0.75rem;max-width:200px;">
-          <label>\u05e8\u05d5\u05d7\u05d1 \u05e9\u05e2\u05e8 (\u05e1"\u05de)</label>
-          <input type="number" min="60" max="800" step="10" value="${f.gateWidth||100}"
+        <div class="field">
+          <label>רוחב (ס"מ)</label>
+          <input type="number" min="60" max="200" step="5" value="${f.gateWidth||120}"
             oninput="updateWindowDim(${f.id},'gateWidth',this.value)">
-        </div>` : ''}
+        </div>
       </div>
-
-      ${showGate ? `
       <div class="motor-row">
         <input type="checkbox" id="motor-${f.id}" ${f.motor?'checked':''}
           onchange="updateWindow(${f.id},'motor',this.checked)">
-        <label for="motor-${f.id}">\u26a1 \u05de\u05e0\u05d5\u05e2 \u05d7\u05e9\u05de\u05dc\u05d9 \u05dc\u05e9\u05e2\u05e8 \u2014 \u20aa${PRICES.motor.toLocaleString()} \u05dc\u05d9\u05d7\u05d9\u05d3\u05d4</label>
-      </div>` : ''}
+        <label for="motor-${f.id}">⚡ מנוע חשמלי — ₪${PRICES.motor.toLocaleString()} ליחידה</label>
+      </div>
+      ` : ''}
 
+      ${isParking ? `
+      <!-- שדות שער חניה -->
+      <div>
+        <div class="sub-label"><i class="ph ph-git-fork"></i> סוג שער חניה</div>
+        <div class="opt-group">
+          ${[['slide','הזזה'],['lift','הרמה'],['double-swing','דו-כנפי']].map(([k,lbl]) =>
+            `<button class="opt-card ${(f.parkingGateSubType||'slide')===k?'active':''}" onclick="updateWindow(${f.id},'parkingGateSubType','${k}')">${lbl}</button>`
+          ).join('')}
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>גובה (ס"מ)</label>
+          <select onchange="updateWindowDim(${f.id},'height',this.value)">
+            ${[120,150,180,200,220,250].map(v =>
+              `<option value="${v}" ${f.height==v?'selected':''}>${v} ס"מ</option>`
+            ).join('')}
+          </select>
+        </div>
+        <div class="field">
+          <label>רוחב פתח (ס"מ)</label>
+          <input type="number" min="150" max="1500" step="10" value="${f.gateWidth||300}"
+            oninput="updateWindowDim(${f.id},'gateWidth',this.value)">
+        </div>
+      </div>
+      <div class="motor-row">
+        <input type="checkbox" id="motor-${f.id}" ${f.motor?'checked':''}
+          onchange="updateWindow(${f.id},'motor',this.checked)">
+        <label for="motor-${f.id}">⚡ מנוע חשמלי — ₪${PRICES.motor.toLocaleString()} ליחידה</label>
+      </div>
+      ` : ''}
+
+      <!-- צבע אלומיניום -->
       <div class="color-section">
-        <div class="color-section-title"><i class="ph ph-paint-bucket"></i> \u05e6\u05d1\u05e2 \u05d0\u05dc\u05d5\u05de\u05d9\u05e0\u05d9\u05d5\u05dd</div>
+        <div class="color-section-title"><i class="ph ph-paint-bucket"></i> צבע אלומיניום</div>
         <div class="ral-swatches" id="al-swatches-${f.id}">${ralSwatches}</div>
         <div class="color-custom-row">
-          <label>RAL \u05d7\u05d5\u05e4\u05e9\u05d9:</label>
-          <input type="text" placeholder="\u05dc\u05d3\u05d5\u05d2\u05de\u05d0: 5015" value="${f.alColorCustom}"
+          <label>RAL חופשי:</label>
+          <input type="text" placeholder="לדוגמה: 5015" value="${f.alColorCustom}"
             oninput="setWindowAlCustom(${f.id},this.value)"
             style="background:var(--surface2);border:1.5px solid var(--border);border-radius:var(--radius);padding:0.4rem 0.7rem;font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--ink);width:130px;outline:none;">
         </div>
       </div>
 
+      <!-- הדמיה -->
       <div>
-        <div class="sub-label"><i class="ph ph-ruler"></i> \u05ea\u05e6\u05d5\u05d2\u05d4 \u05de\u05e7\u05d3\u05d9\u05de\u05d4</div>
+        <div class="sub-label"><i class="ph ph-ruler"></i> תצוגה מקדימה</div>
         <div class="preview-row">
           <div class="preview-box" style="width:100%;max-width:380px;">
-            <div class="preview-box-label"><i class="ph ph-fence"></i> \u05d4\u05d3\u05de\u05d9\u05d4</div>
-            ${svgFence(f)}
+            <div class="preview-box-label"><i class="ph ph-eye"></i> הדמיה</div>
+            ${svgPreview}
           </div>
         </div>
       </div>
 
+      <!-- הערות -->
       <div>
-        <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.45rem;"><i class="ph ph-note-pencil" style="font-size:0.9rem;"></i> \u05d4\u05e2\u05e8\u05d5\u05ea \u05dc\u05de\u05e7\u05d8\u05e2 \u05d6\u05d4</label>
-        <textarea rows="2" placeholder="\u05d4\u05e2\u05e8\u05d5\u05ea, \u05d3\u05e8\u05d9\u05e9\u05d5\u05ea \u05de\u05d9\u05d5\u05d7\u05d3\u05d5\u05ea, \u05e4\u05e8\u05d8\u05d9 \u05e9\u05d8\u05d7..."
+        <label style="font-size:0.72rem;font-weight:700;color:var(--silver);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:0.45rem;"><i class="ph ph-note-pencil" style="font-size:0.9rem;"></i> הערות לפריט זה</label>
+        <textarea rows="2" placeholder="הערות, דרישות מיוחדות, פרטי שטח..."
           oninput="updateWindowText(${f.id},'notes',this.value)"
           style="width:100%;padding:0.55rem 0.8rem;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Heebo',sans-serif;font-size:0.85rem;color:var(--ink);background:var(--surface2);resize:vertical;outline:none;transition:border-color var(--trans);box-sizing:border-box;line-height:1.5;"
           onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">${f.notes||''}</textarea>
@@ -1921,32 +2141,38 @@ function renderWindowCard(f) {
     </div>
 
     <div class="window-card-footer">
-      <div style="font-size:0.85rem;color:var(--silver);">${f.height} \u05e1"\u05de \u05d2\u05d5\u05d1\u05d4 &nbsp;|&nbsp; ${f.length} \u05e1"\u05de \u05d0\u05d5\u05e8\u05da &nbsp;|&nbsp; ${sqm} \u05de"\u05e8 &nbsp;|&nbsp; ${fenceTypeLabels[f.fenceType]||''}</div>
-      <div class="footer-price">\u05de\u05d7\u05d9\u05e8: <strong>\u20aa${price.toLocaleString()}</strong></div>
+      <div style="font-size:0.85rem;color:var(--silver);">${footerDims}</div>
+      <div class="footer-price">מחיר: <strong>₪${price.toLocaleString()}</strong></div>
     </div>
   </div>`;
 }
 
 // ── RENDER SUMMARY ──
 function renderSummary() {
-  const fenceTypeLabels = { horizontal:'לוחות אופקיים', vertical:'פיקים אנכיים', railing:'מעקה זכוכית' };
-  const gateTypeLabels  = { none:'—', 'small-slide':'שערון הזזה', 'small-swing':'שערון פתיחה', 'large-slide':'שער הזזה גדול', 'double-swing':'שער כנפיים' };
+  const productTypeLabels = { fence:'גדר', 'pedestrian-gate':'שער הולכי רגל', 'parking-gate':'שער חניה' };
+  const fenceTypeLabels   = { horizontal:'לוחות אופקיים', vertical:'פיקים אנכיים', railing:'מעקה זכוכית' };
+  const parkingSubLabels  = { slide:'הזזה', lift:'הרמה', 'double-swing':'דו-כנפי' };
   const tbody = document.getElementById('summaryBody');
   tbody.innerHTML = state.windows.map(f => {
-    const sqm   = ((f.height/100)*(f.length/100)).toFixed(2);
-    const price = calcWindowPrice(f);
+    const isFence   = f.productType === 'fence';
+    const isParking = f.productType === 'parking-gate';
+    const sqm       = isFence ? ((f.height/100)*(f.length/100)).toFixed(2) : '—';
+    const widthCol  = isFence ? f.length : (f.gateWidth || 120);
+    const price     = calcWindowPrice(f);
     const ralEntry2 = RAL_COLORS.find(r => r.code === f.alColor);
     const colorLabel = ralEntry2 ? `RAL ${f.alColor} – ${ralEntry2.name}` : (f.alColorCustom||'—');
-    const gateLabel = gateTypeLabels[f.gateType] || '—';
-    const motorLabel = (f.motor && f.gateType !== 'none') ? 'כן' : '—';
+    let productLabel = productTypeLabels[f.productType] || f.productType;
+    if (isFence) productLabel += ' — ' + (fenceTypeLabels[f.fenceType]||'');
+    let subTypeLabel = isParking ? (parkingSubLabels[f.parkingGateSubType]||'—') : '—';
+    const motorLabel = f.motor ? 'כן' : '—';
     return `<tr>
-      <td>${f.location || 'מקטע ' + f.id}</td>
-      <td>${fenceTypeLabels[f.fenceType]||f.fenceType}</td>
+      <td>${f.location || 'פריט ' + f.id}</td>
+      <td style="font-size:0.8rem;">${productLabel}</td>
       <td class="num">${f.height}</td>
-      <td class="num">${f.length}</td>
+      <td class="num">${widthCol}</td>
       <td class="num">${sqm}</td>
       <td style="font-size:0.75rem;">${colorLabel}</td>
-      <td class="extras">${gateLabel}</td>
+      <td class="extras">${subTypeLabel}</td>
       <td class="extras">${motorLabel}</td>
       <td style="font-size:0.75rem;color:var(--silver);max-width:120px;">${f.notes ? `<span title="${f.notes.replace(/"/g,'&quot;')}">${f.notes.length>30?f.notes.slice(0,28)+'…':f.notes}</span>` : '—'}</td>
       <td class="num">\u20aa${price.toLocaleString()}</td>
