@@ -804,6 +804,75 @@
     .credit-form .field input { background:var(--surface); border:1.5px solid var(--border); border-radius:var(--radius); padding:0.55rem 0.75rem; color:var(--ink); font-family:'Heebo',sans-serif; font-size:0.9rem; width:100%; }
     .btn-submit-credit { padding:0.85rem; background:var(--blue); color:#fff; border:none; border-radius:var(--radius); font-family:'Heebo',sans-serif; font-size:0.95rem; font-weight:800; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:0.5rem; }
 
+    /* ── FENCE MODEL MODAL ── */
+    .fmodel-overlay {
+      position: fixed; inset: 0; z-index: 600;
+      background: rgba(10,20,45,0.45);
+      display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+      opacity: 0; pointer-events: none; transition: opacity 0.2s;
+    }
+    .fmodel-overlay.open { opacity: 1; pointer-events: all; }
+    .fmodel-box {
+      background: var(--surface); border-radius: 18px;
+      width: 100%; max-width: 640px; max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 24px 64px rgba(0,30,80,0.22);
+      transform: translateY(14px); transition: transform 0.2s;
+    }
+    .fmodel-overlay.open .fmodel-box { transform: translateY(0); }
+    .fmodel-hdr {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 1.5rem;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .fmodel-title {
+      font-size: 1rem; font-weight: 800; color: var(--ink);
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .fmodel-title i { color: var(--blue); font-size: 1.2rem; }
+    .fmodel-close {
+      background: none; border: none; cursor: pointer;
+      font-size: 1.2rem; color: var(--silver); padding: 0.2rem;
+      transition: color var(--trans);
+    }
+    .fmodel-close:hover { color: var(--ink); }
+    .fmodel-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 1rem; padding: 1.25rem 1.5rem 1.5rem;
+    }
+    .fmodel-card {
+      border: 1.5px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      cursor: pointer; transition: all 0.18s;
+      background: var(--surface2);
+    }
+    .fmodel-card:hover { border-color: var(--blue); box-shadow: 0 4px 16px rgba(0,119,204,0.13); transform: translateY(-2px); }
+    .fmodel-card.selected { border-color: var(--blue); background: var(--blue-dim); box-shadow: 0 0 0 3px rgba(0,119,204,0.15); }
+    .fmodel-thumb {
+      width: 100%; background: #f0f4fa;
+      border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; justify-content: center;
+      padding: 0.5rem 0;
+    }
+    .fmodel-thumb svg { width: 100%; height: auto; display: block; }
+    .fmodel-info { padding: 0.65rem 0.85rem 0.75rem; }
+    .fmodel-code { font-size: 0.68rem; font-weight: 700; color: var(--silver); letter-spacing: 0.5px; margin-bottom: 0.2rem; }
+    .fmodel-name { font-size: 0.88rem; font-weight: 800; color: var(--ink); }
+    .fmodel-desc { font-size: 0.72rem; color: var(--silver); margin-top: 0.15rem; }
+
+    /* selected model chip in card */
+    .fence-model-chip {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--blue-dim); border: 1.5px solid rgba(0,119,204,0.2);
+      border-radius: 8px; padding: 0.5rem 0.8rem;
+      font-size: 0.85rem; font-weight: 700; color: var(--blue);
+      cursor: pointer; transition: all 0.18s; width: 100%;
+    }
+    .fence-model-chip:hover { background: rgba(0,119,204,0.12); border-color: var(--blue); }
+    .fence-model-chip-code { font-size: 0.72rem; font-weight: 600; color: var(--silver); margin-right: auto; }
+    .fence-model-chip i.edit-icon { font-size: 0.9rem; color: var(--silver); }
+
     /* ── RESPONSIVE ── */
     @media (max-width: 640px) {
       .cfg-header { padding: 0 1rem; }
@@ -1015,8 +1084,101 @@ const state = {
   windows:[ newWindowObj(1) ]
 };
 
+// ── FENCE MODELS CATALOG ──
+const FENCE_MODELS = [
+  {
+    key: 'atom', code: 'GDR-100', name: 'אטום', fenceType: 'horizontal', desc: 'לוחות אופקיים אטומים',
+    thumb: () => {
+      const C = '#8f8f8f'; const D = '#5a5a5a';
+      let s = `<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="90" fill="#f0f4fa"/>`;
+      s += `<rect x="0" y="0" width="10" height="90" fill="${C}"/>`;
+      s += `<rect x="150" y="0" width="10" height="90" fill="${C}"/>`;
+      for (let y=4; y+10<=86; y+=11) {
+        s += `<rect x="10" y="${y}" width="140" height="10" fill="${C}" rx="1"/>`;
+        s += `<rect x="10" y="${y+10}" width="140" height="1" fill="${D}" opacity="0.3"/>`;
+      }
+      s += '</svg>';
+      return s;
+    }
+  },
+  {
+    key: 'hitech-atom', code: 'GDR-110', name: 'הייטק אטום', fenceType: 'horizontal', desc: 'פרופיל מודרני אטום',
+    thumb: () => {
+      const C = '#6b7a99'; const D = '#3a4560'; const H = '#9fb0cc';
+      let s = `<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="90" fill="#f0f4fa"/>`;
+      s += `<rect x="0" y="0" width="12" height="90" fill="${C}"/>`;
+      s += `<rect x="148" y="0" width="12" height="90" fill="${C}"/>`;
+      for (let y=4; y+12<=86; y+=13) {
+        s += `<rect x="12" y="${y}" width="136" height="9" fill="${C}" rx="1"/>`;
+        s += `<rect x="12" y="${y}" width="136" height="2" fill="${H}" opacity="0.6" rx="1"/>`;
+        s += `<rect x="12" y="${y+9}" width="136" height="3" fill="${D}" opacity="0.5"/>`;
+      }
+      s += '</svg>';
+      return s;
+    }
+  },
+  {
+    key: 'strips', code: 'GDR-120', name: 'סטריפס', fenceType: 'horizontal', desc: 'לוחות עם רווחים',
+    thumb: () => {
+      const C = '#8f8f8f'; const BG = 'rgba(30,60,100,0.08)';
+      let s = `<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="90" fill="#f0f4fa"/>`;
+      s += `<rect x="10" y="4" width="140" height="82" fill="${BG}" rx="2"/>`;
+      s += `<rect x="0" y="0" width="10" height="90" fill="${C}"/>`;
+      s += `<rect x="150" y="0" width="10" height="90" fill="${C}"/>`;
+      for (let y=6; y+6<=84; y+=13) {
+        s += `<rect x="10" y="${y}" width="140" height="6" fill="${C}" rx="1"/>`;
+      }
+      s += '</svg>';
+      return s;
+    }
+  },
+  {
+    key: 'hitech-angular', code: 'GDR-130', name: 'הייטק זוויתי', fenceType: 'horizontal', desc: 'לוחות זוויתיים',
+    thumb: () => {
+      const C = '#6b7a99'; const D = '#3a4560';
+      let s = `<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="90" fill="#f0f4fa"/>`;
+      s += `<clipPath id="fma-clip"><rect x="10" y="4" width="140" height="82"/></clipPath>`;
+      s += `<rect x="0" y="0" width="10" height="90" fill="${C}"/>`;
+      s += `<rect x="150" y="0" width="10" height="90" fill="${C}"/>`;
+      s += `<g clip-path="url(#fma-clip)">`;
+      for (let y=-10; y<110; y+=13) {
+        // parallelogram: top-left offset by 8px
+        s += `<polygon points="10,${y} 150,${y-8} 150,${y-8+9} 10,${y+9}" fill="${C}" opacity="0.9"/>`;
+        s += `<polygon points="10,${y}" />`;
+        s += `<line x1="10" y1="${y}" x2="150" y2="${y-8}" stroke="${D}" stroke-width="0.5" opacity="0.4"/>`;
+      }
+      s += `</g>`;
+      s += '</svg>';
+      return s;
+    }
+  },
+  {
+    key: 'hitech-vertical', code: 'GDR-140', name: 'הייטק אנכי', fenceType: 'vertical', desc: 'פיקים אנכיים מודרניים',
+    thumb: () => {
+      const C = '#6b7a99'; const D = '#3a4560'; const H = '#9fb0cc';
+      let s = `<svg viewBox="0 0 160 90" xmlns="http://www.w3.org/2000/svg"><rect width="160" height="90" fill="#f0f4fa"/>`;
+      s += `<rect x="0" y="0" width="10" height="90" fill="${C}"/>`;
+      s += `<rect x="150" y="0" width="10" height="90" fill="${C}"/>`;
+      s += `<rect x="10" y="4" width="140" height="7" fill="${C}" rx="1"/>`;
+      s += `<rect x="10" y="79" width="140" height="7" fill="${C}" rx="1"/>`;
+      for (let x=14; x+8<=148; x+=13) {
+        s += `<rect x="${x}" y="11" width="8" height="68" fill="${C}" rx="2"/>`;
+        s += `<rect x="${x}" y="11" width="8" height="3" fill="${H}" opacity="0.6" rx="1"/>`;
+        s += `<rect x="${x+7}" y="11" width="1" height="68" fill="${D}" opacity="0.3"/>`;
+      }
+      s += '</svg>';
+      return s;
+    }
+  }
+];
+
+function getFenceModel(key) {
+  return FENCE_MODELS.find(m => m.key === key) || FENCE_MODELS[0];
+}
+
 function newWindowObj(id) {
-  return { id, location:'', productType:'fence', parkingGateSubType:'slide', fenceType:'horizontal', height:150, length:500, gateWidth:120, motor:false, alColor:'9016', alColorCustom:'', notes:'' };
+  return { id, location:'', productType:'fence', parkingGateSubType:'slide', fenceType:'horizontal', fenceModel:'atom', height:150, length:500, gateWidth:120, motor:false, alColor:'9016', alColorCustom:'', notes:'',
+    fixedPanel:'none', fixedPanelWidth:50, pedHingeSide:'right', pedHingeCount:3, handleType:'standard' };
 }
 
 // ── LOAD PRICES ──
@@ -1770,6 +1932,17 @@ function svgFence(f) {
   const leftW = hasGate ? Math.round((fW - gateW) * 0.5) : fW;
   const rightW = hasGate ? fW - gateW - leftW : 0;
 
+  const model = f.fenceModel || 'atom';
+  const darkenHex = (hex, amt) => {
+    const n = parseInt(hex.replace('#',''),16);
+    const r = Math.max(0,Math.min(255,((n>>16)&0xff)-amt));
+    const g = Math.max(0,Math.min(255,((n>>8)&0xff)-amt));
+    const b = Math.max(0,Math.min(255,(n&0xff)-amt));
+    return `rgb(${r},${g},${b})`;
+  };
+  const frameDark2 = darkenHex(frameHex, 50);
+  const frameLight = darkenHex(frameHex, -30);
+
   const drawSection = (sx, sw) => {
     if (sw <= 4) return '';
     let s = '';
@@ -1777,20 +1950,51 @@ function svgFence(f) {
     s += `<rect x="${sx+sw-postW}" y="${fY}" width="${postW}" height="${fH}" fill="${frameHex}" rx="2"/>`;
     const iX = sx + postW, iW = sw - postW * 2;
     if (iW <= 0) return s;
-    if (f.fenceType === 'railing') {
+
+    if (model === 'railing' || f.fenceType === 'railing') {
       s += `<rect x="${iX}" y="${fY+6}" width="${iW}" height="5" fill="${frameHex}" rx="1"/>`;
       s += `<rect x="${iX}" y="${fY+fH-11}" width="${iW}" height="5" fill="${frameHex}" rx="1"/>`;
       s += `<rect x="${iX}" y="${fY+11}" width="${iW}" height="${fH-22}" fill="rgba(200,225,255,0.3)" stroke="rgba(100,160,255,0.5)" stroke-width="0.7" rx="2"/>`;
-    } else if (f.fenceType === 'vertical') {
+    } else if (model === 'hitech-vertical' || f.fenceType === 'vertical') {
       s += `<rect x="${iX}" y="${fY+6}" width="${iW}" height="5" fill="${frameHex}" rx="1"/>`;
       s += `<rect x="${iX}" y="${fY+fH-11}" width="${iW}" height="5" fill="${frameHex}" rx="1"/>`;
-      const pW = 7, pG = 5;
-      for (let px = iX; px + pW <= iX + iW; px += pW + pG)
+      const pW = 7, pG = 4;
+      for (let px = iX; px + pW <= iX + iW; px += pW + pG) {
         s += `<rect x="${px}" y="${fY+11}" width="${pW}" height="${fH-22}" fill="${frameHex}" rx="1" opacity="0.85"/>`;
+        s += `<rect x="${px}" y="${fY+11}" width="${pW}" height="2" fill="${frameLight}" opacity="0.5" rx="1"/>`;
+      }
+    } else if (model === 'strips') {
+      // strips: thin boards with visible gaps
+      const bH = 6, gap = 7;
+      s += `<rect x="${iX}" y="${fY}" width="${iW}" height="${fH}" fill="rgba(30,60,100,0.06)" rx="1"/>`;
+      for (let by = fY+2; by + bH <= fY + fH - 2; by += bH + gap)
+        s += `<rect x="${iX}" y="${by}" width="${iW}" height="${bH}" fill="${frameHex}" rx="1"/>`;
+    } else if (model === 'hitech-angular') {
+      // angular louver boards
+      const clipId = `fsc-${sx}`;
+      s += `<clipPath id="${clipId}"><rect x="${iX}" y="${fY}" width="${iW}" height="${fH}"/></clipPath>`;
+      s += `<g clip-path="url(#${clipId})">`;
+      const bH2 = 9, step2 = 13;
+      for (let by = fY - 5; by < fY + fH + 5; by += step2) {
+        // parallelogram: top-left shifted by 6px vs top-right
+        s += `<polygon points="${iX},${by+6} ${iX+iW},${by} ${iX+iW},${by+bH2} ${iX},${by+bH2+6}" fill="${frameHex}" opacity="0.9"/>`;
+        s += `<polygon points="${iX},${by+6} ${iX+iW},${by} ${iX+iW},${by+2} ${iX},${by+8}" fill="${frameLight}" opacity="0.5"/>`;
+        s += `<polygon points="${iX},${by+bH2+6} ${iX+iW},${by+bH2} ${iX+iW},${by+bH2+1.5} ${iX},${by+bH2+7.5}" fill="${frameDark2}" opacity="0.4"/>`;
+      }
+      s += `</g>`;
+    } else if (model === 'hitech-atom') {
+      // hi-tech solid: boards with chamfer top highlight
+      const bH3 = 10, gap3 = 2;
+      for (let by = fY; by + bH3 <= fY + fH; by += bH3 + gap3) {
+        s += `<rect x="${iX}" y="${by}" width="${iW}" height="${bH3}" fill="${frameHex}" rx="1"/>`;
+        s += `<rect x="${iX}" y="${by}" width="${iW}" height="2" fill="${frameLight}" opacity="0.55" rx="1"/>`;
+        s += `<rect x="${iX}" y="${by+bH3-1}" width="${iW}" height="1.5" fill="${frameDark2}" opacity="0.35"/>`;
+      }
     } else {
-      const bH = 9, gap = 4;
-      for (let by = fY; by + bH <= fY + fH; by += bH + gap)
-        s += `<rect x="${iX}" y="${by}" width="${iW}" height="${bH}" fill="${frameHex}" rx="1" opacity="0.85"/>`;
+      // atom: solid tight boards
+      const bH4 = 10, gap4 = 1;
+      for (let by = fY; by + bH4 <= fY + fH; by += bH4 + gap4)
+        s += `<rect x="${iX}" y="${by}" width="${iW}" height="${bH4}" fill="${frameHex}" rx="1"/>`;
     }
     return s;
   };
@@ -1814,8 +2018,8 @@ function svgFence(f) {
     if (f.motor) s += `<text x="${gX+gateW/2}" y="${fY+fH/2+10}" text-anchor="middle" font-size="7" fill="#c47c00" font-family="Heebo,sans-serif">\u26a1 \u05de\u05e0\u05d5\u05e2</text>`;
     if (rightW > 0) s += drawSection(gX + gateW, rightW);
   }
-  const ftLabels = {horizontal:'\u05dc\u05d5\u05d7\u05d5\u05ea \u05d0\u05d5\u05e4\u05e7\u05d9\u05d9\u05dd',vertical:'\u05e4\u05d9\u05e7\u05d9\u05dd \u05d0\u05e0\u05db\u05d9\u05d9\u05dd',railing:'\u05de\u05e2\u05e7\u05d4 \u05d6\u05db\u05d5\u05db\u05d9\u05ea'};
-  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">${ftLabels[f.fenceType]||''} | ${f.height} \u05e1"\u05de \u05d2\u05d5\u05d1\u05d4 | ${f.length} \u05e1"\u05de \u05d0\u05d5\u05e8\u05da</text>`;
+  const mdl = getFenceModel(f.fenceModel || 'atom');
+  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">${mdl.name} (${mdl.code}) | ${f.height} \u05e1"\u05de \u05d2\u05d5\u05d1\u05d4 | ${f.length} \u05e1"\u05de \u05d0\u05d5\u05e8\u05da</text>`;
   s += '</svg>';
   return s;
 }
@@ -1833,42 +2037,141 @@ function svgPedestrianGate(f) {
     return `rgb(${r},${g},${b})`;
   };
   const frameDark = darken(frameHex, 50);
-  const postW = 10, ML = 60, MT = 16, MB = 28;
+
+  const fixedPanel  = f.fixedPanel  || 'none';
+  const hingeSide   = f.pedHingeSide  || 'right';
+  const hingeCount  = f.pedHingeCount || 3;
+  const handleType  = f.handleType    || 'standard';
+  const hasFixed    = fixedPanel !== 'none';
+
+  // layout: if fixed panel → total area split 60/40 between door/fixed
+  const postW = 10;
+  // margin depends on whether there's a fixed panel (needs more room)
+  const ML = hasFixed ? 20 : 60;
+  const MT = 16, MB = 28;
   const gW = VW - ML*2, gH = VH - MT - MB;
   const gX = ML, gY = MT;
+
+  // split door vs fixed panel widths — using actual fixedPanelWidth
+  const innerW = gW - postW*2; // space between outer posts
+  const totalGateW = f.gateWidth || 120;
+  const fpWCm = hasFixed ? Math.min(f.fixedPanelWidth || 50, totalGateW - 30) : 0;
+  const doorWCm = hasFixed ? Math.max(30, totalGateW - fpWCm) : totalGateW;
+  const fpRatio = hasFixed ? fpWCm / totalGateW : 0;
+  const fpW    = hasFixed ? Math.round(innerW * fpRatio) : 0;
+  const doorW  = hasFixed ? innerW - fpW : innerW;
+
+  // position of door panel and fixed panel
+  // fixedPanel='right' in RTL means the fixed part is on the right side of the opening
+  const doorPanelX = gX + postW + (fixedPanel === 'right' ? 0 : fpW);
+  const fixPanelX  = gX + postW + (fixedPanel === 'right' ? doorW : 0);
 
   let s = `<svg viewBox="0 0 ${VW} ${VH}" xmlns="http://www.w3.org/2000/svg">`;
   s += `<rect width="${VW}" height="${VH}" fill="#fff"/>`;
   // ground line
   s += `<line x1="${gX-10}" y1="${gY+gH}" x2="${gX+gW+10}" y2="${gY+gH}" stroke="#bbb" stroke-width="1.5"/>`;
-  // left post
+  // outer left post
   s += `<rect x="${gX}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
-  // right post
+  // outer right post
   s += `<rect x="${gX+gW-postW}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
-  // door panel (inner area with bars)
-  const panelX = gX + postW, panelW = gW - postW*2;
+
+  // ── fixed panel (if present) ──
+  if (hasFixed) {
+    // divider post between door and fixed panel
+    const divX = fixedPanel === 'right' ? gX + postW + doorW : gX + postW + fpW;
+    s += `<rect x="${divX}" y="${gY}" width="${postW}" height="${gH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8" opacity="0.9"/>`;
+    // fixed panel fill
+    s += `<rect x="${fixPanelX}" y="${gY+4}" width="${fpW-postW}" height="${gH-8}" fill="rgba(200,225,255,0.25)" stroke="${frameDark}" stroke-width="0.6" rx="1"/>`;
+    // pickets inside fixed panel
+    const fpW2 = fpW - postW;
+    const fpX2 = fixPanelX;
+    s += `<rect x="${fpX2}" y="${gY+4}" width="${fpW2}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.6"/>`;
+    s += `<rect x="${fpX2}" y="${gY+gH-12}" width="${fpW2}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.6"/>`;
+    const pW2=5, pG2=7;
+    for (let px=fpX2+4; px+pW2<=fpX2+fpW2-4; px+=pW2+pG2)
+      s += `<rect x="${px}" y="${gY+12}" width="${pW2}" height="${gH-24}" fill="${frameHex}" rx="1" opacity="0.7"/>`;
+    s += `<text x="${fpX2+fpW2/2}" y="${gY+gH/2+4}" text-anchor="middle" font-size="7" fill="${frameDark}" font-family="Heebo,sans-serif" opacity="0.6">קבוע</text>`;
+  }
+
+  // ── door panel ──
+  const pedModel = f.fenceModel || 'atom';
+  const frameLight2 = darken(frameHex, -30);
   // top rail
-  s += `<rect x="${panelX}" y="${gY+4}" width="${panelW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
+  s += `<rect x="${doorPanelX}" y="${gY+4}" width="${doorW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
   // bottom rail
-  s += `<rect x="${panelX}" y="${gY+gH-12}" width="${panelW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
-  // mid rail
-  s += `<rect x="${panelX}" y="${gY+Math.round(gH/2)-4}" width="${panelW}" height="7" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.7"/>`;
-  // vertical pickets
-  const pW = 6, pG = 8;
-  for (let px = panelX+6; px + pW <= panelX+panelW-6; px += pW+pG)
-    s += `<rect x="${px}" y="${gY+12}" width="${pW}" height="${gH-24}" fill="${frameHex}" rx="1" opacity="0.8"/>`;
-  // hinge marks (right side)
-  [0.2, 0.5, 0.8].forEach(r => {
-    s += `<rect x="${gX+gW-postW-4}" y="${gY+gH*r-5}" width="6" height="10" rx="1.5" fill="${frameDark}" opacity="0.9"/>`;
+  s += `<rect x="${doorPanelX}" y="${gY+gH-12}" width="${doorW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
+
+  // inner fill based on model
+  const innerTop = gY+12, innerH = gH-24, innerLeft = doorPanelX+4, innerRight = doorPanelX+doorW-4, innerW2 = innerRight - innerLeft;
+  if (pedModel === 'hitech-vertical' || pedModel === 'strips') {
+    // vertical pickets
+    const pW = pedModel === 'strips' ? 5 : 6;
+    const pG = pedModel === 'strips' ? 9 : 7;
+    for (let px = innerLeft; px + pW <= innerRight; px += pW+pG) {
+      s += `<rect x="${px}" y="${innerTop}" width="${pW}" height="${innerH}" fill="${frameHex}" rx="1" opacity="0.85"/>`;
+      if (pedModel !== 'strips') s += `<rect x="${px}" y="${innerTop}" width="${pW}" height="2" fill="${frameLight2}" opacity="0.5" rx="1"/>`;
+    }
+  } else if (pedModel === 'hitech-angular') {
+    // angular louvers
+    const clipIdP = `pc-${doorPanelX}`;
+    s += `<clipPath id="${clipIdP}"><rect x="${innerLeft}" y="${innerTop}" width="${innerW2}" height="${innerH}"/></clipPath>`;
+    s += `<g clip-path="url(#${clipIdP})">`;
+    for (let by = innerTop-4; by < innerTop+innerH+4; by += 11) {
+      s += `<polygon points="${innerLeft},${by+5} ${innerRight},${by} ${innerRight},${by+8} ${innerLeft},${by+13}" fill="${frameHex}" opacity="0.9"/>`;
+      s += `<polygon points="${innerLeft},${by+5} ${innerRight},${by} ${innerRight},${by+1.5} ${innerLeft},${by+6.5}" fill="${frameLight2}" opacity="0.5"/>`;
+    }
+    s += `</g>`;
+  } else if (pedModel === 'hitech-atom') {
+    // horizontal boards hi-tech
+    // mid rail too
+    s += `<rect x="${doorPanelX}" y="${gY+Math.round(gH/2)-4}" width="${doorW}" height="7" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.7"/>`;
+    const bH3 = 9, gap3 = 1;
+    for (let by = innerTop; by + bH3 <= innerTop+innerH; by += bH3+gap3) {
+      s += `<rect x="${innerLeft}" y="${by}" width="${innerW2}" height="${bH3}" fill="${frameHex}" rx="1"/>`;
+      s += `<rect x="${innerLeft}" y="${by}" width="${innerW2}" height="2" fill="${frameLight2}" opacity="0.5" rx="1"/>`;
+    }
+  } else {
+    // atom / default: solid horizontal boards + mid rail
+    s += `<rect x="${doorPanelX}" y="${gY+Math.round(gH/2)-4}" width="${doorW}" height="7" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.7"/>`;
+    const bH4 = 10, gap4 = 1;
+    for (let by = innerTop; by + bH4 <= innerTop+innerH; by += bH4+gap4)
+      s += `<rect x="${innerLeft}" y="${by}" width="${innerW2}" height="${bH4}" fill="${frameHex}" rx="1" opacity="0.9"/>`;
+  }
+
+  // ── hinges ──
+  const hingePositions = hingeCount === 2 ? [0.25,0.75] : hingeCount === 4 ? [0.15,0.38,0.62,0.85] : [0.2,0.5,0.8];
+  // hinge is on the hingeSide — in SVG coords (LTR), 'right' means right edge of door panel
+  const hingeEdgeX = hingeSide === 'right'
+    ? doorPanelX + doorW - 4
+    : doorPanelX - 2;
+  hingePositions.forEach(r => {
+    s += `<rect x="${hingeEdgeX}" y="${gY+gH*r-5}" width="6" height="10" rx="1.5" fill="${frameDark}" opacity="0.9"/>`;
   });
-  // handle (left side)
-  const hY = gY + gH * 0.45;
-  s += `<rect x="${panelX+8}" y="${hY-12}" width="5" height="24" rx="2.5" fill="${frameDark}" opacity="0.85"/>`;
-  s += `<rect x="${panelX+4}" y="${hY-3}" width="10" height="6" rx="3" fill="${frameDark}" opacity="0.6"/>`;
-  // motor badge if applicable
+
+  // ── handle (opposite side of hinge) ──
+  const handleSide = hingeSide === 'right' ? 'left' : 'right';
+  const hX  = handleSide === 'left' ? doorPanelX + 8 : doorPanelX + doorW - 13;
+  const hY2 = gY + gH * 0.45;
+  if (handleType === 'decorative') {
+    // decorative: longer bar + decorative ball on top
+    s += `<rect x="${hX}" y="${hY2-18}" width="5" height="36" rx="2.5" fill="${frameDark}" opacity="0.9"/>`;
+    s += `<circle cx="${hX+2.5}" cy="${hY2-22}" r="5" fill="${frameDark}" opacity="0.85"/>`;
+    s += `<rect x="${hX-5}" y="${hY2-3}" width="15" height="6" rx="3" fill="${frameDark}" opacity="0.65"/>`;
+  } else {
+    // standard handle
+    s += `<rect x="${hX}" y="${hY2-12}" width="5" height="24" rx="2.5" fill="${frameDark}" opacity="0.85"/>`;
+    s += `<rect x="${hX-4}" y="${hY2-3}" width="13" height="6" rx="3" fill="${frameDark}" opacity="0.6"/>`;
+  }
+
+  // motor badge
   if (f.motor) s += `<text x="${VW/2}" y="${gY+gH/2+4}" text-anchor="middle" font-size="7.5" fill="#c47c00" font-family="Heebo,sans-serif" font-weight="700">⚡ מנוע</text>`;
+
   // label
-  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">שערון הולכי רגל | ${f.height} ס"מ גובה | ${f.gateWidth||120} ס"מ רוחב</text>`;
+  const pedMdl = getFenceModel(f.fenceModel || 'atom');
+  const svgDoorLabel = hasFixed
+    ? `שער ${doorWCm} ס"מ | קבוע ${fpWCm} ס"מ (${fixedPanel==='right'?'ימין':'שמאל'})`
+    : `${f.gateWidth||120} ס"מ רוחב`;
+  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7" fill="#6b7a99" font-family="Heebo,sans-serif">שערון ${pedMdl.name} | ${f.height} ס"מ גובה | ${svgDoorLabel}</text>`;
   s += '</svg>';
   return s;
 }
@@ -1900,46 +2203,65 @@ function svgParkingGate(f) {
 
   const panelX = gX + postW, panelW = gW - postW*2;
 
+  const pkModel = f.fenceModel || 'atom';
+  const frameLight3 = darken(frameHex, -30);
+
+  // helper: draw fill pattern inside a rect area based on model
+  const drawPanelFill = (px2, py2, pw2, ph2, clipSuffix) => {
+    let r = '';
+    if (pkModel === 'hitech-vertical' || pkModel === 'strips') {
+      const vW = pkModel === 'strips' ? 5 : 6, vG = pkModel === 'strips' ? 9 : 7;
+      for (let vx = px2+4; vx+vW <= px2+pw2-4; vx += vW+vG) {
+        r += `<rect x="${vx}" y="${py2}" width="${vW}" height="${ph2}" fill="${frameHex}" rx="1" opacity="0.85"/>`;
+        if (pkModel !== 'strips') r += `<rect x="${vx}" y="${py2}" width="${vW}" height="2" fill="${frameLight3}" opacity="0.5" rx="1"/>`;
+      }
+    } else if (pkModel === 'hitech-angular') {
+      const cid = `pkc-${clipSuffix}`;
+      r += `<clipPath id="${cid}"><rect x="${px2}" y="${py2}" width="${pw2}" height="${ph2}"/></clipPath>`;
+      r += `<g clip-path="url(#${cid})">`;
+      for (let by2 = py2-4; by2 < py2+ph2+4; by2 += 12) {
+        r += `<polygon points="${px2},${by2+6} ${px2+pw2},${by2} ${px2+pw2},${by2+9} ${px2},${by2+15}" fill="${frameHex}" opacity="0.9"/>`;
+        r += `<polygon points="${px2},${by2+6} ${px2+pw2},${by2} ${px2+pw2},${by2+1.5} ${px2},${by2+7.5}" fill="${frameLight3}" opacity="0.45"/>`;
+      }
+      r += `</g>`;
+    } else if (pkModel === 'hitech-atom') {
+      const bH = 9, gap = 1;
+      for (let by2 = py2; by2+bH <= py2+ph2; by2 += bH+gap) {
+        r += `<rect x="${px2}" y="${by2}" width="${pw2}" height="${bH}" fill="${frameHex}" rx="1"/>`;
+        r += `<rect x="${px2}" y="${by2}" width="${pw2}" height="2" fill="${frameLight3}" opacity="0.5" rx="1"/>`;
+      }
+    } else {
+      // atom / strips horizontal (default)
+      const bH = 10, gap = pkModel === 'strips' ? 5 : 1;
+      for (let by2 = py2; by2+bH <= py2+ph2; by2 += bH+gap)
+        r += `<rect x="${px2}" y="${by2}" width="${pw2}" height="${bH}" fill="${frameHex}" rx="1" opacity="${pkModel==='strips'?'1':'0.9'}"/>`;
+    }
+    return r;
+  };
+
   if (sub === 'double-swing') {
-    // two wings
     const wingW = Math.round(panelW/2);
     [0, 1].forEach(i => {
       const wx = panelX + i * wingW;
       s += `<rect x="${wx}" y="${gY+4}" width="${wingW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
       s += `<rect x="${wx}" y="${gY+gH-12}" width="${wingW}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.8"/>`;
-      s += `<rect x="${wx}" y="${gY+Math.round(gH/2)-4}" width="${wingW}" height="7" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.7"/>`;
-      const pW2=6, pG2=9;
-      for (let px=wx+4; px+pW2<=wx+wingW-4; px+=pW2+pG2)
-        s += `<rect x="${px}" y="${gY+12}" width="${pW2}" height="${gH-24}" fill="${frameHex}" rx="1" opacity="0.8"/>`;
-      // hinge
+      s += drawPanelFill(wx+3, gY+12, wingW-6, gH-24, `ds${i}`);
       const hingeX = i===0 ? wx+wingW-4 : wx;
       [0.2,0.5,0.8].forEach(r => s += `<rect x="${hingeX-3}" y="${gY+gH*r-5}" width="6" height="10" rx="1.5" fill="${frameDark}" opacity="0.9"/>`);
-      // swing arc indicator
       const arcFromX = i===0 ? wx+wingW : wx;
       const arcToX   = i===0 ? wx+wingW-wingW*0.7 : wx+wingW*0.7;
       s += `<path d="M${arcFromX},${gY} Q${arcToX},${gY+gH*0.5} ${arcFromX},${gY+gH}" fill="none" stroke="${frameDark}" stroke-width="0.8" stroke-dasharray="3,3" opacity="0.25"/>`;
     });
-    // center divider
     s += `<line x1="${panelX+Math.round(panelW/2)}" y1="${gY}" x2="${panelX+Math.round(panelW/2)}" y2="${gY+gH}" stroke="${frameDark}" stroke-width="1.5" opacity="0.4"/>`;
   } else if (sub === 'lift') {
-    // gate panel with horizontal boards (folded up look)
-    const boardH = 10, boardGap = 3;
-    for (let by = gY+4; by+boardH <= gY+gH-4; by+=boardH+boardGap)
-      s += `<rect x="${panelX}" y="${by}" width="${panelW}" height="${boardH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.6" opacity="0.85"/>`;
-    // top rail (thicker)
+    s += drawPanelFill(panelX, gY+4, panelW, gH-8, 'lift');
     s += `<rect x="${panelX-4}" y="${gY}" width="${panelW+8}" height="8" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="1"/>`;
-    // lift arrow
     const cx = panelX + panelW/2;
     s += `<line x1="${cx}" y1="${gY+gH-16}" x2="${cx}" y2="${gY+8}" stroke="#0077cc" stroke-width="2" stroke-dasharray="4,3" opacity="0.6"/>`;
     s += `<polygon points="${cx-5},${gY+16} ${cx},${gY+6} ${cx+5},${gY+16}" fill="#0077cc" opacity="0.6"/>`;
   } else {
-    // slide (default)
-    const boardH = 10, boardGap = 3;
-    for (let by = gY+4; by+boardH <= gY+gH-4; by+=boardH+boardGap)
-      s += `<rect x="${panelX}" y="${by}" width="${panelW}" height="${boardH}" fill="${frameHex}" rx="2" stroke="${frameDark}" stroke-width="0.6" opacity="0.85"/>`;
-    // slide rail (top)
+    s += drawPanelFill(panelX, gY+4, panelW, gH-8, 'slide');
     s += `<rect x="${gX-12}" y="${gY-4}" width="${gW+24}" height="8" fill="${frameHex}" rx="3" stroke="${frameDark}" stroke-width="1"/>`;
-    // slide arrow
     const cy = gY + gH/2;
     s += `<line x1="${panelX+16}" y1="${cy}" x2="${panelX+panelW-16}" y2="${cy}" stroke="#0077cc" stroke-width="2" stroke-dasharray="5,3" opacity="0.55"/>`;
     s += `<polygon points="${panelX+panelW-16},${cy-4} ${panelX+panelW-6},${cy} ${panelX+panelW-16},${cy+4}" fill="#0077cc" opacity="0.55"/>`;
@@ -1952,7 +2274,8 @@ function svgParkingGate(f) {
   }
 
   const subLabels = { slide:'הזזה', lift:'הרמה', 'double-swing':'דו-כנפי' };
-  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">שער חניה — ${subLabels[sub]||''} | ${f.height} ס"מ גובה | ${f.gateWidth||300} ס"מ רוחב</text>`;
+  const pkMdl = getFenceModel(f.fenceModel || 'atom');
+  s += `<text x="${VW/2}" y="${VH-8}" text-anchor="middle" font-size="7.5" fill="#6b7a99" font-family="Heebo,sans-serif">שער חניה ${pkMdl.name} — ${subLabels[sub]||''} | ${f.height} ס"מ גובה | ${f.gateWidth||300} ס"מ רוחב</text>`;
   s += '</svg>';
   return s;
 }
@@ -2023,21 +2346,23 @@ function renderWindowCard(f) {
       ${isFence ? `
       <!-- שדות גדר -->
       <div>
-        <div class="sub-label"><i class="ph ph-list-bullets"></i> סוג גדר</div>
-        <div class="opt-group">
-          ${[['horizontal','לוחות אופקיים'],['vertical','פיקים אנכיים'],['railing','מעקה זכוכית']].map(([k,lbl]) =>
-            `<button class="opt-card ${f.fenceType===k?'active':''}" onclick="updateWindow(${f.id},'fenceType','${k}')">${lbl}</button>`
-          ).join('')}
-        </div>
+        <div class="sub-label"><i class="ph ph-list-bullets"></i> דגם גדר</div>
+        ${(() => {
+          const m = getFenceModel(f.fenceModel || 'atom');
+          return `<button class="fence-model-chip" onclick="openFenceModelModal(${f.id})">
+            <i class="ph ph-fence"></i>
+            <span>${m.name}</span>
+            <span class="fence-model-chip-code">${m.code}</span>
+            <i class="ph ph-pencil-simple edit-icon"></i>
+          </button>`;
+        })()}
       </div>
       <div class="field-row">
         <div class="field">
-          <label>גובה גדר (ס"מ)</label>
-          <select onchange="updateWindowDim(${f.id},'height',this.value)">
-            ${[80,100,120,150,180,200,250].map(v =>
-              `<option value="${v}" ${f.height==v?'selected':''}>${v} ס"מ</option>`
-            ).join('')}
-          </select>
+          <label>גובה גדר (ס"מ) — עד 200</label>
+          <input type="number" min="10" max="200" step="1" value="${f.height}"
+            placeholder="לדוגמה: 150"
+            oninput="updateWindowDim(${f.id},'height',this.value)">
         </div>
         <div class="field">
           <label>אורך מקטע (ס"מ)</label>
@@ -2052,21 +2377,89 @@ function renderWindowCard(f) {
 
       ${isPed ? `
       <!-- שדות שערון הולכי רגל -->
+      <div>
+        <div class="sub-label"><i class="ph ph-list-bullets"></i> דגם שער</div>
+        ${(() => {
+          const m = getFenceModel(f.fenceModel || 'atom');
+          return `<button class="fence-model-chip" onclick="openFenceModelModal(${f.id})">
+            <i class="ph ph-person-simple-walk"></i>
+            <span>${m.name}</span>
+            <span class="fence-model-chip-code">${m.code}</span>
+            <i class="ph ph-pencil-simple edit-icon"></i>
+          </button>`;
+        })()}
+      </div>
       <div class="field-row">
         <div class="field">
-          <label>גובה (ס"מ)</label>
-          <select onchange="updateWindowDim(${f.id},'height',this.value)">
-            ${[80,100,120,150,180,200].map(v =>
-              `<option value="${v}" ${f.height==v?'selected':''}>${v} ס"מ</option>`
-            ).join('')}
-          </select>
+          <label>גובה (ס"מ) — עד 230</label>
+          <input type="number" min="60" max="230" step="1" value="${f.height}"
+            placeholder="לדוגמה: 150"
+            oninput="updateWindowDim(${f.id},'height',this.value)">
         </div>
         <div class="field">
-          <label>רוחב (ס"מ)</label>
-          <input type="number" min="60" max="200" step="5" value="${f.gateWidth||120}"
+          <label>רוחב (ס"מ) — עד 600</label>
+          <input type="number" min="60" max="600" step="1" value="${f.gateWidth||120}"
+            placeholder="לדוגמה: 120"
             oninput="updateWindowDim(${f.id},'gateWidth',this.value)">
         </div>
       </div>
+
+      <!-- חלק קבוע + צירים + ידית -->
+      <div style="background:var(--surface2);border:1px solid var(--border-light);border-radius:var(--radius-lg);padding:1rem;display:flex;flex-direction:column;gap:0.85rem;">
+
+        <!-- שורה 1: חלק קבוע -->
+        <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <span style="font-size:0.75rem;font-weight:700;color:var(--silver);white-space:nowrap;min-width:72px;text-align:right;">חלק קבוע</span>
+          <div class="opt-group" style="margin:0;">
+            <button class="opt-card ${(f.fixedPanel||'none')==='none' ?'active':''}" onclick="updateWindow(${f.id},'fixedPanel','none')">ללא</button>
+            <button class="opt-card ${f.fixedPanel==='right'?'active':''}" onclick="updateWindow(${f.id},'fixedPanel','right')">ימין</button>
+            <button class="opt-card ${f.fixedPanel==='left' ?'active':''}" onclick="updateWindow(${f.id},'fixedPanel','left')">שמאל</button>
+          </div>
+          ${(f.fixedPanel||'none') !== 'none' ? (() => {
+            const fpW = f.fixedPanelWidth || 50;
+            const gW2 = f.gateWidth || 120;
+            const doorActual = Math.max(0, gW2 - fpW);
+            return `<div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+              <input type="number" min="10" max="${gW2-30}" step="1" value="${fpW}"
+                oninput="updateWindowDim(${f.id},'fixedPanelWidth',this.value)"
+                style="width:72px;padding:0.4rem 0.6rem;border:1.5px solid var(--border);border-radius:var(--radius);font-family:'Heebo',sans-serif;font-size:0.88rem;color:var(--ink);background:var(--surface);outline:none;text-align:center;"
+                onfocus="this.style.borderColor='var(--blue)'" onblur="this.style.borderColor='var(--border)'">
+              <span style="font-size:0.78rem;color:var(--silver);">ס"מ</span>
+              <div style="font-size:0.78rem;color:var(--silver);background:rgba(0,119,204,0.07);border:1px solid rgba(0,119,204,0.18);border-radius:6px;padding:0.25rem 0.6rem;white-space:nowrap;">
+                פתח <strong style="color:var(--blue);">${gW2} ס"מ</strong>
+                <span style="color:var(--silver-light);margin:0 0.25rem;">−</span>
+                קבוע <strong style="color:var(--silver);">${fpW} ס"מ</strong>
+                <span style="color:var(--silver-light);margin:0 0.25rem;">=</span>
+                שער <strong style="color:var(--green);">${doorActual} ס"מ</strong>
+              </div>
+            </div>`;
+          })() : ''}
+        </div>
+
+        <!-- שורה 2: צד צירים + כמות -->
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:0.75rem;font-weight:700;color:var(--silver);white-space:nowrap;min-width:72px;text-align:right;">צד צירים</span>
+          <div class="opt-group" style="margin:0;">
+            <button class="opt-card ${(f.pedHingeSide||'right')==='right'?'active':''}" onclick="updateWindow(${f.id},'pedHingeSide','right')">ימין</button>
+            <button class="opt-card ${f.pedHingeSide==='left' ?'active':''}" onclick="updateWindow(${f.id},'pedHingeSide','left')">שמאל</button>
+          </div>
+          <span style="font-size:0.75rem;font-weight:700;color:var(--silver);white-space:nowrap;margin-right:0.5rem;">כמות</span>
+          <div class="opt-group" style="margin:0;">
+            ${[2,3,4].map(n => `<button class="opt-card ${(f.pedHingeCount||3)==n?'active':''}" onclick="updateWindow(${f.id},'pedHingeCount',${n})">${n}</button>`).join('')}
+          </div>
+        </div>
+
+        <!-- שורה 3: סוג ידית -->
+        <div style="display:flex;align-items:center;gap:1rem;">
+          <span style="font-size:0.75rem;font-weight:700;color:var(--silver);white-space:nowrap;min-width:72px;text-align:right;">סוג ידית</span>
+          <div class="opt-group" style="margin:0;flex:1;">
+            <button class="opt-card ${(f.handleType||'standard')==='standard'?'active':''}" onclick="updateWindow(${f.id},'handleType','standard')">רגילה</button>
+            <button class="opt-card ${f.handleType==='decorative'?'active':''}" onclick="updateWindow(${f.id},'handleType','decorative')">דקורטיבית</button>
+          </div>
+        </div>
+
+      </div>
+
       <div class="motor-row">
         <input type="checkbox" id="motor-${f.id}" ${f.motor?'checked':''}
           onchange="updateWindow(${f.id},'motor',this.checked)">
@@ -2077,6 +2470,18 @@ function renderWindowCard(f) {
       ${isParking ? `
       <!-- שדות שער חניה -->
       <div>
+        <div class="sub-label"><i class="ph ph-list-bullets"></i> דגם שער</div>
+        ${(() => {
+          const m = getFenceModel(f.fenceModel || 'atom');
+          return `<button class="fence-model-chip" onclick="openFenceModelModal(${f.id})">
+            <i class="ph ph-car"></i>
+            <span>${m.name}</span>
+            <span class="fence-model-chip-code">${m.code}</span>
+            <i class="ph ph-pencil-simple edit-icon"></i>
+          </button>`;
+        })()}
+      </div>
+      <div>
         <div class="sub-label"><i class="ph ph-git-fork"></i> סוג שער חניה</div>
         <div class="opt-group">
           ${[['slide','הזזה'],['lift','הרמה'],['double-swing','דו-כנפי']].map(([k,lbl]) =>
@@ -2086,16 +2491,15 @@ function renderWindowCard(f) {
       </div>
       <div class="field-row">
         <div class="field">
-          <label>גובה (ס"מ)</label>
-          <select onchange="updateWindowDim(${f.id},'height',this.value)">
-            ${[120,150,180,200,220,250].map(v =>
-              `<option value="${v}" ${f.height==v?'selected':''}>${v} ס"מ</option>`
-            ).join('')}
-          </select>
+          <label>גובה (ס"מ) — עד 230</label>
+          <input type="number" min="80" max="230" step="1" value="${f.height}"
+            placeholder="לדוגמה: 180"
+            oninput="updateWindowDim(${f.id},'height',this.value)">
         </div>
         <div class="field">
-          <label>רוחב פתח (ס"מ)</label>
-          <input type="number" min="150" max="1500" step="10" value="${f.gateWidth||300}"
+          <label>רוחב פתח (ס"מ) — עד 600</label>
+          <input type="number" min="150" max="600" step="1" value="${f.gateWidth||300}"
+            placeholder="לדוגמה: 300"
             oninput="updateWindowDim(${f.id},'gateWidth',this.value)">
         </div>
       </div>
@@ -2341,6 +2745,14 @@ window.updateWindowDim = function(id, field, value) {
   const w = state.windows.find(x => x.id === id);
   if (!w) return;
   w[field] = +value;
+  if (field === 'height' && w.productType === 'fence')
+    w[field] = Math.min(200, Math.max(10, w[field]));
+  if (field === 'height' && (w.productType === 'parking-gate' || w.productType === 'pedestrian-gate'))
+    w[field] = Math.min(230, Math.max(60, w[field]));
+  if (field === 'gateWidth' && (w.productType === 'parking-gate' || w.productType === 'pedestrian-gate'))
+    w[field] = Math.min(600, Math.max(60, w[field]));
+  if (field === 'fixedPanelWidth' && w.productType === 'pedestrian-gate')
+    w[field] = Math.min((w.gateWidth||120) - 30, Math.max(10, w[field]));
   clearTimeout(_dimTimer);
   _dimTimer = setTimeout(() => {
     // עדכן רק את הכרטיס הספציפי + סיכום, בלי להחליף את ה-DOM של כל הקלטים
@@ -2555,6 +2967,48 @@ window.handleLogout = async function() {
   window.location.href = 'login.html';
 };
 
+// ── FENCE MODEL MODAL ──
+let _fenceModelId = null;
+
+window.openFenceModelModal = function(id) {
+  _fenceModelId = id;
+  const w = state.windows.find(x => x.id === id);
+  const overlay = document.getElementById('fenceModelOverlay');
+  const grid = document.getElementById('fenceModelGrid');
+  const currentModel = w?.fenceModel || 'atom';
+
+  grid.innerHTML = FENCE_MODELS.map(m => `
+    <div class="fmodel-card ${m.key === currentModel ? 'selected' : ''}"
+      onclick="selectFenceModel(${id},'${m.key}')">
+      <div class="fmodel-thumb">${m.thumb()}</div>
+      <div class="fmodel-info">
+        <div class="fmodel-code">${m.code}</div>
+        <div class="fmodel-name">${m.name}</div>
+        <div class="fmodel-desc">${m.desc}</div>
+      </div>
+    </div>
+  `).join('');
+
+  overlay.classList.add('open');
+};
+
+window.closeFenceModelModal = function(e) {
+  if (e && e.target !== document.getElementById('fenceModelOverlay')) return;
+  document.getElementById('fenceModelOverlay').classList.remove('open');
+  _fenceModelId = null;
+};
+
+window.selectFenceModel = function(id, key) {
+  const w = state.windows.find(x => x.id === id);
+  if (!w) return;
+  const m = getFenceModel(key);
+  w.fenceModel = key;
+  w.fenceType  = m.fenceType;
+  document.getElementById('fenceModelOverlay').classList.remove('open');
+  _fenceModelId = null;
+  renderAll();
+};
+
 // ── INIT ──
 async function init() {
   const { data:{ user } } = await supabase.auth.getUser();
@@ -2705,6 +3159,17 @@ document.addEventListener('click', function(e) {
       <button class="btn-primary" onclick="saveBlindModal()"><i class="ph ph-check"></i> שמור</button>
       <button class="btn-ghost" onclick="closeBlindModal()">ביטול</button>
     </div>
+  </div>
+</div>
+
+<!-- FENCE MODEL MODAL -->
+<div class="fmodel-overlay" id="fenceModelOverlay" onclick="closeFenceModelModal(event)">
+  <div class="fmodel-box" onclick="event.stopPropagation()">
+    <div class="fmodel-hdr">
+      <div class="fmodel-title"><i class="ph ph-fence"></i> בחירת דגם גדר</div>
+      <button class="fmodel-close" onclick="closeFenceModelModal()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="fmodel-grid" id="fenceModelGrid"></div>
   </div>
 </div>
 
