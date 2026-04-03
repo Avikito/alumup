@@ -643,6 +643,15 @@
         <div class="dashboard-title">הגדרות פרופיל</div>
         <div class="dashboard-subtitle">עדכון פרטי העסק, אבטחה, מיתוג והסמכות</div>
 
+        <!-- באנר בקשות דחויות -->
+        <div id="cr-rejected-banner" style="display:none;margin-bottom:1.25rem;padding:1rem 1.25rem;
+          background:rgba(220,38,38,0.07);border:1.5px solid rgba(220,38,38,0.25);border-radius:12px;">
+          <div style="font-weight:700;color:#dc2626;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.5rem;">
+            <i class="ph ph-x-circle"></i> בקשת שינוי פרטים נדחתה
+          </div>
+          <div id="cr-rejected-list" style="display:flex;flex-direction:column;gap:0.5rem;"></div>
+        </div>
+
         <div class="settings-grid">
 
           <!-- Card 1: פרטי זיהוי -->
@@ -792,6 +801,58 @@
     </main>
   </div>
 
+  <!-- ── CHANGE REQUEST MODAL ── -->
+  <div class="order-modal-overlay" id="changeRequestOverlay" onclick="closeChangeRequest(event)">
+    <div class="order-modal" onclick="event.stopPropagation()" style="max-width:500px;">
+      <div class="order-modal-hdr">
+        <div class="order-modal-title"><i class="ph ph-pencil-simple"></i> בקשת שינוי פרטים</div>
+        <button class="btn-close-modal" onclick="closeChangeRequest()"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="order-modal-body" style="padding:1.5rem;">
+        <p style="font-size:0.85rem;color:var(--silver-dark);margin-bottom:1.25rem;">
+          מלא את הפרטים שברצונך לעדכן — ניתן לשנות מספר פרטים בבת אחת. השאר ריק מה שאינך רוצה לשנות.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:0.85rem;">
+          <div style="display:grid;grid-template-columns:120px 1fr;align-items:center;gap:0.6rem;">
+            <label style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);">שם העסק</label>
+            <input id="cr-business-name" type="text" placeholder="שם חדש..."
+              style="padding:0.5rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-dark);color:var(--industrial-silver);font-family:'Heebo',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:120px 1fr;align-items:center;gap:0.6rem;">
+            <label style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);">ח.פ / ע.מ</label>
+            <input id="cr-business-id" type="text" placeholder="מספר חדש..."
+              style="padding:0.5rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-dark);color:var(--industrial-silver);font-family:'Heebo',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:120px 1fr;align-items:center;gap:0.6rem;">
+            <label style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);">כתובת</label>
+            <input id="cr-address" type="text" placeholder="כתובת חדשה..."
+              style="padding:0.5rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-dark);color:var(--industrial-silver);font-family:'Heebo',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:120px 1fr;align-items:center;gap:0.6rem;">
+            <label style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);">טלפון</label>
+            <input id="cr-phone" type="tel" placeholder="מספר חדש..."
+              style="padding:0.5rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-dark);color:var(--industrial-silver);font-family:'Heebo',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:120px 1fr;align-items:center;gap:0.6rem;">
+            <label style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);">אימייל</label>
+            <input id="cr-email" type="email" placeholder="אימייל חדש..."
+              style="padding:0.5rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-dark);color:var(--industrial-silver);font-family:'Heebo',sans-serif;font-size:0.88rem;outline:none;width:100%;box-sizing:border-box;">
+          </div>
+          <div style="display:grid;grid-template-columns:120px 1fr;align-items:start;gap:0.6rem;">
+            <label style="font-size:0.8rem;font-weight:700;color:var(--silver-dark);padding-top:0.5rem;">הערות</label>
+            <textarea id="cr-notes" rows="2" placeholder="פרטים נוספים..."
+              style="padding:0.5rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;background:var(--surface-dark);color:var(--industrial-silver);font-family:'Heebo',sans-serif;font-size:0.85rem;outline:none;resize:vertical;width:100%;box-sizing:border-box;"></textarea>
+          </div>
+          <div id="cr-msg" style="font-size:0.82rem;display:none;padding:0.6rem 0.8rem;border-radius:8px;"></div>
+          <button onclick="submitChangeRequest()"
+            style="padding:0.75rem 1.5rem;background:var(--electric-blue);color:#fff;border:none;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.5rem;">
+            <i class="ph ph-paper-plane-tilt"></i> שלח בקשה
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ── ORDER DETAIL MODAL ── -->
   <div class="order-modal-overlay" id="orderModalOverlay" onclick="closeOrderModal(event)">
     <div class="order-modal" onclick="event.stopPropagation()">
@@ -845,6 +906,7 @@ function normalize(row, type) {
     code:      type === 'quote' ? (row.quote_code || row.id.slice(0,8))
                                 : (row.order_code || row.id.slice(0,8)),
     status:    row.status || 'draft',
+    category:  row.category || '',
     config:    row.config || {},
     total:     type === 'quote' ? (row.total_amount || 0) : (row.subtotal || row.total_price || 0),
     subtotal:  row.subtotal || 0,
@@ -1732,13 +1794,17 @@ function itemCard(o, showApprove) {
   // Approve button only for orders with status quote/draft (not legacy quotes table rows)
   const canApprove = showApprove && o._type === 'order' && ['quote', 'draft'].includes(o.status);
   const isProcurement = cfg.type === 'procurement';
-  const isWindows     = o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows);
+  const isFenceGate   = o.category === 'גדרות ושערים';
+  const isWindows     = !isFenceGate && (o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows));
   const windowCount   = isWindows ? ((cfg.windows||[]).length || 1) : 0;
+  const fenceCount    = isFenceGate ? ((cfg.windows||[]).length || 1) : 0;
   const descText = isProcurement
     ? `פרופילי אלומיניום · ${(cfg.profiles||[]).length + (cfg.screws||[]).length} פריטים`
-    : isWindows
-      ? `חלונות ויטרינה · ${windowCount} חלון${windowCount > 1 ? 'ות' : ''}`
-      : `פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}`;
+    : isFenceGate
+      ? `גדרות ושערים · ${fenceCount} פריט${fenceCount > 1 ? 'ים' : ''}`
+      : isWindows
+        ? `חלונות ויטרינה · ${windowCount} חלון${windowCount > 1 ? 'ות' : ''}`
+        : `פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}`;
 
   return `<div class="order-card" onclick="openModal('${o._id}')">
     <div class="order-card-info">
@@ -1826,6 +1892,73 @@ window.openModal = function(id) {
 
     if (cfg.orderNum) html += `<div style="font-size:0.82rem;color:var(--silver-dark);margin-bottom:0.4rem;">מספר הזמנה: <strong>${cfg.orderNum}</strong></div>`;
     if (cfg.ralCode) html += `<div style="font-size:0.82rem;color:var(--silver-dark);margin-bottom:1rem;">גוון RAL: <strong>${cfg.ralCode}</strong></div>`;
+
+    html += `<div class="modal-totals">
+      <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
+      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
+      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+    </div>`;
+
+    document.getElementById('modalBody').innerHTML = html;
+    document.getElementById('orderModalOverlay').classList.add('open');
+    return;
+  }
+
+  // ── גדרות ושערים ──
+  if (o.category === 'גדרות ושערים') {
+    const ptLabels  = { fence:'גדר', 'pedestrian-gate':'שערון הולכי רגל', 'parking-gate':'שער חניה' };
+    const subLabels = { slide:'הזזה', lift:'הרמה', 'double-swing':'דו-כנפי' };
+    const ftLabels  = { horizontal:'לוחות אופקיים', vertical:'פיקים אנכיים', railing:'מעקה זכוכית' };
+    const hdLabels  = { standard:'רגילה', decorative:'דקורטיבית' };
+
+    if (cfg.projectName || cfg.customerName || cfg.customerAddress) {
+      html += `<div style="margin-bottom:1.1rem;padding:0.85rem 1rem;background:var(--surface-elevated,#f8fafc);border-radius:10px;border:1px solid var(--border-color,#e2e8f0);">`;
+      if (cfg.projectName)     html += `<div style="font-size:0.83rem;margin-bottom:0.25rem;"><span style="color:var(--silver-dark);font-weight:600;">שם פרויקט: </span><strong>${cfg.projectName}</strong></div>`;
+      if (cfg.customerName)    html += `<div style="font-size:0.83rem;margin-bottom:0.25rem;"><span style="color:var(--silver-dark);font-weight:600;">לקוח: </span><strong>${cfg.customerName}</strong></div>`;
+      if (cfg.customerAddress) html += `<div style="font-size:0.83rem;"><span style="color:var(--silver-dark);font-weight:600;">כתובת: </span>${cfg.customerAddress}</div>`;
+      html += `</div>`;
+    }
+
+    (cfg.windows || []).forEach((f, i) => {
+      const pt = f.productType || 'fence';
+      const title = ptLabels[pt] || pt;
+      const ralEntry = (window.RAL_COLORS||[]).find(r => r.code === f.alColor);
+      const colorLabel = ralEntry ? `RAL ${f.alColor} – ${ralEntry.name}` : (f.alColorCustom ? `RAL ${f.alColorCustom}` : `RAL ${f.alColor||'9016'}`);
+
+      const rows = [];
+      if (pt === 'fence') {
+        rows.push(['סוג גדר', ftLabels[f.fenceType]||f.fenceType||'—']);
+        rows.push(['גובה', `${f.height} ס"מ`]);
+        rows.push(['אורך', `${f.length} ס"מ`]);
+        const sqm = ((f.height/100)*(f.length/100)).toFixed(2);
+        rows.push(['שטח', `${sqm} מ"ר`]);
+      } else if (pt === 'pedestrian-gate') {
+        rows.push(['גובה', `${f.height} ס"מ`]);
+        rows.push(['רוחב', `${f.gateWidth||120} ס"מ`]);
+        rows.push(['צד ציר', f.pedHingeSide==='left'?'שמאל':'ימין']);
+        rows.push(['ידית', hdLabels[f.handleType]||'—']);
+      } else if (pt === 'parking-gate') {
+        rows.push(['סוג', subLabels[f.parkingGateSubType]||'—']);
+        rows.push(['גובה', `${f.height} ס"מ`]);
+        rows.push(['רוחב', `${f.gateWidth||300} ס"מ`]);
+        if (f.motor)       rows.push(['מנוע חשמלי', '⚡ כן']);
+        if (f.steelFrame)  rows.push(['מסגרת פלדה', '🏗️ כן']);
+        if (f.springsArms) rows.push(['קפיצים וזרועות', '🔧 כן']);
+      }
+      rows.push(['צבע פרופיל', colorLabel]);
+      if (f.notes) rows.push(['הערות', f.notes]);
+
+      html += `<div class="modal-sys-card" style="margin-bottom:0.85rem;">
+        <div class="modal-sys-title">
+          <i class="ph ph-${pt==='fence'?'fence':pt==='pedestrian-gate'?'person-simple-walk':'car'}"></i>
+          ${f.location || `${title} ${i+1}`}
+          <span style="font-weight:400;color:var(--silver-dark);font-size:0.78rem;margin-right:0.5rem;">· ${title}</span>
+        </div>
+        <div class="modal-grid">
+          ${rows.map(([k,v]) => `<div class="modal-item"><span class="modal-key">${k}</span><span class="modal-val">${v}</span></div>`).join('')}
+        </div>
+      </div>`;
+    });
 
     html += `<div class="modal-totals">
       <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
@@ -2017,7 +2150,8 @@ window.generateDashboardPDF = async function(id) {
 
     // Build description from config
     const cfg = o.config || {};
-    const isWin2 = o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows);
+    const isFenceGate2 = o.category === 'גדרות ושערים';
+    const isWin2 = !isFenceGate2 && (o.category === 'חלון ויטרינה' || Array.isArray(cfg.windows));
     const sysCount = (cfg.systems || []).length || 1;
     const firstSys = cfg.systems?.[0] || {};
     const dims = (firstSys.width && firstSys.depth) ? `${firstSys.width}×${firstSys.depth} ס"מ` : '';
@@ -2028,7 +2162,10 @@ window.generateDashboardPDF = async function(id) {
       cfg.addons?.dimmer && 'דימר',
     ].filter(Boolean).join(', ');
     const winCount2 = (cfg.windows||[]).length || 1;
-    const desc = isWin2
+    const fenceCount2 = isFenceGate2 ? winCount2 : 0;
+    const desc = isFenceGate2
+      ? `גדרות ושערים · ${fenceCount2} פריט${fenceCount2 > 1 ? 'ים' : ''}`
+      : isWin2
       ? `חלונות ויטרינה · ${winCount2} חלון`
       : `פרגולה PVC${dims ? ' · ' + dims : ''}${addonsStr ? ' · ' + addonsStr : ''}`;
 
@@ -2171,8 +2308,25 @@ async function initSettingsSection() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return;
 
-  const { data: p } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+  const [{ data: p }, { data: rejectedCrs }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user.id).single(),
+    supabase.from('change_requests').select('field,new_value,admin_note,created_at')
+      .eq('user_id', user.id).eq('status', 'rejected').order('created_at', { ascending: false })
+  ]);
   _settingsProfile = p || {};
+
+  // הצג בקשות דחויות
+  if (rejectedCrs?.length) {
+    document.getElementById('cr-rejected-banner').style.display = 'block';
+    document.getElementById('cr-rejected-list').innerHTML = rejectedCrs.map(r => {
+      const date = new Date(r.created_at).toLocaleDateString('he-IL');
+      return `<div style="padding:0.65rem 0.85rem;background:rgba(220,38,38,0.05);border-radius:8px;border:1px solid rgba(220,38,38,0.15);">
+        <div style="font-size:0.8rem;color:var(--silver-dark);margin-bottom:0.3rem;">${date} · שדה: <strong style="color:#dc2626;">${r.field}</strong></div>
+        <div style="font-size:0.83rem;white-space:pre-line;color:var(--industrial-silver);margin-bottom:${r.admin_note?'0.35rem':'0'};">${r.new_value}</div>
+        ${r.admin_note ? `<div style="font-size:0.8rem;color:#92400e;"><i class="ph ph-note"></i> הערת המערכת: ${r.admin_note}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
 
   // Identity card
   document.getElementById('sf-business-name').textContent    = p?.business_name    || '—';
@@ -2261,14 +2415,103 @@ window.previewLogo = function(event) {
   reader.readAsDataURL(file);
 };
 
-window.openChangeRequest = function() {
-  supabase.auth.getUser().then(({ data: { user } }) => {
-    const subject = encodeURIComponent('בקשת שינוי פרטי עסק – ALUM-IL');
-    const body = encodeURIComponent(
-      `שלום,\n\nאני מבקש לעדכן את פרטי העסק שלי במערכת ALUM-IL.\n\nמשתמש: ${user?.email || ''}\n\nפרטים לשינוי:\n\n`
-    );
-    window.location.href = `mailto:support@alum-il.co.il?subject=${subject}&body=${body}`;
-  });
+window.openChangeRequest = async function() {
+  // בדוק אם יש בקשה פתוחה
+  const { data: { user } } = await supabase.auth.getUser();
+  const { data: pending } = await supabase
+    .from('change_requests')
+    .select('id,created_at')
+    .eq('user_id', user.id)
+    .eq('status', 'pending')
+    .limit(1);
+
+  if (pending?.length) {
+    const date = new Date(pending[0].created_at).toLocaleDateString('he-IL');
+    const msg = document.getElementById('cr-msg');
+    ['cr-business-name','cr-business-id','cr-address','cr-phone','cr-email','cr-notes']
+      .forEach(id => document.getElementById(id).value = '');
+    msg.style.display = 'block';
+    msg.style.background = '#fefce8';
+    msg.style.color = '#92400e';
+    msg.textContent = `יש בקשה פתוחה מ-${date} הממתינה לטיפול — לא ניתן להגיש בקשה נוספת עד לסגירתה.`;
+    const btn = document.querySelector('#changeRequestOverlay button[onclick="submitChangeRequest()"]');
+    btn.style.display = 'none';
+    document.getElementById('changeRequestOverlay').classList.add('open');
+    return;
+  }
+
+  ['cr-business-name','cr-business-id','cr-address','cr-phone','cr-email','cr-notes']
+    .forEach(id => document.getElementById(id).value = '');
+  const msg = document.getElementById('cr-msg');
+  msg.style.display = 'none';
+  const btn = document.querySelector('#changeRequestOverlay button[onclick="submitChangeRequest()"]');
+  btn.style.display = 'flex';
+  btn.disabled = false;
+  btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> שלח בקשה';
+  document.getElementById('changeRequestOverlay').classList.add('open');
+};
+
+window.closeChangeRequest = function(e) {
+  if (e && e.target !== document.getElementById('changeRequestOverlay')) return;
+  document.getElementById('changeRequestOverlay').classList.remove('open');
+};
+
+window.submitChangeRequest = async function() {
+  const fields = [
+    { id: 'cr-business-name', label: 'שם העסק' },
+    { id: 'cr-business-id',   label: 'ח.פ / ע.מ' },
+    { id: 'cr-address',       label: 'כתובת' },
+    { id: 'cr-phone',         label: 'טלפון' },
+    { id: 'cr-email',         label: 'אימייל' },
+  ];
+  const notes = document.getElementById('cr-notes').value.trim();
+  const msg   = document.getElementById('cr-msg');
+
+  const changes = fields
+    .map(f => ({ label: f.label, value: document.getElementById(f.id).value.trim() }))
+    .filter(f => f.value);
+
+  if (changes.length === 0) {
+    msg.style.display = 'block';
+    msg.style.background = '#fef2f2';
+    msg.style.color = '#dc2626';
+    msg.textContent = 'יש למלא לפחות פרט אחד לשינוי';
+    return;
+  }
+
+  const btn = document.querySelector('#changeRequestOverlay button[onclick="submitChangeRequest()"]');
+  btn.disabled = true;
+  btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שולח...';
+
+  const summary = changes.map(c => `${c.label}: ${c.value}`).join('\n');
+
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    const { error } = await supabase.from('change_requests').insert({
+      user_id:    user?.id,
+      user_email: user?.email,
+      field:      changes.length === 1 ? changes[0].label : 'עדכון מרובה',
+      new_value:  summary,
+      notes:      notes || null,
+      status:     'pending'
+    });
+
+    if (error) throw error;
+
+    msg.style.display = 'block';
+    msg.style.background = '#f0fdf4';
+    msg.style.color = '#16a34a';
+    msg.textContent = `✓ הבקשה נשלחה בהצלחה (${changes.length} פרטים) — נחזור אליך תוך יום עסקים`;
+    btn.style.display = 'none';
+    setTimeout(() => document.getElementById('changeRequestOverlay').classList.remove('open'), 2500);
+  } catch {
+    msg.style.display = 'block';
+    msg.style.background = '#fefce8';
+    msg.style.color = '#92400e';
+    msg.innerHTML = `לא ניתן לשלוח אוטומטית. <a href="mailto:support@alum-il.co.il?subject=${encodeURIComponent('בקשת שינוי פרטים')}&body=${encodeURIComponent(summary + (notes ? '\n\nהערות: ' + notes : ''))}" style="color:var(--electric-blue);font-weight:700;">לחץ כאן לשליחה במייל</a>`;
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> שלח בקשה';
+  }
 };
 
 window.savePassword = async function() {

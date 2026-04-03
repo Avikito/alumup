@@ -822,7 +822,44 @@ function buildExpandRow(u) {
           </div>
         </div>
 
-        <!-- Section 4: הערות פנימיות -->
+        <!-- Section 4: היסטוריית שינויי פרטים (מתקפל) -->
+        ${(() => {
+          const crLogs = (u.member_activity_log || [])
+            .filter(e => e.action === 'change_request_approved' || e.action === 'change_request_rejected')
+            .slice().reverse();
+          if (!crLogs.length) return '';
+          return `<div class="ep-section">
+            <div class="ep-section-title" onclick="toggleCrLog('${u.id}')" style="cursor:pointer;user-select:none;display:flex;align-items:center;justify-content:space-between;">
+              <span><i class="ph ph-clock-counter-clockwise"></i> היסטוריית שינויי פרטים
+                <span style="font-size:0.72rem;font-weight:400;color:var(--silver-dark);margin-right:0.4rem;">(${crLogs.length})</span>
+              </span>
+              <i class="ph ph-caret-down" id="cr-log-caret-${u.id}" style="transition:transform 0.2s;font-size:0.9rem;color:var(--silver-dark);"></i>
+            </div>
+            <div id="cr-log-body-${u.id}" style="display:none;margin-top:0.6rem;display:none;">
+              <div style="display:flex;flex-direction:column;gap:0.5rem;">
+                ${crLogs.map(e => {
+                  const approved = e.action === 'change_request_approved';
+                  const date = new Date(e.at).toLocaleDateString('he-IL');
+                  const time = new Date(e.at).toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' });
+                  return `<div style="padding:0.65rem 0.85rem;border-radius:8px;border:1px solid ${approved?'rgba(22,163,74,0.2)':'rgba(220,38,38,0.2)'};background:${approved?'rgba(22,163,74,0.05)':'rgba(220,38,38,0.05)'};">
+                    <div style="display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;">
+                      <span style="font-size:0.72rem;font-weight:700;padding:0.1rem 0.5rem;border-radius:20px;
+                        background:${approved?'rgba(22,163,74,0.12)':'rgba(220,38,38,0.1)'};
+                        color:${approved?'#16a34a':'#dc2626'};">
+                        ${approved?'✓ אושר':'✗ נדחה'}
+                      </span>
+                      <span style="font-size:0.75rem;color:var(--silver-dark);">${date} · ${time}</span>
+                    </div>
+                    <div style="font-size:0.8rem;color:var(--industrial-silver);white-space:pre-line;margin-bottom:${e.admin_note?'0.3rem':'0'};">${e.details || ''}</div>
+                    ${e.admin_note ? `<div style="font-size:0.76rem;color:var(--silver-dark);"><i class="ph ph-note"></i> הערת אדמין: ${e.admin_note}</div>` : ''}
+                  </div>`;
+                }).join('')}
+              </div>
+            </div>
+          </div>`;
+        })()}
+
+        <!-- Section 5: הערות פנימיות -->
         <div class="ep-section" style="border-bottom:none;">
           <div class="ep-section-title">
             <i class="ph ph-note-pencil"></i> הערות פנימיות
@@ -865,6 +902,16 @@ window.setRating = async function(id, n) {
   await supabase.from('profiles').update({ rating: n }).eq('id', id);
   const idx = allUsers.findIndex(u => u.id === id);
   if (idx !== -1) allUsers[idx].rating = n;
+};
+
+/* ── Toggle change-log accordion ── */
+window.toggleCrLog = function(id) {
+  const body  = document.getElementById(`cr-log-body-${id}`);
+  const caret = document.getElementById(`cr-log-caret-${id}`);
+  if (!body) return;
+  const open = body.style.display === 'none' || body.style.display === '';
+  body.style.display  = open ? 'block' : 'none';
+  if (caret) caret.style.transform = open ? 'rotate(180deg)' : 'rotate(0deg)';
 };
 
 /* ── Toggle expand ── */

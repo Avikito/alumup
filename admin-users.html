@@ -111,6 +111,84 @@
     .biz-id    { font-size:0.78rem;color:var(--silver-dark); }
     .phone-cell { direction:ltr;text-align:right;font-size:0.85rem; }
 
+    /* ── CHANGE REQUESTS SECTION ── */
+    .cr-section {
+      margin-bottom: 2rem;
+      border: 1.5px solid rgba(217,119,6,0.35);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .cr-section-header {
+      display: flex; align-items: center; gap: 0.65rem;
+      padding: 0.85rem 1.25rem;
+      background: rgba(217,119,6,0.08);
+      border-bottom: 1px solid rgba(217,119,6,0.2);
+      font-size: 0.9rem; font-weight: 800; color: #92400e;
+    }
+    .cr-section-header i { font-size: 1.1rem; }
+    .cr-badge {
+      background: rgba(217,119,6,0.15); color: #b45309;
+      border: 1px solid rgba(217,119,6,0.3);
+      border-radius: 20px; padding: 0.1rem 0.55rem;
+      font-size: 0.72rem; font-weight: 700; margin-right: auto;
+    }
+    .cr-table { width: 100%; border-collapse: collapse; font-size: 0.87rem; }
+    .cr-table th {
+      background: rgba(217,119,6,0.05);
+      padding: 0.65rem 1rem; text-align: right;
+      font-size: 0.72rem; font-weight: 700; color: #92400e;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(217,119,6,0.15);
+    }
+    .cr-table td { padding: 0.85rem 1rem; border-bottom: 1px solid rgba(217,119,6,0.1); vertical-align: top; }
+    .cr-table tr:last-child td { border-bottom: none; }
+    .cr-table tr:hover td { background: rgba(217,119,6,0.04); }
+    .cr-compare { display: flex; flex-direction: column; gap: 0.35rem; min-width: 200px; }
+    .cr-compare-row { display: flex; align-items: baseline; gap: 0.4rem; font-size: 0.82rem; }
+    .cr-label { font-size: 0.7rem; font-weight: 700; color: #92400e; min-width: 65px; }
+    .cr-old { color: var(--silver-dark); text-decoration: line-through; opacity: 0.7; }
+    .cr-arrow { color: #b45309; font-size: 0.75rem; }
+    .cr-new { font-weight: 700; color: #15803d; }
+    .cr-field-badge {
+      display: inline-flex; align-items: center;
+      padding: 0.15rem 0.55rem; border-radius: 20px;
+      font-size: 0.72rem; font-weight: 700;
+      background: rgba(217,119,6,0.12); color: #b45309;
+      border: 1px solid rgba(217,119,6,0.25);
+    }
+    .cr-note-input {
+      width: 100%; min-width: 180px; padding: 0.4rem 0.6rem;
+      border: 1.5px solid rgba(217,119,6,0.25); border-radius: 7px;
+      background: rgba(217,119,6,0.04); color: var(--industrial-silver);
+      font-family: 'Heebo', sans-serif; font-size: 0.82rem;
+      resize: vertical; outline: none; box-sizing: border-box;
+    }
+    .cr-note-input:focus { border-color: #b45309; }
+    .cr-actions { display: flex; flex-direction: column; gap: 0.4rem; }
+    .btn-cr-approve {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.35rem 0.85rem; border-radius: 7px;
+      font-family: 'Heebo', sans-serif; font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
+      background: rgba(22,163,74,0.1); color: #16a34a;
+      border: 1.5px solid rgba(22,163,74,0.28);
+    }
+    .btn-cr-approve:hover { background: rgba(22,163,74,0.18); }
+    .btn-cr-reject {
+      display: inline-flex; align-items: center; gap: 0.3rem;
+      padding: 0.35rem 0.85rem; border-radius: 7px;
+      font-family: 'Heebo', sans-serif; font-size: 0.8rem; font-weight: 700;
+      cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
+      background: rgba(220,38,38,0.08); color: #dc2626;
+      border: 1.5px solid rgba(220,38,38,0.25);
+    }
+    .btn-cr-reject:hover { background: rgba(220,38,38,0.14); }
+    .btn-cr-approve:disabled, .btn-cr-reject:disabled { opacity: 0.4; pointer-events: none; }
+    .cr-empty {
+      padding: 1.5rem; text-align: center;
+      color: #92400e; opacity: 0.5; font-size: 0.88rem;
+    }
+
     /* empty approved state */
     .all-clear {
       text-align:center;padding:3rem 2rem;
@@ -144,6 +222,30 @@
     <main class="admin-content">
       <div class="page-title">אישור משתמשים</div>
       <div class="page-subtitle">בקשות הצטרפות הממתינות לאישור</div>
+
+      <!-- ── בקשות שינוי פרטים ── -->
+      <div class="cr-section" id="crSection" style="display:none;">
+        <div class="cr-section-header">
+          <i class="ph ph-pencil-simple-line"></i>
+          בקשות שינוי פרטים
+          <span class="cr-badge" id="crBadge">0</span>
+        </div>
+        <table class="cr-table">
+          <thead>
+            <tr>
+              <th>תאריך</th>
+              <th>לקוח</th>
+              <th>שינויים מבוקשים — ישן ← חדש</th>
+              <th>הערת לקוח</th>
+              <th>הערת אדמין (תיעוד ב-CRM)</th>
+              <th>פעולה</th>
+            </tr>
+          </thead>
+          <tbody id="crBody">
+            <tr><td colspan="6" class="cr-empty"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>
+          </tbody>
+        </table>
+      </div>
 
       <div class="toolbar">
         <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או ח\"פ..." id="searchInput" oninput="filterRows()">
@@ -245,8 +347,181 @@ const SPEC_LABELS = {
 async function init() {
   const user = await requireAdmin();
   if (!user) return;
-  await loadUsers();
+  await Promise.all([loadUsers(), loadChangeRequests()]);
 }
+
+// map field label → profile column
+const FIELD_TO_COL = {
+  'שם העסק':  'business_name',
+  'ח.פ / ע.מ':'business_id',
+  'כתובת':    'business_address',
+  'טלפון':    'phone',
+  'אימייל':   'email',
+};
+const FIELD_LABEL = {
+  business_name:    'שם העסק',
+  business_id:      'ח.פ / ע.מ',
+  business_address: 'כתובת',
+  phone:            'טלפון',
+  email:            'אימייל',
+};
+
+// parse "שם העסק: value\nטלפון: value" → [{label, newVal}]
+function parseNewValue(str) {
+  return (str || '').split('\n').map(line => {
+    const idx = line.indexOf(':');
+    if (idx === -1) return null;
+    return { label: line.slice(0, idx).trim(), newVal: line.slice(idx + 1).trim() };
+  }).filter(Boolean);
+}
+
+let crRequests = []; // store for markCrDone
+
+async function loadChangeRequests() {
+  const { data, error } = await supabase
+    .from('change_requests')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+
+  if (error || !data?.length) {
+    document.getElementById('crSection').style.display = 'none';
+    return;
+  }
+
+  // fetch matching profiles for old values
+  const userIds = [...new Set(data.map(r => r.user_id).filter(Boolean))];
+  let profileMap = {};
+  if (userIds.length) {
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('id, business_name, business_id, business_address, phone, email')
+      .in('id', userIds);
+    (profiles || []).forEach(p => { profileMap[p.id] = p; });
+  }
+
+  crRequests = data;
+  document.getElementById('crSection').style.display = 'block';
+  document.getElementById('crBadge').textContent = data.length;
+
+  document.getElementById('crBody').innerHTML = data.map(r => {
+    const date    = r.created_at ? new Date(r.created_at).toLocaleDateString('he-IL') : '—';
+    const profile = profileMap[r.user_id] || {};
+    const changes = parseNewValue(r.new_value);
+
+    const compareHTML = changes.length
+      ? `<div class="cr-compare">${changes.map(c => {
+          const col = FIELD_TO_COL[c.label];
+          const oldVal = col ? (profile[col] || '—') : '—';
+          return `<div class="cr-compare-row">
+            <span class="cr-label">${c.label}</span>
+            <span class="cr-old">${oldVal}</span>
+            <span class="cr-arrow">←</span>
+            <span class="cr-new">${c.newVal}</span>
+          </div>`;
+        }).join('')}</div>`
+      : `<span style="color:var(--silver-dark);font-size:0.82rem;">${r.new_value || '—'}</span>`;
+
+    const clientNote = r.notes
+      ? `<span style="font-size:0.8rem;color:var(--silver-dark);">${r.notes}</span>`
+      : '<span style="opacity:0.4;font-size:0.8rem;">—</span>';
+
+    return `<tr id="crrow-${r.id}">
+      <td class="date-cell" style="white-space:nowrap;">${date}</td>
+      <td style="font-size:0.82rem;">
+        <div style="font-weight:700;color:var(--industrial-silver);">${profile.business_name || '—'}</div>
+        <div style="color:var(--silver-dark);font-size:0.76rem;">${r.user_email || ''}</div>
+      </td>
+      <td>${compareHTML}</td>
+      <td>${clientNote}</td>
+      <td>
+        <textarea id="crnote-${r.id}" class="cr-note-input" rows="2"
+          placeholder="הערה פנימית לתיעוד ב-CRM..."></textarea>
+      </td>
+      <td>
+        <div class="cr-actions">
+          <button class="btn-cr-approve" id="crbtn-approve-${r.id}" onclick="handleCr('${r.id}','approved')">
+            <i class="ph ph-check"></i> אשר
+          </button>
+          <button class="btn-cr-reject" id="crbtn-reject-${r.id}" onclick="handleCr('${r.id}','rejected')">
+            <i class="ph ph-x"></i> דחה
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.handleCr = async function(id, action) {
+  const approveBtn = document.getElementById(`crbtn-approve-${id}`);
+  const rejectBtn  = document.getElementById(`crbtn-reject-${id}`);
+  const note = document.getElementById(`crnote-${id}`)?.value.trim();
+  if (approveBtn) approveBtn.disabled = true;
+  if (rejectBtn)  rejectBtn.disabled  = true;
+  if (action === 'approved' && approveBtn)
+    approveBtn.innerHTML = '<i class="ph ph-circle-notch spin"></i>';
+  else if (rejectBtn)
+    rejectBtn.innerHTML  = '<i class="ph ph-circle-notch spin"></i>';
+
+  const req = crRequests.find(r => r.id === id);
+
+  try {
+    // 1. update change_request status
+    const { error } = await supabase
+      .from('change_requests')
+      .update({ status: action, admin_note: note || null })
+      .eq('id', id);
+    if (error) throw error;
+
+    if (req?.user_id) {
+      const { data: profData } = await supabase
+        .from('profiles').select('member_activity_log').eq('id', req.user_id).single();
+
+      const logEntry = {
+        action:     action === 'approved' ? 'change_request_approved' : 'change_request_rejected',
+        label:      action === 'approved'
+          ? `בקשת שינוי פרטים אושרה: ${req.field}`
+          : `בקשת שינוי פרטים נדחתה: ${req.field}`,
+        details:    req.new_value,
+        admin_note: note || null,
+        by_role:    'admin',
+        at:         new Date().toISOString(),
+      };
+      const log = [...(profData?.member_activity_log || []), logEntry];
+
+      let profileUpdate = { member_activity_log: log };
+
+      // אם אושר — עדכן גם את שדות הפרופיל
+      if (action === 'approved') {
+        const changes = parseNewValue(req.new_value);
+        changes.forEach(c => {
+          const col = FIELD_TO_COL[c.label];
+          if (col) profileUpdate[col] = c.newVal;
+        });
+      }
+
+      const { error: profErr } = await supabase
+        .from('profiles').update(profileUpdate).eq('id', req.user_id);
+      if (profErr) throw profErr;
+    }
+
+    // fade out row
+    const row = document.getElementById(`crrow-${id}`);
+    if (row) {
+      row.classList.add('fading-out');
+      setTimeout(() => {
+        row.remove();
+        crRequests = crRequests.filter(r => r.id !== id);
+        document.getElementById('crBadge').textContent = crRequests.length;
+        if (crRequests.length === 0) document.getElementById('crSection').style.display = 'none';
+      }, 420);
+    }
+  } catch (e) {
+    alert('שגיאה: ' + e.message);
+    if (approveBtn) { approveBtn.disabled = false; approveBtn.innerHTML = '<i class="ph ph-check"></i> אשר'; }
+    if (rejectBtn)  { rejectBtn.disabled  = false; rejectBtn.innerHTML  = '<i class="ph ph-x"></i> דחה'; }
+  }
+};
 
 async function loadUsers() {
   console.log('[USERS] loadUsers() called');

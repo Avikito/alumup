@@ -1605,10 +1605,10 @@ function newSystemObj(id) {
   return {
     id,
     name: '',
-    width: 400,
-    depth: 300,
-    installHeight: 270,
-    gutterHeight: 210,
+    width: '',
+    depth: '',
+    installHeight: '',
+    gutterHeight: '',
     gutterEdited: false,
     aluminumColor: '9005',
     aluminumColorCustom: '',
@@ -1676,20 +1676,22 @@ function renderMemberPriceBox(regularSubtotal) {
 }
 function calcTotal() {
   let subtotal = 0;
-  for (const s of state.systems) {
+  const activeSystems = state.systems.filter(s => s.width && s.depth);
+  for (const s of activeSystems) {
     const area = calcArea(s.width, s.depth);
     subtotal += applyMemberDiscount(calcKitPrice(area));
     if (state.addons.led) subtotal += Math.round(area * ADDON_PRICES.led);
   }
+  if (activeSystems.length === 0) return { subtotal: 0, vat: 0, grandTotal: 0 };
   if (state.addons.remote) subtotal += ADDON_PRICES.remote;
   if (state.addons.tahoma) subtotal += ADDON_PRICES.tahoma;
   if (state.addons.dimmer) subtotal += ADDON_PRICES.dimmer;
   if (state.addons.levelingBeam?.sides > 0)
-    subtotal += state.addons.levelingBeam.sides * ADDON_PRICES.levelingBeam * state.systems.length;
+    subtotal += state.addons.levelingBeam.sides * ADDON_PRICES.levelingBeam * activeSystems.length;
   if (state.measureService) subtotal += 350;
   // Packaging fee — per system, overridable per project
   const pkgFee = state.packagingFee !== null ? Number(state.packagingFee) : ADDON_PRICES.packaging;
-  subtotal += pkgFee * state.systems.length;
+  subtotal += pkgFee * activeSystems.length;
   // Profiles & angles
   Object.entries(state.profileQtys).forEach(([k, q]) => {
     if (q > 0) subtotal += q * PROFILE_PRICES[k];
@@ -1787,19 +1789,19 @@ function buildSystemCard(s) {
       <div class="dims-grid">
         <div class="field">
           <label>רוחב (ס"מ)</label>
-          <input type="number" value="${s.width}" min="100" max="1200" step="1" oninput="updateDim(${s.id},'width',this.value)">
+          <input type="number" value="${s.width}" placeholder="400" min="100" max="1200" step="1" oninput="updateDim(${s.id},'width',this.value)">
         </div>
         <div class="field">
           <label>עומק (ס"מ)</label>
-          <input type="number" value="${s.depth}" min="100" max="800" step="1" oninput="updateDim(${s.id},'depth',this.value)">
+          <input type="number" value="${s.depth}" placeholder="300" min="100" max="800" step="1" oninput="updateDim(${s.id},'depth',this.value)">
         </div>
         <div class="field">
           <label>גובה התקנה אחורי (ס"מ)</label>
-          <input type="number" value="${s.installHeight}" min="200" max="500" step="1" oninput="updateDim(${s.id},'installHeight',this.value)">
+          <input type="number" value="${s.installHeight}" placeholder="270" min="200" max="500" step="1" oninput="updateDim(${s.id},'installHeight',this.value)">
         </div>
         <div class="field">
           <label>גובה מרזב (ס"מ) <span style="color:var(--silver);font-size:0.75rem;">אוטומטי</span></label>
-          <input type="number" id="gutter-${s.id}" value="${s.gutterHeight}" min="100" max="500" step="1" oninput="updateGutter(${s.id},this.value)">
+          <input type="number" id="gutter-${s.id}" value="${s.gutterHeight}" placeholder="210" min="100" max="500" step="1" oninput="updateGutter(${s.id},this.value)">
         </div>
       </div>
 
@@ -2384,8 +2386,9 @@ function renderSummary() {
   let grand = 0;
 
   for(const s of state.systems) {
+    if (!s.width || !s.depth) continue;
     const area = calcArea(s.width, s.depth);
-    const kit = calcKitPrice(area);
+    const kit = applyMemberDiscount(calcKitPrice(area));
     const led = state.addons.led ? Math.round(area * ADDON_PRICES.led) : 0;
     const tot = kit + led;
     grand += tot;
@@ -2423,13 +2426,14 @@ function renderSummary() {
     rows += `<div class="total-row"><span class="label">קורת פילוס 120×80 (${lbLabel})</span><span class="val">₪${lbCost.toLocaleString()}</span></div>`;
   }
   if(state.measureService) rows += `<div class="total-row"><span class="label">שירות מדידה בשטח</span><span class="val">₪350</span></div>`;
-  // Packaging — always visible, editable per project
+  // Packaging — only when at least one system has dimensions
   const pkgFee = state.packagingFee !== null ? Number(state.packagingFee) : ADDON_PRICES.packaging;
-  const pkgTotal = pkgFee * state.systems.length;
+  const activeSysCount = state.systems.filter(s => s.width && s.depth).length;
+  const pkgTotal = pkgFee * activeSysCount;
   rows += `<div class="total-row" style="align-items:center;">
     <span class="label" style="display:flex;align-items:center;gap:0.4rem;">
       אריזה
-      <span style="font-size:0.72rem;color:var(--silver);font-weight:400;">(${state.systems.length} מערכת/ות × ₪<input
+      <span style="font-size:0.72rem;color:var(--silver);font-weight:400;">(${activeSysCount} מערכת/ות × ₪<input
         type="number" value="${pkgFee}" min="0" step="10"
         readonly
         style="width:62px;border:1px solid var(--border);border-radius:5px;padding:0.1rem 0.35rem;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;color:var(--silver);background:transparent;text-align:center;cursor:default;"
