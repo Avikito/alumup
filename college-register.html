@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>מכללת ALUM-IL | הרשמה</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script>
+    tailwind = { config: { corePlugins: { preflight: false } } }
+  </script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0f1f35;
+      --blue:    #1a4f8a;
+      --blue-m:  #1a5faa;
+      --blue-lt: #e8f0fb;
+      --gold:    #c47c00;
+      --gold-lt: #fdf3e0;
+      --border:  #dde4f0;
+      --bg:      #f4f6fb;
+      --white:   #ffffff;
+      --text:    #1a2640;
+      --muted:   #6b7a99;
+      --success: #16a34a;
+      --danger:  #dc2626;
+    }
+
+    body {
+      font-family: 'Heebo', sans-serif;
+      color: var(--text);
+      background: var(--white);
+      line-height: 1.6;
+    }
+
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* ─── HEADER ───────────────────────────── */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0.9rem 0;
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .header-logo img { height: 32px; }
+    .header-logo-label {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    .header-back {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.15s;
+    }
+    .header-back:hover { color: var(--blue-m); }
+
+    .header-cta {
+      background: var(--blue-m);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.55rem 1.2rem;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .header-cta:hover { background: #0d4d96; transform: translateY(-1px); }
+
+    /* ─── FORM SECTION ─────────────────────── */
+    .form-section {
+      background: var(--bg);
+      padding: 5rem 0;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .form-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 80% at 100% 0%, rgba(26,95,170,0.07) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .form-wrap {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 3rem;
+      align-items: start;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Left: form info */
+    .form-info-title {
+      font-size: 1.45rem;
+      font-weight: 900;
+      color: var(--navy);
+      line-height: 1.25;
+      margin-bottom: 8px;
+    }
+
+    .form-info-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-steps-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .form-step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 0;
+      position: relative;
+    }
+
+    .form-step-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 15px;
+      top: 40px;
+      width: 1px;
+      height: calc(100% - 20px);
+      background: var(--border);
+    }
+
+    .form-step-num {
+      width: 30px; height: 30px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 800;
+      color: var(--muted);
+      flex-shrink: 0;
+    }
+
+    .form-step-num.active {
+      background: var(--blue-m);
+      border-color: var(--blue-m);
+      color: #fff;
+      box-shadow: 0 0 0 3px rgba(26,95,170,0.3);
+    }
+
+    .form-step-num.done {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--navy);
+    }
+
+    .form-step-label {
+      font-size: 0.82rem;
+      color: var(--muted);
+      padding-top: 5px;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+    .form-step-item.active .form-step-label { color: var(--navy); }
+    .form-step-item.done .form-step-label { color: var(--blue-m); }
+
+    /* Right: form card */
+    .form-card {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2rem;
+      box-shadow: 0 4px 24px rgba(26,46,100,0.1);
+    }
+
+    /* Progress bar inside card */
+    .form-progress {
+      height: 4px;
+      background: #e8eef8;
+      border-radius: 4px;
+      margin-bottom: 1.75rem;
+      overflow: hidden;
+    }
+
+    .form-progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--blue-m), var(--gold));
+      border-radius: 4px;
+      transition: width 0.4s ease;
+    }
+
+    /* Step panes */
+    .pane { display: none; }
+    .pane.active { display: block; animation: fadeUp 0.25s ease; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .pane-eyebrow {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--blue-m);
+      margin-bottom: 6px;
+    }
+
+    .pane-title {
+      font-size: 1.3rem;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 4px;
+    }
+
+    .pane-sub {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    /* Field */
+    .field { margin-bottom: 12px; }
+    .field label { display: block; font-size: 0.8rem; font-weight: 700; color: var(--text); margin-bottom: 5px; }
+
+    .field input, .field select {
+      width: 100%;
+      padding: 0.7rem 0.9rem;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 0.9rem;
+      color: var(--text);
+      background: #fff;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field input:focus, .field select:focus {
+      border-color: var(--blue-m);
+      box-shadow: 0 0 0 3px rgba(26,95,170,0.1);
+    }
+
+    .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    /* Option cards in form */
+    .opt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 1.25rem; }
+
+    .opt-card {
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fff;
+      text-align: center;
+    }
+
+    .opt-card:hover { border-color: var(--blue-m); }
+
+    .opt-card.sel {
+      border-color: var(--blue-m);
+      background: var(--blue-lt);
+      box-shadow: 0 0 0 3px rgba(26,95,170,0.08);
+    }
+
+    .opt-card-em { font-size: 1.4rem; margin-bottom: 4px; }
+    .opt-card-title { font-size: 0.85rem; font-weight: 800; color: var(--navy); }
+    .opt-card-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    /* Window options */
+    .win-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.25rem; }
+
+    .win-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 0.8rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .win-item:hover { border-color: var(--blue-m); }
+    .win-item.sel { border-color: var(--blue-m); background: var(--blue-lt); }
+
+    .win-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      border: 2px solid var(--border);
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .win-item.sel .win-dot { background: var(--blue-m); border-color: var(--blue-m); box-shadow: 0 0 0 2px rgba(26,95,170,0.2); }
+
+    .win-info { flex: 1; }
+    .win-title { font-size: 0.88rem; font-weight: 800; color: var(--navy); }
+    .win-sub { font-size: 0.72rem; color: var(--muted); }
+    .win-tag { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 20px; }
+
+    /* Screening questions */
+    .screen-q {
+      background: #f7f9fc;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: 10px;
+    }
+
+    .screen-q-text { font-size: 0.88rem; font-weight: 700; color: var(--navy); margin-bottom: 10px; }
+
+    .screen-q-opts { display: flex; gap: 8px; }
+
+    .screen-q-opt {
+      flex: 1;
+      padding: 0.55rem;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--muted);
+      transition: all 0.15s;
+    }
+
+    .screen-q-opt:hover { border-color: var(--blue-m); color: var(--blue-m); }
+    .screen-q-opt.sel { border-color: var(--blue-m); background: var(--blue-m); color: #fff; }
+    .screen-q-opt.sel-no { border-color: var(--danger); background: #fff5f5; color: var(--danger); }
+
+    /* Canvas signature */
+    .sig-box {
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+
+    .sig-box-label {
+      background: #f7f9fc;
+      padding: 8px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .sig-box-label button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.72rem;
+      color: var(--muted);
+      font-family: 'Heebo', sans-serif;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 90px;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    /* Doc text */
+    .doc-scroll {
+      background: #f7f9fc;
+      border-radius: 8px;
+      padding: 0.85rem 1rem;
+      font-size: 0.78rem;
+      color: var(--text);
+      line-height: 1.75;
+      max-height: 110px;
+      overflow-y: auto;
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+    }
+
+    /* Payment summary */
+    .pay-box {
+      background: #f7f9fc;
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 1rem;
+    }
+
+    .pay-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      padding: 5px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .pay-row:last-child { border-bottom: none; }
+    .pay-row span:first-child { color: var(--muted); }
+    .pay-row span:last-child { font-weight: 700; color: var(--navy); }
+
+    .pay-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 2px solid var(--border);
+    }
+
+    .pay-total-label { font-size: 0.95rem; font-weight: 800; color: var(--navy); }
+    .pay-total-val { font-size: 1.4rem; font-weight: 900; color: var(--blue-m); }
+
+    /* Buttons */
+    .btn-submit {
+      width: 100%;
+      padding: 0.9rem;
+      background: linear-gradient(135deg, #1e6fbd, #0d4d96);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Heebo', sans-serif;
+      font-size: 1rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 18px rgba(13,77,150,0.28);
+    }
+
+    .btn-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 26px rgba(13,77,150,0.36); }
+    .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .btn-back-link {
+      display: block;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      cursor: pointer;
+      background: none;
+      border: none;
+      font-family: 'Heebo', sans-serif;
+      width: 100%;
+    }
+    .btn-back-link:hover { color: var(--blue-m); }
+
+    /* Step hint */
+    .step-hint {
+      text-align: center;
+      font-size: 0.76rem;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* Error */
+    .err {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      color: var(--danger);
+      background: #fff5f5;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-bottom: 10px;
+    }
+    .err.show { display: flex; }
+
+    /* Signed badge */
+    .signed-badge {
+      display: none;
+      align-items: center;
+      gap: 4px;
+      background: #dcfce7;
+      color: #15803d;
+      border-radius: 20px;
+      padding: 1px 8px;
+      font-size: 0.7rem;
+      font-weight: 700;
+    }
+    .signed-badge.show { display: inline-flex; }
+
+    /* Section divider inside pane */
+    .pane-divider {
+      border: none;
+      border-top: 1.5px solid var(--border);
+      margin: 1.25rem 0;
+    }
+
+    .pane-section-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+
+    /* Success */
+    .success-pane { text-align: center; padding: 1rem 0; }
+
+    .success-ring {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1.25rem;
+      box-shadow: 0 8px 28px rgba(22,163,74,0.3);
+      animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .success-ring i { color: #fff; font-size: 2rem; }
+
+    /* ─── FOOTER ───────────────────────────── */
+    .page-footer {
+      background: var(--navy);
+      color: rgba(255,255,255,0.4);
+      text-align: center;
+      padding: 1.5rem;
+      font-size: 0.78rem;
+    }
+
+    /* ─── RESPONSIVE ───────────────────────── */
+    @media (max-width: 900px) {
+      .form-wrap { grid-template-columns: 1fr; }
+      .form-info { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .field-row { grid-template-columns: 1fr; }
+      .opt-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══ HEADER ══════════════════════════════════════════════ -->
+<header class="site-header">
+  <div class="container header-inner">
+    <a href="index.html" class="header-logo">
+      <img src="logo.PNG" alt="ALUM-IL">
+      <span class="header-logo-label">College</span>
+    </a>
+    <a href="index.html" class="header-back">
+      <i class="ph ph-arrow-right"></i> חזרה לאתר
+    </a>
+    <a href="#form-anchor" class="header-cta">
+      הירשם עכשיו <i class="ph ph-arrow-down"></i>
+    </a>
+  </div>
+</header>
+
+<!-- ══ FORM ═════════════════════════════════════════════════ -->
+<section class="form-section" id="form-anchor">
+  <div class="container">
+    <div class="form-wrap">
+
+      <!-- Sidebar -->
+      <div class="form-info">
+        <h2 class="form-info-title">תהליך הרשמה למכללה</h2>
+        <p class="form-info-sub">5 שלבים קצרים. לאחר התשלום נחזור אליכם לתיאום מועד הקורס.</p>
+
+        <div class="form-steps-list">
+          <div class="form-step-item active" id="fsi-1">
+            <div class="form-step-num active" id="fsn-1">1</div>
+            <div class="form-step-label">פרטים אישיים</div>
+          </div>
+          <div class="form-step-item" id="fsi-2">
+            <div class="form-step-num" id="fsn-2">2</div>
+            <div class="form-step-label">רקע מקצועי</div>
+          </div>
+          <div class="form-step-item" id="fsi-3">
+            <div class="form-step-num" id="fsn-3">3</div>
+            <div class="form-step-label">בחירת מסלול</div>
+          </div>
+          <div class="form-step-item" id="fsi-4">
+            <div class="form-step-num" id="fsn-4">4</div>
+            <div class="form-step-label">הצהרות</div>
+          </div>
+          <div class="form-step-item" id="fsi-5">
+            <div class="form-step-num" id="fsn-5">5</div>
+            <div class="form-step-label">תשלום</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="form-card">
+        <div class="form-progress">
+          <div class="form-progress-fill" id="prog" style="width:20%"></div>
+        </div>
+
+        <!-- ── STEP 1: פרטים אישיים ── -->
+        <div class="pane active" id="p1">
+          <div class="pane-eyebrow">שלב 1 · פרטים אישיים</div>
+          <h3 class="pane-title">כמה פרטים כדי להתחיל</h3>
+          <p class="pane-sub">מלאו את הפרטים האישיים שלכם להמשך התהליך.</p>
+
+          <div class="field">
+            <label>שם מלא *</label>
+            <input type="text" id="f-name" placeholder="ישראל ישראלי">
+          </div>
+
+          <div class="field">
+            <label>תעודת זהות *</label>
+            <input type="text" id="f-idnum" placeholder="000000000" dir="ltr" maxlength="9" inputmode="numeric">
+          </div>
+
+          <div class="field-row" style="margin-bottom:12px;">
+            <div class="field">
+              <label>טלפון נייד *</label>
+              <input type="tel" id="f-phone" placeholder="050-0000000" dir="ltr">
+            </div>
+            <div class="field">
+              <label>אימייל *</label>
+              <input type="email" id="f-email" placeholder="name@email.com" dir="ltr">
+            </div>
+          </div>
+
+          <div class="err" id="err1"><i class="ph ph-warning"></i> <span></span></div>
+
+          <button class="btn-submit" onclick="reg.next()">המשך לשלב הבא <i class="ph ph-arrow-left"></i></button>
+          <p class="step-hint">השלב הבא: רקע מקצועי</p>
+        </div>
+
+        <!-- ── STEP 2: רקע מקצועי ── -->
+        <div class="pane" id="p2">
+          <div class="pane-eyebrow">שלב 2 · רקע מקצועי</div>
+          <h3 class="pane-title">רקע מקצועי והכוונה</h3>
+          <p class="pane-sub">ספרו לנו מעט על הרקע המקצועי שלכם.</p>
+
+          <div class="field">
+            <label>כתובת מגורים *</label>
+            <input type="text" id="f-address" placeholder="רחוב, עיר">
+          </div>
+
+          <div class="field-row" style="margin-bottom:12px;">
+            <div class="field">
+              <label>מקצוע נוכחי *</label>
+              <input type="text" id="f-profession" placeholder="לדוג׳: שרברב, חשמלאי...">
+            </div>
+            <div class="field">
+              <label>מקום עבודה <span style="font-weight:400;color:var(--muted);">(אופציונלי)</span></label>
+              <input type="text" id="f-workplace" placeholder="שם המעסיק / עצמאי">
+            </div>
+          </div>
+
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מה המטרה שלך מההכשרה? *</label>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div class="opt-card" id="goal-employee" onclick="reg.selGoal('employee')" style="text-align:right;padding:0.75rem 1rem;">
+                <div class="opt-card-title">להשתלב כשכיר בתחום</div>
+              </div>
+              <div class="opt-card" id="goal-freelance" onclick="reg.selGoal('freelance')" style="text-align:right;padding:0.75rem 1rem;">
+                <div class="opt-card-title">לעבוד כעצמאי</div>
+              </div>
+              <div class="opt-card" id="goal-exploring" onclick="reg.selGoal('exploring')" style="text-align:right;padding:0.75rem 1rem;">
+                <div class="opt-card-title">עדיין בודק את הכיוון</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="err" id="err2"><i class="ph ph-warning"></i> <span></span></div>
+
+          <button class="btn-submit" onclick="reg.next()">המשך לשלב הבא <i class="ph ph-arrow-left"></i></button>
+          <p class="step-hint">השלב הבא: בחירת מסלול</p>
+          <button class="btn-back-link" onclick="reg.back()">← חזרה</button>
+        </div>
+
+        <!-- ── STEP 3: בחירת מסלול ── -->
+        <div class="pane" id="p3">
+          <div class="pane-eyebrow">שלב 3 · בחירת מסלול</div>
+          <h3 class="pane-title">בחרו את המסלול שלכם</h3>
+          <p class="pane-sub">בחרו את ההכשרה, המיקום ולוח הזמנים המתאימים לכם.</p>
+
+          <!-- Track -->
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מסלול הכשרה *</label>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;">
+              <div class="win-item" id="track-c1" onclick="reg.selTrack('pergola_al')">
+                <div class="win-dot"></div>
+                <div class="win-info"><div class="win-title">מתקין מוסמך – פרגולה אלומיניום</div></div>
+              </div>
+              <div class="win-item" id="track-c2" onclick="reg.selTrack('pergola_electric')">
+                <div class="win-dot"></div>
+                <div class="win-info"><div class="win-title">מתקין מוסמך – פרגולה חשמלית ומסכי ZIP</div></div>
+              </div>
+              <div class="win-item" id="track-c3" onclick="reg.selTrack('glass_systems')">
+                <div class="win-dot"></div>
+                <div class="win-info"><div class="win-title">מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון</div></div>
+              </div>
+              <div class="win-item" id="track-c4" onclick="reg.selTrack('bioclimatic')">
+                <div class="win-dot"></div>
+                <div class="win-info"><div class="win-title">מתקין מוסמך – מערכות BIOCLIMATIC</div></div>
+              </div>
+              <div class="win-item" id="track-c5" onclick="reg.selTrack('weld_al')">
+                <div class="win-dot"></div>
+                <div class="win-info"><div class="win-title">מסגרות וריתוך אלומיניום</div></div>
+              </div>
+              <div class="win-item" id="track-c6" onclick="reg.selTrack('weld_steel')">
+                <div class="win-dot"></div>
+                <div class="win-info"><div class="win-title">מסגרות וריתוך קונסטרוקציה</div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Location -->
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מיקום מועדף *</label>
+            <div class="opt-grid">
+              <div class="opt-card" id="loc-bs" onclick="reg.selLoc('beer_sheva')">
+                <div class="opt-card-em">🏜️</div>
+                <div class="opt-card-title">באר שבע</div>
+                <div class="opt-card-sub">מרכז הדרום</div>
+              </div>
+              <div class="opt-card" id="loc-ta" onclick="reg.selLoc('tel_aviv')">
+                <div class="opt-card-em">🏙️</div>
+                <div class="opt-card-title">תל אביב</div>
+                <div class="opt-card-sub">מרכז הצפון</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Schedule -->
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">לוח זמנים *</label>
+            <div class="opt-grid">
+              <div class="opt-card" id="sch-am" onclick="reg.selSch('morning')">
+                <div class="opt-card-em">🌅</div>
+                <div class="opt-card-title">בוקר</div>
+                <div class="opt-card-sub">08:00–12:00</div>
+              </div>
+              <div class="opt-card" id="sch-pm" onclick="reg.selSch('evening')">
+                <div class="opt-card-em">🌆</div>
+                <div class="opt-card-title">ערב</div>
+                <div class="opt-card-sub">17:00–21:00</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Window -->
+          <div style="margin-bottom:1rem;">
+            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מועד פתיחה מועדף</label>
+            <div class="win-list">
+              <div class="win-item" id="win-mj" onclick="reg.selWin('may_jun')">
+                <div class="win-dot"></div>
+                <div class="win-info">
+                  <div class="win-title">מאי – יוני 2025</div>
+                  <div class="win-sub">הסבב הקרוב ביותר</div>
+                </div>
+                <span class="win-tag" style="background:#fee2e2;color:#dc2626;">⚡ 3 מקומות</span>
+              </div>
+              <div class="win-item" id="win-jj" onclick="reg.selWin('jun_jul')">
+                <div class="win-dot"></div>
+                <div class="win-info">
+                  <div class="win-title">יוני – יולי 2025</div>
+                  <div class="win-sub">הסבב השני</div>
+                </div>
+                <span class="win-tag" style="background:#fef3c7;color:#d97706;">7 מקומות</span>
+              </div>
+              <div class="win-item" id="win-as" onclick="reg.selWin('aug_sep')">
+                <div class="win-dot"></div>
+                <div class="win-info">
+                  <div class="win-title">אוגוסט – ספטמבר 2025</div>
+                  <div class="win-sub">הסבב השלישי</div>
+                </div>
+                <span class="win-tag" style="background:#dcfce7;color:#16a34a;">פתוח</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="err" id="err3"><i class="ph ph-warning"></i> <span></span></div>
+
+          <button class="btn-submit" onclick="reg.next()">המשך לשלב הבא <i class="ph ph-arrow-left"></i></button>
+          <p class="step-hint">השלב הבא: הצהרות וחתימה</p>
+          <button class="btn-back-link" onclick="reg.back()">← חזרה</button>
+        </div>
+
+        <!-- ── STEP 4: הצהרות וחתימה ── -->
+        <div class="pane" id="p4">
+          <div class="pane-eyebrow">שלב 4 · הצהרות וחתימה</div>
+          <h3 class="pane-title">בדיקת התאמה והצהרות</h3>
+          <p class="pane-sub">ענו על שאלות ההתאמה וחתמו על המסמכים.</p>
+
+          <!-- Screening -->
+          <div class="pane-section-label">בדיקת התאמה</div>
+
+          <div class="screen-q" id="sq-physical">
+            <div class="screen-q-text">האם אתה כשיר פיזית לעבודה בגובה ולהרמת משקלים עד 25 ק"ג?</div>
+            <div class="screen-q-opts">
+              <div class="screen-q-opt" onclick="reg.screenQ('physical','yes',this)">כן, בהחלט</div>
+              <div class="screen-q-opt" onclick="reg.screenQ('physical','no',this)">לא בטוח</div>
+            </div>
+          </div>
+
+          <div class="screen-q" id="sq-available">
+            <div class="screen-q-text">האם תוכל להגיע 3 ימים בשבוע למשך 12 שבועות?</div>
+            <div class="screen-q-opts">
+              <div class="screen-q-opt" onclick="reg.screenQ('available','yes',this)">כן, פנוי</div>
+              <div class="screen-q-opt" onclick="reg.screenQ('available','no',this)">יש לי מגבלות</div>
+            </div>
+          </div>
+
+          <div class="screen-q">
+            <div class="screen-q-text">גיל — האם אתה מעל גיל 18?</div>
+            <div class="screen-q-opts">
+              <div class="screen-q-opt" onclick="reg.screenQ('age','yes',this)">כן, 18+</div>
+              <div class="screen-q-opt" onclick="reg.screenQ('age','no',this)">מתחת לגיל 18</div>
+            </div>
+          </div>
+
+          <div id="screen-fail" style="display:none;background:#fff5f5;border:1px solid #fca5a5;border-radius:10px;padding:12px 14px;font-size:0.85rem;color:#991b1b;margin-bottom:10px;">
+            <strong>⚠ נראה שאין התאמה מלאה לקורס זה.</strong><br>
+            אנו ממליצים ליצור קשר ישיר כדי לדון באפשרויות המתאימות לכם.
+          </div>
+
+          <hr class="pane-divider">
+
+          <!-- Signatures -->
+          <div class="pane-section-label">מסמכים וחתימה</div>
+
+          <!-- Health -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.82rem;font-weight:800;color:var(--navy);">הצהרת בריאות</span>
+              <span class="signed-badge" id="badge-h"><i class="ph ph-check"></i> חתום</span>
+            </div>
+            <div class="doc-scroll">
+              <strong>הצהרת בריאות — מכללת ALUM-IL</strong><br><br>
+              אני המצהיר/ה מאשר/ת כי:<br>
+              1. אני כשיר/ה פיזית לביצוע עבודות בגובה עד 6 מטר.<br>
+              2. אני מסוגל/ת להרמת משקלים עד 25 ק"ג ללא הגבלה רפואית.<br>
+              3. איני סובל/ת ממחלות לב, יל"ד בלתי מאוזן, סחרחורת כרונית.<br>
+              4. אתחייב/ת להודיע למכללה על כל שינוי במצבי הרפואי.
+            </div>
+            <div class="sig-box">
+              <div class="sig-box-label">
+                חתמו כאן:
+                <button onclick="reg.clearSig('h')">נקה</button>
+              </div>
+              <canvas id="cv-h" width="560" height="90"></canvas>
+            </div>
+          </div>
+
+          <!-- Regulations -->
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+              <span style="font-size:0.82rem;font-weight:800;color:var(--navy);">תקנון לימודים</span>
+              <span class="signed-badge" id="badge-r"><i class="ph ph-check"></i> חתום</span>
+            </div>
+            <div class="doc-scroll">
+              <strong>תקנון מכללת ALUM-IL — מחזור 2025</strong><br><br>
+              נוכחות מינימלית: 85% לקבלת תעודה.<br>
+              דמי רישום: 399 ש"ח — מקוזזים מהמחיר הסופי של הקורס (₪8,500 + מע"מ).<br>
+              ביטול עד 14 יום — החזר מלא. 15–30 יום — 50%. מעל 30 יום — ללא החזר.<br>
+              קוד לבוש: נעלי בטיחות S1P + מטר אישי — חובה.
+            </div>
+            <div class="sig-box">
+              <div class="sig-box-label">
+                חתמו כאן:
+                <button onclick="reg.clearSig('r')">נקה</button>
+              </div>
+              <canvas id="cv-r" width="560" height="90"></canvas>
+            </div>
+          </div>
+
+          <div class="err" id="err4"><i class="ph ph-warning"></i> <span></span></div>
+
+          <button class="btn-submit" onclick="reg.next()">המשך לשלב הבא <i class="ph ph-arrow-left"></i></button>
+          <p class="step-hint">השלב הבא: אישור ותשלום</p>
+          <button class="btn-back-link" onclick="reg.back()">← חזרה</button>
+        </div>
+
+        <!-- ── STEP 5: תשלום ── -->
+        <div class="pane" id="p5">
+          <div class="pane-eyebrow">שלב 5 · תשלום</div>
+          <h3 class="pane-title">אישור ותשלום</h3>
+          <p class="pane-sub">בדקו את הפרטים ולחצו לסגירת הרישום.</p>
+
+          <div class="pay-box">
+            <div class="pay-row"><span>שם</span><span id="s-name">—</span></div>
+            <div class="pay-row"><span>מסלול</span><span id="s-track">—</span></div>
+            <div class="pay-row"><span>מיקום</span><span id="s-loc">—</span></div>
+            <div class="pay-row"><span>לוח זמנים</span><span id="s-sch">—</span></div>
+            <div class="pay-total">
+              <span class="pay-total-label">דמי רישום</span>
+              <span class="pay-total-val">₪399</span>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;background:#fdf3e0;border:1px solid #fde68a;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#92400e;font-weight:600;margin-bottom:8px;">
+            <i class="ph ph-info" style="font-size:1rem;"></i>
+            הסכום מקוזז מהמחיר הסופי של הקורס (₪8,500 + מע"מ)
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#15803d;font-weight:600;margin-bottom:1rem;">
+            <i class="ph ph-lock" style="font-size:1rem;"></i>
+            תשלום מאובטח SSL · לאחר התשלום נחזור אליכם לתיאום
+          </div>
+
+          <div class="err" id="err5"><i class="ph ph-warning"></i> <span></span></div>
+
+          <button class="btn-submit" id="pay-btn" onclick="reg.pay()">
+            <i class="ph ph-credit-card"></i> שלם דמי רישום ₪399
+          </button>
+          <button class="btn-back-link" onclick="reg.back()">← חזרה</button>
+        </div>
+
+        <!-- ── SUCCESS ── -->
+        <div class="pane" id="p-success">
+          <div class="success-pane">
+            <div class="success-ring"><i class="ph ph-check-bold"></i></div>
+            <h3 class="pane-title">דמי הרישום התקבלו!</h3>
+            <p class="pane-sub" style="margin-bottom:1.25rem;">תודה! הרישום שלכם נרשם במערכת.<br>נחזור אליכם תוך <strong>48 שעות</strong> לתיאום מועד ומיקום הקורס.</p>
+
+            <div style="background:#f0f4ff;border:1.5px solid #c7d7fb;border-radius:14px;padding:1.1rem 1.25rem;text-align:right;margin-bottom:1.25rem;">
+              <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#3b5bdb;margin-bottom:8px;">מה הלאה?</div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#1a2640;margin-bottom:6px;">
+                <i class="ph ph-check-circle" style="color:#16a34a;flex-shrink:0;margin-top:1px;"></i>
+                נשלח אליכם SMS עם אישור הרישום
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#1a2640;margin-bottom:6px;">
+                <i class="ph ph-check-circle" style="color:#16a34a;flex-shrink:0;margin-top:1px;"></i>
+                נחזור אליכם לתיאום מועד הקורס
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#1a2640;">
+                <i class="ph ph-check-circle" style="color:#16a34a;flex-shrink:0;margin-top:1px;"></i>
+                ₪399 יקוזזו מהמחיר הסופי של הקורס
+              </div>
+            </div>
+
+            <a href="index.html" class="btn-submit" style="text-decoration:none;margin-top:4px;">
+              <i class="ph ph-house"></i> חזרה לדף הבית
+            </a>
+          </div>
+        </div>
+
+      </div><!-- /form-card -->
+    </div><!-- /form-wrap -->
+  </div>
+</section>
+
+<!-- ══ FOOTER ════════════════════════════════════════════════ -->
+<footer class="page-footer">
+  © 2026 ALUM-IL College · כל הזכויות שמורות · <a href="terms.html" style="color:rgba(255,255,255,0.4);">תקנון ופרטיות</a>
+</footer>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+const locL  = { beer_sheva:'באר שבע', tel_aviv:'תל אביב' };
+const schL  = { morning:'בוקר (08:00–12:00)', evening:'ערב (17:00–21:00)' };
+const winL  = { may_jun:'מאי–יוני 2025', jun_jul:'יוני–יולי 2025', aug_sep:'אוגוסט–ספטמבר 2025' };
+const trackL = {
+  pergola_al:      'מתקין מוסמך – פרגולה אלומיניום',
+  pergola_electric:'מתקין מוסמך – פרגולה חשמלית ומסכי ZIP',
+  glass_systems:   'מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון',
+  bioclimatic:     'מתקין מוסמך – מערכות BIOCLIMATIC',
+  weld_al:         'מסגרות וריתוך אלומיניום',
+  weld_steel:      'מסגרות וריתוך קונסטרוקציה'
+};
+
+const s = {
+  step: 1,
+  screen: { physical: null, available: null, age: null },
+  track: null,
+  loc: null, sch: null, win: null,
+  name: '', idNum: '', address: '', phone: '', email: '',
+  profession: '', workplace: '', goal: null,
+  hSigned: false, rSigned: false,
+  hData: null, rData: null
+};
+
+// Canvas binding
+function bindCv(id, key) {
+  const cv = document.getElementById(`cv-${id}`);
+  if (!cv || cv._b) return; cv._b = true;
+  const ctx = cv.getContext('2d');
+  let drawing = false;
+
+  function p(e) {
+    const r = cv.getBoundingClientRect();
+    const sx = cv.width / r.width, sy = cv.height / r.height;
+    const src = e.touches ? e.touches[0] : e;
+    return { x: (src.clientX - r.left) * sx, y: (src.clientY - r.top) * sy };
+  }
+
+  function start(e) { e.preventDefault(); drawing = true; const pt = p(e); ctx.beginPath(); ctx.moveTo(pt.x, pt.y); }
+  function move(e) {
+    if (!drawing) return; e.preventDefault();
+    const pt = p(e); ctx.lineTo(pt.x, pt.y);
+    ctx.strokeStyle = '#0f1f35'; ctx.lineWidth = 1.8; ctx.lineCap = 'round'; ctx.stroke();
+  }
+  function stop() {
+    if (!drawing) return; drawing = false;
+    s[key + 'Data'] = cv.toDataURL();
+    s[key + 'Signed'] = true;
+    document.getElementById(`badge-${id}`).classList.add('show');
+  }
+
+  cv.addEventListener('mousedown', start); cv.addEventListener('mousemove', move);
+  cv.addEventListener('mouseup', stop); cv.addEventListener('mouseleave', stop);
+  cv.addEventListener('touchstart', start, {passive:false}); cv.addEventListener('touchmove', move, {passive:false});
+  cv.addEventListener('touchend', stop);
+}
+
+function goStep(n) {
+  document.querySelectorAll('.pane').forEach(p => p.classList.remove('active'));
+  const id = n === 'success' ? 'p-success' : `p${n}`;
+  document.getElementById(id).classList.add('active');
+  document.getElementById(id).scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  if (n !== 'success') {
+    s.step = n;
+    document.getElementById('prog').style.width = `${n * 20}%`;
+    for (let i = 1; i <= 5; i++) {
+      const ni = document.getElementById(`fsn-${i}`);
+      const si = document.getElementById(`fsi-${i}`);
+      if (!ni) continue;
+      si.classList.remove('active', 'done');
+      ni.classList.remove('active', 'done');
+      if (i < n) { si.classList.add('done'); ni.classList.add('done'); ni.innerHTML = '<i class="ph ph-check" style="font-size:0.75rem;"></i>'; }
+      else if (i === n) { si.classList.add('active'); ni.classList.add('active'); ni.textContent = i; }
+      else { ni.textContent = i; }
+    }
+    if (n === 4) { setTimeout(() => { bindCv('h', 'h'); bindCv('r', 'r'); }, 50); }
+  } else {
+    document.getElementById('prog').style.width = '100%';
+  }
+}
+
+function err(step, msg) {
+  const el = document.getElementById(`err${step}`);
+  if (!el) return;
+  const sp = el.querySelector('span');
+  if (msg) { sp.textContent = msg; el.classList.add('show'); }
+  else el.classList.remove('show');
+}
+
+async function save() {
+  const { data: { user } } = await supabase.auth.getUser();
+  const ref = 'PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  const { data: st, error: e1 } = await supabase.from('students').insert([{
+    user_id: user?.id || null,
+    full_name: s.name, phone: s.phone, email: s.email,
+    experience_level: 'new', course_track: s.track,
+    location: s.loc, schedule: s.sch,
+    health_declaration_signed: s.hSigned, regulations_signed: s.rSigned,
+    health_signature_data: s.hData, regulations_signature_data: s.rData,
+    payment_status: 'registration_paid', payment_amount: 399, payment_ref: ref, status: 'awaiting_coordination'
+  }]).select().single();
+  if (e1) throw e1;
+  const { error: e2 } = await supabase.from('registrations').insert([{
+    student_id: st.id, course_track: s.track,
+    location: s.loc, schedule: s.sch, registration_fee: 399, full_price: 8500, status: 'awaiting_coordination'
+  }]);
+  if (e2) throw e2;
+}
+
+window.reg = {
+  screenQ(key, val, el) {
+    const parent = el.closest('.screen-q').querySelector('.screen-q-opts');
+    parent.querySelectorAll('.screen-q-opt').forEach(o => o.classList.remove('sel', 'sel-no'));
+    el.classList.add(val === 'yes' ? 'sel' : 'sel-no');
+    s.screen[key] = val;
+    const fail = Object.values(s.screen).some(v => v === 'no');
+    document.getElementById('screen-fail').style.display = fail ? 'block' : 'none';
+    err(4, '');
+  },
+
+  selGoal(v) {
+    s.goal = v;
+    ['goal-employee','goal-freelance','goal-exploring'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById(`goal-${v}`).classList.add('sel');
+    err(2, '');
+  },
+
+  selTrack(v) {
+    s.track = v;
+    ['track-c1','track-c2','track-c3','track-c4','track-c5','track-c6'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById({pergola_al:'track-c1',pergola_electric:'track-c2',glass_systems:'track-c3',bioclimatic:'track-c4',weld_al:'track-c5',weld_steel:'track-c6'}[v]).classList.add('sel');
+    err(3, '');
+  },
+
+  selLoc(v) {
+    s.loc = v;
+    ['loc-bs','loc-ta'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById(v === 'beer_sheva' ? 'loc-bs' : 'loc-ta').classList.add('sel');
+    err(3, '');
+  },
+
+  selSch(v) {
+    s.sch = v;
+    ['sch-am','sch-pm'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById(v === 'morning' ? 'sch-am' : 'sch-pm').classList.add('sel');
+    err(3, '');
+  },
+
+  selWin(v) {
+    s.win = v;
+    ['win-mj','win-jj','win-as'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById({may_jun:'win-mj', jun_jul:'win-jj', aug_sep:'win-as'}[v]).classList.add('sel');
+    err(3, '');
+  },
+
+  clearSig(id) {
+    const cv = document.getElementById(`cv-${id}`);
+    cv.getContext('2d').clearRect(0, 0, cv.width, cv.height);
+    if (id === 'h') { s.hSigned = false; s.hData = null; }
+    else            { s.rSigned = false; s.rData = null; }
+    document.getElementById(`badge-${id}`).classList.remove('show');
+  },
+
+  next() {
+    const n = s.step;
+
+    if (n === 1) {
+      s.name  = document.getElementById('f-name').value.trim();
+      s.idNum = document.getElementById('f-idnum').value.trim();
+      s.phone = document.getElementById('f-phone').value.trim();
+      s.email = document.getElementById('f-email').value.trim();
+      if (!s.name)               { err(1, 'יש להזין שם מלא.'); return; }
+      if (!s.idNum)              { err(1, 'יש להזין תעודת זהות.'); return; }
+      if (!/^\d{9}$/.test(s.idNum)) { err(1, 'תעודת זהות חייבת להכיל 9 ספרות.'); return; }
+      if (!s.phone)              { err(1, 'יש להזין מספר טלפון.'); return; }
+      if (!s.email)              { err(1, 'יש להזין אימייל.'); return; }
+      err(1, '');
+    }
+
+    if (n === 2) {
+      s.address    = document.getElementById('f-address').value.trim();
+      s.profession = document.getElementById('f-profession').value.trim();
+      s.workplace  = document.getElementById('f-workplace').value.trim();
+      if (!s.address)    { err(2, 'יש להזין כתובת מגורים.'); return; }
+      if (!s.profession) { err(2, 'יש להזין מקצוע נוכחי.'); return; }
+      if (!s.goal)       { err(2, 'יש לבחור מטרה מההכשרה.'); return; }
+      err(2, '');
+    }
+
+    if (n === 3) {
+      if (!s.track) { err(3, 'יש לבחור מסלול הכשרה.'); return; }
+      if (!s.loc)   { err(3, 'יש לבחור מיקום.'); return; }
+      if (!s.sch)   { err(3, 'יש לבחור לוח זמנים.'); return; }
+      document.getElementById('s-name').textContent  = s.name;
+      document.getElementById('s-track').textContent = trackL[s.track];
+      document.getElementById('s-loc').textContent   = locL[s.loc];
+      document.getElementById('s-sch').textContent   = schL[s.sch];
+      err(3, '');
+    }
+
+    if (n === 4) {
+      const vals = Object.values(s.screen);
+      if (vals.some(v => v === null)) { err(4, 'יש לענות על כל שאלות ההתאמה.'); return; }
+      if (vals.some(v => v === 'no')) { err(4, 'נא ליצור קשר ישיר לדיון באפשרויות המתאימות.'); return; }
+      const m = [];
+      if (!s.hSigned) m.push('הצהרת בריאות');
+      if (!s.rSigned) m.push('תקנון לימודים');
+      if (m.length) { err(4, `יש לחתום על: ${m.join(', ')}`); return; }
+      err(4, '');
+    }
+
+    goStep(n + 1);
+  },
+
+  back() { if (s.step > 1) goStep(s.step - 1); },
+
+  async pay() {
+    const btn = document.getElementById('pay-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="ph ph-spinner" style="animation:spin 0.8s linear infinite;display:inline-block;"></i> מעבד תשלום...';
+    try {
+      await new Promise(r => setTimeout(r, 2000));
+      await save();
+      goStep('success');
+    } catch(e) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ph ph-credit-card"></i> שלם דמי רישום ₪399';
+      err(5, 'שגיאה: ' + e.message);
+    }
+  }
+};
+
+const st = document.createElement('style');
+st.textContent = '@keyframes spin{to{transform:rotate(360deg)}}';
+document.head.appendChild(st);
+</script>
+</body>
+</html>

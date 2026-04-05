@@ -1,3 +1,5 @@
+import { renderCollegeRegistration, initCollegeRegistration } from './college-registration.js';
+
 export async function renderCollege() {
     return `
         <div class="college-container">
@@ -13,7 +15,31 @@ export async function renderCollege() {
                         <button class="btn btn-outline" style="border-color: rgba(255,255,255,0.3); color: white;">Learning Path</button>
                     </div>
                 </div>
-                
+
+                <!-- Registration CTA Card -->
+                <div class="card" style="flex: 1; min-width: 260px; background: linear-gradient(135deg, #1a5faa 0%, #0d4d96 100%); color: white; display: flex; flex-direction: column; justify-content: center; position: relative; overflow: hidden;">
+                    <div style="position:absolute;top:-20px;left:-20px;width:100px;height:100px;background:rgba(255,255,255,0.05);border-radius:50%;"></div>
+                    <div style="position:absolute;bottom:-30px;right:-10px;width:130px;height:130px;background:rgba(255,255,255,0.04);border-radius:50%;"></div>
+                    <div style="position:relative;z-index:1;">
+                        <div style="display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,0.15);border-radius:20px;padding:4px 10px;font-size:0.72rem;font-weight:700;margin-bottom:10px;">
+                            <i class="ph ph-sparkle"></i> מחזור 2025 פתוח לרישום
+                        </div>
+                        <h3 style="font-size:1.15rem;font-weight:800;margin-bottom:6px;color:#fff;">הצטרפו לקורס המקצועי הבא</h3>
+                        <p style="font-size:0.83rem;opacity:0.85;margin-bottom:16px;line-height:1.6;">
+                            רישום מהיר ב-5 דקות.<br>תשלום מאובטח · ביטוח כלול · תעודה מקצועית.
+                        </p>
+                        <button id="creg-open-btn" style="
+                            background:#fff;color:#1a5faa;border:none;border-radius:10px;
+                            padding:0.7rem 1.25rem;font-family:'Heebo',sans-serif;font-weight:700;
+                            font-size:0.9rem;cursor:pointer;display:inline-flex;align-items:center;gap:6px;
+                            transition:all 0.2s;box-shadow:0 4px 12px rgba(0,0,0,0.15);
+                        " onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 18px rgba(0,0,0,0.2)'"
+                           onmouseout="this.style.transform='translateY(0)';this.style.boxShadow='0 4px 12px rgba(0,0,0,0.15)'">
+                            הירשם לקורס הבא <i class="ph ph-arrow-left"></i>
+                        </button>
+                    </div>
+                </div>
+
                 <div class="card" style="flex: 1; min-width: 250px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
                     <div style="font-size: 3rem; font-weight: 700; color: var(--color-primary); margin-bottom: 8px;">12</div>
                     <div class="text-muted" style="font-size: 1rem; font-weight: 500;">CEU Credits Earned</div>
@@ -28,7 +54,7 @@ export async function renderCollege() {
 
             <!-- Courses Grid -->
             <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px;">
-                
+
                 <!-- Course 1 -->
                 <div class="card" style="display: flex; flex-direction: column; padding: 0; overflow: hidden;">
                     <div style="height: 140px; background: url('https://images.unsplash.com/photo-1541888081665-22441c2c3669?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80') center/cover; position: relative;">
@@ -92,4 +118,24 @@ export async function renderCollege() {
             </div>
         </div>
     `;
+}
+
+// Called by app.js after renderCollege() HTML is injected into the DOM
+export async function initCollege() {
+    const openBtn = document.getElementById('creg-open-btn');
+    if (!openBtn) return;
+
+    openBtn.addEventListener('click', async () => {
+        // Inject modal HTML into body
+        const modalHtml = renderCollegeRegistration();
+        const wrapper = document.createElement('div');
+        wrapper.innerHTML = modalHtml;
+        document.body.appendChild(wrapper.firstElementChild);
+        // Init canvas event listeners
+        initCollegeRegistration();
+    });
+
+    // Expose openRegistration for any other triggers
+    window.collegeReg = window.collegeReg || {};
+    window.collegeReg.openRegistration = () => openBtn.click();
 }

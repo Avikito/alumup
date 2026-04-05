@@ -1,14 +1,14 @@
 import { renderHome } from './pages/home.js';
 import { renderKits } from './pages/kits.js';
 import { renderHub } from './pages/hub.js';
-import { renderCollege } from './pages/college.js';
+import { renderCollege, initCollege } from './pages/college.js';
 import { renderTenders } from './pages/tenders.js';
 
 const routes = {
     '/': { title: 'Dashboard - ALUM-IL', render: renderHome, icon: 'ph-squares-four', label: 'Dashboard' },
     '/kits': { title: 'Installer Kits', render: renderKits, icon: 'ph-package', label: 'Installer Kits' },
     '/hub': { title: 'Purchasing Hub', render: renderHub, icon: 'ph-shopping-cart', label: 'Purchasing Hub' },
-    '/college': { title: 'ALUM-IL College', render: renderCollege, icon: 'ph-graduation-cap', label: 'College' },
+    '/college': { title: 'ALUM-IL College', render: renderCollege, init: initCollege, icon: 'ph-graduation-cap', label: 'College' },
     '/tenders': { title: 'Tenders & Ops', render: renderTenders, icon: 'ph-briefcase', label: 'Tenders & Ops' }
 };
 
@@ -110,6 +110,7 @@ class App {
         try {
             this.contentEl.innerHTML = await route.render();
             this.contentEl.classList.add('fade-in');
+            if (route.init) await route.init();
         } catch (err) {
             console.error(err);
             this.contentEl.innerHTML = `<div class="card"><h2 class="text-danger">Error Loading Page</h2><p>${err.message}</p></div>`;

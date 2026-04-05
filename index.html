@@ -45,6 +45,7 @@
                             התחברות למערכת <i class="ph ph-sign-in"></i>
                         </a>
                     </div>
+
                 </div>
             </div>
 
@@ -64,6 +65,25 @@
                         והזדמנויות בנפרד — הכל מתרכז תחת מערכת אחת ברורה ומסודרת. כך העסק מתנהל בצורה יעילה יותר, חוסך
                         זמן ומשפר את הרווחיות.</p>
                 </div>
+            </div>
+        </section>
+
+        <!-- College Section -->
+        <section style="padding: 4rem 0; background: linear-gradient(135deg, #f0f5ff 0%, #e8f0fb 100%);">
+            <div class="container" style="text-align:center;">
+                <p style="font-size:0.85rem;font-weight:700;color:#1a5faa;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:0.75rem;">הכשרה מקצועית</p>
+                <h2 style="font-size:1.8rem;font-weight:800;color:#1a2640;margin-bottom:0.75rem;">מכללת ALUM-IL</h2>
+                <p style="font-size:1rem;color:#6b7a99;margin-bottom:2rem;">קריירה מקצועית בענף האלומיניום — קורסים, הסמכות ומלווה מקצועי.</p>
+                <a href="college-register.html" style="
+                    display:inline-flex;align-items:center;gap:10px;
+                    background:#1a5faa;color:#fff;
+                    border-radius:12px;padding:0.85rem 2rem;
+                    font-family:'Heebo',sans-serif;font-size:1rem;font-weight:700;
+                    text-decoration:none;transition:background 0.2s;
+                " onmouseover="this.style.background='#0d4d96'" onmouseout="this.style.background='#1a5faa'">
+                    <i class="ph ph-graduation-cap" style="font-size:1.2rem;"></i>
+                    לפרטים והרשמה
+                </a>
             </div>
         </section>
 
@@ -131,10 +151,12 @@
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
 const supabase = createClient(
   'https://exfdjelwyrspfspcevvm.supabase.co',
   'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
 );
+
 (async () => {
   const { data: { user } } = await supabase.auth.getUser();
   if (user) {
@@ -142,6 +164,7 @@ const supabase = createClient(
     if (btn) btn.style.display = 'flex';
   }
 })();
+
 window.handleLogout = async function() {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
