@@ -8,7 +8,8 @@
       "Bash(grep -l \"generatePDF\\\\|jsPDF\\\\|pdf\" \"c:\\\\Users\\\\User\\\\Desktop\\\\עדכון אתר 1503\\\\alumup\"/*.html)",
       "Bash(grep -r \"\\\\.insert\\\\|\\\\.upsert\" 'c:\\\\Users\\\\User\\\\Desktop\\\\עדכון אתר 1503\\\\alumup' --include=*.html --include=*.js)",
       "Bash(curl -sL \"https://cdn.jsdelivr.net/gh/google/fonts/ofl/heebo/Heebo-Regular.ttf\" -o /tmp/heebo_reg.ttf)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(node -e \":*)"
     ]
   }
 }

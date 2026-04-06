@@ -117,6 +117,39 @@
     .detail-item { font-size:0.78rem; }
     .detail-label { font-size:0.65rem;font-weight:800;color:#9aa3b5;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.18rem; }
     .detail-value { color:var(--industrial-silver);font-weight:600;line-height:1.4; }
+    .det-val-yes { color:#16a34a; }
+    .det-val-no  { color:#dc2626; }
+    .det-section { background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:0.85rem 1rem;margin-bottom:0.75rem; }
+    .det-section:last-of-type { margin-bottom:0; }
+    .det-section-title { font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:0.65rem;display:flex;align-items:center;gap:5px; }
+
+    /* ── STUDENT CRM INLINE ROW ── */
+    .b-pool-detail-row { display:none; }
+    .b-pool-detail-row.open { display:table-row; }
+    .b-pool-detail-row td { background:#f8fafc;border-bottom:2px solid #fde68a;padding:1rem 1.2rem 1.2rem; }
+    .bsc-header { display:flex;align-items:center;gap:0.85rem;margin-bottom:1rem;padding-bottom:0.85rem;border-bottom:1px solid #e2e8f0; }
+    .bsc-avatar { width:42px;height:42px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.88rem;font-weight:800; }
+    .bsc-name { font-size:0.95rem;font-weight:900;color:#0f172a;margin-bottom:2px; }
+    .bsc-meta { font-size:0.75rem;color:#64748b;display:flex;gap:0.85rem;flex-wrap:wrap; }
+    .bsc-meta span { display:flex;align-items:center;gap:4px; }
+    .bsc-sections { display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:0.75rem; }
+    .bsc-section { background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:0.75rem 0.9rem; }
+    .bsc-section-title { font-size:0.65rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:0.55rem;display:flex;align-items:center;gap:5px; }
+    .bsc-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:0.4rem 1rem; }
+    .bsc-field { font-size:0.77rem; }
+    .bsc-label { font-size:0.62rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px; }
+    .bsc-val { color:#0f172a;font-weight:600; }
+    .bsc-val-yes { color:#16a34a;font-weight:700; }
+    .bsc-val-no  { color:#dc2626;font-weight:700; }
+    .bsc-note-row { display:flex;gap:8px;margin-top:0.5rem; }
+    .bsc-note-input { flex:1;border:1px solid #e2e8f0;border-radius:8px;padding:0.45rem 0.7rem;font-family:"Heebo",sans-serif;font-size:0.8rem;outline:none;background:#fff; }
+    .bsc-note-input:focus { border-color:#2563eb; }
+    .bsc-note-save { background:#2563eb;color:#fff;border:none;border-radius:8px;padding:0.45rem 0.85rem;font-family:"Heebo",sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer; }
+    .bsc-note-item { background:#f8fafc;border:1px solid #e2e8f0;border-radius:7px;padding:0.4rem 0.65rem;margin-bottom:4px;font-size:0.78rem;color:#334155; }
+    .bsc-note-date { font-size:0.63rem;color:#94a3b8;margin-bottom:1px; }
+    .pool-row-clickable { cursor:pointer;transition:background 0.15s; }
+    .pool-row-clickable:hover td { background:#fffbeb; }
+    .pool-row-clickable.expanded td { background:#fffbeb; }
 
     /* ── NOTES AREA ── */
     .notes-area { margin-top:0.9rem;border-top:1px solid #e8edf5;padding-top:0.8rem; }
@@ -164,7 +197,7 @@
     .b-stat-lbl { font-size:0.72rem;color:#64748b;margin-top:2px; }
 
     /* ── BATCH LAYOUT ── */
-    .b-dash-layout { display:grid;grid-template-columns:1fr 280px;gap:1.25rem;align-items:start; }
+    .b-dash-layout { display:flex;flex-direction:column;gap:1.5rem; }
     .b-section-title { font-size:0.9rem;font-weight:800;color:#0f172a; }
     .b-section-sub { font-size:0.75rem;color:#64748b;margin-top:1px; }
     .b-section-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem; }
@@ -203,17 +236,18 @@
     .b-pool-header { background:linear-gradient(135deg,#fffbeb,#fef3c7);padding:0.9rem 1rem;border-bottom:1px solid #fde68a;display:flex;align-items:center;justify-content:space-between; }
     .b-pool-title { font-size:0.82rem;font-weight:800;color:#92400e;display:flex;align-items:center;gap:6px; }
     .b-pool-count { background:#f59e0b;color:#0f172a;border-radius:20px;font-size:0.68rem;font-weight:800;padding:2px 8px; }
-    .b-pool-body { max-height:calc(100vh - 300px);overflow-y:auto; }
-    .b-pool-item { padding:0.85rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:background 0.15s; }
-    .b-pool-item:last-child { border-bottom:none; }
-    .b-pool-item:hover { background:#fffbeb; }
-    .b-pool-avatar { width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.78rem;font-weight:800; }
-    .b-pool-info { flex:1;min-width:0; }
-    .b-pool-name { font-size:0.8rem;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
-    .b-pool-course { font-size:0.7rem;color:#64748b;margin-top:1px; }
-    .b-pool-btn { background:#fffbeb;color:#b45309;border:none;border-radius:6px;padding:4px 8px;font-family:'Heebo',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all 0.15s;white-space:nowrap; }
-    .b-pool-btn:hover { background:#f59e0b;color:#0f172a; }
-    .b-pool-empty { padding:2rem 1rem;text-align:center;color:#94a3b8;font-size:0.82rem; }
+    .b-pool-body { overflow:hidden; }
+    .b-pool-table { width:100%;border-collapse:collapse; }
+    .b-pool-table th { font-size:0.7rem;font-weight:700;color:#92400e;background:rgba(245,158,11,0.07);padding:0.55rem 1rem;text-align:right;border-bottom:1px solid #fde68a; }
+    .b-pool-table td { padding:0.8rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle; }
+    .b-pool-table tr:last-child td { border-bottom:none; }
+    .b-pool-table tr:hover td { background:#fffbeb; }
+    .b-pool-avatar { width:34px;height:34px;border-radius:50%;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:0.78rem;font-weight:800; }
+    .b-pool-name { font-size:0.82rem;font-weight:700;color:#0f172a; }
+    .b-pool-sub { font-size:0.7rem;color:#64748b;margin-top:1px; }
+    .b-pool-btn { background:#fffbeb;color:#b45309;border:1.5px solid #fde68a;border-radius:7px;padding:5px 12px;font-family:'Heebo',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;transition:all 0.15s;white-space:nowrap; }
+    .b-pool-btn:hover { background:#f59e0b;color:#0f172a;border-color:#f59e0b; }
+    .b-pool-empty { padding:2.5rem 1rem;text-align:center;color:#94a3b8;font-size:0.82rem; }
 
     /* ── BATCH DETAIL ── */
     .b-back-btn { display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;color:#64748b;cursor:pointer;background:none;border:none;font-family:'Heebo',sans-serif;margin-bottom:1rem;padding:0; }
@@ -336,7 +370,7 @@
             <div class="page-subtitle" style="margin-bottom:0;">שיבוץ תלמידים, ניהול נוכחות ומעקב כספי</div>
           </div>
           <div style="display:flex;gap:0.6rem;">
-            <button class="btn-batch-ghost" onclick="bRenderDashboard()"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+            <button class="btn-batch-ghost" onclick="bInit().catch(console.error)"><i class="ph ph-arrows-clockwise"></i> רענן</button>
             <button class="btn-batch-primary" onclick="bOpenNewBatch()"><i class="ph ph-plus"></i> מחזור חדש</button>
           </div>
         </div>
@@ -379,6 +413,7 @@
         </div>
 
       </div><!-- /view-batches -->
+
 
       <!-- ═══ VIEW: MEMBERS ═══ -->
       <div id="view-members">
@@ -472,6 +507,7 @@ const supabase = createClient(
   'https://exfdjelwyrspfspcevvm.supabase.co',
   'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
 );
+window._supabase = supabase;
 
 async function requireCollegeAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
@@ -842,7 +878,7 @@ window.switchView = function(view) {
   document.getElementById('nav-registrations').classList.toggle('active', view === 'registrations');
   document.getElementById('nav-batches').classList.toggle('active',       view === 'batches');
   if (view === 'registrations' && allStudents.length === 0) loadStudents();
-  if (view === 'batches') bRenderDashboard();
+  if (view === 'batches') bInit().catch(console.error);
 };
 
 // ═══════════════════════════════════════════════
@@ -860,16 +896,18 @@ const LOC_LABELS  = { beer_sheva: 'באר שבע', tel_aviv: 'תל אביב' };
 const SCH_LABELS  = { morning: 'בוקר', evening: 'ערב' };
 
 const STUDENT_STATUS_LABELS = {
-  awaiting_coordination: 'ממתין לתיאום',
-  interview_scheduled:   'ראיון נקבע',
-  rejected_interview:    'נפסל בראיון',
-  awaiting_assignment:   'ממתין לשיבוץ',
+  awaiting_coordination:   'ממתין לתיאום',
+  interview_scheduled:     'ראיון נקבע',
+  rejected_interview:      'נפסל בראיון',
+  awaiting_assignment:     'ממתין לשיבוץ',
+  assigned_pending_payment:'משובץ – ממתין לתשלום',
 };
 const STUDENT_STATUS_CLASS = {
-  awaiting_coordination: 'sb-await',
-  interview_scheduled:   'sb-interview',
-  rejected_interview:    'sb-rejected',
-  awaiting_assignment:   'sb-assignment',
+  awaiting_coordination:   'sb-await',
+  interview_scheduled:     'sb-interview',
+  rejected_interview:      'sb-rejected',
+  awaiting_assignment:     'sb-assignment',
+  assigned_pending_payment:'sb-assignment',
 };
 
 let allStudents    = [];
@@ -973,75 +1011,95 @@ function renderStudents(students) {
     </tr>
     <tr id="sdetails-${s.id}" class="details-row">
       <td colspan="8">
-        <div class="details-grid">
-          <div class="detail-item">
-            <div class="detail-label">כשיר פיזית לגובה</div>
-            <div class="detail-value">${s.screening_physical === 'yes' ? '✓ כן' : s.screening_physical === 'no' ? '✗ לא' : '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">אישור עבודה בגובה</div>
-            <div class="detail-value">${s.screening_permit === 'yes' ? '✓ יש אישור' : s.screening_permit === 'no' ? '✗ אין אישור' : '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">ניסיון כלי חשמל</div>
-            <div class="detail-value">${s.screening_tools === 'yes' ? '✓ יש ניסיון' : s.screening_tools === 'no' ? '✗ אין ניסיון' : '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">גיל מעל 18</div>
-            <div class="detail-value">${s.screening_age === 'yes' ? '✓ כן' : s.screening_age === 'no' ? '✗ לא' : '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">שנת לידה</div>
-            <div class="detail-value">${s.birth_year || '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">מחיר מלא קורס</div>
-            <div class="detail-value">₪8,500 + מע"מ</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">הצהרת בריאות</div>
-            <div class="detail-value">${s.health_declaration_signed ? '✓ חתום' : '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">תקנון</div>
-            <div class="detail-value">${s.regulations_signed ? '✓ חתום' : '—'}</div>
-          </div>
-          <div class="detail-item">
-            <div class="detail-label">מועד פתיחה</div>
-            <div class="detail-value">${s.opening_window || '—'}</div>
+
+        <!-- שלב 1: פרטים אישיים -->
+        <div class="det-section">
+          <div class="det-section-title"><i class="ph ph-user"></i> שלב 1 — פרטים אישיים</div>
+          <div class="details-grid">
+            <div class="detail-item"><div class="detail-label">שם מלא</div><div class="detail-value">${s.full_name||'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">טלפון</div><div class="detail-value">${s.phone||'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">אימייל</div><div class="detail-value">${s.email||'—'}</div></div>
           </div>
         </div>
-        ${s.id_photo_data ? `
-        <div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid #e8edf5;">
-          <div class="notes-title"><i class="ph ph-identification-card"></i> צילום תעודת זהות</div>
-          <img src="${s.id_photo_data}" alt="ת.ז." style="max-width:260px;max-height:160px;border-radius:8px;border:1px solid var(--border);margin-top:6px;display:block;">
-        </div>` : ''}
-        ${(s.health_signature_data || s.regulations_signature_data) ? `
-        <div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid #e8edf5;">
-          <div class="notes-title"><i class="ph ph-pen-nib"></i> חתימות על הסכמים</div>
-          <div style="display:flex;gap:1.2rem;margin-top:6px;flex-wrap:wrap;">
-            ${s.health_signature_data ? `<div><div style="font-size:0.7rem;color:#9aa3b5;margin-bottom:3px;">הצהרת בריאות</div><img src="${s.health_signature_data}" style="height:70px;border:1px solid var(--border);border-radius:6px;background:#fff;display:block;"></div>` : ''}
-            ${s.regulations_signature_data ? `<div><div style="font-size:0.7rem;color:#9aa3b5;margin-bottom:3px;">תקנון לימודים</div><img src="${s.regulations_signature_data}" style="height:70px;border:1px solid var(--border);border-radius:6px;background:#fff;display:block;"></div>` : ''}
-          </div>
-        </div>` : ''}
 
-        <div class="notes-area">
+        <!-- שלב 2: בחירת קורס -->
+        <div class="det-section">
+          <div class="det-section-title"><i class="ph ph-graduation-cap"></i> שלב 2 — בחירת קורס</div>
+          <div class="details-grid">
+            <div class="detail-item"><div class="detail-label">מסלול</div><div class="detail-value">${COURSE_LABELS[s.course_track]||s.course_track||'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">מיקום</div><div class="detail-value">${s.location==='beer_sheva'?'באר שבע':s.location==='tel_aviv'?'תל אביב':s.location||'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">זמן לימודים</div><div class="detail-value">${s.schedule==='morning'?'בוקר':s.schedule==='evening'?'ערב':s.schedule||'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">מועד פתיחה</div><div class="detail-value">${s.opening_window==='may_jun'?'מאי–יוני':s.opening_window==='jun_jul'?'יוני–יולי':s.opening_window==='aug_sep'?'אוגוסט–ספטמבר':s.opening_window||'—'}</div></div>
+          </div>
+        </div>
+
+        <!-- שלב 3: שאלות סינון -->
+        <div class="det-section">
+          <div class="det-section-title"><i class="ph ph-clipboard-text"></i> שלב 3 — שאלות התאמה</div>
+          <div class="details-grid">
+            <div class="detail-item">
+              <div class="detail-label">כשיר פיזית לגובה</div>
+              <div class="detail-value ${s.screening_physical==='no'?'det-val-no':s.screening_physical==='yes'?'det-val-yes':''}">${s.screening_physical==='yes'?'✓ כן':s.screening_physical==='no'?'✗ לא':'—'}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">אישור עבודה בגובה</div>
+              <div class="detail-value ${s.screening_permit==='no'?'det-val-no':s.screening_permit==='yes'?'det-val-yes':''}">${s.screening_permit==='yes'?'✓ יש אישור':s.screening_permit==='no'?'✗ אין אישור':'—'}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">ניסיון כלי חשמל</div>
+              <div class="detail-value ${s.screening_tools==='no'?'det-val-no':s.screening_tools==='yes'?'det-val-yes':''}">${s.screening_tools==='yes'?'✓ יש ניסיון':s.screening_tools==='no'?'✗ אין ניסיון':'—'}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">גיל מעל 18</div>
+              <div class="detail-value ${s.screening_age==='no'?'det-val-no':s.screening_age==='yes'?'det-val-yes':''}">${s.screening_age==='yes'?'✓ כן':s.screening_age==='no'?'✗ לא':'—'}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- שלב 4: הסכמים וחתימות -->
+        <div class="det-section">
+          <div class="det-section-title"><i class="ph ph-pen-nib"></i> שלב 4 — הסכמים וחתימות</div>
+          <div class="details-grid" style="margin-bottom:${(s.health_signature_data||s.regulations_signature_data)?'0.8rem':'0'};">
+            <div class="detail-item">
+              <div class="detail-label">הצהרת בריאות</div>
+              <div class="detail-value ${s.health_declaration_signed?'det-val-yes':''}">${s.health_declaration_signed?'✓ חתום':'✗ לא חתום'}</div>
+            </div>
+            <div class="detail-item">
+              <div class="detail-label">תקנון לימודים</div>
+              <div class="detail-value ${s.regulations_signed?'det-val-yes':''}">${s.regulations_signed?'✓ חתום':'✗ לא חתום'}</div>
+            </div>
+          </div>
+          ${(s.health_signature_data||s.regulations_signature_data)?`
+          <div style="display:flex;gap:1.2rem;flex-wrap:wrap;">
+            ${s.health_signature_data?`<div><div style="font-size:0.7rem;color:#9aa3b5;margin-bottom:3px;">חתימה — הצהרת בריאות</div><img src="${s.health_signature_data}" style="height:70px;border:1px solid var(--border);border-radius:6px;background:#fff;display:block;"></div>`:''}
+            ${s.regulations_signature_data?`<div><div style="font-size:0.7rem;color:#9aa3b5;margin-bottom:3px;">חתימה — תקנון לימודים</div><img src="${s.regulations_signature_data}" style="height:70px;border:1px solid var(--border);border-radius:6px;background:#fff;display:block;"></div>`:''}
+          </div>`:''}
+        </div>
+
+        <!-- שלב 5: תשלום -->
+        <div class="det-section">
+          <div class="det-section-title"><i class="ph ph-credit-card"></i> שלב 5 — תשלום</div>
+          <div class="details-grid">
+            <div class="detail-item"><div class="detail-label">סטטוס תשלום</div><div class="detail-value">${s.payment_status||'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">סכום ששולם</div><div class="detail-value">${s.payment_amount?'₪'+s.payment_amount:'—'}</div></div>
+            <div class="detail-item"><div class="detail-label">אסמכתא</div><div class="detail-value" style="font-family:monospace;font-size:0.78rem;">${s.payment_ref||'—'}</div></div>
+          </div>
+        </div>
+
+        <!-- הערות מנהל -->
+        <div class="notes-area" style="margin-top:0;">
           <div class="notes-title"><i class="ph ph-note-pencil"></i> הערות מנהל</div>
           <div class="notes-list" id="snotes-list-${s.id}">
-            ${notes.length === 0
-              ? `<div style="font-size:0.78rem;color:var(--silver-dark);padding:0.3rem 0;">אין הערות עדיין</div>`
-              : notes.map(n => `
-                <div class="note-item">
-                  <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
-                  ${n.text}
-                </div>`).join('')
-            }
+            ${notes.length===0
+              ?`<div style="font-size:0.78rem;color:var(--silver-dark);padding:0.3rem 0;">אין הערות עדיין</div>`
+              :notes.map(n=>`<div class="note-item"><span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>${n.text}</div>`).join('')}
           </div>
           <div class="note-input-row">
             <input type="text" class="note-input" id="snote-input-${s.id}" placeholder="הוסף הערה…" onkeydown="if(event.key==='Enter')saveStudentNote('${s.id}')">
             <button class="note-save-btn" onclick="saveStudentNote('${s.id}')"><i class="ph ph-paper-plane-right"></i></button>
           </div>
         </div>
+
       </td>
     </tr>`;
   }).join('');
@@ -1058,29 +1116,15 @@ window.updateStudentStatus = async function(id, newStatus) {
   const s = allStudents.find(x => x.id === id);
   if (s) s.status = newStatus;
 
-  // When moving to awaiting_assignment → add to batch waiting pool
+  // When moving to awaiting_assignment → refresh pool from Supabase
   if (newStatus === 'awaiting_assignment' && s) {
-    const alreadyInPool = bPool.some(x => x.id === s.id);
-    if (!alreadyInPool) {
-      bPool.push({
-        id:     s.id,
-        name:   s.full_name   || '—',
-        phone:  s.phone       || '',
-        track:  s.course_track || '',
-        loc:    s.location    || 'beer_sheva',
-        sch:    s.schedule    || 'morning',
-        payRef: s.payment_ref || '',
-      });
-    }
+    if (typeof bInit === 'function') bInit().catch(console.error);
     // show visual confirmation
-    const row = document.getElementById('srow-' + id);
-    if (row) {
-      const flash = document.createElement('div');
-      flash.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:0.6rem 1.4rem;border-radius:10px;font-size:0.85rem;font-weight:700;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.18);';
-      flash.textContent = `${s.full_name} נוסף/ה למאגר הממתינים לשיבוץ ✓`;
-      document.body.appendChild(flash);
-      setTimeout(() => flash.remove(), 3000);
-    }
+    const flash = document.createElement('div');
+    flash.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:0.6rem 1.4rem;border-radius:10px;font-size:0.85rem;font-weight:700;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.18);';
+    flash.textContent = `${s.full_name} נוסף/ה למאגר הממתינים לשיבוץ ✓`;
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 3000);
   }
 
   // Update badge in row without full re-render
@@ -1178,342 +1222,7 @@ init();
   </div>
 </div>
 
-<script>
-// ══════════════════════════════════════════════
-//  BATCH MODULE — Mock Data
-// ══════════════════════════════════════════════
-const B_TRACK_LABELS = {
-  pergola_al:'פרגולה אלומיניום', pergola_electric:'פרגולה חשמלית + ZIP',
-  glass_systems:'זכוכית ואקורדיון', bioclimatic:'BIOCLIMATIC',
-  weld_al:'ריתוך אלומיניום', weld_steel:'ריתוך קונסטרוקציה',
-};
-const B_LOC = { beer_sheva:'באר שבע', tel_aviv:'תל אביב' };
-const B_SCH = { morning:'בוקר', evening:'ערב' };
-const B_COLORS = ['#2563eb','#7c3aed','#0891b2','#16a34a','#d97706','#dc2626'];
 
-let bBatches = [
-  { id:'b1', name:'פרגולה אלומיניום — מחזור 1 · מאי 2025', track:'pergola_al', loc:'beer_sheva', sch:'morning', date:'2025-05-12', cap:15, sessions:5,
-    students:[
-      {id:'s1',name:'אבי לוי',phone:'050-1111111',paid:true, attend:[1,1,1,0,0]},
-      {id:'s2',name:'יוסי כהן',phone:'052-2222222',paid:true, attend:[1,1,0,1,0]},
-      {id:'s3',name:'דני שפירא',phone:'054-3333333',paid:false,attend:[1,0,0,0,0]},
-      {id:'s4',name:'מאיר גולן',phone:'058-4444444',paid:true, attend:[1,1,1,1,1]},
-      {id:'s5',name:'רון נחום',phone:'050-5555555',paid:true, attend:[1,1,1,1,0]},
-      {id:'s6',name:'גל ברגר',phone:'053-6666666',paid:false,attend:[0,1,0,0,0]},
-    ]},
-  { id:'b2', name:'ריתוך אלומיניום — מחזור 1 · יוני 2025', track:'weld_al', loc:'tel_aviv', sch:'evening', date:'2025-06-03', cap:12, sessions:10,
-    students:[
-      {id:'s7', name:'אורן פרץ', phone:'050-7777777',paid:true, attend:[1,1,1,0,0,0,0,0,0,0]},
-      {id:'s8', name:'נמרוד בן',phone:'052-8888888',paid:true, attend:[1,0,1,1,0,0,0,0,0,0]},
-      {id:'s9', name:'טל אמיר', phone:'054-9999999',paid:false,attend:[0,0,0,0,0,0,0,0,0,0]},
-      {id:'s10',name:'עמית דהן',phone:'058-0000000',paid:true, attend:[1,1,0,0,0,0,0,0,0,0]},
-    ]},
-  { id:'b3', name:'מערכות זכוכית — מחזור 1 · ספטמבר 2025', track:'glass_systems', loc:'beer_sheva', sch:'evening', date:'2025-09-01', cap:10, sessions:10,
-    students:[
-      {id:'s11',name:'ירון שרון',phone:'050-1234567',paid:true, attend:[0,0,0,0,0,0,0,0,0,0]},
-      {id:'s12',name:'שיר אלון', phone:'052-7654321',paid:true, attend:[0,0,0,0,0,0,0,0,0,0]},
-    ]},
-];
-
-const B_DEFAULT_POOL = [
-  {id:'w1',name:'לירן ביטון', phone:'050-1112223',track:'pergola_al',   loc:'beer_sheva',sch:'morning',payRef:'PAY-001'},
-  {id:'w2',name:'חן מרקוביץ',phone:'052-3334445',track:'weld_al',      loc:'tel_aviv',  sch:'evening',payRef:'PAY-002'},
-  {id:'w3',name:'עידן שלום',  phone:'054-5556667',track:'glass_systems',loc:'beer_sheva',sch:'evening',payRef:'PAY-003'},
-  {id:'w4',name:'נועה פנחסי',phone:'058-7778889',track:'pergola_electric',loc:'tel_aviv',sch:'morning',payRef:'PAY-004'},
-  {id:'w5',name:'אסף כהן',   phone:'050-9990001',track:'pergola_al',   loc:'beer_sheva',sch:'morning',payRef:'PAY-005'},
-];
-
-// ── localStorage persistence ──
-function bSave() {
-  try {
-    localStorage.setItem('alumup_batches', JSON.stringify(bBatches));
-    localStorage.setItem('alumup_pool',    JSON.stringify(bPool));
-  } catch(e) {}
-}
-function bLoad() {
-  try {
-    const savedBatches = localStorage.getItem('alumup_batches');
-    const savedPool    = localStorage.getItem('alumup_pool');
-    if (savedBatches) bBatches = JSON.parse(savedBatches);
-    if (savedPool)    bPool    = JSON.parse(savedPool);
-  } catch(e) {}
-}
-
-let bPool = [...B_DEFAULT_POOL];
-bLoad(); // load saved data on startup
-
-let bCurrentBatchId = null;
-let bAssigningId    = null;
-let bSelectedBatch  = null;
-let bCurrentTab     = 'students';
-
-// ── Helpers ──
-function bInitials(name) { return name.trim().split(' ').map(w=>w[0]).slice(0,2).join(''); }
-function bAvatarColor(id) { let h=0; for(let c of id) h=(h*31+c.charCodeAt(0))%B_COLORS.length; return B_COLORS[h]; }
-function bProgColor(pct) { return pct>=80?'#16a34a':pct>=50?'#2563eb':'#f59e0b'; }
-function bAttPct(st) { if(!st.attend.length) return 0; return Math.round(st.attend.filter(v=>v===1).length/st.attend.length*100); }
-function bFillPct(b) { return Math.round(b.students.length/b.cap*100); }
-
-// ── Stats ──
-function bRenderStats() {
-  const total = bBatches.reduce((a,b)=>a+b.students.length,0);
-  document.getElementById('b-stats-row').innerHTML = `
-    <div class="b-stat-card"><div class="b-stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="ph ph-books"></i></div><div><div class="b-stat-val">${bBatches.length}</div><div class="b-stat-lbl">מחזורים פעילים</div></div></div>
-    <div class="b-stat-card"><div class="b-stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-user-check"></i></div><div><div class="b-stat-val">${total}</div><div class="b-stat-lbl">תלמידים משובצים</div></div></div>
-    <div class="b-stat-card"><div class="b-stat-icon" style="background:#fffbeb;color:#d97706;"><i class="ph ph-hourglass"></i></div><div><div class="b-stat-val">${bPool.length}</div><div class="b-stat-lbl">ממתינים לשיבוץ</div></div></div>
-    <div class="b-stat-card"><div class="b-stat-icon" style="background:#f5f3ff;color:#7c3aed;"><i class="ph ph-currency-circle-dollar"></i></div><div><div class="b-stat-val">₪${(bBatches.reduce((a,b)=>a+b.students.filter(s=>s.paid).length,0)*8500+bPool.length*399).toLocaleString()}</div><div class="b-stat-lbl">סה"כ גבוי</div></div></div>
-  `;
-}
-
-// ── Batches Grid ──
-function bRenderGrid() {
-  const tagMap = {pergola_al:'b-tag-blue',pergola_electric:'b-tag-blue',glass_systems:'b-tag-blue',bioclimatic:'b-tag-green',weld_al:'b-tag-orange',weld_steel:'b-tag-orange'};
-  let html = bBatches.map(b => {
-    const pct = bFillPct(b);
-    const spots = b.cap - b.students.length;
-    const dateStr = b.date ? new Date(b.date).toLocaleDateString('he-IL') : '—';
-    return `<div class="b-card" onclick="bOpenDetail('${b.id}')">
-      <div class="b-card-header">
-        <div><div class="b-card-name">${b.name}</div><div class="b-card-sub">${B_TRACK_LABELS[b.track]||b.track}</div></div>
-        <span class="b-tag ${tagMap[b.track]||'b-tag-blue'}">${B_SCH[b.sch]}</span>
-      </div>
-      <div class="b-meta">
-        <span class="b-meta-item"><i class="ph ph-map-pin"></i> ${B_LOC[b.loc]}</span>
-        <span class="b-meta-item"><i class="ph ph-calendar"></i> ${dateStr}</span>
-        <span class="b-meta-item"><i class="ph ph-clock"></i> ${b.sessions} מפגשים</span>
-      </div>
-      <div class="b-prog-row"><span class="b-prog-lbl">תפוסה</span><span class="b-prog-val">${b.students.length}/${b.cap} · ${spots>0?spots+' פנויים':'מלא'}</span></div>
-      <div class="b-prog-bar"><div class="b-prog-fill" style="width:${pct}%;background:${bProgColor(pct)};"></div></div>
-      <div class="b-card-footer" onclick="event.stopPropagation()">
-        <button class="b-btn b-btn-primary" onclick="bOpenDetail('${b.id}')"><i class="ph ph-clipboard-text"></i> ניהול נוכחות</button>
-        <button class="b-btn b-btn-ghost" onclick="bOpenDetail('${b.id}')"><i class="ph ph-currency-circle-dollar"></i> כספים</button>
-        <button class="b-btn b-btn-ghost" onclick="bDeleteBatch('${b.id}')" style="flex:0;padding:0.45rem 0.6rem;color:#dc2626;" title="מחק מחזור"><i class="ph ph-trash"></i></button>
-      </div>
-    </div>`;
-  }).join('');
-  html += `<div class="b-card-new" onclick="bOpenNewBatch()"><i class="ph ph-plus-circle"></i><span>הקמת מחזור חדש</span></div>`;
-  document.getElementById('b-grid').innerHTML = html;
-}
-
-// ── Pool ──
-function bRenderPool() {
-  document.getElementById('b-pool-count').textContent = bPool.length;
-  const body = document.getElementById('b-pool-body');
-  if (!bPool.length) {
-    body.innerHTML = `<div class="b-pool-empty"><i class="ph ph-check-circle" style="font-size:1.5rem;color:#16a34a;display:block;margin-bottom:4px;"></i>כל הממתינים שובצו!</div>`;
-    return;
-  }
-  body.innerHTML = bPool.map(w => `
-    <div class="b-pool-item">
-      <div class="b-pool-avatar" style="background:${bAvatarColor(w.id)};">${bInitials(w.name)}</div>
-      <div class="b-pool-info"><div class="b-pool-name">${w.name}</div><div class="b-pool-course">${B_TRACK_LABELS[w.track]||w.track} · ${B_LOC[w.loc]}</div></div>
-      <button class="b-pool-btn" onclick="bOpenAssign('${w.id}',event)"><i class="ph ph-arrow-square-left"></i> שבץ</button>
-    </div>`).join('');
-}
-
-function bRenderDashboard() {
-  bRenderStats();
-  bRenderGrid();
-  bRenderPool();
-}
-
-// ── Batch Detail ──
-function bOpenDetail(id) {
-  bCurrentBatchId = id;
-  bCurrentTab = 'students';
-  bNavTo('detail');
-  bRenderDetail();
-}
-
-function bRenderDetail() {
-  const b = bBatches.find(x=>x.id===bCurrentBatchId);
-  if (!b) return;
-  const pct = bFillPct(b);
-  document.getElementById('b-detail-header').innerHTML = `
-    <div class="b-detail-header" style="background:transparent;border:none;padding:0;margin:0;display:block;">
-      <h2>${b.name}</h2>
-      <div class="b-detail-meta">
-        <span><i class="ph ph-graduation-cap"></i> ${B_TRACK_LABELS[b.track]}</span>
-        <span><i class="ph ph-map-pin"></i> ${B_LOC[b.loc]}</span>
-        <span><i class="ph ph-clock"></i> ${B_SCH[b.sch]} · ${b.sessions} מפגשים</span>
-        <span><i class="ph ph-calendar"></i> ${b.date?new Date(b.date).toLocaleDateString('he-IL'):'—'}</span>
-        <span><i class="ph ph-users"></i> ${b.students.length}/${b.cap}</span>
-        <span style="margin-right:auto;"><strong style="color:${bProgColor(pct)};font-size:1.1rem;">${pct}%</strong> תפוסה</span>
-      </div>
-    </div>`;
-  document.querySelectorAll('.b-detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
-  document.querySelectorAll('.b-tab-pane').forEach((p,i)=>p.classList.toggle('active',i===0));
-  bRenderStudentsTab(b);
-  bRenderFinanceTab(b);
-}
-
-function bRenderStudentsTab(b) {
-  const sessions = Array.from({length:b.sessions},(_,i)=>i);
-  if (!b.students.length) {
-    document.getElementById('b-tab-students').innerHTML = `<div class="b-table-wrap" style="padding:3rem;text-align:center;color:#94a3b8;"><i class="ph ph-users" style="font-size:2rem;display:block;margin-bottom:8px;"></i>אין תלמידים משובצים עדיין</div>`;
-    return;
-  }
-  const rows = b.students.map(st => {
-    const pct = bAttPct(st);
-    const boxes = sessions.map(i => {
-      const v = st.attend[i];
-      const cls = v===1?'present':v===0?'absent':'';
-      const lbl = v===1?'✓':v===0?'✗':'';
-      return `<div class="b-att-box ${cls}" onclick="bToggleAttend('${b.id}','${st.id}',${i})">${lbl}</div>`;
-    }).join('');
-    return `<tr>
-      <td><div class="b-s-cell"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div><div class="b-s-name">${st.name}</div><div class="b-s-phone">${st.phone}</div></div></div></td>
-      <td><span class="b-pill ${st.paid?'b-pill-paid':'b-pill-pending'}">${st.paid?'<i class="ph ph-check"></i> שולמה':'<i class="ph ph-warning"></i> חסרה'}</span></td>
-      <td><div class="b-attend-cell">${boxes}</div></td>
-      <td style="font-weight:700;color:${pct>=85?'#16a34a':pct>=60?'#2563eb':'#dc2626'};">${pct}%</td>
-      <td><button onclick="bToggleBalance('${b.id}','${st.id}')" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:#64748b;font-family:'Heebo',sans-serif;"><i class="ph ph-pencil"></i> עדכן</button></td>
-    </tr>`;
-  }).join('');
-  const hdrs = sessions.map(i=>`<th style="min-width:26px;text-align:center;">${i+1}</th>`).join('');
-  document.getElementById('b-tab-students').innerHTML = `
-    <div class="b-table-wrap"><table>
-      <thead><tr><th>תלמיד</th><th>יתרה</th><th colspan="${b.sessions}">נוכחות — מפגשים ${hdrs}</th><th>%</th><th></th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
-}
-
-function bRenderFinanceTab(b) {
-  const rows = b.students.map(st => {
-    const balance = 8500-399;
-    return `<tr>
-      <td><div class="b-s-cell"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div class="b-s-name">${st.name}</div></div></td>
-      <td><span class="b-pill b-pill-paid"><i class="ph ph-check"></i> ₪399</span></td>
-      <td><span class="b-pill ${st.paid?'b-pill-paid':'b-pill-pending'}">${st.paid?'<i class="ph ph-check"></i> ₪'+balance.toLocaleString():'<i class="ph ph-warning"></i> ₪'+balance.toLocaleString()+' — טרם שולם'}</span></td>
-      <td style="font-weight:800;color:#0f172a;">₪${(st.paid?8500:399).toLocaleString()}</td>
-      <td><button onclick="bToggleBalance('${b.id}','${st.id}')" style="background:${st.paid?'#fef2f2':'#f0fdf4'};border:none;border-radius:6px;padding:4px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;color:${st.paid?'#dc2626':'#16a34a'};font-family:'Heebo',sans-serif;">${st.paid?'בטל תשלום':'סמן כשולם'}</button></td>
-    </tr>`;
-  }).join('');
-  const paid = b.students.filter(s=>s.paid).length;
-  const total = b.students.reduce((a,st)=>a+(st.paid?8500:399),0);
-  document.getElementById('b-tab-finance').innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem;">
-      <div class="b-stat-card"><div class="b-stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-check-circle"></i></div><div><div class="b-stat-val">${paid}</div><div class="b-stat-lbl">שילמו יתרה</div></div></div>
-      <div class="b-stat-card"><div class="b-stat-icon" style="background:#fef2f2;color:#dc2626;"><i class="ph ph-warning-circle"></i></div><div><div class="b-stat-val">${b.students.length-paid}</div><div class="b-stat-lbl">יתרה חסרה</div></div></div>
-      <div class="b-stat-card"><div class="b-stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="ph ph-currency-circle-dollar"></i></div><div><div class="b-stat-val">₪${total.toLocaleString()}</div><div class="b-stat-lbl">סה"כ שולם</div></div></div>
-    </div>
-    <div class="b-table-wrap"><table>
-      <thead><tr><th>תלמיד</th><th>דמי רישום</th><th>יתרת קורס</th><th>סה"כ שולם</th><th>פעולה</th></tr></thead>
-      <tbody>${rows}</tbody>
-    </table></div>`;
-}
-
-// ── Actions ──
-function bToggleAttend(bId,sId,idx) {
-  const b=bBatches.find(x=>x.id===bId),st=b.students.find(x=>x.id===sId);
-  st.attend[idx]=st.attend[idx]===1?0:1;
-  bSave();
-  bRenderStudentsTab(b); bRenderStats();
-}
-function bToggleBalance(bId,sId) {
-  const b=bBatches.find(x=>x.id===bId),st=b.students.find(x=>x.id===sId);
-  st.paid=!st.paid;
-  bSave();
-  bRenderStudentsTab(b); bRenderFinanceTab(b); bRenderStats();
-}
-function bOpenAssign(wId,e) {
-  if(e) e.stopPropagation();
-  const w=bPool.find(x=>x.id===wId);
-  if(!w) return;
-  bAssigningId=wId; bSelectedBatch=null;
-  document.getElementById('b-assign-title').textContent=`שיבוץ: ${w.name}`;
-  const compat=bBatches.filter(b=>b.track===w.track&&b.students.length<b.cap);
-  const other=bBatches.filter(b=>b.track!==w.track&&b.students.length<b.cap);
-  let html='';
-  if(compat.length) { html+=`<div style="font-size:0.72rem;font-weight:800;color:#16a34a;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">מסלול תואם</div>`; html+=compat.map(b=>bAssignRow(b,true)).join(''); }
-  if(other.length)  { html+=`<div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">מחזורים אחרים</div>`; html+=other.map(b=>bAssignRow(b,false)).join(''); }
-  if(!compat.length&&!other.length) html=`<div style="text-align:center;color:#94a3b8;padding:1.5rem;font-size:0.85rem;">אין מחזורים פנויים כרגע</div>`;
-  document.getElementById('b-assign-list').innerHTML=html;
-  document.getElementById('bm-assign').classList.add('open');
-}
-function bAssignRow(b,compat) {
-  return `<div class="b-assign-item" id="bai-${b.id}" onclick="bSelectBatch('${b.id}')">
-    <div><div class="b-assign-name">${b.name}</div><div class="b-assign-meta">${B_LOC[b.loc]} · ${B_SCH[b.sch]} · ${B_TRACK_LABELS[b.track]}</div></div>
-    <div class="b-assign-spots" style="color:${compat?'#16a34a':'#64748b'};">${b.cap-b.students.length} מקומות</div>
-  </div>`;
-}
-function bSelectBatch(id) {
-  bSelectedBatch=id;
-  document.querySelectorAll('.b-assign-item').forEach(el=>el.classList.remove('sel'));
-  document.getElementById('bai-'+id)?.classList.add('sel');
-}
-function bConfirmAssign() {
-  if(!bSelectedBatch){alert('יש לבחור מחזור');return;}
-  const w=bPool.find(x=>x.id===bAssigningId);
-  const b=bBatches.find(x=>x.id===bSelectedBatch);
-  if(!w||!b) return;
-  b.students.push({id:w.id,name:w.name,phone:w.phone,paid:false,attend:Array(b.sessions).fill(0)});
-  bPool=bPool.filter(x=>x.id!==bAssigningId);
-  bSave();
-  bCloseModal('bm-assign');
-  bRenderDashboard();
-  if(bCurrentBatchId===bSelectedBatch) bRenderDetail();
-}
-function bOpenNewBatch() {
-  document.getElementById('bnb-name').value='';
-  document.getElementById('bnb-track').value='';
-  document.getElementById('bnb-date').value='';
-  document.getElementById('bnb-cap').value='15';
-  document.getElementById('bm-new-batch').classList.add('open');
-}
-function bCreateBatch() {
-  const name=document.getElementById('bnb-name').value.trim();
-  const track=document.getElementById('bnb-track').value;
-  const loc=document.getElementById('bnb-loc').value;
-  const sch=document.getElementById('bnb-sch').value;
-  const date=document.getElementById('bnb-date').value;
-  const cap=parseInt(document.getElementById('bnb-cap').value)||15;
-  if(!name){alert('יש להזין שם מחזור');return;}
-  if(!track){alert('יש לבחור מסלול');return;}
-  bBatches.push({id:'b'+Date.now(),name,track,loc,sch,date,cap,sessions:sch==='morning'?5:10,students:[]});
-  bSave();
-  bCloseModal('bm-new-batch');
-  bRenderDashboard();
-}
-
-// ── Navigation ──
-function bNavTo(v) {
-  document.querySelectorAll('.b-view').forEach(el=>el.classList.remove('active'));
-  document.getElementById('bv-'+v)?.classList.add('active');
-}
-function bSwitchTab(t) {
-  bCurrentTab=t;
-  document.querySelectorAll('.b-detail-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='students')||(i===1&&t==='finance')));
-  document.querySelectorAll('.b-tab-pane').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='students')||(i===1&&t==='finance')));
-}
-function bCloseModal(id,e) {
-  if(e&&e.target!==document.getElementById(id)) return;
-  document.getElementById(id).classList.remove('open');
-}
-
-const B_DELETE_PASSWORD = 'alum2025';
-let bPendingDeleteId = null;
-
-function bDeleteBatch(id) {
-  bPendingDeleteId = id;
-  document.getElementById('b-del-pass-input').value = '';
-  document.getElementById('b-del-pass-err').style.display = 'none';
-  document.getElementById('bm-delete').classList.add('open');
-  setTimeout(() => document.getElementById('b-del-pass-input').focus(), 100);
-}
-
-function bConfirmDelete() {
-  const val = document.getElementById('b-del-pass-input').value;
-  if (val !== B_DELETE_PASSWORD) {
-    const err = document.getElementById('b-del-pass-err');
-    err.textContent = 'סיסמה שגויה';
-    err.style.display = 'block';
-    return;
-  }
-  bBatches = bBatches.filter(x => x.id !== bPendingDeleteId);
-  bSave();
-  bCloseModal('bm-delete');
-  bRenderDashboard();
-}
-</script>
+<script src="admin-college.js"></script>
 </body>
 </html>
