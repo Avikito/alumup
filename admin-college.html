@@ -134,8 +134,161 @@
     .all-clear i { font-size:2.5rem;color:#d4af37;opacity:0.6;display:block;margin-bottom:0.5rem; }
     .all-clear p { color:var(--silver-dark);font-size:0.92rem;font-weight:600; }
 
+    /* ── BATCH MODULE VARS ── */
+    #view-batches {
+      --bblue:    #2563eb;
+      --bblue-lt: #eff6ff;
+      --bslate:   #64748b;
+      --bslate-lt:#f1f5f9;
+      --borange:  #f59e0b;
+      --borange-lt:#fffbeb;
+      --bgreen:   #16a34a;
+      --bgreen-lt:#f0fdf4;
+      --bred:     #dc2626;
+      --bred-lt:  #fef2f2;
+    }
+
+    /* ── BATCH TOPBAR ACTIONS ── */
+    #batch-topbar { display:none;align-items:center;gap:0.75rem; }
+    #batch-topbar.show { display:flex; }
+    .btn-batch-primary { background:#2563eb;color:#fff;border:none;border-radius:8px;padding:0.45rem 1rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s; }
+    .btn-batch-primary:hover { background:#1d4ed8; }
+    .btn-batch-ghost { background:none;color:var(--silver-dark);border:1.5px solid var(--border);border-radius:8px;padding:0.42rem 0.85rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;transition:all 0.15s; }
+    .btn-batch-ghost:hover { border-color:#2563eb;color:#2563eb; }
+
+    /* ── BATCH STATS ── */
+    .b-stats-row { display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.25rem; }
+    .b-stat-card { background:#fff;border:1.5px solid var(--border);border-radius:12px;padding:1rem 1.1rem;display:flex;align-items:center;gap:12px; }
+    .b-stat-icon { width:42px;height:42px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:1.2rem; }
+    .b-stat-val { font-size:1.5rem;font-weight:900;color:#0f172a;line-height:1; }
+    .b-stat-lbl { font-size:0.72rem;color:#64748b;margin-top:2px; }
+
+    /* ── BATCH LAYOUT ── */
+    .b-dash-layout { display:grid;grid-template-columns:1fr 280px;gap:1.25rem;align-items:start; }
+    .b-section-title { font-size:0.9rem;font-weight:800;color:#0f172a; }
+    .b-section-sub { font-size:0.75rem;color:#64748b;margin-top:1px; }
+    .b-section-header { display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem; }
+
+    /* ── BATCH CARDS ── */
+    .b-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1rem; }
+    .b-card { background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1.1rem;transition:all 0.2s;cursor:pointer;position:relative; }
+    .b-card:hover { border-color:#2563eb;box-shadow:0 4px 16px rgba(37,99,235,0.1);transform:translateY(-1px); }
+    .b-card-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.75rem; }
+    .b-card-name { font-size:0.9rem;font-weight:800;color:#0f172a;line-height:1.3; }
+    .b-card-sub { font-size:0.72rem;color:#64748b;margin-top:2px; }
+    .b-tag { font-size:0.65rem;font-weight:700;border-radius:6px;padding:2px 8px;flex-shrink:0; }
+    .b-tag-blue { background:#eff6ff;color:#2563eb; }
+    .b-tag-orange { background:#fffbeb;color:#b45309; }
+    .b-tag-green { background:#f0fdf4;color:#16a34a; }
+    .b-meta { display:flex;gap:0.75rem;margin-bottom:0.75rem;flex-wrap:wrap; }
+    .b-meta-item { display:flex;align-items:center;gap:4px;font-size:0.74rem;color:#64748b; }
+    .b-prog-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:5px; }
+    .b-prog-lbl { font-size:0.72rem;color:#64748b;font-weight:600; }
+    .b-prog-val { font-size:0.72rem;font-weight:800;color:#0f172a; }
+    .b-prog-bar { height:6px;background:#e2e8f0;border-radius:4px;overflow:hidden; }
+    .b-prog-fill { height:100%;border-radius:4px;transition:width 0.3s; }
+    .b-card-footer { display:flex;gap:6px;margin-top:0.85rem; }
+    .b-btn { flex:1;padding:0.45rem;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:4px; }
+    .b-btn-primary { background:#eff6ff;color:#2563eb; }
+    .b-btn-primary:hover { background:#2563eb;color:#fff; }
+    .b-btn-ghost { background:#f1f5f9;color:#64748b; }
+    .b-btn-ghost:hover { background:#e2e8f0;color:#0f172a; }
+    .b-card-new { background:none;border:2px dashed var(--border);border-radius:14px;padding:1.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all 0.2s;min-height:200px;color:#94a3b8; }
+    .b-card-new:hover { border-color:#2563eb;color:#2563eb;background:#eff6ff; }
+    .b-card-new i { font-size:1.8rem; }
+    .b-card-new span { font-size:0.82rem;font-weight:700; }
+
+    /* ── WAITING POOL ── */
+    .b-pool-panel { background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden; }
+    .b-pool-header { background:linear-gradient(135deg,#fffbeb,#fef3c7);padding:0.9rem 1rem;border-bottom:1px solid #fde68a;display:flex;align-items:center;justify-content:space-between; }
+    .b-pool-title { font-size:0.82rem;font-weight:800;color:#92400e;display:flex;align-items:center;gap:6px; }
+    .b-pool-count { background:#f59e0b;color:#0f172a;border-radius:20px;font-size:0.68rem;font-weight:800;padding:2px 8px; }
+    .b-pool-body { max-height:calc(100vh - 300px);overflow-y:auto; }
+    .b-pool-item { padding:0.85rem 1rem;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;transition:background 0.15s; }
+    .b-pool-item:last-child { border-bottom:none; }
+    .b-pool-item:hover { background:#fffbeb; }
+    .b-pool-avatar { width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.78rem;font-weight:800; }
+    .b-pool-info { flex:1;min-width:0; }
+    .b-pool-name { font-size:0.8rem;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    .b-pool-course { font-size:0.7rem;color:#64748b;margin-top:1px; }
+    .b-pool-btn { background:#fffbeb;color:#b45309;border:none;border-radius:6px;padding:4px 8px;font-family:'Heebo',sans-serif;font-size:0.7rem;font-weight:700;cursor:pointer;flex-shrink:0;transition:all 0.15s;white-space:nowrap; }
+    .b-pool-btn:hover { background:#f59e0b;color:#0f172a; }
+    .b-pool-empty { padding:2rem 1rem;text-align:center;color:#94a3b8;font-size:0.82rem; }
+
+    /* ── BATCH DETAIL ── */
+    .b-back-btn { display:inline-flex;align-items:center;gap:6px;font-size:0.82rem;font-weight:600;color:#64748b;cursor:pointer;background:none;border:none;font-family:'Heebo',sans-serif;margin-bottom:1rem;padding:0; }
+    .b-back-btn:hover { color:#2563eb; }
+    .b-detail-header { background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;gap:1rem; }
+    .b-detail-header h2 { font-size:1.1rem;font-weight:900;color:#0f172a;margin-bottom:4px; }
+    .b-detail-meta { display:flex;gap:1rem;flex-wrap:wrap; }
+    .b-detail-meta span { font-size:0.78rem;color:#64748b;display:flex;align-items:center;gap:4px; }
+    .b-detail-tabs { display:flex;gap:4px;border-bottom:2px solid var(--border);margin-bottom:1.25rem; }
+    .b-detail-tab { padding:0.6rem 1rem;font-size:0.82rem;font-weight:700;color:#64748b;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;transition:all 0.15s; }
+    .b-detail-tab:hover { color:#2563eb; }
+    .b-detail-tab.active { color:#2563eb;border-bottom-color:#2563eb; }
+    .b-tab-pane { display:none; }
+    .b-tab-pane.active { display:block; }
+
+    /* ── BATCH TABLE ── */
+    .b-table-wrap { background:#fff;border:1.5px solid var(--border);border-radius:14px;overflow:hidden; }
+    .b-table-wrap table { width:100%;border-collapse:collapse; }
+    .b-table-wrap th { background:#f1f5f9;padding:0.7rem 1rem;font-size:0.72rem;font-weight:800;color:#64748b;text-align:right;white-space:nowrap;border-bottom:1px solid var(--border); }
+    .b-table-wrap td { padding:0.75rem 1rem;font-size:0.82rem;border-bottom:1px solid var(--border);vertical-align:middle; }
+    .b-table-wrap tr:last-child td { border-bottom:none; }
+    .b-table-wrap tr:hover td { background:#f8fafc; }
+    .b-s-cell { display:flex;align-items:center;gap:9px; }
+    .b-s-avatar { width:30px;height:30px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;color:#fff; }
+    .b-s-name { font-weight:700;color:#0f172a;font-size:0.82rem; }
+    .b-s-phone { font-size:0.72rem;color:#64748b; }
+    .b-pill { display:inline-flex;align-items:center;gap:4px;border-radius:20px;padding:3px 10px;font-size:0.7rem;font-weight:700; }
+    .b-pill-paid { background:#f0fdf4;color:#16a34a; }
+    .b-pill-pending { background:#fef2f2;color:#dc2626; }
+    .b-attend-cell { display:flex;gap:4px;flex-wrap:wrap; }
+    .b-att-box { width:22px;height:22px;border-radius:5px;border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:0.7rem;font-weight:800;transition:all 0.15s; }
+    .b-att-box.present { background:#f0fdf4;border-color:#16a34a;color:#16a34a; }
+    .b-att-box.absent  { background:#fef2f2;border-color:#dc2626;color:#dc2626; }
+    .b-att-box:hover { border-color:#2563eb; }
+
+    /* ── BATCH MODALS ── */
+    .b-overlay { display:none;position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(3px); }
+    .b-overlay.open { display:flex; }
+    .b-modal-box { background:#fff;border-radius:18px;padding:1.75rem;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;position:relative;animation:b-popUp 0.2s ease;box-shadow:0 20px 60px rgba(15,23,42,0.2); }
+    @keyframes b-popUp { from{opacity:0;transform:translateY(16px) scale(0.97)} to{opacity:1;transform:none} }
+    .b-modal-title { font-size:1rem;font-weight:900;color:#0f172a;margin-bottom:1.25rem; }
+    .b-modal-close { position:absolute;top:1rem;left:1rem;background:#f1f5f9;border:none;border-radius:50%;width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#64748b;font-size:0.9rem; }
+    .b-modal-close:hover { background:#e2e8f0;color:#0f172a; }
+    .b-form-field { margin-bottom:0.9rem; }
+    .b-form-field label { display:block;font-size:0.78rem;font-weight:700;color:#0f172a;margin-bottom:5px; }
+    .b-form-field input, .b-form-field select { width:100%;padding:0.6rem 0.85rem;border:1.5px solid var(--border);border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.88rem;color:#0f172a;outline:none;transition:border-color 0.15s; }
+    .b-form-field input:focus, .b-form-field select:focus { border-color:#2563eb; }
+    .b-form-row { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
+    .b-assign-item { padding:0.85rem 1rem;border:1.5px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:space-between; }
+    .b-assign-item:hover { border-color:#2563eb;background:#eff6ff; }
+    .b-assign-item.sel { border-color:#2563eb;background:#eff6ff; }
+    .b-assign-name { font-size:0.85rem;font-weight:800;color:#0f172a; }
+    .b-assign-meta { font-size:0.72rem;color:#64748b;margin-top:2px; }
+    .b-assign-spots { font-size:0.78rem;font-weight:700;color:#64748b;flex-shrink:0; }
+
+    /* ── BATCH VIEWS ── */
+    .b-view { display:none; }
+    .b-view.active { display:block; }
+
     /* ── COLLEGE BADGE ── */
     .college-badge { display:inline-flex;align-items:center;gap:0.4rem;font-size:0.75rem;background:rgba(124,58,237,0.08);color:#6d28d9;border:1px solid rgba(124,58,237,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700; }
+
+    /* ── STUDENT STATUS BADGES ── */
+    .sb-await      { background:rgba(234,88,12,0.08);color:#c2540a;border-color:rgba(234,88,12,0.22); }
+    .sb-interview  { background:rgba(124,58,237,0.08);color:#6d28d9;border-color:rgba(124,58,237,0.22); }
+    .sb-rejected   { background:rgba(220,38,38,0.08);color:#dc2626;border-color:rgba(220,38,38,0.22); }
+    .sb-assignment { background:rgba(22,163,74,0.08);color:#15803d;border-color:rgba(22,163,74,0.22); }
+    .sb-started    { background:rgba(14,116,144,0.08);color:#0e7490;border-color:rgba(14,116,144,0.22); }
+    .sb-completed  { background:rgba(22,163,74,0.08);color:#15803d;border-color:rgba(22,163,74,0.22); }
+    .sb-cancelled  { background:rgba(220,38,38,0.08);color:#dc2626;border-color:rgba(220,38,38,0.22); }
+    .sb-paid       { background:rgba(161,98,7,0.08);color:#a16207;border-color:rgba(161,98,7,0.22); }
+
+    /* ── STATUS SELECT ── */
+    .status-select { padding:0.22rem 0.5rem;border-radius:6px;border:1.5px solid var(--border);font-family:'Heebo',sans-serif;font-size:0.8rem;background:var(--surface-dark);color:var(--industrial-silver);cursor:pointer; }
+    .status-select:focus { outline:none;border-color:#d4af37; }
 
     /* ── ACTIVITY LOG ── */
     .log-section { margin-top:0.9rem;border-top:1px solid #e8edf5;padding-top:0.8rem; }
@@ -165,47 +318,150 @@
     <aside class="admin-sidebar">
       <div class="sidebar-label">ניהול מכללה</div>
       <ul class="admin-nav">
-        <li><a href="admin-college.html" class="active"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
+        <li><a href="#" id="nav-members" class="active" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
+        <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;"><i class="ph ph-books"></i> רישומי קורסים</a></li>
+        <li><a href="#" id="nav-batches" onclick="switchView('batches');return false;"><i class="ph ph-squares-four"></i> ניהול מחזורים</a></li>
       </ul>
     </aside>
 
     <main class="admin-content">
-      <div class="page-title"><i class="ph ph-graduation-cap" style="color:#6d28d9;margin-left:0.4rem;"></i>ממשק מנהלת המכללה</div>
-      <div class="page-subtitle">מועמדים בתהליך הכשרה — ניהול קידום שלבים והערות</div>
 
-      <div class="toolbar">
-        <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או שם מלא..." id="searchInput" oninput="filterRows()">
-        <span class="count-label" id="countLabel"></span>
+      <!-- ═══ VIEW: BATCHES ═══ -->
+      <div id="view-batches" style="display:none;">
+
+        <!-- Topbar actions for batches -->
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+          <div>
+            <div class="page-title" style="margin-bottom:0.2rem;"><i class="ph ph-squares-four" style="color:#2563eb;margin-left:0.4rem;"></i>ניהול מחזורים</div>
+            <div class="page-subtitle" style="margin-bottom:0;">שיבוץ תלמידים, ניהול נוכחות ומעקב כספי</div>
+          </div>
+          <div style="display:flex;gap:0.6rem;">
+            <button class="btn-batch-ghost" onclick="bRenderDashboard()"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+            <button class="btn-batch-primary" onclick="bOpenNewBatch()"><i class="ph ph-plus"></i> מחזור חדש</button>
+          </div>
+        </div>
+
+        <!-- Dashboard sub-view -->
+        <div class="b-view active" id="bv-dashboard">
+          <div class="b-stats-row" id="b-stats-row"></div>
+          <div class="b-dash-layout">
+            <div>
+              <div class="b-section-header">
+                <div><div class="b-section-title">מחזורים פעילים</div><div class="b-section-sub">לחצו על מחזור לפרטים ולניהול נוכחות</div></div>
+              </div>
+              <div class="b-grid" id="b-grid"></div>
+            </div>
+            <div>
+              <div class="b-section-header">
+                <div><div class="b-section-title">ממתינים לשיבוץ</div><div class="b-section-sub">שילמו דמי רישום · טרם שובצו</div></div>
+              </div>
+              <div class="b-pool-panel">
+                <div class="b-pool-header">
+                  <span class="b-pool-title"><i class="ph ph-hourglass-medium"></i> מאגר הממתינים</span>
+                  <span class="b-pool-count" id="b-pool-count">0</span>
+                </div>
+                <div class="b-pool-body" id="b-pool-body"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Detail sub-view -->
+        <div class="b-view" id="bv-detail">
+          <button class="b-back-btn" onclick="bNavTo('dashboard')"><i class="ph ph-arrow-right"></i> חזרה ללוח הבקרה</button>
+          <div class="b-detail-header" id="b-detail-header"></div>
+          <div class="b-detail-tabs">
+            <div class="b-detail-tab active" onclick="bSwitchTab('students')"><i class="ph ph-users"></i> תלמידים ונוכחות</div>
+            <div class="b-detail-tab" onclick="bSwitchTab('finance')"><i class="ph ph-currency-circle-dollar"></i> מצב כספי</div>
+          </div>
+          <div class="b-tab-pane active" id="b-tab-students"></div>
+          <div class="b-tab-pane" id="b-tab-finance"></div>
+        </div>
+
+      </div><!-- /view-batches -->
+
+      <!-- ═══ VIEW: MEMBERS ═══ -->
+      <div id="view-members">
+        <div class="page-title"><i class="ph ph-graduation-cap" style="color:#6d28d9;margin-left:0.4rem;"></i>ממשק מנהלת המכללה</div>
+        <div class="page-subtitle">מועמדים בתהליך הכשרה — ניהול קידום שלבים והערות</div>
+
+        <div class="toolbar">
+          <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או שם מלא..." id="searchInput" oninput="filterRows()">
+          <span class="count-label" id="countLabel"></span>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="setTab('all')"                          id="tab-all">הכל</button>
+          <button class="tab-btn"        onclick="setTab('new_application')"              id="tab-new_application">בקשות חדשות</button>
+          <button class="tab-btn"        onclick="setTab('under_review')"                 id="tab-under_review">בתהליך בדיקה</button>
+          <button class="tab-btn"        onclick="setTab('experienced_pending_cert')"     id="tab-experienced_pending_cert">ממתין להסמכה</button>
+          <button class="tab-btn"        onclick="setTab('in_professional_training')"     id="tab-in_professional_training">הכשרה מקצועית</button>
+          <button class="tab-btn"        onclick="setTab('completing_docs')"              id="tab-completing_docs">השלמת מסמכים</button>
+        </div>
+
+        <div class="users-table-wrap" id="tableWrap">
+          <table class="users-table" id="usersTable">
+            <thead>
+              <tr>
+                <th>תאריך בקשה</th>
+                <th>שם עסק</th>
+                <th>טלפון</th>
+                <th>אימייל</th>
+                <th>סטטוס</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody id="usersBody">
+              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+                <i class="ph ph-circle-notch spin"></i> טוען...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="tab-bar">
-        <button class="tab-btn active" onclick="setTab('all')"                          id="tab-all">הכל</button>
-        <button class="tab-btn"        onclick="setTab('new_application')"              id="tab-new_application">בקשות חדשות</button>
-        <button class="tab-btn"        onclick="setTab('under_review')"                 id="tab-under_review">בתהליך בדיקה</button>
-        <button class="tab-btn"        onclick="setTab('experienced_pending_cert')"     id="tab-experienced_pending_cert">ממתין להסמכה</button>
-        <button class="tab-btn"        onclick="setTab('in_professional_training')"     id="tab-in_professional_training">הכשרה מקצועית</button>
-        <button class="tab-btn"        onclick="setTab('completing_docs')"              id="tab-completing_docs">השלמת מסמכים</button>
+      <!-- ═══ VIEW: COURSE REGISTRATIONS ═══ -->
+      <div id="view-registrations" style="display:none;">
+        <div class="page-title"><i class="ph ph-books" style="color:#0e7490;margin-left:0.4rem;"></i>רישומי קורסים</div>
+        <div class="page-subtitle">תלמידים שנרשמו לקורסי המכללה — ניהול סטטוס, ראיונות ותיאום</div>
+
+        <div class="toolbar">
+          <input class="search-input" type="text" placeholder="חיפוש לפי שם, טלפון או אימייל..." id="regSearchInput" oninput="filterStudents()">
+          <span class="count-label" id="regCountLabel"></span>
+          <button class="btn-details" onclick="loadStudents()" style="margin-right:auto;"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+        </div>
+
+        <div class="tab-bar">
+          <button class="tab-btn active" onclick="setStudentTab('all')"                   id="stab-all">הכל</button>
+          <button class="tab-btn"        onclick="setStudentTab('awaiting_coordination')" id="stab-awaiting_coordination">ממתין לתיאום</button>
+          <button class="tab-btn"        onclick="setStudentTab('interview_scheduled')"   id="stab-interview_scheduled">ראיון נקבע</button>
+          <button class="tab-btn"        onclick="setStudentTab('rejected_interview')"    id="stab-rejected_interview">נפסל בראיון</button>
+          <button class="tab-btn"        onclick="setStudentTab('awaiting_assignment')"   id="stab-awaiting_assignment">ממתין לשיבוץ</button>
+        </div>
+
+        <div class="users-table-wrap">
+          <table class="users-table" id="studentsTable">
+            <thead>
+              <tr>
+                <th>תאריך רישום</th>
+                <th>שם מלא</th>
+                <th>טלפון / אימייל</th>
+                <th>מסלול קורס</th>
+                <th>מיקום / לוח זמנים</th>
+                <th>מס׳ אישור תשלום</th>
+                <th>סטטוס</th>
+                <th>פעולות</th>
+              </tr>
+            </thead>
+            <tbody id="studentsBody">
+              <tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+                <i class="ph ph-circle-notch spin"></i> טוען...
+              </td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="users-table-wrap" id="tableWrap">
-        <table class="users-table" id="usersTable">
-          <thead>
-            <tr>
-              <th>תאריך בקשה</th>
-              <th>שם עסק</th>
-              <th>טלפון</th>
-              <th>אימייל</th>
-              <th>סטטוס</th>
-              <th>פעולות</th>
-            </tr>
-          </thead>
-          <tbody id="usersBody">
-            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--silver-dark);">
-              <i class="ph ph-circle-notch spin"></i> טוען...
-            </td></tr>
-          </tbody>
-        </table>
-      </div>
     </main>
   </div>
 
@@ -575,7 +831,689 @@ window.filterRows = function() {
   renderTable(filtered);
 };
 
+// ═══════════════════════════════════════════════
+// VIEW SWITCHING
+// ═══════════════════════════════════════════════
+window.switchView = function(view) {
+  document.getElementById('view-members').style.display       = view === 'members'       ? '' : 'none';
+  document.getElementById('view-registrations').style.display = view === 'registrations' ? '' : 'none';
+  document.getElementById('view-batches').style.display       = view === 'batches'       ? '' : 'none';
+  document.getElementById('nav-members').classList.toggle('active',       view === 'members');
+  document.getElementById('nav-registrations').classList.toggle('active', view === 'registrations');
+  document.getElementById('nav-batches').classList.toggle('active',       view === 'batches');
+  if (view === 'registrations' && allStudents.length === 0) loadStudents();
+  if (view === 'batches') bRenderDashboard();
+};
+
+// ═══════════════════════════════════════════════
+// COURSE REGISTRATIONS — DATA & LABELS
+// ═══════════════════════════════════════════════
+const COURSE_LABELS = {
+  pergola_al:       'פרגולה אלומיניום',
+  pergola_electric: 'פרגולה חשמלית ומסכי ZIP',
+  glass_systems:    'זכוכית, ויטרינה ואקורדיון',
+  bioclimatic:      'מערכות BIOCLIMATIC',
+  weld_al:          'ריתוך אלומיניום',
+  weld_steel:       'ריתוך קונסטרוקציה',
+};
+const LOC_LABELS  = { beer_sheva: 'באר שבע', tel_aviv: 'תל אביב' };
+const SCH_LABELS  = { morning: 'בוקר', evening: 'ערב' };
+
+const STUDENT_STATUS_LABELS = {
+  awaiting_coordination: 'ממתין לתיאום',
+  interview_scheduled:   'ראיון נקבע',
+  rejected_interview:    'נפסל בראיון',
+  awaiting_assignment:   'ממתין לשיבוץ',
+};
+const STUDENT_STATUS_CLASS = {
+  awaiting_coordination: 'sb-await',
+  interview_scheduled:   'sb-interview',
+  rejected_interview:    'sb-rejected',
+  awaiting_assignment:   'sb-assignment',
+};
+
+let allStudents    = [];
+let currentStudTab = 'all';
+
+function getFilteredStudents() {
+  if (currentStudTab === 'all') return allStudents;
+  return allStudents.filter(s => (s.status || '') === currentStudTab);
+}
+
+window.setStudentTab = function(tab) {
+  currentStudTab = tab;
+  document.querySelectorAll('#view-registrations .tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('stab-' + tab)?.classList.add('active');
+  renderStudents(getFilteredStudents());
+};
+
+window.filterStudents = function() {
+  const q = (document.getElementById('regSearchInput').value || '').toLowerCase().trim();
+  const base = getFilteredStudents();
+  if (!q) { renderStudents(base); return; }
+  renderStudents(base.filter(s =>
+    (s.full_name || '').toLowerCase().includes(q) ||
+    (s.phone     || '').toLowerCase().includes(q) ||
+    (s.email     || '').toLowerCase().includes(q) ||
+    (s.payment_ref || '').toLowerCase().includes(q)
+  ));
+};
+
+window.loadStudents = async function() {
+  document.getElementById('studentsBody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>`;
+  const { data, error } = await supabase
+    .from('students')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    document.getElementById('studentsBody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה: ${error.message}</td></tr>`;
+    return;
+  }
+  allStudents = data || [];
+  renderStudents(getFilteredStudents());
+};
+
+function renderStudents(students) {
+  document.getElementById('regCountLabel').textContent = `${students.length} רישומים`;
+  const tbody = document.getElementById('studentsBody');
+
+  if (students.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="all-clear"><i class="ph ph-books"></i><p>אין רישומים בסטטוס זה</p></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = students.map(s => {
+    const date      = s.created_at ? new Date(s.created_at).toLocaleDateString('he-IL') : '—';
+    const course    = COURSE_LABELS[s.course_track]  || s.course_track  || '—';
+    const loc       = LOC_LABELS[s.location]          || s.location      || '—';
+    const sch       = SCH_LABELS[s.schedule]          || s.schedule      || '—';
+    const st        = s.status || 'awaiting_coordination';
+    const stLabel   = STUDENT_STATUS_LABELS[st]  || st;
+    const stClass   = STUDENT_STATUS_CLASS[st]   || 'sb-await';
+    const payRef    = s.payment_ref || '—';
+    const payAmt    = s.payment_amount ? `₪${s.payment_amount.toLocaleString()}` : '—';
+    const notes     = s.admin_notes || [];
+
+    const statusOptions = Object.entries(STUDENT_STATUS_LABELS).map(([k, v]) =>
+      `<option value="${k}" ${k === st ? 'selected' : ''}>${v}</option>`
+    ).join('');
+
+    return `<tr id="srow-${s.id}" data-search="${(s.full_name||'').toLowerCase()} ${(s.phone||'').toLowerCase()} ${(s.email||'').toLowerCase()}">
+      <td class="date-cell">${date}</td>
+      <td>
+        <div class="biz-name">${s.full_name || '—'}</div>
+      </td>
+      <td>
+        <div class="phone-cell">${s.phone || '—'}</div>
+        <div style="font-size:0.75rem;color:var(--silver-dark);">${s.email || ''}</div>
+      </td>
+      <td><span class="spec-tag" style="background:rgba(14,116,144,0.07);color:#0e7490;border-color:rgba(14,116,144,0.2);">${course}</span></td>
+      <td>
+        <span class="spec-tag">${loc}</span>
+        <span class="spec-tag">${sch}</span>
+      </td>
+      <td>
+        <div style="font-size:0.76rem;font-weight:700;color:var(--navy);direction:ltr;text-align:right;">${payRef}</div>
+        <div style="font-size:0.73rem;color:var(--silver-dark);">דמי רישום: ${payAmt}</div>
+      </td>
+      <td>
+        <span class="status-badge ${stClass}">${stLabel}</span>
+      </td>
+      <td>
+        <div class="actions-cell" style="flex-direction:column;align-items:flex-start;gap:0.35rem;">
+          <select class="status-select" onchange="updateStudentStatus('${s.id}', this.value)">
+            ${statusOptions}
+          </select>
+          <button class="btn-details" onclick="toggleStudentDetails('${s.id}')">
+            <i class="ph ph-list-bullets"></i> פרטים
+          </button>
+        </div>
+      </td>
+    </tr>
+    <tr id="sdetails-${s.id}" class="details-row">
+      <td colspan="8">
+        <div class="details-grid">
+          <div class="detail-item">
+            <div class="detail-label">כשיר פיזית לגובה</div>
+            <div class="detail-value">${s.screening_physical === 'yes' ? '✓ כן' : s.screening_physical === 'no' ? '✗ לא' : '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">אישור עבודה בגובה</div>
+            <div class="detail-value">${s.screening_permit === 'yes' ? '✓ יש אישור' : s.screening_permit === 'no' ? '✗ אין אישור' : '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">ניסיון כלי חשמל</div>
+            <div class="detail-value">${s.screening_tools === 'yes' ? '✓ יש ניסיון' : s.screening_tools === 'no' ? '✗ אין ניסיון' : '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">גיל מעל 18</div>
+            <div class="detail-value">${s.screening_age === 'yes' ? '✓ כן' : s.screening_age === 'no' ? '✗ לא' : '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">שנת לידה</div>
+            <div class="detail-value">${s.birth_year || '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">מחיר מלא קורס</div>
+            <div class="detail-value">₪8,500 + מע"מ</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">הצהרת בריאות</div>
+            <div class="detail-value">${s.health_declaration_signed ? '✓ חתום' : '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">תקנון</div>
+            <div class="detail-value">${s.regulations_signed ? '✓ חתום' : '—'}</div>
+          </div>
+          <div class="detail-item">
+            <div class="detail-label">מועד פתיחה</div>
+            <div class="detail-value">${s.opening_window || '—'}</div>
+          </div>
+        </div>
+        ${s.id_photo_data ? `
+        <div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid #e8edf5;">
+          <div class="notes-title"><i class="ph ph-identification-card"></i> צילום תעודת זהות</div>
+          <img src="${s.id_photo_data}" alt="ת.ז." style="max-width:260px;max-height:160px;border-radius:8px;border:1px solid var(--border);margin-top:6px;display:block;">
+        </div>` : ''}
+        ${(s.health_signature_data || s.regulations_signature_data) ? `
+        <div style="margin-top:0.8rem;padding-top:0.8rem;border-top:1px solid #e8edf5;">
+          <div class="notes-title"><i class="ph ph-pen-nib"></i> חתימות על הסכמים</div>
+          <div style="display:flex;gap:1.2rem;margin-top:6px;flex-wrap:wrap;">
+            ${s.health_signature_data ? `<div><div style="font-size:0.7rem;color:#9aa3b5;margin-bottom:3px;">הצהרת בריאות</div><img src="${s.health_signature_data}" style="height:70px;border:1px solid var(--border);border-radius:6px;background:#fff;display:block;"></div>` : ''}
+            ${s.regulations_signature_data ? `<div><div style="font-size:0.7rem;color:#9aa3b5;margin-bottom:3px;">תקנון לימודים</div><img src="${s.regulations_signature_data}" style="height:70px;border:1px solid var(--border);border-radius:6px;background:#fff;display:block;"></div>` : ''}
+          </div>
+        </div>` : ''}
+
+        <div class="notes-area">
+          <div class="notes-title"><i class="ph ph-note-pencil"></i> הערות מנהל</div>
+          <div class="notes-list" id="snotes-list-${s.id}">
+            ${notes.length === 0
+              ? `<div style="font-size:0.78rem;color:var(--silver-dark);padding:0.3rem 0;">אין הערות עדיין</div>`
+              : notes.map(n => `
+                <div class="note-item">
+                  <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
+                  ${n.text}
+                </div>`).join('')
+            }
+          </div>
+          <div class="note-input-row">
+            <input type="text" class="note-input" id="snote-input-${s.id}" placeholder="הוסף הערה…" onkeydown="if(event.key==='Enter')saveStudentNote('${s.id}')">
+            <button class="note-save-btn" onclick="saveStudentNote('${s.id}')"><i class="ph ph-paper-plane-right"></i></button>
+          </div>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+window.toggleStudentDetails = function(id) {
+  const row = document.getElementById('sdetails-' + id);
+  if (row) row.classList.toggle('open');
+};
+
+window.updateStudentStatus = async function(id, newStatus) {
+  const { error } = await supabase.from('students').update({ status: newStatus }).eq('id', id);
+  if (error) { alert('שגיאה בעדכון סטטוס: ' + error.message); return; }
+  const s = allStudents.find(x => x.id === id);
+  if (s) s.status = newStatus;
+
+  // When moving to awaiting_assignment → add to batch waiting pool
+  if (newStatus === 'awaiting_assignment' && s) {
+    const alreadyInPool = bPool.some(x => x.id === s.id);
+    if (!alreadyInPool) {
+      bPool.push({
+        id:     s.id,
+        name:   s.full_name   || '—',
+        phone:  s.phone       || '',
+        track:  s.course_track || '',
+        loc:    s.location    || 'beer_sheva',
+        sch:    s.schedule    || 'morning',
+        payRef: s.payment_ref || '',
+      });
+    }
+    // show visual confirmation
+    const row = document.getElementById('srow-' + id);
+    if (row) {
+      const flash = document.createElement('div');
+      flash.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:0.6rem 1.4rem;border-radius:10px;font-size:0.85rem;font-weight:700;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.18);';
+      flash.textContent = `${s.full_name} נוסף/ה למאגר הממתינים לשיבוץ ✓`;
+      document.body.appendChild(flash);
+      setTimeout(() => flash.remove(), 3000);
+    }
+  }
+
+  // Update badge in row without full re-render
+  const row = document.getElementById('srow-' + id);
+  if (row) {
+    const badge = row.querySelector('.status-badge');
+    if (badge) {
+      const cls   = STUDENT_STATUS_CLASS[newStatus]  || 'sb-await';
+      const label = STUDENT_STATUS_LABELS[newStatus] || newStatus;
+      badge.className = `status-badge ${cls}`;
+      badge.textContent = label;
+    }
+  }
+};
+
+window.saveStudentNote = async function(id) {
+  const input = document.getElementById(`snote-input-${id}`);
+  const text  = (input?.value || '').trim();
+  if (!text) return;
+
+  const s     = allStudents.find(x => x.id === id);
+  const notes = [...(s?.admin_notes || []), { text, created_at: new Date().toISOString(), by: currentUserEmail }];
+
+  const { error } = await supabase.from('students').update({ admin_notes: notes }).eq('id', id);
+  if (error) { alert('שגיאה בשמירת הערה: ' + error.message); return; }
+  if (s) s.admin_notes = notes;
+  input.value = '';
+
+  const list = document.getElementById(`snotes-list-${id}`);
+  if (list) {
+    list.innerHTML = notes.map(n => `
+      <div class="note-item">
+        <span class="note-date">${new Date(n.created_at).toLocaleDateString('he-IL')}</span>
+        ${n.text}
+      </div>`).join('');
+  }
+};
+
 init();
+</script>
+
+<!-- ══ BATCH MODALS ══ -->
+<div class="b-overlay" id="bm-delete" onclick="bCloseModal('bm-delete',event)">
+  <div class="b-modal-box" style="max-width:360px;">
+    <button class="b-modal-close" onclick="bCloseModal('bm-delete')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" style="color:#dc2626;"><i class="ph ph-trash"></i> מחיקת מחזור</div>
+    <p style="font-size:0.83rem;color:#64748b;margin-bottom:1rem;">פעולה זו תמחק את המחזור וכל הנתונים שלו לצמיתות. הזינו את הסיסמה כדי לאשר:</p>
+    <div class="b-form-field">
+      <label>סיסמת מנהל</label>
+      <input type="password" id="b-del-pass-input" placeholder="הזינו סיסמה" onkeydown="if(event.key==='Enter')bConfirmDelete()">
+    </div>
+    <div id="b-del-pass-err" style="display:none;font-size:0.8rem;color:#dc2626;font-weight:700;margin-bottom:0.75rem;"></div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;background:#dc2626;" onclick="bConfirmDelete()">
+      <i class="ph ph-trash"></i> אשר מחיקה
+    </button>
+  </div>
+</div>
+
+<div class="b-overlay" id="bm-new-batch" onclick="bCloseModal('bm-new-batch',event)">
+  <div class="b-modal-box">
+    <button class="b-modal-close" onclick="bCloseModal('bm-new-batch')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title"><i class="ph ph-plus-circle" style="color:#2563eb;"></i> הקמת מחזור חדש</div>
+    <div class="b-form-field"><label>שם המחזור</label><input type="text" id="bnb-name" placeholder="לדוג׳: פרגולה אלומיניום — מ׳ 1 · יוני 2025"></div>
+    <div class="b-form-field">
+      <label>מסלול קורס</label>
+      <select id="bnb-track">
+        <option value="">בחר מסלול</option>
+        <option value="pergola_al">מתקין מוסמך – פרגולה אלומיניום</option>
+        <option value="pergola_electric">מתקין מוסמך – פרגולה חשמלית ומסכי ZIP</option>
+        <option value="glass_systems">מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון</option>
+        <option value="bioclimatic">מתקין מוסמך – מערכות BIOCLIMATIC</option>
+        <option value="weld_al">מסגרות וריתוך אלומיניום</option>
+        <option value="weld_steel">מסגרות וריתוך קונסטרוקציה</option>
+      </select>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field"><label>מיקום</label><select id="bnb-loc"><option value="beer_sheva">באר שבע</option><option value="tel_aviv">תל אביב</option></select></div>
+      <div class="b-form-field"><label>לוח זמנים</label><select id="bnb-sch"><option value="morning">בוקר (08:30–16:30 · 5 מפגשים)</option><option value="evening">ערב (16:00–20:30 · 10 מפגשים)</option></select></div>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field"><label>תאריך פתיחה</label><input type="date" id="bnb-date"></div>
+      <div class="b-form-field"><label>קיבולת מקסימלית</label><input type="number" id="bnb-cap" value="15" min="1" max="30"></div>
+    </div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="bCreateBatch()"><i class="ph ph-check"></i> צור מחזור</button>
+  </div>
+</div>
+
+<div class="b-overlay" id="bm-assign" onclick="bCloseModal('bm-assign',event)">
+  <div class="b-modal-box">
+    <button class="b-modal-close" onclick="bCloseModal('bm-assign')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" id="b-assign-title">שיבוץ תלמיד למחזור</div>
+    <p style="font-size:0.8rem;color:#64748b;margin-bottom:1rem;">בחרו מחזור מתאים לפי מסלול, מיקום ופנויות:</p>
+    <div id="b-assign-list"></div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="bConfirmAssign()"><i class="ph ph-check"></i> אשר שיבוץ</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  BATCH MODULE — Mock Data
+// ══════════════════════════════════════════════
+const B_TRACK_LABELS = {
+  pergola_al:'פרגולה אלומיניום', pergola_electric:'פרגולה חשמלית + ZIP',
+  glass_systems:'זכוכית ואקורדיון', bioclimatic:'BIOCLIMATIC',
+  weld_al:'ריתוך אלומיניום', weld_steel:'ריתוך קונסטרוקציה',
+};
+const B_LOC = { beer_sheva:'באר שבע', tel_aviv:'תל אביב' };
+const B_SCH = { morning:'בוקר', evening:'ערב' };
+const B_COLORS = ['#2563eb','#7c3aed','#0891b2','#16a34a','#d97706','#dc2626'];
+
+let bBatches = [
+  { id:'b1', name:'פרגולה אלומיניום — מחזור 1 · מאי 2025', track:'pergola_al', loc:'beer_sheva', sch:'morning', date:'2025-05-12', cap:15, sessions:5,
+    students:[
+      {id:'s1',name:'אבי לוי',phone:'050-1111111',paid:true, attend:[1,1,1,0,0]},
+      {id:'s2',name:'יוסי כהן',phone:'052-2222222',paid:true, attend:[1,1,0,1,0]},
+      {id:'s3',name:'דני שפירא',phone:'054-3333333',paid:false,attend:[1,0,0,0,0]},
+      {id:'s4',name:'מאיר גולן',phone:'058-4444444',paid:true, attend:[1,1,1,1,1]},
+      {id:'s5',name:'רון נחום',phone:'050-5555555',paid:true, attend:[1,1,1,1,0]},
+      {id:'s6',name:'גל ברגר',phone:'053-6666666',paid:false,attend:[0,1,0,0,0]},
+    ]},
+  { id:'b2', name:'ריתוך אלומיניום — מחזור 1 · יוני 2025', track:'weld_al', loc:'tel_aviv', sch:'evening', date:'2025-06-03', cap:12, sessions:10,
+    students:[
+      {id:'s7', name:'אורן פרץ', phone:'050-7777777',paid:true, attend:[1,1,1,0,0,0,0,0,0,0]},
+      {id:'s8', name:'נמרוד בן',phone:'052-8888888',paid:true, attend:[1,0,1,1,0,0,0,0,0,0]},
+      {id:'s9', name:'טל אמיר', phone:'054-9999999',paid:false,attend:[0,0,0,0,0,0,0,0,0,0]},
+      {id:'s10',name:'עמית דהן',phone:'058-0000000',paid:true, attend:[1,1,0,0,0,0,0,0,0,0]},
+    ]},
+  { id:'b3', name:'מערכות זכוכית — מחזור 1 · ספטמבר 2025', track:'glass_systems', loc:'beer_sheva', sch:'evening', date:'2025-09-01', cap:10, sessions:10,
+    students:[
+      {id:'s11',name:'ירון שרון',phone:'050-1234567',paid:true, attend:[0,0,0,0,0,0,0,0,0,0]},
+      {id:'s12',name:'שיר אלון', phone:'052-7654321',paid:true, attend:[0,0,0,0,0,0,0,0,0,0]},
+    ]},
+];
+
+const B_DEFAULT_POOL = [
+  {id:'w1',name:'לירן ביטון', phone:'050-1112223',track:'pergola_al',   loc:'beer_sheva',sch:'morning',payRef:'PAY-001'},
+  {id:'w2',name:'חן מרקוביץ',phone:'052-3334445',track:'weld_al',      loc:'tel_aviv',  sch:'evening',payRef:'PAY-002'},
+  {id:'w3',name:'עידן שלום',  phone:'054-5556667',track:'glass_systems',loc:'beer_sheva',sch:'evening',payRef:'PAY-003'},
+  {id:'w4',name:'נועה פנחסי',phone:'058-7778889',track:'pergola_electric',loc:'tel_aviv',sch:'morning',payRef:'PAY-004'},
+  {id:'w5',name:'אסף כהן',   phone:'050-9990001',track:'pergola_al',   loc:'beer_sheva',sch:'morning',payRef:'PAY-005'},
+];
+
+// ── localStorage persistence ──
+function bSave() {
+  try {
+    localStorage.setItem('alumup_batches', JSON.stringify(bBatches));
+    localStorage.setItem('alumup_pool',    JSON.stringify(bPool));
+  } catch(e) {}
+}
+function bLoad() {
+  try {
+    const savedBatches = localStorage.getItem('alumup_batches');
+    const savedPool    = localStorage.getItem('alumup_pool');
+    if (savedBatches) bBatches = JSON.parse(savedBatches);
+    if (savedPool)    bPool    = JSON.parse(savedPool);
+  } catch(e) {}
+}
+
+let bPool = [...B_DEFAULT_POOL];
+bLoad(); // load saved data on startup
+
+let bCurrentBatchId = null;
+let bAssigningId    = null;
+let bSelectedBatch  = null;
+let bCurrentTab     = 'students';
+
+// ── Helpers ──
+function bInitials(name) { return name.trim().split(' ').map(w=>w[0]).slice(0,2).join(''); }
+function bAvatarColor(id) { let h=0; for(let c of id) h=(h*31+c.charCodeAt(0))%B_COLORS.length; return B_COLORS[h]; }
+function bProgColor(pct) { return pct>=80?'#16a34a':pct>=50?'#2563eb':'#f59e0b'; }
+function bAttPct(st) { if(!st.attend.length) return 0; return Math.round(st.attend.filter(v=>v===1).length/st.attend.length*100); }
+function bFillPct(b) { return Math.round(b.students.length/b.cap*100); }
+
+// ── Stats ──
+function bRenderStats() {
+  const total = bBatches.reduce((a,b)=>a+b.students.length,0);
+  document.getElementById('b-stats-row').innerHTML = `
+    <div class="b-stat-card"><div class="b-stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="ph ph-books"></i></div><div><div class="b-stat-val">${bBatches.length}</div><div class="b-stat-lbl">מחזורים פעילים</div></div></div>
+    <div class="b-stat-card"><div class="b-stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-user-check"></i></div><div><div class="b-stat-val">${total}</div><div class="b-stat-lbl">תלמידים משובצים</div></div></div>
+    <div class="b-stat-card"><div class="b-stat-icon" style="background:#fffbeb;color:#d97706;"><i class="ph ph-hourglass"></i></div><div><div class="b-stat-val">${bPool.length}</div><div class="b-stat-lbl">ממתינים לשיבוץ</div></div></div>
+    <div class="b-stat-card"><div class="b-stat-icon" style="background:#f5f3ff;color:#7c3aed;"><i class="ph ph-currency-circle-dollar"></i></div><div><div class="b-stat-val">₪${(bBatches.reduce((a,b)=>a+b.students.filter(s=>s.paid).length,0)*8500+bPool.length*399).toLocaleString()}</div><div class="b-stat-lbl">סה"כ גבוי</div></div></div>
+  `;
+}
+
+// ── Batches Grid ──
+function bRenderGrid() {
+  const tagMap = {pergola_al:'b-tag-blue',pergola_electric:'b-tag-blue',glass_systems:'b-tag-blue',bioclimatic:'b-tag-green',weld_al:'b-tag-orange',weld_steel:'b-tag-orange'};
+  let html = bBatches.map(b => {
+    const pct = bFillPct(b);
+    const spots = b.cap - b.students.length;
+    const dateStr = b.date ? new Date(b.date).toLocaleDateString('he-IL') : '—';
+    return `<div class="b-card" onclick="bOpenDetail('${b.id}')">
+      <div class="b-card-header">
+        <div><div class="b-card-name">${b.name}</div><div class="b-card-sub">${B_TRACK_LABELS[b.track]||b.track}</div></div>
+        <span class="b-tag ${tagMap[b.track]||'b-tag-blue'}">${B_SCH[b.sch]}</span>
+      </div>
+      <div class="b-meta">
+        <span class="b-meta-item"><i class="ph ph-map-pin"></i> ${B_LOC[b.loc]}</span>
+        <span class="b-meta-item"><i class="ph ph-calendar"></i> ${dateStr}</span>
+        <span class="b-meta-item"><i class="ph ph-clock"></i> ${b.sessions} מפגשים</span>
+      </div>
+      <div class="b-prog-row"><span class="b-prog-lbl">תפוסה</span><span class="b-prog-val">${b.students.length}/${b.cap} · ${spots>0?spots+' פנויים':'מלא'}</span></div>
+      <div class="b-prog-bar"><div class="b-prog-fill" style="width:${pct}%;background:${bProgColor(pct)};"></div></div>
+      <div class="b-card-footer" onclick="event.stopPropagation()">
+        <button class="b-btn b-btn-primary" onclick="bOpenDetail('${b.id}')"><i class="ph ph-clipboard-text"></i> ניהול נוכחות</button>
+        <button class="b-btn b-btn-ghost" onclick="bOpenDetail('${b.id}')"><i class="ph ph-currency-circle-dollar"></i> כספים</button>
+        <button class="b-btn b-btn-ghost" onclick="bDeleteBatch('${b.id}')" style="flex:0;padding:0.45rem 0.6rem;color:#dc2626;" title="מחק מחזור"><i class="ph ph-trash"></i></button>
+      </div>
+    </div>`;
+  }).join('');
+  html += `<div class="b-card-new" onclick="bOpenNewBatch()"><i class="ph ph-plus-circle"></i><span>הקמת מחזור חדש</span></div>`;
+  document.getElementById('b-grid').innerHTML = html;
+}
+
+// ── Pool ──
+function bRenderPool() {
+  document.getElementById('b-pool-count').textContent = bPool.length;
+  const body = document.getElementById('b-pool-body');
+  if (!bPool.length) {
+    body.innerHTML = `<div class="b-pool-empty"><i class="ph ph-check-circle" style="font-size:1.5rem;color:#16a34a;display:block;margin-bottom:4px;"></i>כל הממתינים שובצו!</div>`;
+    return;
+  }
+  body.innerHTML = bPool.map(w => `
+    <div class="b-pool-item">
+      <div class="b-pool-avatar" style="background:${bAvatarColor(w.id)};">${bInitials(w.name)}</div>
+      <div class="b-pool-info"><div class="b-pool-name">${w.name}</div><div class="b-pool-course">${B_TRACK_LABELS[w.track]||w.track} · ${B_LOC[w.loc]}</div></div>
+      <button class="b-pool-btn" onclick="bOpenAssign('${w.id}',event)"><i class="ph ph-arrow-square-left"></i> שבץ</button>
+    </div>`).join('');
+}
+
+function bRenderDashboard() {
+  bRenderStats();
+  bRenderGrid();
+  bRenderPool();
+}
+
+// ── Batch Detail ──
+function bOpenDetail(id) {
+  bCurrentBatchId = id;
+  bCurrentTab = 'students';
+  bNavTo('detail');
+  bRenderDetail();
+}
+
+function bRenderDetail() {
+  const b = bBatches.find(x=>x.id===bCurrentBatchId);
+  if (!b) return;
+  const pct = bFillPct(b);
+  document.getElementById('b-detail-header').innerHTML = `
+    <div class="b-detail-header" style="background:transparent;border:none;padding:0;margin:0;display:block;">
+      <h2>${b.name}</h2>
+      <div class="b-detail-meta">
+        <span><i class="ph ph-graduation-cap"></i> ${B_TRACK_LABELS[b.track]}</span>
+        <span><i class="ph ph-map-pin"></i> ${B_LOC[b.loc]}</span>
+        <span><i class="ph ph-clock"></i> ${B_SCH[b.sch]} · ${b.sessions} מפגשים</span>
+        <span><i class="ph ph-calendar"></i> ${b.date?new Date(b.date).toLocaleDateString('he-IL'):'—'}</span>
+        <span><i class="ph ph-users"></i> ${b.students.length}/${b.cap}</span>
+        <span style="margin-right:auto;"><strong style="color:${bProgColor(pct)};font-size:1.1rem;">${pct}%</strong> תפוסה</span>
+      </div>
+    </div>`;
+  document.querySelectorAll('.b-detail-tab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('.b-tab-pane').forEach((p,i)=>p.classList.toggle('active',i===0));
+  bRenderStudentsTab(b);
+  bRenderFinanceTab(b);
+}
+
+function bRenderStudentsTab(b) {
+  const sessions = Array.from({length:b.sessions},(_,i)=>i);
+  if (!b.students.length) {
+    document.getElementById('b-tab-students').innerHTML = `<div class="b-table-wrap" style="padding:3rem;text-align:center;color:#94a3b8;"><i class="ph ph-users" style="font-size:2rem;display:block;margin-bottom:8px;"></i>אין תלמידים משובצים עדיין</div>`;
+    return;
+  }
+  const rows = b.students.map(st => {
+    const pct = bAttPct(st);
+    const boxes = sessions.map(i => {
+      const v = st.attend[i];
+      const cls = v===1?'present':v===0?'absent':'';
+      const lbl = v===1?'✓':v===0?'✗':'';
+      return `<div class="b-att-box ${cls}" onclick="bToggleAttend('${b.id}','${st.id}',${i})">${lbl}</div>`;
+    }).join('');
+    return `<tr>
+      <td><div class="b-s-cell"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div><div class="b-s-name">${st.name}</div><div class="b-s-phone">${st.phone}</div></div></div></td>
+      <td><span class="b-pill ${st.paid?'b-pill-paid':'b-pill-pending'}">${st.paid?'<i class="ph ph-check"></i> שולמה':'<i class="ph ph-warning"></i> חסרה'}</span></td>
+      <td><div class="b-attend-cell">${boxes}</div></td>
+      <td style="font-weight:700;color:${pct>=85?'#16a34a':pct>=60?'#2563eb':'#dc2626'};">${pct}%</td>
+      <td><button onclick="bToggleBalance('${b.id}','${st.id}')" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:#64748b;font-family:'Heebo',sans-serif;"><i class="ph ph-pencil"></i> עדכן</button></td>
+    </tr>`;
+  }).join('');
+  const hdrs = sessions.map(i=>`<th style="min-width:26px;text-align:center;">${i+1}</th>`).join('');
+  document.getElementById('b-tab-students').innerHTML = `
+    <div class="b-table-wrap"><table>
+      <thead><tr><th>תלמיד</th><th>יתרה</th><th colspan="${b.sessions}">נוכחות — מפגשים ${hdrs}</th><th>%</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+function bRenderFinanceTab(b) {
+  const rows = b.students.map(st => {
+    const balance = 8500-399;
+    return `<tr>
+      <td><div class="b-s-cell"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div class="b-s-name">${st.name}</div></div></td>
+      <td><span class="b-pill b-pill-paid"><i class="ph ph-check"></i> ₪399</span></td>
+      <td><span class="b-pill ${st.paid?'b-pill-paid':'b-pill-pending'}">${st.paid?'<i class="ph ph-check"></i> ₪'+balance.toLocaleString():'<i class="ph ph-warning"></i> ₪'+balance.toLocaleString()+' — טרם שולם'}</span></td>
+      <td style="font-weight:800;color:#0f172a;">₪${(st.paid?8500:399).toLocaleString()}</td>
+      <td><button onclick="bToggleBalance('${b.id}','${st.id}')" style="background:${st.paid?'#fef2f2':'#f0fdf4'};border:none;border-radius:6px;padding:4px 10px;font-size:0.72rem;font-weight:700;cursor:pointer;color:${st.paid?'#dc2626':'#16a34a'};font-family:'Heebo',sans-serif;">${st.paid?'בטל תשלום':'סמן כשולם'}</button></td>
+    </tr>`;
+  }).join('');
+  const paid = b.students.filter(s=>s.paid).length;
+  const total = b.students.reduce((a,st)=>a+(st.paid?8500:399),0);
+  document.getElementById('b-tab-finance').innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.25rem;">
+      <div class="b-stat-card"><div class="b-stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-check-circle"></i></div><div><div class="b-stat-val">${paid}</div><div class="b-stat-lbl">שילמו יתרה</div></div></div>
+      <div class="b-stat-card"><div class="b-stat-icon" style="background:#fef2f2;color:#dc2626;"><i class="ph ph-warning-circle"></i></div><div><div class="b-stat-val">${b.students.length-paid}</div><div class="b-stat-lbl">יתרה חסרה</div></div></div>
+      <div class="b-stat-card"><div class="b-stat-icon" style="background:#eff6ff;color:#2563eb;"><i class="ph ph-currency-circle-dollar"></i></div><div><div class="b-stat-val">₪${total.toLocaleString()}</div><div class="b-stat-lbl">סה"כ שולם</div></div></div>
+    </div>
+    <div class="b-table-wrap"><table>
+      <thead><tr><th>תלמיד</th><th>דמי רישום</th><th>יתרת קורס</th><th>סה"כ שולם</th><th>פעולה</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>`;
+}
+
+// ── Actions ──
+function bToggleAttend(bId,sId,idx) {
+  const b=bBatches.find(x=>x.id===bId),st=b.students.find(x=>x.id===sId);
+  st.attend[idx]=st.attend[idx]===1?0:1;
+  bSave();
+  bRenderStudentsTab(b); bRenderStats();
+}
+function bToggleBalance(bId,sId) {
+  const b=bBatches.find(x=>x.id===bId),st=b.students.find(x=>x.id===sId);
+  st.paid=!st.paid;
+  bSave();
+  bRenderStudentsTab(b); bRenderFinanceTab(b); bRenderStats();
+}
+function bOpenAssign(wId,e) {
+  if(e) e.stopPropagation();
+  const w=bPool.find(x=>x.id===wId);
+  if(!w) return;
+  bAssigningId=wId; bSelectedBatch=null;
+  document.getElementById('b-assign-title').textContent=`שיבוץ: ${w.name}`;
+  const compat=bBatches.filter(b=>b.track===w.track&&b.students.length<b.cap);
+  const other=bBatches.filter(b=>b.track!==w.track&&b.students.length<b.cap);
+  let html='';
+  if(compat.length) { html+=`<div style="font-size:0.72rem;font-weight:800;color:#16a34a;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">מסלול תואם</div>`; html+=compat.map(b=>bAssignRow(b,true)).join(''); }
+  if(other.length)  { html+=`<div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:1px;margin:12px 0 6px;">מחזורים אחרים</div>`; html+=other.map(b=>bAssignRow(b,false)).join(''); }
+  if(!compat.length&&!other.length) html=`<div style="text-align:center;color:#94a3b8;padding:1.5rem;font-size:0.85rem;">אין מחזורים פנויים כרגע</div>`;
+  document.getElementById('b-assign-list').innerHTML=html;
+  document.getElementById('bm-assign').classList.add('open');
+}
+function bAssignRow(b,compat) {
+  return `<div class="b-assign-item" id="bai-${b.id}" onclick="bSelectBatch('${b.id}')">
+    <div><div class="b-assign-name">${b.name}</div><div class="b-assign-meta">${B_LOC[b.loc]} · ${B_SCH[b.sch]} · ${B_TRACK_LABELS[b.track]}</div></div>
+    <div class="b-assign-spots" style="color:${compat?'#16a34a':'#64748b'};">${b.cap-b.students.length} מקומות</div>
+  </div>`;
+}
+function bSelectBatch(id) {
+  bSelectedBatch=id;
+  document.querySelectorAll('.b-assign-item').forEach(el=>el.classList.remove('sel'));
+  document.getElementById('bai-'+id)?.classList.add('sel');
+}
+function bConfirmAssign() {
+  if(!bSelectedBatch){alert('יש לבחור מחזור');return;}
+  const w=bPool.find(x=>x.id===bAssigningId);
+  const b=bBatches.find(x=>x.id===bSelectedBatch);
+  if(!w||!b) return;
+  b.students.push({id:w.id,name:w.name,phone:w.phone,paid:false,attend:Array(b.sessions).fill(0)});
+  bPool=bPool.filter(x=>x.id!==bAssigningId);
+  bSave();
+  bCloseModal('bm-assign');
+  bRenderDashboard();
+  if(bCurrentBatchId===bSelectedBatch) bRenderDetail();
+}
+function bOpenNewBatch() {
+  document.getElementById('bnb-name').value='';
+  document.getElementById('bnb-track').value='';
+  document.getElementById('bnb-date').value='';
+  document.getElementById('bnb-cap').value='15';
+  document.getElementById('bm-new-batch').classList.add('open');
+}
+function bCreateBatch() {
+  const name=document.getElementById('bnb-name').value.trim();
+  const track=document.getElementById('bnb-track').value;
+  const loc=document.getElementById('bnb-loc').value;
+  const sch=document.getElementById('bnb-sch').value;
+  const date=document.getElementById('bnb-date').value;
+  const cap=parseInt(document.getElementById('bnb-cap').value)||15;
+  if(!name){alert('יש להזין שם מחזור');return;}
+  if(!track){alert('יש לבחור מסלול');return;}
+  bBatches.push({id:'b'+Date.now(),name,track,loc,sch,date,cap,sessions:sch==='morning'?5:10,students:[]});
+  bSave();
+  bCloseModal('bm-new-batch');
+  bRenderDashboard();
+}
+
+// ── Navigation ──
+function bNavTo(v) {
+  document.querySelectorAll('.b-view').forEach(el=>el.classList.remove('active'));
+  document.getElementById('bv-'+v)?.classList.add('active');
+}
+function bSwitchTab(t) {
+  bCurrentTab=t;
+  document.querySelectorAll('.b-detail-tab').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='students')||(i===1&&t==='finance')));
+  document.querySelectorAll('.b-tab-pane').forEach((el,i)=>el.classList.toggle('active',(i===0&&t==='students')||(i===1&&t==='finance')));
+}
+function bCloseModal(id,e) {
+  if(e&&e.target!==document.getElementById(id)) return;
+  document.getElementById(id).classList.remove('open');
+}
+
+const B_DELETE_PASSWORD = 'alum2025';
+let bPendingDeleteId = null;
+
+function bDeleteBatch(id) {
+  bPendingDeleteId = id;
+  document.getElementById('b-del-pass-input').value = '';
+  document.getElementById('b-del-pass-err').style.display = 'none';
+  document.getElementById('bm-delete').classList.add('open');
+  setTimeout(() => document.getElementById('b-del-pass-input').focus(), 100);
+}
+
+function bConfirmDelete() {
+  const val = document.getElementById('b-del-pass-input').value;
+  if (val !== B_DELETE_PASSWORD) {
+    const err = document.getElementById('b-del-pass-err');
+    err.textContent = 'סיסמה שגויה';
+    err.style.display = 'block';
+    return;
+  }
+  bBatches = bBatches.filter(x => x.id !== bPendingDeleteId);
+  bSave();
+  bCloseModal('bm-delete');
+  bRenderDashboard();
+}
 </script>
 </body>
 </html>

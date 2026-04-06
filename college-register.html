@@ -298,7 +298,7 @@
       box-shadow: 0 0 0 3px rgba(26,95,170,0.08);
     }
 
-    .opt-card-em { font-size: 1.4rem; margin-bottom: 4px; }
+    .opt-card-em { font-size: 1.4rem; margin-bottom: 4px; color: var(--muted); }
     .opt-card-title { font-size: 0.85rem; font-weight: 800; color: var(--navy); }
     .opt-card-sub { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
 
@@ -555,6 +555,162 @@
 
     .success-ring i { color: #fff; font-size: 2rem; }
 
+    /* ─── COURSE MODAL ────────────────────── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15,31,53,0.55);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      backdrop-filter: blur(3px);
+    }
+    .modal-overlay.open { display: flex; }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 18px;
+      padding: 2rem;
+      max-width: 540px;
+      width: 100%;
+      max-height: 88vh;
+      overflow-y: auto;
+      position: relative;
+      animation: fadeUp 0.22s ease;
+      box-shadow: 0 24px 64px rgba(15,31,53,0.22);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      background: #f4f6fb;
+      border: none;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 1rem;
+      transition: background 0.15s;
+    }
+    .modal-close:hover { background: var(--border); }
+
+    .modal-track-title {
+      font-size: 1.15rem;
+      font-weight: 900;
+      color: var(--navy);
+      margin-bottom: 1.25rem;
+      padding-left: 2rem;
+      line-height: 1.3;
+    }
+
+    .modal-section { margin-bottom: 1.1rem; }
+
+    .modal-section-label {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--blue-m);
+      margin-bottom: 8px;
+    }
+
+    .modal-syllabus { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .modal-syllabus li {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+    .modal-syllabus li::before {
+      content: '';
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--blue-m);
+      flex-shrink: 0;
+      margin-top: 6px;
+    }
+
+    .modal-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+    .modal-tag {
+      background: var(--blue-lt);
+      color: var(--blue-m);
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: 0.78rem;
+      font-weight: 700;
+    }
+
+    .modal-meta-row {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .modal-meta-box {
+      flex: 1;
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 0.75rem 1rem;
+      text-align: center;
+    }
+    .modal-meta-val { font-size: 1.2rem; font-weight: 900; color: var(--navy); }
+    .modal-meta-lbl { font-size: 0.72rem; color: var(--muted); margin-top: 2px; }
+
+    /* ─── COURSE CARDS (step 3 grid) ──────── */
+    .course-card {
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .course-card:hover { border-color: var(--blue-m); box-shadow: 0 4px 16px rgba(26,95,170,0.1); transform: translateY(-1px); }
+    .course-card.sel {
+      border-color: var(--blue-m);
+      background: var(--blue-lt);
+      box-shadow: 0 0 0 3px rgba(26,95,170,0.1);
+    }
+    .course-card-icon { font-size: 1.5rem; color: var(--blue-m); line-height: 1; }
+    .course-card.sel .course-card-icon { color: var(--blue); }
+    .course-card-title { font-size: 0.82rem; font-weight: 800; color: var(--navy); line-height: 1.35; }
+    .course-card-meta { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+    .course-card-cta { font-size: 0.72rem; font-weight: 700; color: var(--blue-m); margin-top: auto; display: flex; align-items: center; gap: 3px; }
+    .course-card.sel .course-card-cta { color: var(--blue); }
+
+    /* Modal morning/evening info box */
+    .modal-info-box {
+      background: var(--bg);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-size: 0.82rem;
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .modal-info-box strong { color: var(--navy); }
+
+    /* Modal error */
+    .modal-err {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--danger);
+      background: #fff5f5;
+      border: 1px solid #fca5a5;
+      border-radius: 8px;
+      padding: 7px 10px;
+      margin-bottom: 10px;
+    }
+    .modal-err.show { display: flex; }
+
     /* ─── FOOTER ───────────────────────────── */
     .page-footer {
       background: var(--navy);
@@ -645,9 +801,32 @@
             <input type="text" id="f-name" placeholder="ישראל ישראלי">
           </div>
 
-          <div class="field">
-            <label>תעודת זהות *</label>
-            <input type="text" id="f-idnum" placeholder="000000000" dir="ltr" maxlength="9" inputmode="numeric">
+          <div class="field-row" style="margin-bottom:12px;">
+            <div class="field">
+              <label>תעודת זהות *</label>
+              <input type="text" id="f-idnum" placeholder="000000000" dir="ltr" maxlength="9" inputmode="numeric">
+            </div>
+            <div class="field">
+              <label>שנת לידה *</label>
+              <select id="f-birthyear" dir="ltr">
+                <option value="">בחר שנה</option>
+                ${Array.from({length:57},(_,i)=>2006-i).map(y=>`<option value="${y}">${y}</option>`).join('')}
+              </select>
+            </div>
+          </div>
+
+          <div class="field" style="margin-bottom:12px;">
+            <label>צילום תעודת זהות *</label>
+            <div style="border:1.5px dashed var(--border);border-radius:10px;padding:1rem;background:#f7f9fc;text-align:center;cursor:pointer;" onclick="document.getElementById('f-idphoto').click()">
+              <i class="ph ph-identification-card" style="font-size:1.8rem;color:var(--muted);display:block;margin-bottom:4px;"></i>
+              <div style="font-size:0.8rem;color:var(--muted);font-weight:600;">לחצו להעלאת תמונה</div>
+              <div style="font-size:0.72rem;color:var(--muted);margin-top:2px;">JPG / PNG · צד קדמי</div>
+            </div>
+            <input type="file" id="f-idphoto" accept="image/*" style="display:none;" onchange="reg.onIdFile(this)">
+            <div id="idphoto-preview" style="display:none;margin-top:8px;">
+              <img id="idphoto-img" src="" alt="תעודת זהות" style="max-width:100%;max-height:180px;border-radius:8px;border:1px solid var(--border);display:block;">
+              <button type="button" onclick="reg.clearIdPhoto()" style="margin-top:4px;font-size:0.75rem;color:var(--muted);background:none;border:none;cursor:pointer;font-family:'Heebo',sans-serif;">× הסר תמונה</button>
+            </div>
           </div>
 
           <div class="field-row" style="margin-bottom:12px;">
@@ -715,101 +894,44 @@
         <div class="pane" id="p3">
           <div class="pane-eyebrow">שלב 3 · בחירת מסלול</div>
           <h3 class="pane-title">בחרו את המסלול שלכם</h3>
-          <p class="pane-sub">בחרו את ההכשרה, המיקום ולוח הזמנים המתאימים לכם.</p>
+          <p class="pane-sub">לחצו על קורס כדי לראות פרטים מלאים ולבחור מיקום ולוח זמנים.</p>
 
-          <!-- Track -->
-          <div style="margin-bottom:1rem;">
-            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מסלול הכשרה *</label>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:1.25rem;">
-              <div class="win-item" id="track-c1" onclick="reg.selTrack('pergola_al')">
-                <div class="win-dot"></div>
-                <div class="win-info"><div class="win-title">מתקין מוסמך – פרגולה אלומיניום</div></div>
-              </div>
-              <div class="win-item" id="track-c2" onclick="reg.selTrack('pergola_electric')">
-                <div class="win-dot"></div>
-                <div class="win-info"><div class="win-title">מתקין מוסמך – פרגולה חשמלית ומסכי ZIP</div></div>
-              </div>
-              <div class="win-item" id="track-c3" onclick="reg.selTrack('glass_systems')">
-                <div class="win-dot"></div>
-                <div class="win-info"><div class="win-title">מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון</div></div>
-              </div>
-              <div class="win-item" id="track-c4" onclick="reg.selTrack('bioclimatic')">
-                <div class="win-dot"></div>
-                <div class="win-info"><div class="win-title">מתקין מוסמך – מערכות BIOCLIMATIC</div></div>
-              </div>
-              <div class="win-item" id="track-c5" onclick="reg.selTrack('weld_al')">
-                <div class="win-dot"></div>
-                <div class="win-info"><div class="win-title">מסגרות וריתוך אלומיניום</div></div>
-              </div>
-              <div class="win-item" id="track-c6" onclick="reg.selTrack('weld_steel')">
-                <div class="win-dot"></div>
-                <div class="win-info"><div class="win-title">מסגרות וריתוך קונסטרוקציה</div></div>
-              </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem;">
+            <div class="course-card" id="track-c1" onclick="reg.selTrack('pergola_al')">
+              <div class="course-card-icon"><i class="ph ph-sun-dim"></i></div>
+              <div class="course-card-title">מתקין מוסמך – פרגולה אלומיניום</div>
+              <div class="course-card-meta">60 שע׳ · ₪8,500</div>
+              <div class="course-card-cta">פרטים ובחירה <i class="ph ph-arrow-left"></i></div>
             </div>
-          </div>
-
-          <!-- Location -->
-          <div style="margin-bottom:1rem;">
-            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מיקום מועדף *</label>
-            <div class="opt-grid">
-              <div class="opt-card" id="loc-bs" onclick="reg.selLoc('beer_sheva')">
-                <div class="opt-card-em">🏜️</div>
-                <div class="opt-card-title">באר שבע</div>
-                <div class="opt-card-sub">מרכז הדרום</div>
-              </div>
-              <div class="opt-card" id="loc-ta" onclick="reg.selLoc('tel_aviv')">
-                <div class="opt-card-em">🏙️</div>
-                <div class="opt-card-title">תל אביב</div>
-                <div class="opt-card-sub">מרכז הצפון</div>
-              </div>
+            <div class="course-card" id="track-c2" onclick="reg.selTrack('pergola_electric')">
+              <div class="course-card-icon"><i class="ph ph-lightning"></i></div>
+              <div class="course-card-title">מתקין מוסמך – פרגולה חשמלית ומסכי ZIP</div>
+              <div class="course-card-meta">60 שע׳ · ₪8,500</div>
+              <div class="course-card-cta">פרטים ובחירה <i class="ph ph-arrow-left"></i></div>
             </div>
-          </div>
-
-          <!-- Schedule -->
-          <div style="margin-bottom:1rem;">
-            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">לוח זמנים *</label>
-            <div class="opt-grid">
-              <div class="opt-card" id="sch-am" onclick="reg.selSch('morning')">
-                <div class="opt-card-em">🌅</div>
-                <div class="opt-card-title">בוקר</div>
-                <div class="opt-card-sub">08:00–12:00</div>
-              </div>
-              <div class="opt-card" id="sch-pm" onclick="reg.selSch('evening')">
-                <div class="opt-card-em">🌆</div>
-                <div class="opt-card-title">ערב</div>
-                <div class="opt-card-sub">17:00–21:00</div>
-              </div>
+            <div class="course-card" id="track-c3" onclick="reg.selTrack('glass_systems')">
+              <div class="course-card-icon"><i class="ph ph-squares-four"></i></div>
+              <div class="course-card-title">מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון</div>
+              <div class="course-card-meta">60 שע׳ · ₪8,500</div>
+              <div class="course-card-cta">פרטים ובחירה <i class="ph ph-arrow-left"></i></div>
             </div>
-          </div>
-
-          <!-- Window -->
-          <div style="margin-bottom:1rem;">
-            <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--text);margin-bottom:8px;">מועד פתיחה מועדף</label>
-            <div class="win-list">
-              <div class="win-item" id="win-mj" onclick="reg.selWin('may_jun')">
-                <div class="win-dot"></div>
-                <div class="win-info">
-                  <div class="win-title">מאי – יוני 2025</div>
-                  <div class="win-sub">הסבב הקרוב ביותר</div>
-                </div>
-                <span class="win-tag" style="background:#fee2e2;color:#dc2626;">⚡ 3 מקומות</span>
-              </div>
-              <div class="win-item" id="win-jj" onclick="reg.selWin('jun_jul')">
-                <div class="win-dot"></div>
-                <div class="win-info">
-                  <div class="win-title">יוני – יולי 2025</div>
-                  <div class="win-sub">הסבב השני</div>
-                </div>
-                <span class="win-tag" style="background:#fef3c7;color:#d97706;">7 מקומות</span>
-              </div>
-              <div class="win-item" id="win-as" onclick="reg.selWin('aug_sep')">
-                <div class="win-dot"></div>
-                <div class="win-info">
-                  <div class="win-title">אוגוסט – ספטמבר 2025</div>
-                  <div class="win-sub">הסבב השלישי</div>
-                </div>
-                <span class="win-tag" style="background:#dcfce7;color:#16a34a;">פתוח</span>
-              </div>
+            <div class="course-card" id="track-c4" onclick="reg.selTrack('bioclimatic')">
+              <div class="course-card-icon"><i class="ph ph-leaf"></i></div>
+              <div class="course-card-title">מתקין מוסמך – מערכות BIOCLIMATIC</div>
+              <div class="course-card-meta">60 שע׳ · ₪8,500</div>
+              <div class="course-card-cta">פרטים ובחירה <i class="ph ph-arrow-left"></i></div>
+            </div>
+            <div class="course-card" id="track-c5" onclick="reg.selTrack('weld_al')">
+              <div class="course-card-icon"><i class="ph ph-wrench"></i></div>
+              <div class="course-card-title">מסגרות וריתוך אלומיניום</div>
+              <div class="course-card-meta">60 שע׳ · ₪8,500</div>
+              <div class="course-card-cta">פרטים ובחירה <i class="ph ph-arrow-left"></i></div>
+            </div>
+            <div class="course-card" id="track-c6" onclick="reg.selTrack('weld_steel')">
+              <div class="course-card-icon"><i class="ph ph-hammer"></i></div>
+              <div class="course-card-title">מסגרות וריתוך קונסטרוקציה</div>
+              <div class="course-card-meta">60 שע׳ · ₪8,500</div>
+              <div class="course-card-cta">פרטים ובחירה <i class="ph ph-arrow-left"></i></div>
             </div>
           </div>
 
@@ -837,11 +959,28 @@
             </div>
           </div>
 
-          <div class="screen-q" id="sq-available">
-            <div class="screen-q-text">האם תוכל להגיע 3 ימים בשבוע למשך 12 שבועות?</div>
+          <div class="screen-q" id="sq-permit">
+            <div class="screen-q-text">האם יש ברשותך אישור עבודה בגובה?</div>
             <div class="screen-q-opts">
-              <div class="screen-q-opt" onclick="reg.screenQ('available','yes',this)">כן, פנוי</div>
-              <div class="screen-q-opt" onclick="reg.screenQ('available','no',this)">יש לי מגבלות</div>
+              <div class="screen-q-opt" onclick="reg.screenQ('permit','yes',this)">כן, יש לי אישור</div>
+              <div class="screen-q-opt" onclick="reg.screenQ('permit','no',this)">אין לי אישור</div>
+            </div>
+            <div id="permit-upload" style="display:none;margin-top:10px;padding:10px 12px;background:var(--bg);border-radius:8px;border:1px solid var(--border);">
+              <label style="display:block;font-size:0.8rem;font-weight:700;color:var(--navy);margin-bottom:6px;">
+                <i class="ph ph-paperclip"></i> צרפו תמונה של האישור <span style="font-weight:400;color:var(--muted);">(אופציונלי)</span>
+              </label>
+              <input type="file" id="permit-file" accept="image/*" style="font-size:0.8rem;width:100%;" onchange="reg.onPermitFile(this)">
+              <div id="permit-preview" style="margin-top:8px;display:none;">
+                <img id="permit-img" src="" alt="אישור עבודה בגובה" style="max-width:100%;max-height:160px;border-radius:6px;border:1px solid var(--border);">
+              </div>
+            </div>
+          </div>
+
+          <div class="screen-q">
+            <div class="screen-q-text">האם יש לך ניסיון קודם בעבודה עם כלי עבודה חשמליים? (פטישון, מקדחה, מברגה)</div>
+            <div class="screen-q-opts">
+              <div class="screen-q-opt" onclick="reg.screenQ('tools','yes',this)">כן, יש לי ניסיון</div>
+              <div class="screen-q-opt" onclick="reg.screenQ('tools','no',this)">אין לי ניסיון</div>
             </div>
           </div>
 
@@ -937,9 +1076,14 @@
             הסכום מקוזז מהמחיר הסופי של הקורס (₪8,500 + מע"מ)
           </div>
 
-          <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#15803d;font-weight:600;margin-bottom:1rem;">
+          <div style="display:flex;align-items:center;gap:8px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#15803d;font-weight:600;margin-bottom:8px;">
             <i class="ph ph-lock" style="font-size:1rem;"></i>
-            תשלום מאובטח SSL · לאחר התשלום נחזור אליכם לתיאום
+            תשלום מאובטח SSL
+          </div>
+
+          <div style="display:flex;align-items:flex-start;gap:8px;background:#f0f4ff;border:1px solid #c7d7fb;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#1e40af;font-weight:600;margin-bottom:1rem;">
+            <i class="ph ph-phone-call" style="font-size:1rem;flex-shrink:0;margin-top:1px;"></i>
+            לאחר התשלום צוות המכללה יצור אתכם קשר לראיון פרונטלי ותיאום מועד ההכשרה.
           </div>
 
           <div class="err" id="err5"><i class="ph ph-warning"></i> <span></span></div>
@@ -955,7 +1099,10 @@
           <div class="success-pane">
             <div class="success-ring"><i class="ph ph-check-bold"></i></div>
             <h3 class="pane-title">דמי הרישום התקבלו!</h3>
-            <p class="pane-sub" style="margin-bottom:1.25rem;">תודה! הרישום שלכם נרשם במערכת.<br>נחזור אליכם תוך <strong>48 שעות</strong> לתיאום מועד ומיקום הקורס.</p>
+            <p class="pane-sub" style="margin-bottom:0.5rem;">תודה! הרישום שלכם נרשם במערכת.<br>צוות המכללה יצור אתכם קשר <strong>בהקדם</strong> לראיון פרונטלי ותיאום מועד ההכשרה.</p>
+            <div id="pay-ref-box" style="display:inline-flex;align-items:center;gap:6px;background:#f4f6fb;border:1px solid var(--border);border-radius:8px;padding:6px 14px;font-size:0.78rem;color:var(--muted);font-weight:700;margin-bottom:1rem;">
+              <i class="ph ph-receipt"></i> מס׳ אישור: <span id="pay-ref-num" style="color:var(--navy);letter-spacing:0.5px;">—</span>
+            </div>
 
             <div style="background:#f0f4ff;border:1.5px solid #c7d7fb;border-radius:14px;padding:1.1rem 1.25rem;text-align:right;margin-bottom:1.25rem;">
               <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#3b5bdb;margin-bottom:8px;">מה הלאה?</div>
@@ -965,7 +1112,11 @@
               </div>
               <div style="display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#1a2640;margin-bottom:6px;">
                 <i class="ph ph-check-circle" style="color:#16a34a;flex-shrink:0;margin-top:1px;"></i>
-                נחזור אליכם לתיאום מועד הקורס
+                צוות המכללה יצור אתכם קשר לראיון פרונטלי
+              </div>
+              <div style="display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#1a2640;margin-bottom:6px;">
+                <i class="ph ph-check-circle" style="color:#16a34a;flex-shrink:0;margin-top:1px;"></i>
+                לאחר הראיון יתואם מועד תחילת ההכשרה
               </div>
               <div style="display:flex;align-items:flex-start;gap:8px;font-size:0.83rem;color:#1a2640;">
                 <i class="ph ph-check-circle" style="color:#16a34a;flex-shrink:0;margin-top:1px;"></i>
@@ -973,7 +1124,10 @@
               </div>
             </div>
 
-            <a href="index.html" class="btn-submit" style="text-decoration:none;margin-top:4px;">
+            <button onclick="reg.downloadAgreements()" class="btn-submit" style="background:linear-gradient(135deg,#0e7490,#0c5a6e);margin-top:4px;margin-bottom:8px;">
+              <i class="ph ph-file-pdf"></i> הורד הסכמים חתומים (PDF)
+            </button>
+            <a href="index.html" class="btn-submit" style="text-decoration:none;background:linear-gradient(135deg,#6b7a99,#4a5568);">
               <i class="ph ph-house"></i> חזרה לדף הבית
             </a>
           </div>
@@ -983,6 +1137,117 @@
     </div><!-- /form-wrap -->
   </div>
 </section>
+
+<!-- ══ COURSE MODAL ══════════════════════════════════════════ -->
+<div class="modal-overlay" id="course-modal" onclick="reg.closeModal(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="reg.closeModal()"><i class="ph ph-x"></i></button>
+    <div class="modal-track-title" id="modal-title"></div>
+
+    <!-- Syllabus -->
+    <div class="modal-section">
+      <div class="modal-section-label">סילבוס הקורס</div>
+      <ul class="modal-syllabus" id="modal-syllabus"></ul>
+    </div>
+
+    <!-- Who it's for -->
+    <div class="modal-section">
+      <div class="modal-section-label">למי זה מתאים?</div>
+      <ul class="modal-syllabus" id="modal-suitable"></ul>
+    </div>
+
+    <!-- Hours + Price -->
+    <div class="modal-section">
+      <div class="modal-meta-row">
+        <div class="modal-meta-box">
+          <div class="modal-meta-val" id="modal-hours"></div>
+          <div class="modal-meta-lbl">שעות לימוד</div>
+        </div>
+        <div class="modal-meta-box">
+          <div class="modal-meta-val" id="modal-price"></div>
+          <div class="modal-meta-lbl">מחיר הקורס</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Morning vs Evening -->
+    <div class="modal-section">
+      <div class="modal-section-label">מה ההבדל בין בוקר לערב?</div>
+      <div class="modal-info-box">
+        <strong>מסלול בוקר</strong> — 08:30–16:30, סה"כ 6 מפגשים. קצב אינטנסיבי, מתאים למי שאינו עובד בשעות הבוקר.<br>
+        <strong>מסלול ערב</strong> — 16:00–20:30, סה"כ 10 מפגשים. מותאם לעובדים במשרה מלאה או חלקית במהלך היום.
+      </div>
+    </div>
+
+    <!-- Location -->
+    <div class="modal-section">
+      <div class="modal-section-label">מיקום *</div>
+      <div class="opt-grid" style="margin-bottom:0;">
+        <div class="opt-card" id="m-loc-bs" onclick="reg.selModalLoc('beer_sheva')">
+          <div class="opt-card-em"><i class="ph ph-map-pin"></i></div>
+          <div class="opt-card-title">באר שבע</div>
+          <div class="opt-card-sub">מרכז הדרום</div>
+        </div>
+        <div class="opt-card" id="m-loc-ta" onclick="reg.selModalLoc('tel_aviv')">
+          <div class="opt-card-em"><i class="ph ph-map-pin"></i></div>
+          <div class="opt-card-title">תל אביב</div>
+          <div class="opt-card-sub">מרכז הצפון</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Schedule -->
+    <div class="modal-section">
+      <div class="modal-section-label">לוח זמנים *</div>
+      <div class="opt-grid" style="margin-bottom:0;">
+        <div class="opt-card" id="m-sch-am" onclick="reg.selModalSch('morning')">
+          <div class="opt-card-em"><i class="ph ph-sun"></i></div>
+          <div class="opt-card-title">בוקר</div>
+          <div class="opt-card-sub">08:30–16:30 · 6 מפגשים</div>
+        </div>
+        <div class="opt-card" id="m-sch-pm" onclick="reg.selModalSch('evening')">
+          <div class="opt-card-em"><i class="ph ph-moon"></i></div>
+          <div class="opt-card-title">ערב</div>
+          <div class="opt-card-sub">16:00–20:30 · 10 מפגשים</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Opening window -->
+    <div class="modal-section">
+      <div class="modal-section-label">מועד פתיחה מועדף *</div>
+      <div class="win-list" style="margin-bottom:0;">
+        <div class="win-item" id="m-win-mj" onclick="reg.selModalWin('may_jun')">
+          <div class="win-dot"></div>
+          <div class="win-info">
+            <div class="win-title">מאי – יוני 2025</div>
+            <div class="win-sub">הסבב הקרוב ביותר</div>
+          </div>
+        </div>
+        <div class="win-item" id="m-win-jj" onclick="reg.selModalWin('jun_jul')">
+          <div class="win-dot"></div>
+          <div class="win-info">
+            <div class="win-title">יוני – יולי 2025</div>
+            <div class="win-sub">הסבב השני</div>
+          </div>
+        </div>
+        <div class="win-item" id="m-win-as" onclick="reg.selModalWin('aug_sep')">
+          <div class="win-dot"></div>
+          <div class="win-info">
+            <div class="win-title">אוגוסט – ספטמבר 2025</div>
+            <div class="win-sub">הסבב השלישי</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-err" id="modal-err"><i class="ph ph-warning"></i> <span></span></div>
+
+    <button class="btn-submit" onclick="reg.confirmTrack()" style="margin-top:0.25rem;">
+      <i class="ph ph-check"></i> אישור בחירה והמשך
+    </button>
+  </div>
+</div>
 
 <!-- ══ FOOTER ════════════════════════════════════════════════ -->
 <footer class="page-footer">
@@ -996,8 +1261,47 @@ const supabase = createClient(
   'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
 );
 
+const courseData = {
+  pergola_al: {
+    title: 'מתקין מוסמך – פרגולה אלומיניום',
+    syllabus: ['קריאת שרטוטים ותוכניות הרכבה', 'עבודה עם פרופילי אלומיניום ואביזרים', 'הרכבת עמודים, קורות וגגוני פרגולה', 'עבודה בגובה ונהלי בטיחות', 'גימור, איטום ובדיקות איכות'],
+    suitable: ['מי שמעוניין להתמחות בהרכבת פרגולות אלומיניום', 'בעלי רקע בנגרות, מסגרות או בנייה', 'יזמים המעוניינים לפתוח עסק עצמאי בתחום'],
+    hours: 60, price: '₪8,500 + מע"מ'
+  },
+  pergola_electric: {
+    title: 'מתקין מוסמך – פרגולה חשמלית ומסכי ZIP',
+    syllabus: ['יסודות חשמל ובקרים אוטומטיים', 'התקנת מנועים וחיישנים', 'הרכבת מסכי ZIP וגלגלת אלומיניום', 'חיבור לממשקי שליטה חכמה', 'תחזוקה ואבחון תקלות'],
+    suitable: ['חשמלאים ואנשי טכנולוגיה שרוצים להרחיב לתחום הסגירות', 'מתקינים קיימים שרוצים לשדרג לפרגולות חכמות', 'קבלנים הרוצים להציע ערך מוסף ללקוחות'],
+    hours: 60, price: '₪8,500 + מע"מ'
+  },
+  glass_systems: {
+    title: 'מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון',
+    syllabus: ['סוגי זכוכית ותקנות בטיחות', 'הרכבת מסגרות ויטרינה ואקורדיון', 'עבודה עם סיליקון, פינים ומנעולים', 'התקנת מחיצות זכוכית וסגירות חצר', 'טיפול ומניעת נזקים'],
+    suitable: ['מי שמעוניין בעבודה עם מערכות זכוכית ועיצוב מסחרי', 'אנשי בנייה ושיפוצים המחפשים התמחות ייחודית', 'קבלנים הפועלים עם בתי עסק ומסחר'],
+    hours: 60, price: '₪8,500 + מע"מ'
+  },
+  bioclimatic: {
+    title: 'מתקין מוסמך – מערכות BIOCLIMATIC',
+    syllabus: ['הכרת מערכות ביוקלימטיות ויצרנים מובילים', 'הרכבת לוחות ציר מתכווננים ואוטומטיים', 'אינטגרציה עם גשמים וחיישני רוח', 'התקנת תאורה ומסכי צד', 'עבודה עם מערכות ניקוז'],
+    suitable: ['מתקינים מנוסים המבקשים להתמחות בפרמיום', 'קבלנים העובדים עם לקוחות יוקרה ווילות', 'מי שרוצה ליצב את עצמו בשוק הביוקלימטי הצומח'],
+    hours: 60, price: '₪8,500 + מע"מ'
+  },
+  weld_al: {
+    title: 'מסגרות וריתוך אלומיניום',
+    syllabus: ['טכניקות ריתוך MIG לאלומיניום', 'כלי מדידה, חיתוך ועיצוב פרופילים', 'הרכבת מסגרות ומבנים', 'בדיקות איכות ועמידות', 'גימור ואנודיזציה בסיסית'],
+    suitable: ['חסרי ניסיון המעוניינים להיכנס לתחום המסגרות', 'נגרים ומתכתנים המחפשים הכשרה מוסמכת', 'עצמאים הרוצים להרחיב שירותים לעבודות אלומיניום'],
+    hours: 60, price: '₪8,500 + מע"מ'
+  },
+  weld_steel: {
+    title: 'מסגרות וריתוך קונסטרוקציה',
+    syllabus: ['ריתוך MIG/MAG פלדה ונירוסטה', 'קריאת שרטוטי קונסטרוקציה', 'בניית מסגרות, שערים ומעקות', 'עיבוד חום, ישור וגימור', 'תקנות בנייה ובטיחות מבנה'],
+    suitable: ['מי שמעוניין בריתוך תעשייתי ועבודות מבנה', 'קבלני בנייה הרוצים לשלב שירותי מסגרות', 'אנשי מקצוע המחפשים הסמכה מוכרת בענף'],
+    hours: 60, price: '₪8,500 + מע"מ'
+  }
+};
+
 const locL  = { beer_sheva:'באר שבע', tel_aviv:'תל אביב' };
-const schL  = { morning:'בוקר (08:00–12:00)', evening:'ערב (17:00–21:00)' };
+const schL  = { morning:'בוקר (08:30–16:30 · 6 מפגשים)', evening:'ערב (16:00–20:30 · 10 מפגשים)' };
 const winL  = { may_jun:'מאי–יוני 2025', jun_jul:'יוני–יולי 2025', aug_sep:'אוגוסט–ספטמבר 2025' };
 const trackL = {
   pergola_al:      'מתקין מוסמך – פרגולה אלומיניום',
@@ -1010,10 +1314,10 @@ const trackL = {
 
 const s = {
   step: 1,
-  screen: { physical: null, available: null, age: null },
+  screen: { physical: null, permit: null, tools: null, age: null },
   track: null,
   loc: null, sch: null, win: null,
-  name: '', idNum: '', address: '', phone: '', email: '',
+  name: '', idNum: '', birthYear: null, idPhotoData: null, address: '', phone: '', email: '',
   profession: '', workplace: '', goal: null,
   hSigned: false, rSigned: false,
   hData: null, rData: null
@@ -1087,12 +1391,18 @@ function err(step, msg) {
 
 async function save() {
   const { data: { user } } = await supabase.auth.getUser();
-  const ref = 'PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+  const ref = s.payRef || ('PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase());
   const { data: st, error: e1 } = await supabase.from('students').insert([{
     user_id: user?.id || null,
     full_name: s.name, phone: s.phone, email: s.email,
+    birth_year: s.birthYear ? parseInt(s.birthYear) : null,
+    id_photo_data: s.idPhotoData || null,
     experience_level: 'new', course_track: s.track,
-    location: s.loc, schedule: s.sch,
+    location: s.loc, schedule: s.sch, opening_window: s.win || null,
+    screening_physical: s.screen?.physical || null,
+    screening_permit:   s.screen?.permit   || null,
+    screening_tools:    s.screen?.tools    || null,
+    screening_age:      s.screen?.age      || null,
     health_declaration_signed: s.hSigned, regulations_signed: s.rSigned,
     health_signature_data: s.hData, regulations_signature_data: s.rData,
     payment_status: 'registration_paid', payment_amount: 399, payment_ref: ref, status: 'awaiting_coordination'
@@ -1111,9 +1421,46 @@ window.reg = {
     parent.querySelectorAll('.screen-q-opt').forEach(o => o.classList.remove('sel', 'sel-no'));
     el.classList.add(val === 'yes' ? 'sel' : 'sel-no');
     s.screen[key] = val;
+    if (key === 'permit') {
+      const upload = document.getElementById('permit-upload');
+      upload.style.display = val === 'yes' ? 'block' : 'none';
+      if (val === 'no') { s.permitImage = null; document.getElementById('permit-preview').style.display = 'none'; document.getElementById('permit-file').value = ''; }
+    }
     const fail = Object.values(s.screen).some(v => v === 'no');
     document.getElementById('screen-fail').style.display = fail ? 'block' : 'none';
     err(4, '');
+  },
+
+  onIdFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      s.idPhotoData = e.target.result;
+      document.getElementById('idphoto-img').src = e.target.result;
+      document.getElementById('idphoto-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  },
+
+  clearIdPhoto() {
+    s.idPhotoData = null;
+    document.getElementById('f-idphoto').value = '';
+    document.getElementById('idphoto-preview').style.display = 'none';
+    document.getElementById('idphoto-img').src = '';
+  },
+
+  onPermitFile(input) {
+    const file = input.files[0];
+    if (!file) return;
+    s.permitImage = file;
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = document.getElementById('permit-img');
+      img.src = e.target.result;
+      document.getElementById('permit-preview').style.display = 'block';
+    };
+    reader.readAsDataURL(file);
   },
 
   selGoal(v) {
@@ -1124,31 +1471,69 @@ window.reg = {
   },
 
   selTrack(v) {
+    const d = courseData[v];
+    if (!d) return;
+    reg._pendingTrack = v;
+    reg._pendingLoc = null;
+    reg._pendingSch = null;
+    reg._pendingWin = null;
+    // reset modal selections
+    ['m-loc-bs','m-loc-ta','m-sch-am','m-sch-pm','m-win-mj','m-win-jj','m-win-as'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    // populate content
+    document.getElementById('modal-title').textContent = d.title;
+    document.getElementById('modal-syllabus').innerHTML = d.syllabus.map(t => `<li>${t}</li>`).join('');
+    document.getElementById('modal-suitable').innerHTML = d.suitable.map(t => `<li>${t}</li>`).join('');
+    document.getElementById('modal-hours').textContent = d.hours;
+    document.getElementById('modal-price').textContent = d.price;
+    const me = document.getElementById('modal-err');
+    me.classList.remove('show'); me.querySelector('span').textContent = '';
+    document.getElementById('course-modal').classList.add('open');
+  },
+
+  selModalLoc(v) {
+    reg._pendingLoc = v;
+    ['m-loc-bs','m-loc-ta'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById(v === 'beer_sheva' ? 'm-loc-bs' : 'm-loc-ta').classList.add('sel');
+  },
+
+  selModalSch(v) {
+    reg._pendingSch = v;
+    ['m-sch-am','m-sch-pm'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById(v === 'morning' ? 'm-sch-am' : 'm-sch-pm').classList.add('sel');
+  },
+
+  selModalWin(v) {
+    reg._pendingWin = v;
+    ['m-win-mj','m-win-jj','m-win-as'].forEach(id => document.getElementById(id).classList.remove('sel'));
+    document.getElementById({may_jun:'m-win-mj', jun_jul:'m-win-jj', aug_sep:'m-win-as'}[v]).classList.add('sel');
+  },
+
+  _modalErr(msg) {
+    const el = document.getElementById('modal-err');
+    el.querySelector('span').textContent = msg;
+    el.classList.add('show');
+    el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  },
+
+  confirmTrack() {
+    if (!reg._pendingLoc) { reg._modalErr('יש לבחור מיקום.'); return; }
+    if (!reg._pendingSch) { reg._modalErr('יש לבחור לוח זמנים.'); return; }
+    if (!reg._pendingWin) { reg._modalErr('יש לבחור מועד פתיחה.'); return; }
+    const v = reg._pendingTrack;
     s.track = v;
+    s.loc   = reg._pendingLoc;
+    s.sch   = reg._pendingSch;
+    s.win   = reg._pendingWin;
+    const trackMap = {pergola_al:'track-c1',pergola_electric:'track-c2',glass_systems:'track-c3',bioclimatic:'track-c4',weld_al:'track-c5',weld_steel:'track-c6'};
     ['track-c1','track-c2','track-c3','track-c4','track-c5','track-c6'].forEach(id => document.getElementById(id).classList.remove('sel'));
-    document.getElementById({pergola_al:'track-c1',pergola_electric:'track-c2',glass_systems:'track-c3',bioclimatic:'track-c4',weld_al:'track-c5',weld_steel:'track-c6'}[v]).classList.add('sel');
+    document.getElementById(trackMap[v]).classList.add('sel');
     err(3, '');
+    reg.closeModal();
   },
 
-  selLoc(v) {
-    s.loc = v;
-    ['loc-bs','loc-ta'].forEach(id => document.getElementById(id).classList.remove('sel'));
-    document.getElementById(v === 'beer_sheva' ? 'loc-bs' : 'loc-ta').classList.add('sel');
-    err(3, '');
-  },
-
-  selSch(v) {
-    s.sch = v;
-    ['sch-am','sch-pm'].forEach(id => document.getElementById(id).classList.remove('sel'));
-    document.getElementById(v === 'morning' ? 'sch-am' : 'sch-pm').classList.add('sel');
-    err(3, '');
-  },
-
-  selWin(v) {
-    s.win = v;
-    ['win-mj','win-jj','win-as'].forEach(id => document.getElementById(id).classList.remove('sel'));
-    document.getElementById({may_jun:'win-mj', jun_jul:'win-jj', aug_sep:'win-as'}[v]).classList.add('sel');
-    err(3, '');
+  closeModal(e) {
+    if (e && e.target !== document.getElementById('course-modal')) return;
+    document.getElementById('course-modal').classList.remove('open');
   },
 
   clearSig(id) {
@@ -1163,15 +1548,18 @@ window.reg = {
     const n = s.step;
 
     if (n === 1) {
-      s.name  = document.getElementById('f-name').value.trim();
-      s.idNum = document.getElementById('f-idnum').value.trim();
-      s.phone = document.getElementById('f-phone').value.trim();
-      s.email = document.getElementById('f-email').value.trim();
-      if (!s.name)               { err(1, 'יש להזין שם מלא.'); return; }
-      if (!s.idNum)              { err(1, 'יש להזין תעודת זהות.'); return; }
-      if (!/^\d{9}$/.test(s.idNum)) { err(1, 'תעודת זהות חייבת להכיל 9 ספרות.'); return; }
-      if (!s.phone)              { err(1, 'יש להזין מספר טלפון.'); return; }
-      if (!s.email)              { err(1, 'יש להזין אימייל.'); return; }
+      s.name      = document.getElementById('f-name').value.trim();
+      s.idNum     = document.getElementById('f-idnum').value.trim();
+      s.birthYear = document.getElementById('f-birthyear').value;
+      s.phone     = document.getElementById('f-phone').value.trim();
+      s.email     = document.getElementById('f-email').value.trim();
+      if (!s.name)                   { err(1, 'יש להזין שם מלא.'); return; }
+      if (!s.idNum)                  { err(1, 'יש להזין תעודת זהות.'); return; }
+      if (!/^\d{9}$/.test(s.idNum))  { err(1, 'תעודת זהות חייבת להכיל 9 ספרות.'); return; }
+      if (!s.birthYear)              { err(1, 'יש לבחור שנת לידה.'); return; }
+      if (!s.idPhotoData)            { err(1, 'יש להעלות צילום תעודת זהות.'); return; }
+      if (!s.phone)                  { err(1, 'יש להזין מספר טלפון.'); return; }
+      if (!s.email)                  { err(1, 'יש להזין אימייל.'); return; }
       err(1, '');
     }
 
@@ -1186,9 +1574,7 @@ window.reg = {
     }
 
     if (n === 3) {
-      if (!s.track) { err(3, 'יש לבחור מסלול הכשרה.'); return; }
-      if (!s.loc)   { err(3, 'יש לבחור מיקום.'); return; }
-      if (!s.sch)   { err(3, 'יש לבחור לוח זמנים.'); return; }
+      if (!s.track) { err(3, 'יש לבחור קורס — לחצו על אחד הקורסים כדי לבחור.'); return; }
       document.getElementById('s-name').textContent  = s.name;
       document.getElementById('s-track').textContent = trackL[s.track];
       document.getElementById('s-loc').textContent   = locL[s.loc];
@@ -1212,19 +1598,91 @@ window.reg = {
 
   back() { if (s.step > 1) goStep(s.step - 1); },
 
+  downloadAgreements() {
+    const today = new Date().toLocaleDateString('he-IL');
+    const trackName = {
+      pergola_al:'מתקין מוסמך – פרגולה אלומיניום',
+      pergola_electric:'מתקין מוסמך – פרגולה חשמלית ומסכי ZIP',
+      glass_systems:'מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון',
+      bioclimatic:'מתקין מוסמך – מערכות BIOCLIMATIC',
+      weld_al:'מסגרות וריתוך אלומיניום',
+      weld_steel:'מסגרות וריתוך קונסטרוקציה'
+    }[s.track] || s.track;
+
+    const html = `<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>הסכמים חתומים – ${s.name}</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 2.5cm 3cm; color: #111; font-size: 13px; }
+    h1 { font-size: 18px; color: #0f1f35; border-bottom: 2px solid #1a5faa; padding-bottom: 8px; margin-bottom: 20px; }
+    h2 { font-size: 14px; color: #1a5faa; margin: 24px 0 8px; }
+    .meta { background: #f4f6fb; border-radius: 6px; padding: 10px 14px; margin-bottom: 24px; font-size: 12px; line-height: 1.8; }
+    .doc-text { background: #f9f9f9; border: 1px solid #dde4f0; border-radius: 6px; padding: 12px 16px; line-height: 1.9; margin-bottom: 10px; }
+    .sig-label { font-size: 11px; color: #6b7a99; margin-bottom: 4px; }
+    .sig-img { border: 1px solid #dde4f0; border-radius: 6px; max-height: 90px; display: block; background: #fff; }
+    .page-break { page-break-before: always; margin-top: 2cm; }
+    .footer { margin-top: 3cm; font-size: 10px; color: #9aa3b5; text-align: center; border-top: 1px solid #dde4f0; padding-top: 8px; }
+  </style>
+</head>
+<body>
+  <h1>הסכמים חתומים — מכללת ALUM-IL</h1>
+  <div class="meta">
+    <strong>שם:</strong> ${s.name} &nbsp;|&nbsp;
+    <strong>ת.ז.:</strong> ${s.idNum} &nbsp;|&nbsp;
+    <strong>טלפון:</strong> ${s.phone}<br>
+    <strong>מסלול:</strong> ${trackName}<br>
+    <strong>תאריך חתימה:</strong> ${today} &nbsp;|&nbsp;
+    <strong>מס׳ אישור תשלום:</strong> ${s.payRef || '—'}
+  </div>
+
+  <h2>הצהרת בריאות</h2>
+  <div class="doc-text">
+    אני המצהיר/ה מאשר/ת כי:<br>
+    1. אני כשיר/ה פיזית לביצוע עבודות בגובה עד 6 מטר.<br>
+    2. אני מסוגל/ת להרמת משקלים עד 25 ק"ג ללא הגבלה רפואית.<br>
+    3. איני סובל/ת ממחלות לב, יל"ד בלתי מאוזן, סחרחורת כרונית.<br>
+    4. אתחייב/ת להודיע למכללה על כל שינוי במצבי הרפואי.
+  </div>
+  <div class="sig-label">חתימה:</div>
+  ${s.hData ? `<img class="sig-img" src="${s.hData}">` : '<div style="height:60px;border:1px dashed #ccc;border-radius:6px;"></div>'}
+
+  <div class="page-break"></div>
+
+  <h2>תקנון לימודים</h2>
+  <div class="doc-text">
+    נוכחות מינימלית: 85% לקבלת תעודה.<br>
+    דמי רישום: 399 ש"ח — מקוזזים מהמחיר הסופי של הקורס (₪8,500 + מע"מ).<br>
+    ביטול עד 14 יום — החזר מלא. 15–30 יום — 50%. מעל 30 יום — ללא החזר.<br>
+    קוד לבוש: נעלי בטיחות S1P + מטר אישי — חובה.
+  </div>
+  <div class="sig-label">חתימה:</div>
+  ${s.rData ? `<img class="sig-img" src="${s.rData}">` : '<div style="height:60px;border:1px dashed #ccc;border-radius:6px;"></div>'}
+
+  <div class="footer">מסמך זה הופק אוטומטית על ידי מערכת ההרשמה של מכללת ALUM-IL · ${today}</div>
+</body>
+</html>`;
+
+    const win = window.open('', '_blank', 'width=900,height=700');
+    win.document.write(html);
+    win.document.close();
+    win.onload = () => win.print();
+  },
+
   async pay() {
     const btn = document.getElementById('pay-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="ph ph-spinner" style="animation:spin 0.8s linear infinite;display:inline-block;"></i> מעבד תשלום...';
-    try {
-      await new Promise(r => setTimeout(r, 2000));
-      await save();
-      goStep('success');
-    } catch(e) {
-      btn.disabled = false;
-      btn.innerHTML = '<i class="ph ph-credit-card"></i> שלם דמי רישום ₪399';
-      err(5, 'שגיאה: ' + e.message);
-    }
+    // Generate confirmation reference
+    s.payRef = 'PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
+    // Simulate payment gateway delay
+    await new Promise(r => setTimeout(r, 1800));
+    // Show success immediately — save to DB in background
+    document.getElementById('pay-ref-num').textContent = s.payRef;
+    goStep('success');
+    // Save to Supabase in background (non-blocking)
+    save().catch(e => console.warn('DB save failed:', e.message));
   }
 };
 

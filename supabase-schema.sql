@@ -1,155 +1,209 @@
 -- ═══════════════════════════════════════════════════════════
---  ALUM-IL College — Supabase Schema
---  Run this in your Supabase SQL Editor (Dashboard → SQL Editor)
+--  ALUM-IL College — Supabase Schema (v2)
+--  Run this in: Supabase Dashboard → SQL Editor → New Query
 -- ═══════════════════════════════════════════════════════════
 
--- ─── 1. LEADS ────────────────────────────────────────────────
--- Captures interest / partial form fills before payment
+-- ─── DROP OLD TABLES (if they exist from a previous version) ─
 
-CREATE TABLE IF NOT EXISTS leads (
+DROP TABLE IF EXISTS registrations CASCADE;
+DROP TABLE IF EXISTS students     CASCADE;
+DROP TABLE IF EXISTS leads        CASCADE;
+
+-- ─── 1. LEADS ────────────────────────────────────────────────
+
+CREATE TABLE leads (
   id             UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
   full_name      TEXT,
   phone          TEXT,
   email          TEXT,
-  candidate_type TEXT        CHECK (candidate_type IN ('new', 'veteran', 'employer')),
-  location       TEXT        CHECK (location IN ('beer_sheva', 'tel_aviv')),
-  schedule       TEXT        CHECK (schedule IN ('morning', 'evening')),
-  time_window    TEXT        CHECK (time_window IN ('may_jun', 'jun_jul', 'aug_sep')),
   created_at     TIMESTAMPTZ DEFAULT now()
 );
 
 -- ─── 2. STUDENTS ─────────────────────────────────────────────
--- Confirmed registrations (payment succeeded)
+-- One row per confirmed registration (after payment)
 
-CREATE TABLE IF NOT EXISTS students (
-  id                           UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
-  user_id                      UUID        REFERENCES auth.users(id) ON DELETE SET NULL,
+CREATE TABLE students (
+  id                          UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  user_id                     UUID        REFERENCES auth.users(id) ON DELETE SET NULL,
 
   -- Personal
-  full_name                    TEXT        NOT NULL,
-  phone                        TEXT        NOT NULL,
-  email                        TEXT        NOT NULL,
+  full_name                   TEXT        NOT NULL,
+  phone                       TEXT        NOT NULL,
+  email                       TEXT        NOT NULL,
 
-  -- Profile
-  candidate_type               TEXT        NOT NULL CHECK (candidate_type IN ('new', 'veteran', 'employer')),
-  employee_count               INTEGER     DEFAULT 1,
+  -- Course selection
+  experience_level            TEXT,
+  course_track                TEXT,       -- pergola_al | pergola_electric | glass_systems | bioclimatic | weld_al | weld_steel
+  location                    TEXT,       -- beer_sheva | tel_aviv
+  schedule                    TEXT,       -- morning | evening
+  opening_window              TEXT,       -- may_jun | jun_jul | aug_sep
 
-  -- Logistics
-  location                     TEXT        NOT NULL CHECK (location IN ('beer_sheva', 'tel_aviv')),
-  schedule                     TEXT        NOT NULL CHECK (schedule IN ('morning', 'evening')),
-  time_window                  TEXT        CHECK (time_window IN ('may_jun', 'jun_jul', 'aug_sep')),
+  -- Screening answers
+  screening_physical          TEXT,       -- yes | no
+  screening_permit            TEXT,       -- yes | no
+  screening_tools             TEXT,       -- yes | no
+  screening_age               TEXT,       -- yes | no
 
-  -- Documents
-  health_declaration_signed    BOOLEAN     DEFAULT false,
-  regulations_signed           BOOLEAN     DEFAULT false,
-  health_signature_data        TEXT,        -- base64 PNG of canvas signature
-  regulations_signature_data   TEXT,        -- base64 PNG of canvas signature
+  -- Documents / signatures
+  health_declaration_signed   BOOLEAN     DEFAULT false,
+  regulations_signed          BOOLEAN     DEFAULT false,
+  health_signature_data       TEXT,       -- base64 PNG
+  regulations_signature_data  TEXT,       -- base64 PNG
 
   -- Payment
-  payment_status               TEXT        DEFAULT 'pending'
-                                           CHECK (payment_status IN ('pending', 'paid', 'failed', 'refunded')),
-  payment_amount               NUMERIC     DEFAULT 750,
-  payment_ref                  TEXT,        -- payment gateway reference
+  payment_status              TEXT        DEFAULT 'pending',
+  payment_amount              NUMERIC     DEFAULT 0,
+  payment_ref                 TEXT,
 
-  -- Status & ROI
-  status                       TEXT        DEFAULT 'registered'
-                                           CHECK (status IN ('registered', 'waitlist', 'confirmed', 'cancelled')),
-  expected_roi                 NUMERIC,     -- Expected ROI for employer type (optional)
+  -- Admin
+  status                      TEXT        DEFAULT 'awaiting_coordination',
+  admin_notes                 JSONB       DEFAULT '[]',
 
-  created_at                   TIMESTAMPTZ DEFAULT now()
+  created_at                  TIMESTAMPTZ DEFAULT now()
 );
 
 -- ─── 3. REGISTRATIONS ────────────────────────────────────────
--- Maps students to course cycles
--- Supports waitlist: status = 'waitlist' when cycle is not yet confirmed
 
-CREATE TABLE IF NOT EXISTS registrations (
-  id             UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
-  student_id     UUID        NOT NULL REFERENCES students(id) ON DELETE CASCADE,
-
-  -- Cycle identifier (e.g. "cycle-may_jun-beer_sheva")
-  cycle_id       TEXT,
-
-  -- Location & schedule (denormalized for quick admin queries)
-  location       TEXT        CHECK (location IN ('beer_sheva', 'tel_aviv')),
-  schedule       TEXT        CHECK (schedule IN ('morning', 'evening')),
-
-  -- Lifecycle
-  status         TEXT        DEFAULT 'registered'
-                             CHECK (status IN ('registered', 'waitlist', 'confirmed', 'cancelled')),
-
-  registered_at  TIMESTAMPTZ DEFAULT now(),
-  confirmed_at   TIMESTAMPTZ          -- Set by admin when cycle opens (break-even reached)
+CREATE TABLE registrations (
+  id                UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  student_id        UUID        NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  course_track      TEXT,
+  location          TEXT,
+  schedule          TEXT,
+  registration_fee  NUMERIC     DEFAULT 399,
+  full_price        NUMERIC     DEFAULT 8500,
+  status            TEXT        DEFAULT 'awaiting_coordination',
+  registered_at     TIMESTAMPTZ DEFAULT now()
 );
 
--- ─── INDEXES ─────────────────────────────────────────────────
+-- ─── 4. BATCHES ──────────────────────────────────────────────
+-- One row per study cohort (מחזור)
 
-CREATE INDEX IF NOT EXISTS idx_students_location_window
-  ON students (location, time_window, status);
-
-CREATE INDEX IF NOT EXISTS idx_students_payment
-  ON students (payment_status);
-
-CREATE INDEX IF NOT EXISTS idx_registrations_cycle
-  ON registrations (cycle_id, status);
-
-CREATE INDEX IF NOT EXISTS idx_registrations_student
-  ON registrations (student_id);
-
--- ─── ROW LEVEL SECURITY ──────────────────────────────────────
--- Enable RLS on all tables
-
-ALTER TABLE leads         ENABLE ROW LEVEL SECURITY;
-ALTER TABLE students      ENABLE ROW LEVEL SECURITY;
-ALTER TABLE registrations ENABLE ROW LEVEL SECURITY;
-
--- Leads: anyone can insert (pre-auth), only admins can read
-CREATE POLICY "leads_insert_public"   ON leads FOR INSERT WITH CHECK (true);
-CREATE POLICY "leads_select_admin"    ON leads FOR SELECT USING (
-  auth.uid() IN (SELECT user_id FROM admin_users)
+CREATE TABLE batches (
+  id           UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  name         TEXT        NOT NULL,                        -- e.g. "מחזור א׳ – פרגולות"
+  track        TEXT,                                        -- course_track value
+  location     TEXT,                                        -- beer_sheva | tel_aviv
+  schedule     TEXT,                                        -- morning | evening
+  open_date    DATE,                                        -- cohort start date
+  capacity     INTEGER     DEFAULT 15,
+  sessions     INTEGER     DEFAULT 5,
+  created_at   TIMESTAMPTZ DEFAULT now()
 );
 
--- Students: users can read their own row; insert allowed for authenticated users
-CREATE POLICY "students_select_own"   ON students FOR SELECT USING (
-  auth.uid() = user_id OR
-  auth.uid() IN (SELECT user_id FROM admin_users)
-);
-CREATE POLICY "students_insert_auth"  ON students FOR INSERT WITH CHECK (
-  auth.uid() IS NOT NULL
-);
-CREATE POLICY "students_update_admin" ON students FOR UPDATE USING (
-  auth.uid() IN (SELECT user_id FROM admin_users)
+-- ─── 5. BATCH_STUDENTS ───────────────────────────────────────
+-- Join table: which students are in which batch + per-student data
+
+CREATE TABLE batch_students (
+  id           UUID        DEFAULT gen_random_uuid() PRIMARY KEY,
+  batch_id     UUID        NOT NULL REFERENCES batches(id) ON DELETE CASCADE,
+  student_id   UUID        NOT NULL REFERENCES students(id) ON DELETE CASCADE,
+  paid         BOOLEAN     DEFAULT false,
+  attendance   JSONB       DEFAULT '[]',                    -- array of session booleans
+  assigned_at  TIMESTAMPTZ DEFAULT now(),
+  UNIQUE (batch_id, student_id)
 );
 
--- Registrations: users can read their own, admins can do everything
-CREATE POLICY "reg_select_own"        ON registrations FOR SELECT USING (
-  student_id IN (SELECT id FROM students WHERE user_id = auth.uid()) OR
-  auth.uid() IN (SELECT user_id FROM admin_users)
-);
-CREATE POLICY "reg_insert_auth"       ON registrations FOR INSERT WITH CHECK (
-  auth.uid() IS NOT NULL
-);
-CREATE POLICY "reg_update_admin"      ON registrations FOR UPDATE USING (
-  auth.uid() IN (SELECT user_id FROM admin_users)
-);
+-- ─── INDEXES ──────────────────────────────────────────────────
 
--- ─── HELPER VIEW: BREAK-EVEN DASHBOARD ───────────────────────
--- Helps the college admin see: how many paid registrations per cycle vs break-even target
+CREATE INDEX idx_students_status         ON students (status);
+CREATE INDEX idx_students_course         ON students (course_track);
+CREATE INDEX idx_students_created        ON students (created_at DESC);
+CREATE INDEX idx_registrations_student   ON registrations (student_id);
+CREATE INDEX idx_batches_track           ON batches (track);
+CREATE INDEX idx_batch_students_batch    ON batch_students (batch_id);
+CREATE INDEX idx_batch_students_student  ON batch_students (student_id);
 
-CREATE OR REPLACE VIEW cycle_summary AS
-SELECT
-  r.cycle_id,
-  r.location,
-  r.schedule,
-  s.time_window,
-  COUNT(*)                                        AS total_registered,
-  COUNT(*) FILTER (WHERE r.status = 'confirmed')  AS total_confirmed,
-  COUNT(*) FILTER (WHERE r.status = 'waitlist')   AS total_waitlist,
-  SUM(s.payment_amount)                           AS total_revenue,
-  -- Break-even example: 12 students × 750 = 9,000 NIS
-  CASE WHEN COUNT(*) >= 12 THEN true ELSE false END AS break_even_reached
-FROM registrations r
-JOIN students s ON s.id = r.student_id
-WHERE s.payment_status = 'paid'
-GROUP BY r.cycle_id, r.location, r.schedule, s.time_window
-ORDER BY s.time_window, r.location;
+-- ─── ROW LEVEL SECURITY ───────────────────────────────────────
+
+ALTER TABLE leads           ENABLE ROW LEVEL SECURITY;
+ALTER TABLE students        ENABLE ROW LEVEL SECURITY;
+ALTER TABLE registrations   ENABLE ROW LEVEL SECURITY;
+ALTER TABLE batches         ENABLE ROW LEVEL SECURITY;
+ALTER TABLE batch_students  ENABLE ROW LEVEL SECURITY;
+
+-- Leads: public insert
+CREATE POLICY "leads_insert_public"
+  ON leads FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "leads_select_admin"
+  ON leads FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+-- Students: insert allowed for anyone (including unauthenticated via anon key)
+CREATE POLICY "students_insert_any"
+  ON students FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "students_select_own_or_admin"
+  ON students FOR SELECT USING (
+    auth.uid() = user_id OR
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "students_update_admin"
+  ON students FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+-- Registrations
+CREATE POLICY "reg_insert_any"
+  ON registrations FOR INSERT WITH CHECK (true);
+
+CREATE POLICY "reg_select_own_or_admin"
+  ON registrations FOR SELECT USING (
+    student_id IN (SELECT id FROM students WHERE user_id = auth.uid()) OR
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "reg_update_admin"
+  ON registrations FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+-- Batches: admin only
+CREATE POLICY "batches_select_admin"
+  ON batches FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "batches_insert_admin"
+  ON batches FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "batches_update_admin"
+  ON batches FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "batches_delete_admin"
+  ON batches FOR DELETE USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+-- Batch students: admin only
+CREATE POLICY "batch_students_select_admin"
+  ON batch_students FOR SELECT USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "batch_students_insert_admin"
+  ON batch_students FOR INSERT WITH CHECK (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "batch_students_update_admin"
+  ON batch_students FOR UPDATE USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+CREATE POLICY "batch_students_delete_admin"
+  ON batch_students FOR DELETE USING (
+    auth.uid() IN (SELECT user_id FROM admin_users)
+  );
+
+-- ─── ALTER EXISTING TABLES ────────────────────────────────────
+-- Run these if the students table was already created without these columns:
+-- ALTER TABLE students ADD COLUMN IF NOT EXISTS birth_year   INTEGER;
+-- ALTER TABLE students ADD COLUMN IF NOT EXISTS id_photo_data TEXT;
