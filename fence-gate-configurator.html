@@ -2980,26 +2980,27 @@ function showMsg(msg, isError=false) {
 window.saveOrder = async function() {
   const btn = document.getElementById('btnSaveQuote');
   btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
-  try {
-    const { data:{ user } } = await supabase.auth.getUser();
-    if (!user) { window.location.href = 'login.html'; return; }
-    const { subtotal, vat, grandTotal } = calcTotal();
-    const code = getOrderCode();
-    const { error } = await supabase.from('orders').insert({
-      user_id:user.id, order_code:code, status:'quote',
-      category:'גדרות ושערים',
-      sub_product:'גדר אלומיניום',
-      width:state.windows[0]?.length||0,
-      depth:state.windows[0]?.height||0,
-      config:JSON.parse(JSON.stringify(state)),
-      subtotal, vat, total_price:grandTotal,
-      shipping_method:'standard', is_read:false, vendor_name:''
-    });
-    if (error) { showMsg('שגיאה בשמירה: ' + error.message, true); return; }
-    showMsg(`ההצעה נשמרה בהצלחה \u2014 ${code}`);
-  } finally {
+  const { data:{ user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+  const { subtotal, vat, grandTotal } = calcTotal();
+  const code = getOrderCode();
+  const { error } = await supabase.from('orders').insert({
+    user_id:user.id, order_code:code, status:'quote',
+    category:'גדרות ושערים',
+    sub_product:'גדר אלומיניום',
+    width:state.windows[0]?.length||0,
+    depth:state.windows[0]?.height||0,
+    config:JSON.parse(JSON.stringify(state)),
+    subtotal, vat, total_price:grandTotal,
+    shipping_method:'standard', is_read:false, vendor_name:''
+  });
+  if (error) {
+    showMsg('שגיאה בשמירה: ' + error.message, true);
     btn.disabled = false; btn.innerHTML = '<i class="ph ph-bookmark"></i> העבר להצעות שמורות';
+    return;
   }
+  showMsg(`ההצעה נשמרה בהצלחה \u2014 ${code}`);
+  btn.innerHTML = '<i class="ph ph-check-circle"></i> נשמר';
 };
 
 // ── PLACE ORDER ──

@@ -561,4 +561,315 @@ async function bConfirmDelete() {
   bBatches = bBatches.filter(x => x.id !== bPendingDeleteId);
   bCloseModal('bm-delete');
   bRenderDashboard();
+}
+
+// ═══════════════════════════════════════════════════════════════
+// PIPELINE MODULE — ניהול תהליך חבר (ימי ראיון ומבחן)
+// ═══════════════════════════════════════════════════════════════
+
+let pDays        = [];   // pipeline_days rows
+let pAssignments = [];   // pipeline_day_assignments with profiles join
+let pApplicants  = [];   // profiles with member_requested_at
+let pAssigningId   = null;
+let pAssigningType = null;
+let pSelectedDayId = null;
+let pOpenDetailId  = null;
+
+const P_STATUS_LABELS = {
+  new_application:    'בקשה חדשה',
+  interview_scheduled:'ממתין לראיון',
+  interview_passed:   'עבר ראיון',
+  interview_failed:   'נכשל בראיון',
+  exam_scheduled:     'ממתין למבחן',
+  exam_passed:        'עבר מבחן',
+  approved:           'מאושר',
+  rejected:           'נדחה'
+};
+
+// ── helpers ──
+function pAvatarColor(id) {
+  const colors = ['#7c3aed','#2563eb','#16a34a','#d97706','#dc2626','#0891b2'];
+  var n = 0; for (var i = 0; i < id.length; i++) n += id.charCodeAt(i);
+  return colors[n % colors.length];
+}
+function pInitials(name) {
+  if (!name) return '?';
+  var parts = name.trim().split(' ');
+  return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+function pCloseModal(id, event) {
+  if (event && event.target !== document.getElementById(id)) return;
+  document.getElementById(id).classList.remove('open');
+}
+
+// ── data load ──
+async function pInit() {
+  const sb = window._supabase;
+  if (!sb) { console.warn('pInit: supabase not ready'); return; }
+  const [daysRes, assignRes, profRes] = await Promise.all([
+    sb.from('pipeline_days').select('*').order('date'),
+    sb.from('pipeline_day_assignments').select('*, profiles(id, full_name, phone, pipeline_status)'),
+    sb.from('profiles')
+      .select('id, full_name, phone, email, member_requested_at, pipeline_status, member_notes')
+      .not('member_requested_at', 'is', null)
+      .order('member_requested_at', { ascending: false })
+  ]);
+  if (daysRes.error) console.error('pInit days error', daysRes.error);
+  if (assignRes.error) console.error('pInit assign error', assignRes.error);
+  if (profRes.error) console.error('pInit profiles error', profRes.error);
+  pDays        = daysRes.data   || [];
+  pAssignments = assignRes.data || [];
+  pApplicants  = (profRes.data  || []).map(function(r) {
+    return Object.assign({}, r, { admin_notes: r.member_notes || [] });
+  });
+  pRender();
+}
+
+// ── render ──
+function pRender() {
+  pRenderStats();
+  pRenderDayGrid('interview');
+  pRenderDayGrid('exam');
+  pRenderPool('interview');
+  pRenderPool('exam');
+}
+
+// ── stats ──
+function pRenderStats() {
+  const newCount      = pApplicants.filter(function(a) { return a.pipeline_status === 'new_application'; }).length;
+  const interviewCount= pApplicants.filter(function(a) { return a.pipeline_status === 'interview_scheduled'; }).length;
+  const examCount     = pApplicants.filter(function(a) { return a.pipeline_status === 'exam_scheduled'; }).length;
+  const approvedCount = pApplicants.filter(function(a) { return a.pipeline_status === 'approved'; }).length;
+  const row = document.getElementById('p-stats-row');
+  if (!row) return;
+  row.innerHTML =
+    '<div class="p-stat-card"><div class="p-stat-icon new"><i class="ph ph-user-plus"></i></div><div><div class="p-stat-val">' + newCount + '</div><div class="p-stat-lbl">בקשות חדשות</div></div></div>' +
+    '<div class="p-stat-card"><div class="p-stat-icon process"><i class="ph ph-microphone"></i></div><div><div class="p-stat-val">' + interviewCount + '</div><div class="p-stat-lbl">בשלב ראיון</div></div></div>' +
+    '<div class="p-stat-card"><div class="p-stat-icon exam"><i class="ph ph-clipboard-text"></i></div><div><div class="p-stat-val">' + examCount + '</div><div class="p-stat-lbl">בשלב מבחן</div></div></div>' +
+    '<div class="p-stat-card"><div class="p-stat-icon approved"><i class="ph ph-check-circle"></i></div><div><div class="p-stat-val">' + approvedCount + '</div><div class="p-stat-lbl">מאושרים</div></div></div>';
+}
+
+// ── day grid ──
+function pDayAssignedCount(dayId) {
+  return pAssignments.filter(function(x) { return x.day_id === dayId; }).length;
+}
+
+function pProgColor(pct) {
+  if (pct >= 90) return '#dc2626';
+  if (pct >= 60) return '#d97706';
+  return '#16a34a';
+}
+
+function pRenderDayGrid(type) {
+  var gridId = type === 'interview' ? 'p-interview-grid' : 'p-exam-grid';
+  var grid = document.getElementById(gridId);
+  if (!grid) return;
+  var days = pDays.filter(function(d) { return d.type === type; });
+  var typeLabel = type === 'interview' ? 'ראיון' : 'מבחן מעשי';
+  var badgeClass = type === 'interview' ? 'interview' : 'exam';
+  var html = days.map(function(d) {
+    var assigned = pDayAssignedCount(d.id);
+    var pct = d.capacity > 0 ? Math.round(assigned / d.capacity * 100) : 0;
+    var dateStr = d.date ? new Date(d.date).toLocaleDateString('he-IL') : '—';
+    var timeStr = d.time ? d.time.slice(0,5) : '';
+    var spots = d.capacity - assigned;
+    return '<div class="p-day-card">' +
+      '<div class="b-card-header">' +
+        '<div><div class="b-card-name">' + dateStr + (timeStr ? '  ' + timeStr : '') + '</div>' +
+          '<div class="b-card-sub">' + (d.location || '') + (d.notes ? ' · ' + d.notes : '') + '</div>' +
+        '</div>' +
+        '<span class="p-day-type-badge ' + badgeClass + '">' + typeLabel + '</span>' +
+      '</div>' +
+      '<div class="b-prog-row"><span class="b-prog-lbl">משובצים</span><span class="b-prog-val">' + assigned + '/' + d.capacity + ' · ' + (spots > 0 ? spots + ' פנויים' : 'מלא') + '</span></div>' +
+      '<div class="b-prog-bar"><div class="b-prog-fill" style="width:' + pct + '%;background:' + pProgColor(pct) + ';"></div></div>' +
+      '<div class="b-card-footer" onclick="event.stopPropagation()">' +
+        '<button class="b-btn b-btn-primary" onclick="pOpenDayDetail(\'' + d.id + '\')"><i class="ph ph-users"></i> ניהול</button>' +
+        '<button class="b-btn b-btn-ghost" onclick="pDeleteDay(\'' + d.id + '\',\'' + type + '\')" style="flex:0;padding:0.45rem 0.6rem;color:#dc2626;" title="מחק יום"><i class="ph ph-trash"></i></button>' +
+      '</div>' +
+      '</div>';
+  }).join('');
+  // "new day" card
+  html += '<div class="b-card-new" onclick="pOpenNewDay(\'' + type + '\')">' +
+    '<i class="ph ph-plus-circle"></i><span>יום ' + typeLabel + ' חדש</span>' +
+    '</div>';
+  grid.innerHTML = html;
+}
+
+// ── pool panels ──
+function pTogglePool(type) {
+  var bodyId = type === 'interview' ? 'p-interview-pool-body' : 'p-exam-pool-body';
+  var body = document.getElementById(bodyId);
+  if (body) body.style.display = body.style.display === 'none' ? 'block' : 'none';
+}
+
+function pRenderPool(type) {
+  var countId = type === 'interview' ? 'p-interview-pool-count' : 'p-exam-pool-count';
+  var bodyId  = type === 'interview' ? 'p-interview-pool-body'  : 'p-exam-pool-body';
+  var statusNeeded = type === 'interview' ? 'new_application' : 'interview_passed';
+  var pool = pApplicants.filter(function(a) { return a.pipeline_status === statusNeeded; });
+  var countEl = document.getElementById(countId);
+  if (countEl) countEl.textContent = pool.length;
+  var body = document.getElementById(bodyId);
+  if (!body) return;
+  if (pool.length === 0) {
+    body.innerHTML = '<div class="p-open-empty"><i class="ph ph-check-circle"></i> ' + (type === 'interview' ? 'כל המועמדים שובצו לראיון' : 'כל המועמדים שובצו למבחן') + '</div>';
+    return;
+  }
+  var rows = pool.map(function(a) {
+    return '<tr>' +
+      '<td><div style="display:flex;align-items:center;gap:8px;">' +
+        '<div class="p-pool-avatar" style="background:' + pAvatarColor(a.id) + ';">' + pInitials(a.full_name) + '</div>' +
+        '<div style="font-size:0.83rem;font-weight:700;">' + (a.full_name||'—') + '</div>' +
+      '</div></td>' +
+      '<td style="font-size:0.78rem;color:#64748b;">' + (a.phone||'—') + '</td>' +
+      '<td><button class="b-pool-btn" onclick="pOpenAssign(\'' + a.id + '\',\'' + type + '\')"><i class="ph ph-arrow-square-left"></i> שבץ</button></td>' +
+    '</tr>';
+  }).join('');
+  body.innerHTML = '<table class="p-pool-table"><thead><tr><th>מועמד</th><th>טלפון</th><th></th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+// ── new day modal ──
+function pOpenNewDay(type) {
+  document.getElementById('pm-day-type').value = type;
+  document.getElementById('pm-new-day-title').innerHTML = '<i class="ph ph-calendar-plus" style="color:#7c3aed;"></i> יום ' + (type === 'interview' ? 'ראיון' : 'מבחן מעשי') + ' חדש';
+  document.getElementById('pm-day-date').value = '';
+  document.getElementById('pm-day-time').value = '';
+  document.getElementById('pm-day-location').value = '';
+  document.getElementById('pm-day-capacity').value = '10';
+  document.getElementById('pm-day-notes').value = '';
+  document.getElementById('pm-new-day').classList.add('open');
+}
+
+async function pCreateDay() {
+  var type     = document.getElementById('pm-day-type').value;
+  var date     = document.getElementById('pm-day-date').value;
+  var time     = document.getElementById('pm-day-time').value || null;
+  var location = document.getElementById('pm-day-location').value.trim() || null;
+  var capacity = parseInt(document.getElementById('pm-day-capacity').value) || 10;
+  var notes    = document.getElementById('pm-day-notes').value.trim() || null;
+  if (!date) { alert('יש לבחור תאריך'); return; }
+  var sb = window._supabase;
+  var res = await sb.from('pipeline_days').insert({ type: type, date: date, time: time, location: location, capacity: capacity, notes: notes }).select().single();
+  if (res.error) { alert('שגיאה: ' + res.error.message); return; }
+  pDays.push(res.data);
+  document.getElementById('pm-new-day').classList.remove('open');
+  pRenderDayGrid(type);
+}
+
+// ── assign modal ──
+function pOpenAssign(profileId, type) {
+  pAssigningId   = profileId;
+  pAssigningType = type;
+  pSelectedDayId = null;
+  var a = pApplicants.find(function(x) { return x.id === profileId; });
+  document.getElementById('pm-assign-title').textContent = 'שיבוץ: ' + (a ? a.full_name : '');
+  var days = pDays.filter(function(d) { return d.type === type && pDayAssignedCount(d.id) < d.capacity; });
+  if (days.length === 0) {
+    document.getElementById('pm-assign-list').innerHTML = '<div style="text-align:center;color:#94a3b8;padding:1.5rem;font-size:0.85rem;">אין ימים פנויים — צרו יום חדש תחילה</div>';
+  } else {
+    document.getElementById('pm-assign-list').innerHTML = days.map(function(d) {
+      var assigned = pDayAssignedCount(d.id);
+      var dateStr = new Date(d.date).toLocaleDateString('he-IL');
+      var timeStr = d.time ? '  ' + d.time.slice(0,5) : '';
+      return '<div class="p-assign-item" id="pai-' + d.id + '" onclick="pSelectDay(\'' + d.id + '\')">' +
+        '<div style="flex:1;"><div class="p-assign-name">' + dateStr + timeStr + '</div>' +
+        '<div class="p-assign-meta">' + (d.location||'') + (d.notes ? ' · ' + d.notes : '') + '</div></div>' +
+        '<div class="p-assign-spots" style="color:#16a34a;">' + (d.capacity - assigned) + ' מקומות</div>' +
+        '</div>';
+    }).join('');
+  }
+  document.getElementById('pm-assign').classList.add('open');
+}
+
+function pSelectDay(id) {
+  pSelectedDayId = id;
+  document.querySelectorAll('.p-assign-item').forEach(function(el) { el.classList.remove('sel'); });
+  var el = document.getElementById('pai-' + id);
+  if (el) el.classList.add('sel');
+}
+
+async function pConfirmAssign() {
+  if (!pSelectedDayId) { alert('יש לבחור יום'); return; }
+  var newStatus = pAssigningType === 'interview' ? 'interview_scheduled' : 'exam_scheduled';
+  var sb = window._supabase;
+  var res = await sb.from('pipeline_day_assignments')
+    .insert({ day_id: pSelectedDayId, profile_id: pAssigningId, result: null })
+    .select().single();
+  if (res.error) { alert('שגיאה בשיבוץ: ' + res.error.message); return; }
+  await sb.from('profiles').update({ pipeline_status: newStatus }).eq('id', pAssigningId);
+  var applicant = pApplicants.find(function(a) { return a.id === pAssigningId; });
+  if (applicant) applicant.pipeline_status = newStatus;
+  pAssignments.push(Object.assign({}, res.data, { profiles: { id: pAssigningId, full_name: applicant && applicant.full_name, phone: applicant && applicant.phone } }));
+  document.getElementById('pm-assign').classList.remove('open');
+  pRender();
+}
+
+// ── day detail modal ──
+function pOpenDayDetail(dayId) {
+  pOpenDetailId = dayId;
+  var day = pDays.find(function(d) { return d.id === dayId; });
+  if (!day) return;
+  var dateStr = new Date(day.date).toLocaleDateString('he-IL');
+  var typeLabel = day.type === 'interview' ? 'ראיון' : 'מבחן מעשי';
+  document.getElementById('pm-detail-title').textContent = typeLabel + ' — ' + dateStr + (day.time ? '  ' + day.time.slice(0,5) : '') + (day.location ? ' · ' + day.location : '');
+  var assigned = pAssignments.filter(function(x) { return x.day_id === dayId; });
+  var html = '';
+  if (assigned.length === 0) {
+    html = '<div style="text-align:center;color:#94a3b8;padding:1.5rem;font-size:0.85rem;">אין משובצים עדיין</div>';
+  } else {
+    html = assigned.map(function(x) {
+      var prof = x.profiles || {};
+      var result = x.result || 'pending';
+      var resultLabel = result === 'passed' ? 'עבר' : result === 'failed' ? 'נכשל' : 'ממתין';
+      var passBtn = result !== 'passed' ? '<button class="p-card-btn green" style="flex:none;padding:0.3rem 0.65rem;font-size:0.73rem;" onclick="pMarkResult(\'' + x.id + '\',\'' + (prof.id||'') + '\',\'passed\',\'' + day.type + '\')"><i class="ph ph-check"></i> עבר</button>' : '';
+      var failBtn = result !== 'failed' ? '<button class="p-card-btn red" style="flex:none;padding:0.3rem 0.65rem;font-size:0.73rem;" onclick="pMarkResult(\'' + x.id + '\',\'' + (prof.id||'') + '\',\'failed\',\'' + day.type + '\')"><i class="ph ph-x"></i> נכשל</button>' : '';
+      return '<div class="p-detail-row">' +
+        '<div style="display:flex;align-items:center;gap:8px;flex:1;">' +
+          '<div class="p-pool-avatar" style="background:' + pAvatarColor(prof.id||'') + ';">' + pInitials(prof.full_name||'') + '</div>' +
+          '<div><div style="font-size:0.85rem;font-weight:700;">' + (prof.full_name||'—') + '</div>' +
+          '<div style="font-size:0.75rem;color:#64748b;">' + (prof.phone||'') + '</div></div>' +
+        '</div>' +
+        '<span class="p-day-result ' + result + '">' + resultLabel + '</span>' +
+        '<div style="display:flex;gap:5px;margin-right:0.5rem;">' + passBtn + failBtn + '</div>' +
+        '</div>';
+    }).join('');
+  }
+  document.getElementById('pm-detail-body').innerHTML = html;
+  document.getElementById('pm-day-detail').classList.add('open');
+}
+
+async function pMarkResult(assignmentId, profileId, result, dayType) {
+  var newStatus = result === 'passed'
+    ? (dayType === 'interview' ? 'interview_passed' : 'exam_passed')
+    : (dayType === 'interview' ? 'interview_failed' : 'rejected');
+  var sb = window._supabase;
+  await sb.from('pipeline_day_assignments').update({ result: result }).eq('id', assignmentId);
+  await sb.from('profiles').update({ pipeline_status: newStatus }).eq('id', profileId);
+  var a = pAssignments.find(function(x) { return x.id === assignmentId; });
+  if (a) a.result = result;
+  var p = pApplicants.find(function(x) { return x.id === profileId; });
+  if (p) p.pipeline_status = newStatus;
+  pRender();
+  if (pOpenDetailId) pOpenDayDetail(pOpenDetailId);
+}
+
+async function pDeleteDay(dayId, type) {
+  if (!confirm('למחוק יום זה? המשובצים יחזרו למאגר.')) return;
+  var sb = window._supabase;
+  // revert assigned applicants' status
+  var prevStatus = type === 'interview' ? 'new_application' : 'interview_passed';
+  var toRevert = pAssignments.filter(function(x) { return x.day_id === dayId && !x.result; });
+  for (var i = 0; i < toRevert.length; i++) {
+    var profId = toRevert[i].profile_id || (toRevert[i].profiles && toRevert[i].profiles.id);
+    if (profId) {
+      await sb.from('profiles').update({ pipeline_status: prevStatus }).eq('id', profId);
+      var p = pApplicants.find(function(x) { return x.id === profId; });
+      if (p) p.pipeline_status = prevStatus;
+    }
+  }
+  var res = await sb.from('pipeline_days').delete().eq('id', dayId);
+  if (res.error) { alert('שגיאה: ' + res.error.message); return; }
+  pDays = pDays.filter(function(d) { return d.id !== dayId; });
+  pAssignments = pAssignments.filter(function(x) { return x.day_id !== dayId; });
+  pRender();
 }

@@ -331,6 +331,109 @@
     .log-label { color:#1a2640;font-weight:600;flex:1; }
     .log-meta { color:#9aa3b5;font-size:0.7rem;white-space:nowrap; }
     .log-empty { color:var(--silver-dark);font-size:0.78rem;font-style:italic;padding:0.3rem 0; }
+
+    /* ══ PIPELINE MODULE ══ */
+    .p-stats-row { display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem; }
+    .p-stat-card { background:#fff;border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;display:flex;align-items:center;gap:0.9rem; }
+    .p-stat-icon { width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.25rem;flex-shrink:0; }
+    .p-stat-icon.new      { background:#ede9fe;color:#7c3aed; }
+    .p-stat-icon.process  { background:#fef3c7;color:#d97706; }
+    .p-stat-icon.exam     { background:#dbeafe;color:#2563eb; }
+    .p-stat-icon.approved { background:#dcfce7;color:#16a34a; }
+    .p-stat-val  { font-size:1.6rem;font-weight:700;line-height:1;color:#1a2640; }
+    .p-stat-lbl  { font-size:0.78rem;color:var(--silver-dark);margin-top:0.15rem; }
+    .p-filter-bar { display:flex;gap:0.5rem;margin-bottom:1.25rem;flex-wrap:wrap; }
+    .p-filter-btn { padding:0.45rem 1rem;border-radius:20px;border:1px solid var(--border);background:#fff;font-size:0.82rem;cursor:pointer;color:#1a2640;transition:all .15s; }
+    .p-filter-btn.active { background:#7c3aed;color:#fff;border-color:#7c3aed; }
+    .p-stage-badge { display:inline-block;padding:0.22rem 0.7rem;border-radius:20px;font-size:0.75rem;font-weight:600; }
+    .p-stage-badge.new_application   { background:#ede9fe;color:#7c3aed; }
+    .p-stage-badge.interview_scheduled{ background:#fef3c7;color:#b45309; }
+    .p-stage-badge.interview_passed  { background:#d1fae5;color:#065f46; }
+    .p-stage-badge.interview_failed  { background:#fee2e2;color:#991b1b; }
+    .p-stage-badge.exam_scheduled    { background:#dbeafe;color:#1d4ed8; }
+    .p-stage-badge.exam_passed       { background:#bbf7d0;color:#14532d; }
+    .p-stage-badge.approved          { background:#dcfce7;color:#16a34a; }
+    .p-stage-badge.rejected          { background:#f3f4f6;color:#6b7280; }
+    .p-list-table { width:100%;border-collapse:collapse; }
+    .p-list-table thead th { font-size:0.75rem;font-weight:600;color:var(--silver-dark);text-align:right;padding:0.5rem 0.75rem;border-bottom:2px solid var(--border);background:#f8f9fb; }
+    .p-list-table tbody tr.p-main-row { cursor:pointer;transition:background .12s; }
+    .p-list-table tbody tr.p-main-row:hover { background:#f5f3ff; }
+    .p-list-table tbody td { font-size:0.85rem;padding:0.65rem 0.75rem;border-bottom:1px solid var(--border);color:#1a2640; }
+    .p-detail-row td { padding:0;background:#f8f9fb; }
+    .p-detail-inner { padding:1.25rem 1.5rem;display:none; }
+    .p-detail-row.open .p-detail-inner { display:block; }
+    .p-info-grid { display:grid;grid-template-columns:repeat(3,1fr);gap:0.75rem 1.5rem;margin-bottom:1.2rem; }
+    .p-field label { display:block;font-size:0.72rem;font-weight:600;color:var(--silver-dark);margin-bottom:0.2rem; }
+    .p-field input, .p-field textarea, .p-field select { width:100%;padding:0.45rem 0.6rem;border:1px solid var(--border);border-radius:7px;font-size:0.83rem;font-family:inherit;background:#fff; }
+    .p-field textarea { resize:vertical;min-height:60px; }
+    .p-section-title { font-size:0.8rem;font-weight:700;color:#7c3aed;text-transform:uppercase;letter-spacing:.04em;margin:1rem 0 0.6rem;border-bottom:1px solid #ede9fe;padding-bottom:0.3rem; }
+    .p-actions { display:flex;gap:0.5rem;flex-wrap:wrap;margin-top:1rem; }
+    .p-btn { padding:0.42rem 1rem;border-radius:8px;border:none;cursor:pointer;font-size:0.82rem;font-weight:600;transition:opacity .15s; }
+    .p-btn:hover { opacity:.85; }
+    .p-btn.save   { background:#7c3aed;color:#fff; }
+    .p-btn.advance{ background:#2563eb;color:#fff; }
+    .p-btn.pass   { background:#16a34a;color:#fff; }
+    .p-btn.fail   { background:#dc2626;color:#fff; }
+    .p-btn.ghost  { background:#f3f4f6;color:#374151; }
+    .p-empty { text-align:center;color:var(--silver-dark);padding:2.5rem;font-size:0.9rem; }
+    /* ── pipeline card grid ── */
+    .p-dash-layout { display:flex;flex-direction:column;gap:1.5rem; }
+    .p-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1rem; }
+    .p-card { background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1.1rem;position:relative;transition:all 0.2s; }
+    .p-card:hover { border-color:#7c3aed;box-shadow:0 4px 16px rgba(124,58,237,0.1); }
+    .p-card.needs-action { border-color:#f59e0b; }
+    .p-card-header { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:0.5rem; }
+    .p-card-name { font-size:0.9rem;font-weight:800;color:#0f172a;line-height:1.3; }
+    .p-card-contact { font-size:0.77rem;color:#64748b;margin-top:2px; }
+    .p-card-dates { display:flex;flex-direction:column;gap:4px;margin:0.6rem 0;padding:0.55rem 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border); }
+    .p-date-row { display:flex;align-items:center;gap:6px;font-size:0.78rem; }
+    .p-date-row.set { color:#0f172a; }
+    .p-date-row.missing { color:#f59e0b;font-weight:600; }
+    .p-card-footer { display:flex;gap:6px;margin-top:0.7rem; }
+    .p-card-btn { flex:1;padding:0.42rem;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.75rem;font-weight:700;cursor:pointer;border:none;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:4px; }
+    .p-card-btn.primary { background:#7c3aed;color:#fff; }
+    .p-card-btn.primary:hover { background:#6d28d9; }
+    .p-card-btn.green { background:#16a34a;color:#fff; }
+    .p-card-btn.red { background:#dc2626;color:#fff; }
+    .p-card-btn.ghost { background:#f1f5f9;color:#475569;border:1px solid var(--border); }
+    .p-card-btn.ghost:hover { background:#e2e8f0; }
+    .p-schedule-panel { display:none;margin-top:0.75rem;padding:0.85rem;background:#f8f5ff;border-radius:10px;border:1px solid #ede9fe; }
+    .p-schedule-panel.open { display:block; }
+    /* ── open items panel ── */
+    .p-open-panel { background:#fffbeb;border:1.5px solid #fcd34d;border-radius:12px;overflow:hidden; }
+    .p-open-header { display:flex;align-items:center;justify-content:space-between;padding:0.75rem 1rem;cursor:pointer;user-select:none; }
+    .p-open-title { font-size:0.88rem;font-weight:700;color:#92400e;display:flex;align-items:center;gap:0.5rem; }
+    .p-open-count { background:#f59e0b;color:#fff;font-size:0.75rem;font-weight:800;border-radius:20px;padding:2px 10px;min-width:24px;text-align:center; }
+    .p-open-body { padding:0 1rem 1rem; }
+    .p-open-row { display:flex;align-items:center;justify-content:space-between;padding:0.5rem 0.65rem;background:#fff;border-radius:8px;border:1px solid #fde68a;margin-bottom:0.4rem; }
+    .p-open-row-info { font-size:0.83rem; }
+    .p-open-row-name { font-weight:700;color:#0f172a; }
+    .p-open-row-reason { font-size:0.75rem;color:#b45309; }
+    .p-open-empty { color:#92400e;font-size:0.82rem;padding:0.4rem 0;display:flex;align-items:center;gap:0.4rem; }
+    /* ── pipeline day cards ── */
+    .p-day-card { background:#fff;border:1.5px solid var(--border);border-radius:14px;padding:1.1rem;transition:all 0.2s; }
+    .p-day-card:hover { border-color:#7c3aed;box-shadow:0 4px 16px rgba(124,58,237,0.1); }
+    .p-day-type-badge { font-size:0.65rem;font-weight:700;border-radius:6px;padding:2px 8px;flex-shrink:0; }
+    .p-day-type-badge.interview { background:#fef3c7;color:#b45309; }
+    .p-day-type-badge.exam      { background:#dbeafe;color:#1d4ed8; }
+    .p-day-result { display:inline-block;padding:2px 8px;border-radius:6px;font-size:0.75rem;font-weight:700; }
+    .p-day-result.passed { background:#d1fae5;color:#065f46; }
+    .p-day-result.failed { background:#fee2e2;color:#991b1b; }
+    .p-day-result.pending{ background:#f3f4f6;color:#6b7280; }
+    /* pool table inside pipeline (mirrors b-pool-table) */
+    .p-pool-table { width:100%;border-collapse:collapse;font-size:0.83rem; }
+    .p-pool-table th { font-size:0.7rem;font-weight:700;color:var(--silver-dark);text-align:right;padding:0.4rem 0.6rem;border-bottom:1px solid var(--border);background:#f8f9fb; }
+    .p-pool-table td { padding:0.5rem 0.6rem;border-bottom:1px solid var(--border);color:#0f172a; }
+    .p-pool-table tbody tr:last-child td { border-bottom:none; }
+    .p-pool-avatar { width:32px;height:32px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font-size:0.72rem;font-weight:800;flex-shrink:0; }
+    .p-assign-item { display:flex;align-items:center;gap:0.75rem;padding:0.75rem 1rem;border:1.5px solid var(--border);border-radius:10px;cursor:pointer;margin-bottom:0.5rem;transition:all .15s; }
+    .p-assign-item:hover { border-color:#7c3aed;background:#f8f5ff; }
+    .p-assign-item.sel { border-color:#7c3aed;background:#f8f5ff; }
+    .p-assign-name { font-size:0.85rem;font-weight:800;color:#0f172a; }
+    .p-assign-meta { font-size:0.72rem;color:#64748b;margin-top:2px; }
+    .p-assign-spots { font-size:0.78rem;font-weight:700;margin-right:auto;flex-shrink:0; }
+    .p-detail-row { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.6rem;border-bottom:1px solid var(--border); }
+    .p-detail-row:last-child { border-bottom:none; }
   </style>
 </head>
 <body>
@@ -355,6 +458,7 @@
         <li><a href="#" id="nav-members" class="active" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
         <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;"><i class="ph ph-books"></i> רישומי קורסים</a></li>
         <li><a href="#" id="nav-batches" onclick="switchView('batches');return false;"><i class="ph ph-squares-four"></i> ניהול מחזורים</a></li>
+        <li><a href="#" id="nav-pipeline" onclick="switchView('pipeline');return false;"><i class="ph ph-git-branch"></i> ניהול תהליך חבר</a></li>
       </ul>
     </aside>
 
@@ -413,6 +517,49 @@
         </div>
 
       </div><!-- /view-batches -->
+
+
+      <!-- ═══ VIEW: PIPELINE ═══ -->
+      <div id="view-pipeline" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+          <div>
+            <div class="page-title" style="margin-bottom:0.2rem;"><i class="ph ph-git-branch" style="color:#7c3aed;margin-left:0.4rem;"></i>ניהול תהליך חבר</div>
+            <div class="page-subtitle" style="margin-bottom:0;">מועמדים שהגישו בקשה — ראיון, מבחן מעשי ואישור</div>
+          </div>
+          <button class="btn-batch-ghost" onclick="pInit().catch(console.error)"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+        </div>
+        <div class="p-stats-row" id="p-stats-row"></div>
+
+        <!-- ── ימי ראיון ── -->
+        <div class="b-section-header" style="margin-bottom:0.75rem;">
+          <div><div class="b-section-title">ימי ראיון</div><div class="b-section-sub">צרו יום ושבצו מועמדים לראיון</div></div>
+          <button class="btn-batch-primary" onclick="pOpenNewDay('interview')"><i class="ph ph-plus"></i> יום ראיון חדש</button>
+        </div>
+        <div class="p-grid" id="p-interview-grid" style="margin-bottom:1.25rem;"></div>
+
+        <div class="p-open-panel" style="margin-bottom:2rem;">
+          <div class="p-open-header" onclick="pTogglePool('interview')">
+            <span class="p-open-title"><i class="ph ph-hourglass-medium"></i> ממתינים לראיון</span>
+            <span class="p-open-count" id="p-interview-pool-count">0</span>
+          </div>
+          <div id="p-interview-pool-body" style="display:none;padding:0 1rem 1rem;"></div>
+        </div>
+
+        <!-- ── ימי מבחן ── -->
+        <div class="b-section-header" style="margin-bottom:0.75rem;">
+          <div><div class="b-section-title">ימי מבחן מעשי</div><div class="b-section-sub">מועמדים שעברו ראיון — שבצו למבחן</div></div>
+          <button class="btn-batch-primary" onclick="pOpenNewDay('exam')"><i class="ph ph-plus"></i> יום מבחן חדש</button>
+        </div>
+        <div class="p-grid" id="p-exam-grid" style="margin-bottom:1.25rem;"></div>
+
+        <div class="p-open-panel">
+          <div class="p-open-header" onclick="pTogglePool('exam')">
+            <span class="p-open-title"><i class="ph ph-clipboard-text"></i> ממתינים למבחן</span>
+            <span class="p-open-count" id="p-exam-pool-count">0</span>
+          </div>
+          <div id="p-exam-pool-body" style="display:none;padding:0 1rem 1rem;"></div>
+        </div>
+      </div><!-- /view-pipeline -->
 
 
       <!-- ═══ VIEW: MEMBERS ═══ -->
@@ -874,11 +1021,14 @@ window.switchView = function(view) {
   document.getElementById('view-members').style.display       = view === 'members'       ? '' : 'none';
   document.getElementById('view-registrations').style.display = view === 'registrations' ? '' : 'none';
   document.getElementById('view-batches').style.display       = view === 'batches'       ? '' : 'none';
+  document.getElementById('view-pipeline').style.display      = view === 'pipeline'      ? '' : 'none';
   document.getElementById('nav-members').classList.toggle('active',       view === 'members');
   document.getElementById('nav-registrations').classList.toggle('active', view === 'registrations');
   document.getElementById('nav-batches').classList.toggle('active',       view === 'batches');
+  document.getElementById('nav-pipeline').classList.toggle('active',      view === 'pipeline');
   if (view === 'registrations' && allStudents.length === 0) loadStudents();
   if (view === 'batches') bInit().catch(console.error);
+  if (view === 'pipeline') pInit().catch(console.error);
 };
 
 // ═══════════════════════════════════════════════
@@ -1222,6 +1372,43 @@ init();
   </div>
 </div>
 
+
+<!-- ══ PIPELINE MODALS ══ -->
+<div class="b-overlay" id="pm-new-day" onclick="pCloseModal('pm-new-day',event)">
+  <div class="b-modal-box">
+    <button class="b-modal-close" onclick="pCloseModal('pm-new-day')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" id="pm-new-day-title"><i class="ph ph-calendar-plus" style="color:#7c3aed;"></i> יום חדש</div>
+    <input type="hidden" id="pm-day-type">
+    <div class="b-form-row">
+      <div class="b-form-field"><label>תאריך</label><input type="date" id="pm-day-date"></div>
+      <div class="b-form-field"><label>שעה</label><input type="time" id="pm-day-time"></div>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field"><label>מיקום</label><input type="text" id="pm-day-location" placeholder="לדוג׳: באר שבע"></div>
+      <div class="b-form-field"><label>קיבולת</label><input type="number" id="pm-day-capacity" value="10" min="1" max="50"></div>
+    </div>
+    <div class="b-form-field"><label>הערות</label><input type="text" id="pm-day-notes" placeholder="הערות אופציונליות..."></div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="pCreateDay()"><i class="ph ph-check"></i> צור יום</button>
+  </div>
+</div>
+
+<div class="b-overlay" id="pm-assign" onclick="pCloseModal('pm-assign',event)">
+  <div class="b-modal-box">
+    <button class="b-modal-close" onclick="pCloseModal('pm-assign')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" id="pm-assign-title">שיבוץ מועמד ליום</div>
+    <p style="font-size:0.8rem;color:#64748b;margin-bottom:1rem;">בחרו יום מהרשימה:</p>
+    <div id="pm-assign-list"></div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.75rem;" onclick="pConfirmAssign()"><i class="ph ph-check"></i> אשר שיבוץ</button>
+  </div>
+</div>
+
+<div class="b-overlay" id="pm-day-detail" onclick="pCloseModal('pm-day-detail',event)">
+  <div class="b-modal-box" style="max-width:580px;">
+    <button class="b-modal-close" onclick="pCloseModal('pm-day-detail')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" id="pm-detail-title">פרטי יום</div>
+    <div id="pm-detail-body"></div>
+  </div>
+</div>
 
 <script src="admin-college.js"></script>
 </body>

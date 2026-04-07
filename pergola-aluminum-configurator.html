@@ -3037,14 +3037,15 @@ async function saveOrder() {
     console.error('[SAVE-QUOTE] Insert FAILED. Code:', error.code, '| Message:', error.message, '| Details:', error.details, '| Hint:', error.hint);
     msg.innerHTML = `<i class="ph ph-warning"></i> שגיאה בשמירה (${error.code}): ${error.message}`;
     msg.className = 'save-order-msg error';
+    btn.disabled = false;
+    btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור הצעת מחיר';
   } else {
     console.log('[SAVE-QUOTE] Insert OK. Row inserted:', insertData);
     msg.innerHTML = `<i class="ph ph-check-circle"></i> ההצעה נשמרה! קוד: <strong>${code}</strong> — ניתן לצפות בה <a href="dashboard.html" style="color:var(--green);text-decoration:underline;">באזור האישי</a>.`;
     msg.className = 'save-order-msg success';
+    btn.innerHTML = '<i class="ph ph-check-circle"></i> נשמר';
   }
   msg.style.display = 'flex';
-  btn.disabled = false;
-  btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור הצעת מחיר';
 }
 
 /* ══════════════════════════════════════
