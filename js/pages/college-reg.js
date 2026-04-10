@@ -1,7 +1,8 @@
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 const supabase = createClient(
   'https://exfdjelwyrspfspcevvm.supabase.co',
-  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED',
+  { auth: { persistSession: false } }
 );
 
 const courseData = {
@@ -60,7 +61,7 @@ const s = {
   screen: { physical: null, permit: null, tools: null, age: null },
   track: null,
   loc: null, sch: null, win: null,
-  name: '', birthYear: null, address: '', phone: '', email: '',
+  name: '', birthYear: null, address: '', phone: '', email: '', password: '',
   profession: '', workplace: '', goal: null,
   hSigned: false, rSigned: false,
   hData: null, rData: null
@@ -133,27 +134,96 @@ function err(step, msg) {
 }
 
 async function save() {
-  const { data: { user } } = await supabase.auth.getUser();
+  const ANON = 'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED';
+  const AUTH_URL = 'https://exfdjelwyrspfspcevvm.supabase.co/auth/v1';
+  const REST_URL = 'https://exfdjelwyrspfspcevvm.supabase.co/rest/v1';
+
+  // 1. יצירת חשבון Auth — קודם, כדי לקבל access_token
+  let accessToken = null;
+  let userId = null;
+
+  const signupRes = await fetch(AUTH_URL + '/signup', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': ANON },
+    body: JSON.stringify({ email: s.email, password: s.password })
+  });
+  const signupJson = await signupRes.json();
+
+  if (signupJson?.access_token) {
+    // משתמש חדש נרשם בהצלחה
+    accessToken = signupJson.access_token;
+    userId = signupJson.user?.id || null;
+  } else if (signupJson?.code === 'user_already_exists' || signupJson?.msg?.includes('already registered') || signupRes.status === 422) {
+    // המשתמש כבר קיים — נכנס עם הסיסמה הקיימת
+    const loginRes = await fetch(AUTH_URL + '/token?grant_type=password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON },
+      body: JSON.stringify({ email: s.email, password: s.password })
+    });
+    const loginJson = await loginRes.json();
+    if (loginJson?.access_token) {
+      accessToken = loginJson.access_token;
+      userId = loginJson.user?.id || null;
+    }
+  }
+
+  if (!accessToken) throw new Error('לא ניתן ליצור חשבון משתמש. אנא פנה לתמיכה.');
+
+  // 2. שמירת רשומת הסטודנט עם access_token (authenticated role)
+  const studentId = crypto.randomUUID();
+  const hdrs = {
+    'Content-Type': 'application/json',
+    'apikey': ANON,
+    'Authorization': 'Bearer ' + accessToken,
+    'Prefer': 'return=minimal'
+  };
+
   const ref = s.payRef || ('PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase());
-  const { data: st, error: e1 } = await supabase.from('students').insert([{
-    user_id: user?.id || null,
-    full_name: s.name, phone: s.phone, email: s.email,
-    experience_level: 'new', course_track: s.track,
-    location: s.loc, schedule: s.sch, opening_window: s.win || null,
-    screening_physical: s.screen?.physical || null,
-    screening_permit:   s.screen?.permit   || null,
-    screening_tools:    s.screen?.tools    || null,
-    screening_age:      s.screen?.age      || null,
-    health_declaration_signed: s.hSigned, regulations_signed: s.rSigned,
-    health_signature_data: s.hData, regulations_signature_data: s.rData,
-    payment_status: 'registration_paid', payment_amount: 399, payment_ref: ref, status: 'awaiting_coordination'
-  }]).select().single();
-  if (e1) throw e1;
-  const { error: e2 } = await supabase.from('registrations').insert([{
-    student_id: st.id, course_track: s.track,
-    location: s.loc, schedule: s.sch, registration_fee: 399, full_price: 8500, status: 'awaiting_coordination'
-  }]);
-  if (e2) throw e2;
+  const r1 = await fetch(REST_URL + '/students', {
+    method: 'POST', headers: hdrs,
+    body: JSON.stringify({
+      id: studentId,
+      user_id: userId,
+      full_name: s.name, phone: s.phone, email: s.email,
+      experience_level: 'new', course_track: s.track,
+      location: s.loc, schedule: s.sch, opening_window: s.win || null,
+      screening_physical: s.screen?.physical || null,
+      screening_permit:   s.screen?.permit   || null,
+      screening_tools:    s.screen?.tools    || null,
+      screening_age:      s.screen?.age      || null,
+      health_declaration_signed: s.hSigned, regulations_signed: s.rSigned,
+      health_signature_data: s.hData, regulations_signature_data: s.rData,
+      payment_status: 'registration_paid', payment_amount: 399, payment_ref: ref, status: 'awaiting_coordination'
+    })
+  });
+  if (!r1.ok) { const t = await r1.text(); throw new Error('students insert ' + r1.status + ': ' + t); }
+
+  // 3. רישום ל-registrations
+  const r2 = await fetch(REST_URL + '/registrations', {
+    method: 'POST', headers: hdrs,
+    body: JSON.stringify({
+      student_id: studentId, course_track: s.track,
+      location: s.loc, schedule: s.sch, registration_fee: 399, full_price: 8500, status: 'awaiting_coordination'
+    })
+  });
+  if (!r2.ok) { const t = await r2.text(); throw new Error('registrations insert ' + r2.status + ': ' + t); }
+
+  // 4. יצירת רשומת profiles — is_approved: false עד לאישור האדמין
+  try {
+    await fetch(REST_URL + '/profiles', {
+      method: 'POST',
+      headers: { ...hdrs, 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ id: userId, is_approved: false, is_blocked: false })
+    });
+  } catch (_) {}
+
+  // 5. ניקוי session — המשתמש לא אמור להיות מחובר עד לאישור האדמין
+  try {
+    await fetch(AUTH_URL + '/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON, 'Authorization': 'Bearer ' + accessToken }
+    });
+  } catch (_) {}
 }
 
 window.reg = {
@@ -274,10 +344,15 @@ window.reg = {
       s.birthYear = document.getElementById('f-birthyear').value;
       s.phone     = document.getElementById('f-phone').value.trim();
       s.email     = document.getElementById('f-email').value.trim();
+      const pw    = document.getElementById('f-password').value;
+      const pw2   = document.getElementById('f-password-confirm').value;
       if (!s.name)      { err(1, 'יש להזין שם מלא.'); return; }
       if (!s.birthYear) { err(1, 'יש לבחור שנת לידה.'); return; }
       if (!s.phone)     { err(1, 'יש להזין מספר טלפון.'); return; }
       if (!s.email)     { err(1, 'יש להזין אימייל.'); return; }
+      if (!pw || pw.length < 6) { err(1, 'יש לבחור סיסמה של לפחות 6 תווים.'); return; }
+      if (pw !== pw2)   { err(1, 'הסיסמאות אינן תואמות.'); return; }
+      s.password = pw;
       err(1, '');
     }
 
@@ -391,15 +466,17 @@ window.reg = {
     const btn = document.getElementById('pay-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="ph ph-spinner" style="animation:spin 0.8s linear infinite;display:inline-block;"></i> מעבד תשלום...';
-    // Generate confirmation reference
     s.payRef = 'PAY-' + Date.now() + '-' + Math.random().toString(36).substr(2,6).toUpperCase();
-    // Simulate payment gateway delay
     await new Promise(r => setTimeout(r, 1800));
-    // Show success immediately — save to DB in background
-    document.getElementById('pay-ref-num').textContent = s.payRef;
-    goStep('success');
-    // Save to Supabase in background (non-blocking)
-    save().catch(e => console.error('DB save failed:', e.message, e));
+    try {
+      await save();
+      document.getElementById('pay-ref-num').textContent = s.payRef;
+      goStep('success');
+    } catch (e) {
+      btn.disabled = false;
+      btn.innerHTML = '<i class="ph ph-credit-card"></i> שלם ₪399 — דמי רישום';
+      err(5, 'שגיאה בשמירת הנתונים: ' + e.message + '. אנא נסו שנית.');
+    }
   }
 };
 

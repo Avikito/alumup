@@ -56,14 +56,15 @@ async function bInit() {
 
   // 5. Build in-memory shape
   bBatches = (batches || []).map(b => ({
-    id:       b.id,
-    name:     b.name,
-    track:    b.track,
-    loc:      b.location,
-    sch:      b.schedule,
-    date:     b.open_date,
-    cap:      b.capacity,
-    sessions: b.sessions,
+    id:         b.id,
+    name:       b.name,
+    track:      b.track,
+    loc:        b.location,
+    sch:        b.schedule,
+    date:       b.open_date,
+    cap:        b.capacity,
+    sessions:   b.sessions,
+    instructor: b.instructor || '',
     students: (bsRows || [])
       .filter(bs => bs.batch_id === b.id)
       .map(bs => ({
@@ -118,28 +119,51 @@ function bRenderStats() {
 }
 
 // ── Batches Grid ──
+const B_MIN_TO_OPEN = 5;
 function bRenderGrid() {
   const tagMap = {pergola_al:'b-tag-blue',pergola_electric:'b-tag-blue',glass_systems:'b-tag-blue',bioclimatic:'b-tag-green',weld_al:'b-tag-orange',weld_steel:'b-tag-orange'};
   let html = bBatches.map(b => {
-    const pct = bFillPct(b);
-    const spots = b.cap - b.students.length;
+    const pct    = bFillPct(b);
+    const count  = b.students.length;
+    const remaining = b.cap - count;
     const dateStr = b.date ? new Date(b.date).toLocaleDateString('he-IL') : '—';
+    const instructor = (b.instructor || '').replace(/"/g,'&quot;');
+
+    let statusHtml;
+    if (count >= b.cap) {
+      statusHtml = `<div class="b-status-badge b-status-full"><i class="ph ph-seal-check"></i> המחזור מלא</div>`;
+    } else if (count >= B_MIN_TO_OPEN) {
+      statusHtml = `<div class="b-status-badge b-status-can-open"><i class="ph ph-check-circle"></i> ניתן לפתיחת מחזור · נותרו ${remaining} מקומות פנויים</div>`;
+    } else {
+      const needed = B_MIN_TO_OPEN - count;
+      statusHtml = `<div class="b-status-badge b-status-cannot-open"><i class="ph ph-warning-circle"></i> לא ניתן לפתיחה — נדרשים עוד ${needed} נרשמים</div>`;
+    }
+
     return `<div class="b-card" onclick="bOpenDetail('${b.id}')">
       <div class="b-card-header">
-        <div><div class="b-card-name">${b.name}</div><div class="b-card-sub">${B_TRACK_LABELS[b.track]||b.track}</div></div>
-        <span class="b-tag ${tagMap[b.track]||'b-tag-blue'}">${B_SCH[b.sch]}</span>
+        <span class="b-tag ${tagMap[b.track]||'b-tag-blue'}" style="font-size:0.72rem;">${B_TRACK_LABELS[b.track]||b.track}</span>
+        <button onclick="event.stopPropagation();bDeleteBatch('${b.id}')" style="background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;font-size:1.05rem;flex-shrink:0;margin-right:auto;" title="מחק מחזור"><i class="ph ph-trash"></i></button>
+      </div>
+      <div class="b-card-name">${b.name}</div>
+      <div class="b-card-location" onclick="event.stopPropagation()">
+        <i class="ph ph-map-pin"></i>
+        <span>${B_LOC[b.loc]||b.loc} - <i class="ph ph-${b.sch==='morning'?'sun':'moon'}" style="font-size:0.85em;"></i> ${B_SCH[b.sch]||b.sch}</span>
+      </div>
+      <div class="b-card-instructor" onclick="event.stopPropagation()">
+        <span class="b-card-instructor-label"><i class="ph ph-chalkboard-teacher"></i> מדריך:</span>
+        <input class="b-card-instructor-input" type="text" placeholder="הזן שם מדריך..." value="${instructor}"
+          onchange="bSaveInstructor('${b.id}',this.value)" onclick="event.stopPropagation()">
       </div>
       <div class="b-meta">
-        <span class="b-meta-item"><i class="ph ph-map-pin"></i> ${B_LOC[b.loc]}</span>
         <span class="b-meta-item"><i class="ph ph-calendar"></i> ${dateStr}</span>
         <span class="b-meta-item"><i class="ph ph-clock"></i> ${b.sessions} מפגשים</span>
       </div>
-      <div class="b-prog-row"><span class="b-prog-lbl">תפוסה</span><span class="b-prog-val">${b.students.length}/${b.cap} · ${spots>0?spots+' פנויים':'מלא'}</span></div>
+      <div class="b-prog-row"><span class="b-prog-lbl">תפוסה</span><span class="b-prog-val">${count}/${b.cap} תלמידים</span></div>
       <div class="b-prog-bar"><div class="b-prog-fill" style="width:${pct}%;background:${bProgColor(pct)};"></div></div>
+      ${statusHtml}
       <div class="b-card-footer" onclick="event.stopPropagation()">
         <button class="b-btn b-btn-primary" onclick="bOpenDetail('${b.id}')"><i class="ph ph-clipboard-text"></i> ניהול נוכחות</button>
-        <button class="b-btn b-btn-ghost" onclick="bOpenDetail('${b.id}')"><i class="ph ph-currency-circle-dollar"></i> כספים</button>
-        <button class="b-btn b-btn-ghost" onclick="bDeleteBatch('${b.id}')" style="flex:0;padding:0.45rem 0.6rem;color:#dc2626;" title="מחק מחזור"><i class="ph ph-trash"></i></button>
+        <button class="b-btn b-btn-export" onclick="bExportBatch('${b.id}')"><i class="ph ph-export"></i> ייצוא</button>
       </div>
     </div>`;
   }).join('');
@@ -375,11 +399,14 @@ function bRenderStudentsTab(b) {
       return `<div class="b-att-box ${cls}" onclick="bToggleAttend('${b.id}','${st.id}',${i})">${lbl}</div>`;
     }).join('');
     return `<tr>
-      <td><div class="b-s-cell"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div><div class="b-s-name">${st.name}</div><div class="b-s-phone">${st.phone}</div></div></div></td>
+      <td><div class="b-s-cell" style="cursor:pointer;" onclick="bOpenStudentProfile('${st.id}')"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div><div class="b-s-name" style="color:#2563eb;text-decoration:underline;text-underline-offset:2px;">${st.name}</div><div class="b-s-phone">${st.phone}</div></div></div></td>
       <td><span class="b-pill ${st.paid?'b-pill-paid':'b-pill-pending'}">${st.paid?'<i class="ph ph-check"></i> שולמה':'<i class="ph ph-warning"></i> חסרה'}</span></td>
       <td><div class="b-attend-cell">${boxes}</div></td>
       <td style="font-weight:700;color:${pct>=85?'#16a34a':pct>=60?'#2563eb':'#dc2626'};">${pct}%</td>
-      <td><button onclick="bToggleBalance('${b.id}','${st.id}')" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:#64748b;font-family:'Heebo',sans-serif;"><i class="ph ph-pencil"></i> עדכן</button></td>
+      <td style="display:flex;gap:6px;align-items:center;">
+        <button onclick="bToggleBalance('${b.id}','${st.id}')" style="background:none;border:none;cursor:pointer;font-size:0.75rem;color:#64748b;font-family:'Heebo',sans-serif;"><i class="ph ph-pencil"></i> עדכן</button>
+        <button onclick="bRemoveStudent('${b.id}','${st.id}')" style="background:#fef2f2;border:none;border-radius:6px;padding:3px 9px;font-size:0.72rem;font-weight:700;cursor:pointer;color:#dc2626;font-family:'Heebo',sans-serif;display:flex;align-items:center;gap:3px;"><i class="ph ph-user-minus"></i> הסר</button>
+      </td>
     </tr>`;
   }).join('');
   const hdrs = sessions.map(i=>`<th style="min-width:26px;text-align:center;">${i+1}</th>`).join('');
@@ -388,6 +415,90 @@ function bRenderStudentsTab(b) {
       <thead><tr><th>תלמיד</th><th>יתרה</th><th colspan="${b.sessions}">נוכחות — מפגשים ${hdrs}</th><th>%</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
+}
+
+// ── Student Profile (Client File) ──
+async function bOpenStudentProfile(studentId) {
+  const modal = document.getElementById('bm-student-profile');
+  const body  = document.getElementById('bm-student-profile-body');
+  body.innerHTML = '<div style="text-align:center;padding:2.5rem;color:#94a3b8;"><i class="ph ph-spinner" style="font-size:2rem;display:inline-block;animation:spin 0.8s linear infinite;"></i></div>';
+  modal.classList.add('open');
+
+  const { data: s, error } = await window._supabase
+    .from('students')
+    .select('*')
+    .eq('id', studentId)
+    .single();
+
+  if (error || !s) {
+    body.innerHTML = `<div style="padding:2rem;color:#dc2626;text-align:center;"><i class="ph ph-warning"></i> שגיאה בטעינת הנתונים</div>`;
+    return;
+  }
+
+  const B_TRACK = { pergola_al:'פרגולה אלומיניום', pergola_electric:'פרגולה חשמלית + ZIP', glass_systems:'זכוכית ואקורדיון', bioclimatic:'BIOCLIMATIC', weld_al:'ריתוך אלומיניום', weld_steel:'ריתוך קונסטרוקציה' };
+  const B_L = { beer_sheva:'באר שבע', tel_aviv:'תל אביב' };
+  const B_S = { morning:'בוקר (08:30–16:30)', evening:'ערב (16:00–20:30)' };
+  const B_WIN = { may_jun:'מאי–יוני', jun_jul:'יוני–יולי', aug_sep:'אוגוסט–ספטמבר' };
+
+  const sc = (v) => v === 'yes' ? '<span style="color:#16a34a;font-weight:700;"><i class="ph ph-check-circle"></i> כן</span>' : v === 'no' ? '<span style="color:#dc2626;font-weight:700;"><i class="ph ph-x-circle"></i> לא</span>' : '—';
+  const yn = (v) => v ? '<span style="color:#16a34a;font-weight:700;"><i class="ph ph-check-circle"></i> חתום</span>' : '<span style="color:#dc2626;font-weight:700;"><i class="ph ph-x-circle"></i> לא חתום</span>';
+
+  const regDate = s.created_at ? new Date(s.created_at).toLocaleDateString('he-IL', {day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+
+  const initials = (s.full_name||'').split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+  const avatarColor = bAvatarColor(s.id);
+
+  body.innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:1.25rem;">
+      <div style="width:52px;height:52px;border-radius:50%;background:${avatarColor};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:1.15rem;color:#fff;flex-shrink:0;">${initials}</div>
+      <div>
+        <div style="font-size:1.1rem;font-weight:800;color:#0f172a;">${s.full_name||'—'}</div>
+        <div style="font-size:0.82rem;color:#64748b;">${s.phone||''} ${s.email ? '· '+s.email : ''}</div>
+        <div style="font-size:0.72rem;color:#94a3b8;margin-top:2px;"><i class="ph ph-calendar"></i> נרשם: ${regDate}</div>
+      </div>
+      <div style="margin-right:auto;text-align:left;">
+        <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:5px 12px;font-size:0.75rem;font-weight:700;color:#16a34a;">
+          <i class="ph ph-receipt"></i> ₪${s.payment_amount||399}
+        </div>
+        <div style="font-size:0.65rem;color:#94a3b8;margin-top:3px;text-align:center;">${s.payment_ref||'—'}</div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;">
+      <div style="background:#f8fafc;border-radius:10px;padding:10px 14px;">
+        <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;margin-bottom:6px;">מסלול</div>
+        <div style="font-size:0.88rem;font-weight:700;color:#0f172a;">${B_TRACK[s.course_track]||s.course_track||'—'}</div>
+      </div>
+      <div style="background:#f8fafc;border-radius:10px;padding:10px 14px;">
+        <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#7c3aed;margin-bottom:6px;">מיקום ולוח זמנים</div>
+        <div style="font-size:0.88rem;font-weight:700;color:#0f172a;">${B_L[s.location]||s.location||'—'} · ${B_S[s.schedule]||s.schedule||'—'}</div>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc;border-radius:10px;padding:10px 14px;margin-bottom:1rem;">
+      <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#2563eb;margin-bottom:8px;">שאלות סינון</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:0.8rem;color:#334155;">
+        <div><i class="ph ph-person-simple-run" style="color:#64748b;"></i> כושר פיזי: ${sc(s.screening_physical)}</div>
+        <div><i class="ph ph-certificate" style="color:#64748b;"></i> רישיון: ${sc(s.screening_permit)}</div>
+        <div><i class="ph ph-wrench" style="color:#64748b;"></i> כלי עבודה: ${sc(s.screening_tools)}</div>
+        <div><i class="ph ph-user" style="color:#64748b;"></i> גיל 18+: ${sc(s.screening_age)}</div>
+      </div>
+    </div>
+
+    <div style="background:#f8fafc;border-radius:10px;padding:10px 14px;margin-bottom:${(s.health_signature_data||s.regulations_signature_data)?'1rem':'0'};">
+      <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#0891b2;margin-bottom:8px;">הצהרות חתומות</div>
+      <div style="display:flex;gap:1.5rem;font-size:0.82rem;color:#334155;">
+        <div><i class="ph ph-heart" style="color:#64748b;"></i> הצהרת בריאות: ${yn(s.health_declaration_signed)}</div>
+        <div><i class="ph ph-scroll" style="color:#64748b;"></i> תקנון לימודים: ${yn(s.regulations_signed)}</div>
+      </div>
+    </div>
+
+    ${(s.health_signature_data || s.regulations_signature_data) ? `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      ${s.health_signature_data ? `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:#94a3b8;margin-bottom:4px;">חתימה — הצהרת בריאות</div><img src="${s.health_signature_data}" style="max-height:60px;max-width:100%;"></div>` : ''}
+      ${s.regulations_signature_data ? `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:#94a3b8;margin-bottom:4px;">חתימה — תקנון</div><img src="${s.regulations_signature_data}" style="max-height:60px;max-width:100%;"></div>` : ''}
+    </div>` : ''}
+  `;
 }
 
 function bRenderFinanceTab(b) {
@@ -491,6 +602,8 @@ async function bConfirmAssign() {
     .eq('id', w.id);
   b.students.push({id:w.id,_bsId:bsData?.id,name:w.name,phone:w.phone,paid:false,attend:newAttend});
   bPool=bPool.filter(x=>x.id!==bAssigningId);
+  // עדכון מסך נרשמים חדשים אם פתוח
+  if (typeof window.onStudentAssigned === 'function') window.onStudentAssigned(w.id);
   bCloseModal('bm-assign');
   bRenderDashboard();
   if(bCurrentBatchId===bSelectedBatch) bRenderDetail();
@@ -535,6 +648,82 @@ function bSwitchTab(t) {
 function bCloseModal(id,e) {
   if(e&&e.target!==document.getElementById(id)) return;
   document.getElementById(id).classList.remove('open');
+}
+
+// ── Instructor ──
+async function bSaveInstructor(bId, value) {
+  const b = bBatches.find(x => x.id === bId);
+  if (b) b.instructor = value;
+  await window._supabase.from('batches').update({ instructor: value }).eq('id', bId);
+}
+
+// ── Export CSV ──
+async function bExportBatch(bId) {
+  const b = bBatches.find(x => x.id === bId);
+  if (!b || !b.students.length) { alert('אין תלמידים לייצוא'); return; }
+  const ids = b.students.map(s => s.id);
+  const { data: students } = await window._supabase
+    .from('students')
+    .select('full_name, phone, email, course_track, location, schedule, payment_ref, payment_amount, created_at')
+    .in('id', ids);
+  if (!students) return;
+  const rows = [
+    ['שם מלא','טלפון','אימייל','מסלול','מיקום','לוח זמנים','אסמכתא','דמי רישום','תאריך רישום'],
+    ...students.map(s => [
+      s.full_name||'', s.phone||'', s.email||'',
+      B_TRACK_LABELS[s.course_track]||s.course_track||'',
+      B_LOC[s.location]||s.location||'',
+      B_SCH[s.schedule]||s.schedule||'',
+      s.payment_ref||'',
+      s.payment_amount ? `₪${s.payment_amount}` : '',
+      s.created_at ? new Date(s.created_at).toLocaleDateString('he-IL') : '',
+    ])
+  ];
+  const csv = '\uFEFF' + rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = `${b.name}_נרשמים.csv`; a.click();
+  URL.revokeObjectURL(url);
+}
+
+// ── Remove Student from Batch ──
+let bPendingRemoveBatchId   = null;
+let bPendingRemoveStudentId = null;
+
+function bRemoveStudent(bId, sId) {
+  bPendingRemoveBatchId   = bId;
+  bPendingRemoveStudentId = sId;
+  const b  = bBatches.find(x => x.id === bId);
+  const st = b?.students.find(x => x.id === sId);
+  document.getElementById('b-remove-student-name').textContent = st ? `תלמיד: ${st.name}` : '';
+  document.getElementById('b-remove-student-pass').value = '';
+  document.getElementById('b-remove-student-err').style.display = 'none';
+  document.getElementById('bm-remove-student').classList.add('open');
+  setTimeout(() => document.getElementById('b-remove-student-pass').focus(), 100);
+}
+
+async function bConfirmRemoveStudent() {
+  const val = document.getElementById('b-remove-student-pass').value;
+  if (val !== B_DELETE_PASSWORD) {
+    const errEl = document.getElementById('b-remove-student-err');
+    errEl.textContent = 'סיסמה שגויה'; errEl.style.display = 'block'; return;
+  }
+  const b  = bBatches.find(x => x.id === bPendingRemoveBatchId);
+  const st = b?.students.find(x => x.id === bPendingRemoveStudentId);
+  if (!b || !st) return;
+  const { error: e1 } = await window._supabase
+    .from('batch_students').delete()
+    .eq('batch_id', bPendingRemoveBatchId).eq('student_id', bPendingRemoveStudentId);
+  if (e1) { alert('שגיאה בהסרה: ' + e1.message); return; }
+  await window._supabase.from('students')
+    .update({ status: 'awaiting_assignment' }).eq('id', bPendingRemoveStudentId);
+  b.students = b.students.filter(x => x.id !== bPendingRemoveStudentId);
+  bPool.push({ id: st.id, name: st.name, phone: st.phone,
+    track: b.track, loc: b.loc, sch: b.sch, payRef: '' });
+  bCloseModal('bm-remove-student');
+  bRenderDashboard();
+  if (bCurrentBatchId === bPendingRemoveBatchId) bRenderDetail();
 }
 
 const B_DELETE_PASSWORD = 'alum2025';

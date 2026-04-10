@@ -113,9 +113,11 @@
                     errorMessage.textContent = 'שגיאה: ' + error.message;
                     errorMessage.style.display = 'block';
                 } else {
-                    const [{ data: profile }, { data: adminRow }] = await Promise.all([
+                    const APPROVED_STATUSES = ['awaiting_assignment','assigned_pending_payment','enrolled','active','graduated'];
+                    const [{ data: profile }, { data: adminRow }, { data: studentRow }] = await Promise.all([
                         supabase.from('profiles').select('is_approved, is_blocked').eq('id', data.user.id).maybeSingle(),
-                        supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).maybeSingle()
+                        supabase.from('admin_users').select('user_id').eq('user_id', data.user.id).maybeSingle(),
+                        supabase.from('students').select('status').eq('user_id', data.user.id).maybeSingle()
                     ]);
                     if (profile?.is_blocked && !adminRow) {
                         await supabase.auth.signOut();
@@ -123,7 +125,8 @@
                         errorMessage.style.display = 'block';
                         return;
                     }
-                    window.location.href = (profile?.is_approved || adminRow) ? 'dashboard.html' : 'pending-approval.html';
+                    const studentApproved = APPROVED_STATUSES.includes(studentRow?.status);
+                    window.location.href = (profile?.is_approved || adminRow || studentApproved) ? 'dashboard.html' : 'pending-approval.html';
                 }
             } catch (err) {
                 console.error('Unexpected error during Supabase login:', err);
