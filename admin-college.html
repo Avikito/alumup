@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <style>
     .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
 
@@ -452,6 +453,93 @@
     .p-assign-spots { font-size:0.78rem;font-weight:700;margin-right:auto;flex-shrink:0; }
     .p-detail-row { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.6rem;border-bottom:1px solid var(--border); }
     .p-detail-row:last-child { border-bottom:none; }
+
+    /* ── OVERVIEW KPI ── */
+    .ov-kpi-row { display:grid;grid-template-columns:repeat(5,1fr);gap:0.85rem;margin-bottom:1.25rem; }
+    .ov-kpi { background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:0.9rem 1.1rem;display:flex;align-items:center;gap:0.85rem; }
+    .ov-kpi-icon { width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem; }
+    .ov-kpi-val { font-size:1.5rem;font-weight:800;color:#0f172a;line-height:1; }
+    .ov-kpi-lbl { font-size:0.68rem;font-weight:600;color:#64748b;margin-top:3px; }
+    /* ── OVERVIEW CRM LAYOUT ── */
+    .ov-crm-layout { display:flex;gap:1rem;height:calc(100vh - 290px);min-height:420px; }
+    .ov-crm-table-wrap { flex:1;min-width:0;display:flex;flex-direction:column;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden; }
+    .ov-crm-toolbar { padding:0.65rem 1rem;border-bottom:1px solid #f1f5f9;display:flex;gap:0.5rem;align-items:center;flex-shrink:0;background:#fafbfc; }
+    .ov-crm-search { flex:1;padding:0.42rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.82rem;font-family:inherit;outline:none;transition:border-color 0.15s;background:#fff; }
+    .ov-crm-search:focus { border-color:#2563eb; }
+    .ov-crm-filter { padding:0.42rem 0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.8rem;font-family:inherit;background:#fff;cursor:pointer;color:#334155; }
+    .ov-crm-scroll { overflow-y:auto;flex:1; }
+    .ov-crm-table { width:100%;border-collapse:collapse; }
+    .ov-crm-table thead th { position:sticky;top:0;z-index:2;background:#f8fafc;padding:0.6rem 1rem;font-size:0.67rem;font-weight:700;color:#64748b;text-align:right;border-bottom:1.5px solid #e8edf4;white-space:nowrap;letter-spacing:0.4px;text-transform:uppercase; }
+    .ov-crm-table tbody tr { border-bottom:1px solid #f8fafc;cursor:pointer;transition:background 0.1s; }
+    .ov-crm-table tbody tr:hover { background:#f8fafc; }
+    .ov-crm-table tbody tr.ov-active-row { background:#eff6ff!important; }
+    .ov-crm-table td { padding:0.72rem 1rem;font-size:0.82rem;color:#334155;vertical-align:middle; }
+    /* ── FLYOUT ── */
+    .ov-flyout { width:0;flex-shrink:0;overflow:hidden;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;transition:width 0.22s ease;display:flex;flex-direction:column; }
+    .ov-flyout.open { width:520px; }
+    .ov-flyout-inner { width:520px;display:flex;flex-direction:column;height:100%;overflow:hidden; }
+    /* ── FLYOUT SECTIONS ── */
+    .ov-fl-section { background:#f8fafc;border:1px solid #e8edf4;border-radius:10px;padding:0.85rem 1rem; }
+    .ov-fl-sec-title { display:flex;align-items:center;gap:0.4rem;font-size:0.72rem;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.7rem; }
+    .ov-fl-sec-title i { font-size:0.9rem;color:#2563eb; }
+    .ov-fl-grid { display:grid;grid-template-columns:1fr 1fr;gap:0.45rem; }
+    .ov-fl-item { background:#fff;border-radius:7px;padding:0.4rem 0.6rem;border:1px solid #e8edf4; }
+    .ov-fl-lbl { font-size:0.6rem;color:#94a3b8;font-weight:600;margin-bottom:1px; }
+    .ov-fl-val { font-size:0.78rem;font-weight:700;color:#334155; }
+    .ov-fl-yes { color:#15803d!important; }
+    .ov-fl-no  { color:#b91c1c!important; }
+    .ov-flyout-head { padding:1rem 1.25rem;border-bottom:1px solid #f1f5f9;flex-shrink:0; }
+    .ov-flyout-body { flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:1.1rem;padding:1.1rem 1.25rem; }
+    .ov-sec-lbl { font-size:0.65rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:0.55rem; }
+    .ov-detail-grid { display:grid;grid-template-columns:1fr 1fr;gap:0.45rem; }
+    .ov-dc { background:#f8fafc;border-radius:8px;padding:0.45rem 0.65rem; }
+    .ov-dc-lbl { font-size:0.6rem;color:#94a3b8;font-weight:600;margin-bottom:1px; }
+    .ov-dc-val { font-size:0.78rem;font-weight:700;color:#334155;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+    /* ── TIMELINE ── */
+    .ov-tl-entry { display:flex;gap:0.6rem;padding-bottom:0.9rem; }
+    .ov-tl-dot-col { display:flex;flex-direction:column;align-items:center;flex-shrink:0; }
+    .ov-tl-circle { width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+    .ov-tl-line { width:2px;flex:1;background:#e2e8f0;margin:3px 0; }
+    .ov-tl-text { font-size:0.77rem;font-weight:700;color:#0f172a;line-height:1.35; }
+    .ov-tl-meta { font-size:0.65rem;color:#94a3b8;margin-top:2px; }
+    /* ── AVATAR ── */
+    .ov-avatar { border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex-shrink:0; }
+    /* ── TABS ── */
+    .ov-tabs { display:flex;gap:0;border-bottom:2px solid #e2e8f0;margin-bottom:0;overflow-x:auto;flex-shrink:0; }
+    .ov-tab { display:flex;align-items:center;gap:0.4rem;padding:0.7rem 1.1rem;font-size:0.82rem;font-weight:600;color:#64748b;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;white-space:nowrap;transition:all 0.15s;user-select:none; }
+    .ov-tab:hover { color:#1d4ed8;background:#f8faff; }
+    .ov-tab.active { color:#1d4ed8;border-bottom-color:#1d4ed8;font-weight:800; }
+    .ov-tab-count { background:#f1f5f9;color:#94a3b8;border-radius:20px;padding:1px 8px;font-size:0.67rem;font-weight:700; }
+    .ov-tab.active .ov-tab-count { background:#dbeafe;color:#1d4ed8; }
+
+    /* ══ CALENDAR VIEW ══ */
+    .cal-layout { display:flex;gap:1rem;height:calc(100vh - 195px);min-height:500px; }
+    .cal-pool-panel { width:210px;flex-shrink:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;display:flex;flex-direction:column;overflow:hidden; }
+    .cal-pool-header { padding:0.7rem 1rem;border-bottom:1px solid #f1f5f9;font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.6px;color:#64748b;background:#fafbfc;flex-shrink:0; }
+    .cal-pool-scroll { flex:1;overflow-y:auto;padding:0.5rem; }
+    .cal-pool-section { font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;padding:0.4rem 0.2rem 0.3rem;margin-top:0.2rem; }
+    .cal-pool-item { display:flex;align-items:center;gap:0.45rem;padding:0.45rem 0.55rem;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;margin-bottom:0.3rem;cursor:grab;font-size:0.76rem;font-weight:600;color:#334155;transition:border-color 0.15s,background 0.15s;user-select:none; }
+    .cal-pool-item:hover { border-color:#2563eb;background:#eff6ff; }
+    .cal-pool-item:active { cursor:grabbing;opacity:0.7; }
+    .cal-pool-avatar { width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.58rem;font-weight:800;color:#fff;flex-shrink:0; }
+    .cal-pool-name { white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px; }
+    .cal-main { flex:1;min-width:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden;padding:0.85rem; }
+    /* FullCalendar overrides — Heebo font + RTL tweaks */
+    .cal-main .fc { font-family:'Heebo',sans-serif; }
+    .cal-main .fc-toolbar-title { font-size:1rem;font-weight:800;color:#0f172a; }
+    .cal-main .fc-button { font-family:'Heebo',sans-serif;font-size:0.76rem;font-weight:700;padding:0.28rem 0.65rem; }
+    .cal-main .fc-button-primary { background:#2563eb;border-color:#2563eb; }
+    .cal-main .fc-button-primary:hover { background:#1d4ed8;border-color:#1d4ed8; }
+    .cal-main .fc-button-primary:not(:disabled).fc-button-active { background:#1e40af!important;border-color:#1e40af!important; }
+    .cal-main .fc-event { border-radius:6px;font-size:0.71rem;font-weight:700;border:none;padding:2px 5px;cursor:pointer; }
+    .cal-main .fc-col-header-cell-cushion { font-size:0.75rem;font-weight:700;color:#334155;text-decoration:none; }
+    .cal-main .fc-daygrid-day-number { font-size:0.76rem;color:#334155;text-decoration:none; }
+    .cal-main .fc-timegrid-slot-label-cushion { font-size:0.68rem;color:#94a3b8; }
+    .cal-main .fc-daygrid-event { margin:1px 2px; }
+    .cal-main .cal-holiday-event { font-size:0.65rem !important; font-weight:600 !important; opacity:0.88; border-radius:4px !important; padding:1px 4px !important; }
+    .cal-legend { display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem; }
+    .cal-legend-item { display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;font-weight:600;color:#334155; }
+    .cal-legend-dot { width:11px;height:11px;border-radius:3px;flex-shrink:0; }
   </style>
 </head>
 <body>
@@ -471,6 +559,10 @@
 
   <div class="admin-wrapper">
     <aside class="admin-sidebar">
+      <ul class="admin-nav">
+        <li><a href="#" id="nav-overview" class="active" onclick="switchView('overview');return false;"><i class="ph ph-squares-four"></i> מבט על</a></li>
+      </ul>
+      <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
       <div class="sidebar-label">קורסי מכללה</div>
       <ul class="admin-nav">
         <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;"><i class="ph ph-books"></i> נרשמים חדשים</a></li>
@@ -479,12 +571,77 @@
       <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
       <div class="sidebar-label">חברי אלום</div>
       <ul class="admin-nav">
-        <li><a href="#" id="nav-members" class="active" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
+        <li><a href="#" id="nav-members" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
         <li><a href="#" id="nav-pipeline" onclick="switchView('pipeline');return false;"><i class="ph ph-git-branch"></i> ניהול תהליך חבר</a></li>
+      </ul>
+      <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
+      <ul class="admin-nav">
+        <li><a href="#" id="nav-calendar" onclick="switchView('calendar');return false;"><i class="ph ph-calendar-dots"></i> לוח זמנים</a></li>
       </ul>
     </aside>
 
     <main class="admin-content">
+
+      <!-- ═══ VIEW: OVERVIEW ═══ -->
+      <div id="view-overview">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;">
+          <div>
+            <div class="page-title" style="margin-bottom:0.2rem;"><i class="ph ph-squares-four" style="color:#2563eb;margin-left:0.4rem;"></i>מבט על — מכללת ALUM-IL</div>
+            <div class="page-subtitle" style="margin-bottom:0;">כלל הסטודנטים והבוגרים המשויכים למכללה</div>
+          </div>
+          <button class="btn-batch-ghost" onclick="ovInit()"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+        </div>
+
+        <!-- KPI Row -->
+        <div class="ov-kpi-row">
+          <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f1f5f9;color:#334155;"><i class="ph ph-users"></i></div><div><div class="ov-kpi-val" id="ov-k-total">—</div><div class="ov-kpi-lbl">סה"כ רשומים</div></div></div>
+          <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#fffbeb;color:#b45309;"><i class="ph ph-user-plus"></i></div><div><div class="ov-kpi-val" id="ov-k-new">—</div><div class="ov-kpi-lbl">נרשמים חדשים</div></div></div>
+          <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f5f3ff;color:#6d28d9;"><i class="ph ph-hourglass-medium"></i></div><div><div class="ov-kpi-val" id="ov-k-wait">—</div><div class="ov-kpi-lbl">ממתינים לשיבוץ</div></div></div>
+          <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f0fdf4;color:#15803d;"><i class="ph ph-student"></i></div><div><div class="ov-kpi-val" id="ov-k-train">—</div><div class="ov-kpi-lbl">בהכשרה</div></div></div>
+          <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f0f9ff;color:#0369a1;"><i class="ph ph-seal-check"></i></div><div><div class="ov-kpi-val" id="ov-k-grad">—</div><div class="ov-kpi-lbl">בוגרים מוסמכים</div></div></div>
+        </div>
+
+        <!-- CRM Layout: table + flyout -->
+        <div class="ov-crm-layout">
+          <div class="ov-crm-table-wrap">
+            <!-- Tabs -->
+            <div class="ov-tabs" id="ov-tabs">
+              <div class="ov-tab active" id="ovtab-all"       onclick="ovSetTab('all')">       הכל          <span class="ov-tab-count" id="ovc-all">—</span></div>
+              <div class="ov-tab"        id="ovtab-new"       onclick="ovSetTab('new')">       נרשמים חדשים <span class="ov-tab-count" id="ovc-new">—</span></div>
+              <div class="ov-tab"        id="ovtab-waiting"   onclick="ovSetTab('waiting')">   משובצים וממתינים <span class="ov-tab-count" id="ovc-waiting">—</span></div>
+              <div class="ov-tab"        id="ovtab-training"  onclick="ovSetTab('training')">  בתהליך הכשרה <span class="ov-tab-count" id="ovc-training">—</span></div>
+              <div class="ov-tab"        id="ovtab-members"   onclick="ovSetTab('members')">   מועמדי חבר אלום <span class="ov-tab-count" id="ovc-members">—</span></div>
+              <div class="ov-tab"        id="ovtab-graduated" onclick="ovSetTab('graduated')"> סיום הכשרה   <span class="ov-tab-count" id="ovc-graduated">—</span></div>
+            </div>
+            <!-- Toolbar -->
+            <div class="ov-crm-toolbar">
+              <input class="ov-crm-search" id="ov-search" type="text" placeholder="חיפוש לפי שם, טלפון, אימייל..." oninput="ovFilterTable()">
+            </div>
+            <div class="ov-crm-scroll">
+              <table class="ov-crm-table">
+                <thead>
+                  <tr>
+                    <th>שם</th>
+                    <th>טלפון</th>
+                    <th>קורס</th>
+                    <th>מיקום</th>
+                    <th>סטטוס</th>
+                    <th>תאריך רישום</th>
+                  </tr>
+                </thead>
+                <tbody id="ov-crm-tbody">
+                  <tr><td colspan="6" style="text-align:center;padding:3rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Flyout -->
+          <div class="ov-flyout" id="ov-flyout">
+            <div class="ov-flyout-inner" id="ov-flyout-inner"></div>
+          </div>
+        </div>
+      </div>
 
       <!-- ═══ VIEW: BATCHES ═══ -->
       <div id="view-batches" style="display:none;">
@@ -585,42 +742,55 @@
 
 
       <!-- ═══ VIEW: MEMBERS ═══ -->
-      <div id="view-members">
-        <div class="page-title"><i class="ph ph-graduation-cap" style="color:#6d28d9;margin-left:0.4rem;"></i>ממשק מנהלת המכללה</div>
-        <div class="page-subtitle">מועמדים בתהליך הכשרה — ניהול קידום שלבים והערות</div>
+      <div id="view-members" style="display:none;">
+        <iframe id="members-iframe"
+          src="admin-members.html?embed=1"
+          style="width:100%;height:calc(100vh - 64px);border:none;display:block;"
+          onload="this.style.opacity=1"
+        ></iframe>
+      </div>
 
-        <div class="toolbar">
-          <input class="search-input" type="text" placeholder="חיפוש לפי שם עסק או שם מלא..." id="searchInput" oninput="filterRows()">
-          <span class="count-label" id="countLabel"></span>
+      <!-- ═══ VIEW: CALENDAR ═══ -->
+      <div id="view-calendar" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;">
+          <div>
+            <div class="page-title" style="margin-bottom:0.15rem;"><i class="ph ph-calendar-dots" style="color:#2563eb;margin-left:0.4rem;"></i>לוח זמנים</div>
+            <div class="page-subtitle" style="margin-bottom:0;">ראיונות, מבחנים ופתיחות מחזורים · גרור מועמד לתאריך לשיבוץ מהיר</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.6rem;flex-shrink:0;">
+            <button id="cal-holidays-btn" onclick="calToggleHolidays()" style="display:flex;align-items:center;gap:0.4rem;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:9px;padding:0.5rem 0.9rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">
+              <i class="ph ph-star"></i> חגים ומועדים
+            </button>
+            <button onclick="calQuickAdd()" style="display:flex;align-items:center;gap:0.4rem;background:#2563eb;color:#fff;border:none;border-radius:9px;padding:0.55rem 1.1rem;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;">
+              <i class="ph ph-plus"></i> אירוע חדש
+            </button>
+          </div>
         </div>
-
-        <div class="tab-bar" id="member-tab-bar">
-          <button class="tab-btn active" onclick="setTab('all')"                          id="tab-all"><span class="tab-count" id="mtc-all">0</span><span class="tab-label">הכל</span></button>
-          <button class="tab-btn"        onclick="setTab('new_application')"              id="tab-new_application"><span class="tab-count" id="mtc-new_application">0</span><span class="tab-label">בקשות חדשות</span></button>
-          <button class="tab-btn"        onclick="setTab('under_review')"                 id="tab-under_review"><span class="tab-count" id="mtc-under_review">0</span><span class="tab-label">בתהליך בדיקה</span></button>
-          <button class="tab-btn"        onclick="setTab('experienced_pending_cert')"     id="tab-experienced_pending_cert"><span class="tab-count" id="mtc-experienced_pending_cert">0</span><span class="tab-label">ממתין להסמכה</span></button>
-          <button class="tab-btn"        onclick="setTab('in_professional_training')"     id="tab-in_professional_training"><span class="tab-count" id="mtc-in_professional_training">0</span><span class="tab-label">הכשרה מקצועית</span></button>
-          <button class="tab-btn"        onclick="setTab('completing_docs')"              id="tab-completing_docs"><span class="tab-count" id="mtc-completing_docs">0</span><span class="tab-label">השלמת מסמכים</span></button>
+        <div class="cal-legend">
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#2563eb;"></span>ראיון</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#7c3aed;"></span>מבחן מעשי</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#15803d;"></span>פתיחת מחזור</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#d97706;"></span>מחזור פתוח רשמית</div>
+          <div id="cal-legend-holidays" style="display:none;contents:'';">
+            <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#1e40af;"></span>יהודי</div>
+            <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#dc2626;"></span>לאומי/זיכרון</div>
+            <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#059669;"></span>מוסלמי</div>
+            <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#7c3aed;opacity:0.6;"></span>נוצרי</div>
+            <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#d97706;opacity:0.7;"></span>דרוזי</div>
+          </div>
         </div>
-
-        <div class="users-table-wrap" id="tableWrap">
-          <table class="users-table" id="usersTable">
-            <thead>
-              <tr>
-                <th>תאריך בקשה</th>
-                <th>שם עסק</th>
-                <th>טלפון</th>
-                <th>אימייל</th>
-                <th>סטטוס</th>
-                <th>פעולות</th>
-              </tr>
-            </thead>
-            <tbody id="usersBody">
-              <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--silver-dark);">
-                <i class="ph ph-circle-notch spin"></i> טוען...
-              </td></tr>
-            </tbody>
-          </table>
+        <div class="cal-layout">
+          <!-- Draggable pool sidebar -->
+          <div class="cal-pool-panel">
+            <div class="cal-pool-header"><i class="ph ph-hand-grabbing" style="margin-left:0.3rem;"></i>גרור לשיבוץ</div>
+            <div class="cal-pool-scroll" id="cal-pool-items">
+              <div style="font-size:0.75rem;color:#94a3b8;text-align:center;padding:2rem 0.5rem;">טוען...</div>
+            </div>
+          </div>
+          <!-- Calendar -->
+          <div class="cal-main">
+            <div id="cal-el" style="height:100%;"></div>
+          </div>
         </div>
       </div>
 
@@ -640,8 +810,6 @@
           <button class="tab-btn"        onclick="setStudentTab('awaiting_coordination')" id="stab-awaiting_coordination"><span class="tab-count" id="tc-awaiting_coordination">0</span><span class="tab-label">ממתין לתיאום</span></button>
           <button class="tab-btn"        onclick="setStudentTab('interview_scheduled')"   id="stab-interview_scheduled"><span class="tab-count" id="tc-interview_scheduled">0</span><span class="tab-label">ראיון נקבע</span></button>
           <button class="tab-btn"        onclick="setStudentTab('rejected_interview')"    id="stab-rejected_interview"><span class="tab-count" id="tc-rejected_interview">0</span><span class="tab-label">נפסל בראיון</span></button>
-          <button class="tab-btn"        onclick="setStudentTab('awaiting_assignment')"   id="stab-awaiting_assignment"><span class="tab-count" id="tc-awaiting_assignment">0</span><span class="tab-label">ממתין לשיבוץ</span></button>
-          <button class="tab-btn"        onclick="setStudentTab('assigned_pending_payment')" id="stab-assigned_pending_payment"><span class="tab-count" id="tc-assigned_pending_payment">0</span><span class="tab-label">שובץ – ממתין לתשלום</span></button>
         </div>
 
         <div class="users-table-wrap">
@@ -756,7 +924,13 @@ async function init() {
   const user = await requireCollegeAdmin();
   if (!user) return;
   currentUserEmail = user.email || 'college';
+  // Hide all views except overview (the default landing page)
+  ['members','registrations','batches','pipeline'].forEach(v => {
+    const el = document.getElementById('view-' + v);
+    if (el) el.style.display = 'none';
+  });
   await loadUsers();
+  ovInit();
 }
 
 async function loadUsers() {
@@ -1055,17 +1229,17 @@ window.filterRows = function() {
 // VIEW SWITCHING
 // ═══════════════════════════════════════════════
 window.switchView = function(view) {
-  document.getElementById('view-members').style.display       = view === 'members'       ? '' : 'none';
-  document.getElementById('view-registrations').style.display = view === 'registrations' ? '' : 'none';
-  document.getElementById('view-batches').style.display       = view === 'batches'       ? '' : 'none';
-  document.getElementById('view-pipeline').style.display      = view === 'pipeline'      ? '' : 'none';
-  document.getElementById('nav-members').classList.toggle('active',       view === 'members');
-  document.getElementById('nav-registrations').classList.toggle('active', view === 'registrations');
-  document.getElementById('nav-batches').classList.toggle('active',       view === 'batches');
-  document.getElementById('nav-pipeline').classList.toggle('active',      view === 'pipeline');
+  ['overview','members','registrations','batches','pipeline','calendar'].forEach(v => {
+    const el = document.getElementById('view-' + v);
+    if (el) el.style.display = v === view ? '' : 'none';
+    const nav = document.getElementById('nav-' + v);
+    if (nav) nav.classList.toggle('active', v === view);
+  });
+  if (view === 'overview')      ovInit();
   if (view === 'registrations' && allStudents.length === 0) loadStudents();
-  if (view === 'batches') bInit().catch(console.error);
-  if (view === 'pipeline') pInit().catch(console.error);
+  if (view === 'batches')       bInit().catch(console.error);
+  if (view === 'pipeline')      pInit().catch(console.error);
+  if (view === 'calendar')      calInit().catch(console.error);
 };
 
 // ═══════════════════════════════════════════════
@@ -1105,7 +1279,7 @@ function getFilteredStudents() {
   return allStudents.filter(s => (s.status || '') === currentStudTab);
 }
 function updateTabCounts() {
-  const tabs = ['all','awaiting_coordination','interview_scheduled','rejected_interview','awaiting_assignment','assigned_pending_payment'];
+  const tabs = ['all','awaiting_coordination','interview_scheduled','rejected_interview'];
   tabs.forEach(t => {
     const el = document.getElementById('tc-' + t);
     if (!el) return;
@@ -1143,9 +1317,11 @@ window.filterStudents = function() {
 
 window.loadStudents = async function() {
   document.getElementById('studentsBody').innerHTML = `<tr><td colspan="8" style="text-align:center;padding:2rem;color:var(--silver-dark);"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>`;
+  const PRE_ASSIGNMENT = ['awaiting_coordination','interview_scheduled','rejected_interview'];
   const { data, error } = await supabase
     .from('students')
     .select('*')
+    .in('status', PRE_ASSIGNMENT)
     .order('created_at', { ascending: false });
 
   if (error) {
@@ -1315,27 +1491,50 @@ window.toggleStudentDetails = function(id) {
   if (row) row.classList.toggle('open');
 };
 
+// ── Shared activity log helper ──────────────────────────────
+window.appendActivityLog = async function(studentId, entry) {
+  try {
+    const { data } = await supabase.from('students').select('activity_log').eq('id', studentId).single();
+    const log = Array.isArray(data?.activity_log) ? data.activity_log : [];
+    const newLog = [...log, { ...entry, at: new Date().toISOString(), by: entry.by || currentUserEmail }];
+    await supabase.from('students').update({ activity_log: newLog }).eq('id', studentId);
+    return newLog;
+  } catch(_) { return null; }
+};
+
 window.updateStudentStatus = async function(id, newStatus) {
+  const s = allStudents.find(x => x.id === id);
+  const oldStatus = s?.status;
   const { error } = await supabase.from('students').update({ status: newStatus }).eq('id', id);
   if (error) { alert('שגיאה בעדכון סטטוס: ' + error.message); return; }
-  const s = allStudents.find(x => x.id === id);
   if (s) s.status = newStatus;
+  // Log the status change
+  window.appendActivityLog(id, {
+    type: 'status_change',
+    from: oldStatus,
+    to: newStatus,
+    label: `${STUDENT_STATUS_LABELS[oldStatus]||oldStatus||'—'} → ${STUDENT_STATUS_LABELS[newStatus]||newStatus}`,
+  });
   updateTabCounts();
 
-  // When moving to awaiting_assignment → refresh pool from Supabase + approve user
+  // When moving to awaiting_assignment → remove from registrations list + refresh batch pool + approve user
   if (newStatus === 'awaiting_assignment' && s) {
+    allStudents = allStudents.filter(x => x.id !== id);
+    updateTabCounts();
+    renderStudents(getFilteredStudents());
+
     if (typeof bInit === 'function') bInit().catch(console.error);
     if (s.user_id) {
       supabase.from('profiles').upsert({ id: s.user_id, is_approved: true }, { onConflict: 'id' }).then(({ error: pe }) => {
         if (pe) console.warn('profiles upsert failed:', pe.message);
       });
     }
-    // show visual confirmation
     const flash = document.createElement('div');
     flash.style.cssText = 'position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#16a34a;color:#fff;padding:0.6rem 1.4rem;border-radius:10px;font-size:0.85rem;font-weight:700;z-index:999;box-shadow:0 4px 16px rgba(0,0,0,0.18);';
-    flash.textContent = `${s.full_name} נוסף/ה למאגר הממתינים לשיבוץ ✓`;
+    flash.textContent = `${s.full_name} עבר/ה למאגר הממתינים לשיבוץ ✓`;
     document.body.appendChild(flash);
     setTimeout(() => flash.remove(), 3000);
+    return;
   }
 
   // Update badge in row without full re-render
@@ -1363,6 +1562,7 @@ window.saveStudentNote = async function(id) {
   if (error) { alert('שגיאה בשמירת הערה: ' + error.message); return; }
   if (s) s.admin_notes = notes;
   input.value = '';
+  window.appendActivityLog(id, { type: 'note', label: `הערה נוספה: "${text}"` });
 
   const list = document.getElementById(`snotes-list-${id}`);
   if (list) {
@@ -1375,6 +1575,1113 @@ window.saveStudentNote = async function(id) {
 };
 
 init();
+
+/* ══════════════════════════════════════════
+   OVERVIEW — CRM MODULE
+══════════════════════════════════════════ */
+const OV_STUDENT_STATUS_LABELS = {
+  awaiting_coordination:    'ממתין לתיאום',
+  interview_scheduled:      'ראיון נקבע',
+  awaiting_assignment:      'ממתין לשיבוץ',
+  assigned_pending_payment: 'משובץ – ממתין לתשלום',
+  enrolled:                 'בקורס',
+  active:                   'פעיל',
+  graduated:                'מוסמך',
+};
+const OV_STUDENT_STATUS_COLOR = {
+  awaiting_coordination:    '#d97706',
+  interview_scheduled:      '#2563eb',
+  awaiting_assignment:      '#7c3aed',
+  assigned_pending_payment: '#0891b2',
+  enrolled:                 '#16a34a',
+  active:                   '#16a34a',
+  graduated:                '#15803d',
+};
+const OV_MEMBER_STATUS_LABELS = {
+  new_application:          'בקשה חדשה',
+  under_review:             'בבדיקה',
+  experienced_pending_cert: 'בעל ניסיון – ממתין',
+  in_professional_training: 'בהכשרה מקצועית',
+  completing_docs:          'השלמת מסמכים',
+};
+const OV_MEMBER_STATUS_COLOR = {
+  new_application:          '#d97706',
+  under_review:             '#2563eb',
+  experienced_pending_cert: '#7c3aed',
+  in_professional_training: '#16a34a',
+  completing_docs:          '#0891b2',
+};
+
+function ovAvatarColor(id) {
+  const colors = ['#2563eb','#7c3aed','#0891b2','#16a34a','#d97706','#dc2626','#db2777'];
+  let h = 0;
+  for (const c of (id||'')) h = (h * 31 + c.charCodeAt(0)) % colors.length;
+  return colors[h];
+}
+function ovInitials(name) {
+  return (name||'?').trim().split(' ').map(w=>w[0]||'').join('').slice(0,2).toUpperCase();
+}
+
+let ovStudents    = [];
+let ovMemberProfiles = [];
+let ovActiveId    = null;
+let ovActiveTab   = 'all';
+
+const OV_TABS_DEF = {
+  all:       { statuses: null,   source: 'students' },
+  new:       { statuses: ['awaiting_coordination'],                                              source: 'students' },
+  waiting:   { statuses: ['interview_scheduled','awaiting_assignment','assigned_pending_payment'], source: 'students' },
+  training:  { statuses: ['enrolled','active'],                                                  source: 'students' },
+  members:   { statuses: null,                                                                   source: 'members'  },
+  graduated: { statuses: ['graduated'],                                                          source: 'students' },
+};
+
+const OV_STATUS_COLORS = {
+  awaiting_coordination:    { bg:'#fffbeb', text:'#b45309', border:'#fde68a' },
+  interview_scheduled:      { bg:'#eff6ff', text:'#1d4ed8', border:'#bfdbfe' },
+  rejected_interview:       { bg:'#fef2f2', text:'#b91c1c', border:'#fecaca' },
+  awaiting_assignment:      { bg:'#f5f3ff', text:'#6d28d9', border:'#ddd6fe' },
+  assigned_pending_payment: { bg:'#ecfeff', text:'#0e7490', border:'#a5f3fc' },
+  enrolled:                 { bg:'#f0fdf4', text:'#15803d', border:'#bbf7d0' },
+  active:                   { bg:'#f0fdf4', text:'#15803d', border:'#bbf7d0' },
+  graduated:                { bg:'#f0f9ff', text:'#0369a1', border:'#bae6fd' },
+  cancelled:                { bg:'#f8fafc', text:'#64748b', border:'#e2e8f0' },
+};
+const OV_ALL_STATUS_LABELS = {
+  awaiting_coordination:    'ממתין לתיאום',
+  interview_scheduled:      'ראיון נקבע',
+  rejected_interview:       'נפסל בראיון',
+  awaiting_assignment:      'ממתין לשיבוץ',
+  assigned_pending_payment: 'משובץ – ממתין לתשלום',
+  enrolled:                 'בהכשרה',
+  active:                   'פעיל',
+  graduated:                'בוגר מוסמך',
+  cancelled:                'בוטל',
+};
+
+function ovStatusBadge(status) {
+  const c = OV_STATUS_COLORS[status] || OV_STATUS_COLORS.cancelled;
+  const l = OV_ALL_STATUS_LABELS[status] || status;
+  return `<span style="background:${c.bg};color:${c.text};border:1px solid ${c.border};border-radius:20px;padding:2px 9px;font-size:0.7rem;font-weight:700;white-space:nowrap;">${l}</span>`;
+}
+
+async function ovInit() {
+  const tbody = document.getElementById('ov-crm-tbody');
+  if (tbody) tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:3rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>`;
+
+  const { data, error } = await supabase.from('students')
+    .select('id, full_name, phone, email, course_track, location, schedule, status, created_at, payment_ref, payment_amount')
+    .order('created_at', { ascending: false });
+
+  if (error) { console.error('[OV]', error); return; }
+  ovStudents = data || [];
+
+  // Load member profiles in parallel (non-blocking if fails)
+  supabase.from('profiles')
+    .select('id, full_name, business_name, phone, email, member_status, member_requested_at, specialties')
+    .not('member_requested_at', 'is', null)
+    .not('member_status', 'in', '("approved","rejected")')
+    .order('member_requested_at', { ascending: false })
+    .then(({ data: pd }) => {
+      ovMemberProfiles = pd || [];
+      ovUpdateCounts();
+      if (ovActiveTab === 'members') ovRenderTable();
+    });
+
+  ovUpdateCounts();
+  ovRenderTable();
+}
+
+function ovUpdateCounts() {
+  const st = ovStudents;
+  const mc = ovMemberProfiles;
+  document.getElementById('ov-k-total').textContent = st.length;
+  document.getElementById('ov-k-new').textContent   = st.filter(s => s.status === 'awaiting_coordination').length;
+  document.getElementById('ov-k-wait').textContent  = st.filter(s => ['interview_scheduled','awaiting_assignment','assigned_pending_payment'].includes(s.status)).length;
+  document.getElementById('ov-k-train').textContent = st.filter(s => ['enrolled','active'].includes(s.status)).length;
+  document.getElementById('ov-k-grad').textContent  = st.filter(s => s.status === 'graduated').length;
+  // Tab counts
+  const set = el => { const e = document.getElementById(el[0]); if(e) e.textContent = el[1]; };
+  set(['ovc-all',       st.length]);
+  set(['ovc-new',       st.filter(s => s.status === 'awaiting_coordination').length]);
+  set(['ovc-waiting',   st.filter(s => ['interview_scheduled','awaiting_assignment','assigned_pending_payment'].includes(s.status)).length]);
+  set(['ovc-training',  st.filter(s => ['enrolled','active'].includes(s.status)).length]);
+  set(['ovc-members',   mc.length]);
+  set(['ovc-graduated', st.filter(s => s.status === 'graduated').length]);
+}
+
+window.ovSetTab = function(tabId) {
+  ovActiveTab = tabId;
+  document.querySelectorAll('.ov-tab').forEach(t => t.classList.toggle('active', t.id === 'ovtab-' + tabId));
+  if (document.getElementById('ov-search')) document.getElementById('ov-search').value = '';
+  // Update table header for members tab
+  const thead = document.querySelector('.ov-crm-table thead tr');
+  if (thead) {
+    if (tabId === 'members') {
+      thead.innerHTML = '<th>שם / עסק</th><th>טלפון</th><th>התמחויות</th><th>תאריך בקשה</th><th>סטטוס</th><th></th>';
+    } else {
+      thead.innerHTML = '<th>שם</th><th>טלפון</th><th>קורס</th><th>מיקום</th><th>סטטוס</th><th>תאריך רישום</th>';
+    }
+  }
+  ovRenderTable();
+};
+
+function ovRenderTable() {
+  const tbody = document.getElementById('ov-crm-tbody');
+  const q     = (document.getElementById('ov-search')?.value || '').toLowerCase().trim();
+  if (!tbody) return;
+
+  const tabDef = OV_TABS_DEF[ovActiveTab] || OV_TABS_DEF.all;
+
+  // Members tab — different data source
+  if (tabDef.source === 'members') {
+    let rows = ovMemberProfiles;
+    if (q) rows = rows.filter(u =>
+      (u.full_name||'').toLowerCase().includes(q) ||
+      (u.business_name||'').toLowerCase().includes(q) ||
+      (u.phone||'').toLowerCase().includes(q) ||
+      (u.email||'').toLowerCase().includes(q)
+    );
+    if (!rows.length) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:3rem;color:#94a3b8;">אין מועמדי חבר</td></tr>`;
+      return;
+    }
+    const SPEC = { pergolas:'פרגולות','electric-pergolas':'פרגולות חשמליות',electric_pergolas:'פרגולות חשמליות',fixed_pergolas:'פרגולות קבועות','zip-screens':'מסכי זיפ',windows:'חלונות וויטרינות','gates-fences':'שערים',gates_fences:'שערים',bioclimatic:'ביקולימטיק','curtain-walls':'קירות מסך','doors-cladding':'דלתות' };
+    const toArr = v => { try { return Array.isArray(v)?v:JSON.parse(v||'[]'); } catch { return []; } };
+    tbody.innerHTML = rows.map(u => {
+      const name  = u.business_name || u.full_name || u.email || '—';
+      const specs = toArr(u.specialties).map(s=>SPEC[s]||s).slice(0,3).join(', ') || '—';
+      const date  = u.member_requested_at ? new Date(u.member_requested_at).toLocaleDateString('he-IL') : '—';
+      const st    = OV_MEMBER_STATUS_LABELS[u.member_status] || u.member_status;
+      const mc    = OV_MEMBER_STATUS_COLOR[u.member_status]  || { bg:'#f8fafc',text:'#64748b',border:'#e2e8f0' };
+      const isActive = u.id === ovActiveId;
+      return `<tr id="ovr-${u.id}" onclick="ovOpenMemberFlyout('${u.id}')" class="${isActive?'ov-active-row':''}">
+        <td><div style="display:flex;align-items:center;gap:0.6rem;">
+          <div class="ov-avatar" style="width:30px;height:30px;font-size:0.68rem;background:${ovAvatarColor(u.id)};">${ovInitials(name)}</div>
+          <div><div style="font-weight:700;color:#0f172a;font-size:0.85rem;">${name}</div>
+          <div style="font-size:0.68rem;color:#94a3b8;">${u.email||''}</div></div></div></td>
+        <td>${u.phone||'—'}</td>
+        <td style="font-size:0.78rem;color:#475569;">${specs}</td>
+        <td style="color:#94a3b8;font-size:0.75rem;">${date}</td>
+        <td><span style="background:${mc.bg};color:${mc.text};border:1px solid ${mc.border};border-radius:20px;padding:2px 9px;font-size:0.7rem;font-weight:700;">${st}</span></td>
+        <td></td>
+      </tr>`;
+    }).join('');
+    return;
+  }
+
+  // Students tabs
+  let rows = ovStudents;
+  if (tabDef.statuses) rows = rows.filter(s => tabDef.statuses.includes(s.status));
+  if (q) rows = rows.filter(s =>
+    (s.full_name||'').toLowerCase().includes(q) ||
+    (s.phone||'').toLowerCase().includes(q) ||
+    (s.email||'').toLowerCase().includes(q)
+  );
+
+  if (!rows.length) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:3rem;color:#94a3b8;">אין תוצאות</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(s => {
+    const date     = s.created_at ? new Date(s.created_at).toLocaleDateString('he-IL') : '—';
+    const track    = COURSE_LABELS[s.course_track] || s.course_track || '—';
+    const loc      = LOC_LABELS[s.location] || s.location || '—';
+    const isActive = s.id === ovActiveId;
+    return `<tr id="ovr-${s.id}" onclick="ovOpenFlyout('${s.id}')" class="${isActive ? 'ov-active-row' : ''}">
+      <td>
+        <div style="display:flex;align-items:center;gap:0.6rem;">
+          <div class="ov-avatar" style="width:30px;height:30px;font-size:0.68rem;background:${ovAvatarColor(s.id)};">${ovInitials(s.full_name)}</div>
+          <div>
+            <div style="font-weight:700;color:#0f172a;font-size:0.85rem;">${s.full_name||'—'}</div>
+            <div style="font-size:0.68rem;color:#94a3b8;">${s.email||''}</div>
+          </div>
+        </div>
+      </td>
+      <td>${s.phone||'—'}</td>
+      <td style="font-size:0.78rem;">${track}</td>
+      <td style="font-size:0.78rem;">${loc}</td>
+      <td>${ovStatusBadge(s.status)}</td>
+      <td style="color:#94a3b8;font-size:0.75rem;">${date}</td>
+    </tr>`;
+  }).join('');
+}
+
+window.ovFilterTable = function() { ovRenderTable(); };
+
+window.ovOpenFlyout = async function ovOpenFlyout(studentId) {
+  ovActiveId = studentId;
+  document.querySelectorAll('#ov-crm-tbody tr').forEach(r => r.classList.toggle('ov-active-row', r.id === 'ovr-' + studentId));
+
+  const flyout = document.getElementById('ov-flyout');
+  flyout.classList.add('open');
+
+  const inner = document.getElementById('ov-flyout-inner');
+  inner.innerHTML = '<div style="padding:3rem;text-align:center;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i></div>';
+
+  // Fetch full student data including all registration fields
+  const { data: full, error } = await supabase.from('students')
+    .select('*')
+    .eq('id', studentId).single();
+
+  if (error || !full) {
+    // Fallback to cached data without activity_log
+    const s = ovStudents.find(x => x.id === studentId);
+    if (s) { s.activity_log = []; ovRenderFlyout(s); }
+    return;
+  }
+
+  // Merge into cache
+  const cached = ovStudents.find(x => x.id === studentId);
+  const s = cached ? Object.assign(cached, full) : full;
+  ovRenderFlyout(s);
+}
+
+function ovRenderFlyout(s) {
+  const inner    = document.getElementById('ov-flyout-inner');
+  const color    = ovAvatarColor(s.id);
+  const initials = ovInitials(s.full_name);
+  const c        = OV_STATUS_COLORS[s.status] || OV_STATUS_COLORS.cancelled;
+  const stLabel  = OV_ALL_STATUS_LABELS[s.status] || s.status;
+  const track    = COURSE_LABELS[s.course_track] || s.course_track || '—';
+  const loc      = LOC_LABELS[s.location] || s.location || '—';
+  const sch      = SCH_LABELS[s.schedule] || s.schedule || '—';
+  const openWin  = s.opening_window==='may_jun'?'מאי–יוני':s.opening_window==='jun_jul'?'יוני–יולי':s.opening_window==='aug_sep'?'אוגוסט–ספטמבר':s.opening_window||'—';
+
+  const statusOptions = Object.entries(OV_ALL_STATUS_LABELS)
+    .map(([k,v]) => `<option value="${k}" ${k===s.status?'selected':''}>${v}</option>`).join('');
+
+  function fi(label, val, cls='') {
+    return `<div class="ov-fl-item"><div class="ov-fl-lbl">${label}</div><div class="ov-fl-val ${cls}">${val}</div></div>`;
+  }
+  function yesno(v, yesLabel='✓ כן', noLabel='✗ לא') {
+    return v==='yes' ? `<span class="ov-fl-yes">${yesLabel}</span>` : v==='no' ? `<span class="ov-fl-no">${noLabel}</span>` : '—';
+  }
+
+  // Timeline
+  const log = Array.isArray(s.activity_log) ? [...s.activity_log].reverse() : [];
+  const tlHtml = log.length ? log.map((e, i) => {
+    const date = e.at ? new Date(e.at).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'}) : '—';
+    let ico = 'ph-activity', icoColor = '#64748b';
+    if (e.type === 'status_change') { ico = 'ph-arrows-clockwise'; icoColor = '#2563eb'; }
+    if (e.type === 'registration')  { ico = 'ph-user-plus';        icoColor = '#16a34a'; }
+    const desc = e.label || (e.type==='status_change' && e.from && e.to
+      ? `${OV_ALL_STATUS_LABELS[e.from]||e.from} → ${OV_ALL_STATUS_LABELS[e.to]||e.to}`
+      : e.note || '');
+    const isLast = i === log.length - 1;
+    return `<div class="ov-tl-entry">
+      <div class="ov-tl-dot-col">
+        <div class="ov-tl-circle" style="background:${icoColor}15;border:1.5px solid ${icoColor}30;">
+          <i class="ph ${ico}" style="font-size:0.72rem;color:${icoColor};"></i>
+        </div>
+        ${!isLast ? '<div class="ov-tl-line"></div>' : ''}
+      </div>
+      <div style="padding-top:2px;min-width:0;">
+        <div class="ov-tl-text">${desc}</div>
+        <div class="ov-tl-meta">${date}${e.by ? ' · ' + e.by : ''}</div>
+      </div>
+    </div>`;
+  }).join('')
+  : `<div style="font-size:0.78rem;color:#94a3b8;text-align:center;padding:1.5rem 0;">אין היסטוריה עדיין</div>`;
+
+  // Admin notes
+  const notes = Array.isArray(s.admin_notes) ? s.admin_notes : [];
+  const notesListHtml = notes.length
+    ? notes.map(n=>`<div class="ov-tl-entry"><div class="ov-tl-dot-col"><div class="ov-tl-circle" style="background:#fef9c3;border:1.5px solid #fde68a;"><i class="ph ph-note-pencil" style="font-size:0.72rem;color:#b45309;"></i></div></div><div style="padding-top:2px;"><div class="ov-tl-text">${n.text||''}</div><div class="ov-tl-meta">${new Date(n.created_at||Date.now()).toLocaleDateString('he-IL')}</div></div></div>`).join('')
+    : '<div style="font-size:0.78rem;color:#94a3b8;padding:0.3rem 0;">אין הערות עדיין</div>';
+
+  inner.innerHTML = `
+    <!-- Header -->
+    <div class="ov-flyout-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <div style="display:flex;align-items:center;gap:0.7rem;">
+          <div class="ov-avatar" style="width:42px;height:42px;font-size:0.88rem;background:${color};">${initials}</div>
+          <div>
+            <div style="font-size:1rem;font-weight:800;color:#0f172a;">${s.full_name||'—'}</div>
+            <div style="font-size:0.72rem;color:#64748b;">${s.phone||''} ${s.email ? '· '+s.email : ''}</div>
+            <div style="font-size:0.68rem;color:#94a3b8;margin-top:1px;">נרשם: ${s.created_at ? new Date(s.created_at).toLocaleDateString('he-IL') : '—'}</div>
+          </div>
+        </div>
+        <button onclick="ovCloseFlyout()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.2rem;padding:4px;border-radius:6px;line-height:1;"><i class="ph ph-x"></i></button>
+      </div>
+      <div style="display:flex;align-items:center;gap:0.6rem;flex-wrap:wrap;">
+        <span style="background:${c.bg};color:${c.text};border:1px solid ${c.border};border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:700;">${stLabel}</span>
+        <select onchange="ovUpdateStatus('${s.id}',this.value)" style="font-size:0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;padding:3px 8px;color:#334155;background:#fff;cursor:pointer;font-family:inherit;">
+          ${statusOptions}
+        </select>
+      </div>
+    </div>
+
+    <div class="ov-flyout-body">
+
+      <!-- שלב 1: פרטים אישיים -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-user"></i> שלב 1 — פרטים אישיים</div>
+        <div class="ov-fl-grid">
+          ${fi('שם מלא', s.full_name||'—')}
+          ${fi('טלפון', s.phone||'—')}
+          ${fi('אימייל', s.email||'—')}
+        </div>
+      </div>
+
+      <!-- שלב 2: בחירת קורס -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-graduation-cap"></i> שלב 2 — בחירת קורס</div>
+        <div class="ov-fl-grid">
+          ${fi('מסלול', track)}
+          ${fi('מיקום', loc)}
+          ${fi('זמן לימודים', sch)}
+          ${fi('מועד פתיחה', openWin)}
+        </div>
+      </div>
+
+      <!-- שלב 3: שאלות התאמה -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-clipboard-text"></i> שלב 3 — שאלות התאמה</div>
+        <div class="ov-fl-grid">
+          ${fi('כשיר פיזית לגובה',    yesno(s.screening_physical))}
+          ${fi('אישור עבודה בגובה',   yesno(s.screening_permit, '✓ יש אישור', '✗ אין אישור'))}
+          ${fi('ניסיון כלי חשמל',      yesno(s.screening_tools,  '✓ יש ניסיון', '✗ אין ניסיון'))}
+          ${fi('גיל מעל 18',           yesno(s.screening_age))}
+        </div>
+      </div>
+
+      <!-- שלב 4: הסכמות וחתימות -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-pen-nib"></i> שלב 4 — הסכמות וחתימות</div>
+        <div class="ov-fl-grid" style="margin-bottom:${(s.health_signature_data||s.regulations_signature_data)?'0.75rem':'0'};">
+          ${fi('הצהרת בריאות', s.health_declaration_signed ? '<span class="ov-fl-yes">✓ חתום</span>' : '<span class="ov-fl-no">✗ לא חתום</span>')}
+          ${fi('תקנון לימודים', s.regulations_signed ? '<span class="ov-fl-yes">✓ חתום</span>' : '<span class="ov-fl-no">✗ לא חתום</span>')}
+        </div>
+        ${(s.health_signature_data||s.regulations_signature_data) ? `<div style="display:flex;gap:1rem;flex-wrap:wrap;">
+          ${s.health_signature_data?`<div><div style="font-size:0.62rem;color:#94a3b8;margin-bottom:3px;">חתימה — הצהרת בריאות</div><img src="${s.health_signature_data}" style="height:60px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;display:block;"></div>`:''}
+          ${s.regulations_signature_data?`<div><div style="font-size:0.62rem;color:#94a3b8;margin-bottom:3px;">חתימה — תקנון לימודים</div><img src="${s.regulations_signature_data}" style="height:60px;border:1px solid #e2e8f0;border-radius:6px;background:#fff;display:block;"></div>`:''}
+        </div>` : ''}
+      </div>
+
+      <!-- שלב 5: תשלום -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-credit-card"></i> שלב 5 — תשלום</div>
+        <div class="ov-fl-grid">
+          ${fi('סטטוס תשלום', s.payment_status||'—')}
+          ${fi('סכום ששולם', s.payment_amount ? '₪'+s.payment_amount : '—')}
+          ${fi('אסמכתא', `<span style="font-family:monospace;font-size:0.73rem;">${s.payment_ref||'—'}</span>`)}
+        </div>
+      </div>
+
+      <!-- הערות מנהל -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-note-pencil"></i> הערות מנהל</div>
+        <div id="ov-notes-list-${s.id}">${notesListHtml}</div>
+        <div style="display:flex;gap:0.4rem;margin-top:0.6rem;">
+          <input type="text" id="ov-note-inp-${s.id}" placeholder="הוסף הערה…"
+            style="flex:1;padding:0.38rem 0.65rem;border:1.5px solid #e2e8f0;border-radius:7px;font-size:0.8rem;font-family:inherit;outline:none;"
+            onkeydown="if(event.key==='Enter')ovSaveNote('${s.id}')">
+          <button onclick="ovSaveNote('${s.id}')" style="background:#2563eb;color:#fff;border:none;border-radius:7px;padding:0.38rem 0.65rem;cursor:pointer;font-size:0.85rem;"><i class="ph ph-paper-plane-right"></i></button>
+        </div>
+      </div>
+
+      <!-- היסטוריית פעולות -->
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.55rem;">
+          <div class="ov-sec-lbl" style="margin-bottom:0;">היסטוריית פעולות</div>
+          <span style="font-size:0.62rem;color:#cbd5e1;font-style:italic;">append-only · לא ניתן לעריכה</span>
+        </div>
+        <div id="ov-tl-${s.id}">${tlHtml}</div>
+      </div>
+
+    </div>`;
+}
+
+window.ovCloseFlyout = function() {
+  ovActiveId = null;
+  document.getElementById('ov-flyout').classList.remove('open');
+  document.querySelectorAll('#ov-crm-tbody tr').forEach(r => r.classList.remove('ov-active-row'));
+};
+
+async function ovOpenMemberFlyout(profileId) {
+  ovActiveId = profileId;
+  document.querySelectorAll('#ov-crm-tbody tr').forEach(r => r.classList.toggle('ov-active-row', r.id === 'ovr-' + profileId));
+  const flyout = document.getElementById('ov-flyout');
+  flyout.classList.add('open');
+  const inner = document.getElementById('ov-flyout-inner');
+  inner.innerHTML = '<div style="padding:3rem;text-align:center;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i></div>';
+
+  const { data: u } = await supabase.from('profiles')
+    .select('id, full_name, business_name, phone, email, member_status, member_requested_at, specialties, regions, application_data, member_notes')
+    .eq('id', profileId).single();
+  if (!u) { inner.innerHTML = '<div style="padding:2rem;color:#dc2626;text-align:center;">שגיאה בטעינה</div>'; return; }
+
+  const name     = u.business_name || u.full_name || u.email || '—';
+  const color    = ovAvatarColor(u.id);
+  const initials = ovInitials(name);
+  const mc       = OV_MEMBER_STATUS_COLOR[u.member_status] || { bg:'#f8fafc', text:'#64748b', border:'#e2e8f0' };
+  const stLabel  = OV_MEMBER_STATUS_LABELS[u.member_status] || u.member_status || '—';
+  const app      = u.application_data || {};
+  const toArr    = v => { try { return Array.isArray(v)?v:JSON.parse(v||'[]'); } catch { return []; } };
+  const SPEC     = { pergolas:'פרגולות','electric-pergolas':'פרגולות חשמליות',electric_pergolas:'פרגולות חשמליות',fixed_pergolas:'פרגולות קבועות','zip-screens':'מסכי זיפ',windows:'חלונות',gates_fences:'שערים',bioclimatic:'ביקולימטיק' };
+  const specs    = toArr(u.specialties).map(s=>SPEC[s]||s).join(', ') || '—';
+  const reqDate  = u.member_requested_at ? new Date(u.member_requested_at).toLocaleDateString('he-IL') : '—';
+  const notes    = Array.isArray(u.member_notes) ? u.member_notes : [];
+
+  function dc(label, val) { return `<div class="ov-dc"><div class="ov-dc-lbl">${label}</div><div class="ov-dc-val" title="${val}">${val}</div></div>`; }
+  const notesHtml = notes.length
+    ? notes.slice().reverse().map(n => `<div class="ov-tl-entry"><div class="ov-tl-dot-col"><div class="ov-tl-circle" style="background:#f5f3ff;border:1.5px solid #ddd6fe;"><i class="ph ph-note" style="font-size:0.72rem;color:#7c3aed;"></i></div></div>
+      <div style="padding-top:2px;"><div class="ov-tl-text">${n.text||''}</div><div class="ov-tl-meta">${new Date(n.created_at||Date.now()).toLocaleDateString('he-IL')}</div></div></div>`).join('')
+    : '<div style="font-size:0.78rem;color:#94a3b8;text-align:center;padding:1.5rem 0;">אין הערות</div>';
+
+  inner.innerHTML = `
+    <div class="ov-flyout-head">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
+        <div style="display:flex;align-items:center;gap:0.7rem;">
+          <div class="ov-avatar" style="width:40px;height:40px;font-size:0.85rem;background:${color};">${initials}</div>
+          <div><div style="font-size:0.95rem;font-weight:800;color:#0f172a;">${name}</div>
+          <div style="font-size:0.72rem;color:#64748b;">${u.phone||''} ${u.email?'· '+u.email:''}</div></div>
+        </div>
+        <button onclick="ovCloseFlyout()" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:1.1rem;padding:4px;border-radius:6px;line-height:1;"><i class="ph ph-x"></i></button>
+      </div>
+      <span style="background:${mc.bg};color:${mc.text};border:1px solid ${mc.border};border-radius:20px;padding:3px 10px;font-size:0.72rem;font-weight:700;">${stLabel}</span>
+    </div>
+    <div class="ov-flyout-body">
+      <div>
+        <div class="ov-sec-lbl">פרטי בקשה</div>
+        <div class="ov-detail-grid">
+          ${dc('תאריך בקשה', reqDate)}
+          ${dc('שנות ניסיון', app.experience_years!=null?app.experience_years+' שנים':'—')}
+          ${dc('ניסיון קודם', app.has_prior_experience==='yes'?'כן — מנוסה':app.has_prior_experience==='no'?'מתחיל':'—')}
+          ${dc('עבודה בגובה', app.height_cert==='yes'?'✓ יש אישור':'✗ אין')}
+        </div>
+        <div style="margin-top:0.5rem;">
+          <div class="ov-dc-lbl" style="margin-bottom:4px;">התמחויות</div>
+          <div style="font-size:0.8rem;font-weight:600;color:#334155;">${specs}</div>
+        </div>
+      </div>
+      <div>
+        <div class="ov-sec-lbl">הערות</div>
+        ${notesHtml}
+      </div>
+    </div>`;
+}
+
+async function ovUpdateStatus(studentId, newStatus) {
+  const s = ovStudents.find(x => x.id === studentId);
+  if (!s || s.status === newStatus) return;
+  const oldStatus = s.status;
+  const entry = {
+    at:    new Date().toISOString(),
+    type:  'status_change',
+    from:  oldStatus,
+    to:    newStatus,
+    by:    currentUserEmail,
+    label: `${OV_ALL_STATUS_LABELS[oldStatus]||oldStatus} → ${OV_ALL_STATUS_LABELS[newStatus]||newStatus}`,
+  };
+  const newLog = [...(Array.isArray(s.activity_log) ? s.activity_log : []), entry];
+  // Try with activity_log; if column missing, fall back to status-only update
+  let { error } = await supabase.from('students').update({ status: newStatus, activity_log: newLog }).eq('id', studentId);
+  if (error && error.message?.includes('activity_log')) {
+    const res = await supabase.from('students').update({ status: newStatus }).eq('id', studentId);
+    error = res.error;
+  }
+  if (error) { alert('שגיאה: ' + error.message); return; }
+  s.status = newStatus;
+  s.activity_log = newLog;
+  // Update KPI
+  document.getElementById('ov-k-new').textContent   = ovStudents.filter(x => x.status === 'awaiting_coordination').length;
+  document.getElementById('ov-k-wait').textContent  = ovStudents.filter(x => ['interview_scheduled','awaiting_assignment','assigned_pending_payment'].includes(x.status)).length;
+  document.getElementById('ov-k-train').textContent = ovStudents.filter(x => ['enrolled','active'].includes(x.status)).length;
+  document.getElementById('ov-k-grad').textContent  = ovStudents.filter(x => x.status === 'graduated').length;
+  // Update row badge
+  const row = document.getElementById('ovr-' + studentId);
+  if (row) { const td = row.querySelectorAll('td')[4]; if(td) td.innerHTML = ovStatusBadge(newStatus); }
+  // Re-render flyout with updated data
+  ovRenderFlyout(s);
+}
+
+async function ovSaveNote(studentId) {
+  const inp = document.getElementById('ov-note-inp-' + studentId);
+  if (!inp) return;
+  const text = inp.value.trim();
+  if (!text) return;
+  const s = ovStudents.find(x => x.id === studentId);
+  if (!s) return;
+  const notes = Array.isArray(s.admin_notes) ? s.admin_notes : [];
+  const newNote = { text, created_at: new Date().toISOString() };
+  const newNotes = [...notes, newNote];
+  const { error } = await supabase.from('students').update({ admin_notes: newNotes }).eq('id', studentId);
+  if (error) { alert('שגיאה בשמירת הערה: ' + error.message); return; }
+  s.admin_notes = newNotes;
+  inp.value = '';
+  // Re-render notes list in flyout
+  const list = document.getElementById('ov-notes-list-' + studentId);
+  if (list) {
+    list.innerHTML = newNotes.slice().reverse().map(n =>
+      `<div class="ov-tl-entry"><div class="ov-tl-dot-col"><div class="ov-tl-circle" style="background:#fef9c3;border:1.5px solid #fde68a;"><i class="ph ph-note-pencil" style="font-size:0.72rem;color:#b45309;"></i></div></div><div style="padding-top:2px;"><div class="ov-tl-text">${n.text||''}</div><div class="ov-tl-meta">${new Date(n.created_at||Date.now()).toLocaleDateString('he-IL')}</div></div></div>`
+    ).join('');
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CALENDAR MODULE
+// ═══════════════════════════════════════════════
+// ── Holiday data (2024-2027) ──────────────────────
+let calShowHolidays = false;
+
+// cat → { bg, text, border }
+const CAL_HOL_STYLE = {
+  jewish:           { bg:'#dbeafe', text:'#1e40af', border:'#93c5fd' },
+  jewish_holiday:   { bg:'#1e40af', text:'#fff',    border:'#1e3a8a' },
+  israel_memorial:  { bg:'#fee2e2', text:'#b91c1c',  border:'#fca5a5' },
+  israel_national:  { bg:'#dcfce7', text:'#15803d',  border:'#86efac' },
+  muslim:           { bg:'#d1fae5', text:'#065f46',  border:'#6ee7b7' },
+  muslim_holiday:   { bg:'#065f46', text:'#d1fae5',  border:'#047857' },
+  christian:        { bg:'#ede9fe', text:'#6d28d9',  border:'#c4b5fd' },
+  christian_holiday:{ bg:'#6d28d9', text:'#fff',     border:'#5b21b6' },
+  orthodox:         { bg:'#f3e8ff', text:'#9333ea',  border:'#d8b4fe' },
+  orthodox_holiday: { bg:'#9333ea', text:'#fff',     border:'#7e22ce' },
+  druze:            { bg:'#fef3c7', text:'#b45309',  border:'#fcd34d' },
+};
+
+const CAL_HOLIDAYS = [
+  // ══ ימי זיכרון ואומה ישראלית ══
+  { date:'2025-01-27', title:'יום הזיכרון הבינלאומי לשואה (UN)', cat:'israel_memorial' },
+  { date:'2025-04-24', title:'יום השואה והגבורה', cat:'israel_memorial' },
+  { date:'2025-05-01', title:'יום הזיכרון לחללי מערכות ישראל', cat:'israel_memorial' },
+  { date:'2025-05-02', title:'יום העצמאות ה-77', cat:'israel_national' },
+  { date:'2025-05-26', title:'יום ירושלים', cat:'israel_national' },
+  { date:'2026-01-27', title:'יום הזיכרון הבינלאומי לשואה (UN)', cat:'israel_memorial' },
+  { date:'2026-04-14', title:'יום השואה והגבורה', cat:'israel_memorial' },
+  { date:'2026-04-22', title:'יום הזיכרון לחללי מערכות ישראל', cat:'israel_memorial' },
+  { date:'2026-04-23', title:'יום העצמאות ה-78', cat:'israel_national' },
+  { date:'2026-05-14', title:'יום ירושלים', cat:'israel_national' },
+  { date:'2027-01-27', title:'יום הזיכרון הבינלאומי לשואה (UN)', cat:'israel_memorial' },
+  { date:'2027-05-03', title:'יום השואה והגבורה', cat:'israel_memorial' },
+  { date:'2027-05-11', title:'יום הזיכרון לחללי מערכות ישראל', cat:'israel_memorial' },
+  { date:'2027-05-12', title:'יום העצמאות ה-79', cat:'israel_national' },
+
+  // ══ חגים יהודיים 5785 (2024-2025) ══
+  { date:'2025-01-13', title:'ט"ו בשבט', cat:'jewish' },
+  { date:'2025-03-13', title:'תענית אסתר', cat:'jewish' },
+  { date:'2025-03-13', title:'פורים – שושן פורים קטן', cat:'jewish' },
+  { date:'2025-03-14', title:'פורים', cat:'jewish_holiday' },
+  { date:'2025-03-15', title:'שושן פורים', cat:'jewish' },
+  { date:'2025-04-12', title:'ערב פסח – בכורות מתענים', cat:'jewish' },
+  { date:'2025-04-13', title:'פסח – יום א׳', cat:'jewish_holiday' },
+  { date:'2025-04-14', title:'פסח – יום ב׳', cat:'jewish_holiday' },
+  { date:'2025-04-15', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2025-04-16', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2025-04-17', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2025-04-18', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2025-04-19', title:'פסח – יום ז׳', cat:'jewish_holiday' },
+  { date:'2025-04-20', title:'פסח – אחרון של פסח', cat:'jewish_holiday' },
+  { date:'2025-05-16', title:'ל"ג בעומר', cat:'jewish' },
+  { date:'2025-06-02', title:'שבועות – יום א׳', cat:'jewish_holiday' },
+  { date:'2025-06-03', title:'שבועות – יום ב׳', cat:'jewish_holiday' },
+  { date:'2025-07-13', title:'צום י"ז בתמוז', cat:'jewish' },
+  { date:'2025-08-05', title:'תשעה באב', cat:'jewish' },
+
+  // ══ חגים יהודיים 5786 (2025-2026) ══
+  { date:'2025-09-22', title:'ערב ראש השנה', cat:'jewish' },
+  { date:'2025-09-23', title:'ראש השנה 5786 – יום א׳', cat:'jewish_holiday' },
+  { date:'2025-09-24', title:'ראש השנה 5786 – יום ב׳', cat:'jewish_holiday' },
+  { date:'2025-10-01', title:'צום גדליה | ערב יום כיפור', cat:'jewish' },
+  { date:'2025-10-02', title:'יום כיפור', cat:'jewish_holiday' },
+  { date:'2025-10-06', title:'סוכות – יום א׳', cat:'jewish_holiday' },
+  { date:'2025-10-07', title:'סוכות – יום ב׳', cat:'jewish_holiday' },
+  { date:'2025-10-08', title:'חול המועד סוכות', cat:'jewish' },
+  { date:'2025-10-09', title:'חול המועד סוכות', cat:'jewish' },
+  { date:'2025-10-10', title:'חול המועד סוכות', cat:'jewish' },
+  { date:'2025-10-11', title:'חול המועד סוכות', cat:'jewish' },
+  { date:'2025-10-12', title:'הושענא רבה', cat:'jewish' },
+  { date:'2025-10-13', title:'שמיני עצרת', cat:'jewish_holiday' },
+  { date:'2025-10-14', title:'שמחת תורה', cat:'jewish_holiday' },
+  { date:'2025-12-14', title:'חנוכה – נר ראשון', cat:'jewish' },
+  { date:'2025-12-15', title:'חנוכה – נר שני', cat:'jewish' },
+  { date:'2025-12-16', title:'חנוכה – נר שלישי', cat:'jewish' },
+  { date:'2025-12-17', title:'חנוכה – נר רביעי', cat:'jewish' },
+  { date:'2025-12-18', title:'חנוכה – נר חמישי', cat:'jewish' },
+  { date:'2025-12-19', title:'חנוכה – נר שישי', cat:'jewish' },
+  { date:'2025-12-20', title:'חנוכה – נר שביעי', cat:'jewish' },
+  { date:'2025-12-21', title:'חנוכה – נר שמיני (זאת חנוכה)', cat:'jewish' },
+  { date:'2026-02-01', title:'ט"ו בשבט', cat:'jewish' },
+  { date:'2026-03-03', title:'פורים', cat:'jewish_holiday' },
+  { date:'2026-03-31', title:'ערב פסח', cat:'jewish' },
+  { date:'2026-04-01', title:'פסח – יום א׳', cat:'jewish_holiday' },
+  { date:'2026-04-02', title:'פסח – יום ב׳', cat:'jewish_holiday' },
+  { date:'2026-04-03', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2026-04-04', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2026-04-05', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2026-04-06', title:'חול המועד פסח', cat:'jewish' },
+  { date:'2026-04-07', title:'פסח – יום ז׳', cat:'jewish_holiday' },
+  { date:'2026-04-08', title:'פסח – אחרון של פסח', cat:'jewish_holiday' },
+  { date:'2026-05-06', title:'ל"ג בעומר', cat:'jewish' },
+  { date:'2026-05-22', title:'שבועות – יום א׳', cat:'jewish_holiday' },
+  { date:'2026-05-23', title:'שבועות – יום ב׳', cat:'jewish_holiday' },
+  { date:'2026-07-02', title:'צום י"ז בתמוז', cat:'jewish' },
+  { date:'2026-07-23', title:'תשעה באב', cat:'jewish' },
+
+  // ══ חגים יהודיים 5787 (2026-2027) ══
+  { date:'2026-09-11', title:'ערב ראש השנה', cat:'jewish' },
+  { date:'2026-09-12', title:'ראש השנה 5787 – יום א׳', cat:'jewish_holiday' },
+  { date:'2026-09-13', title:'ראש השנה 5787 – יום ב׳', cat:'jewish_holiday' },
+  { date:'2026-09-21', title:'ערב יום כיפור', cat:'jewish' },
+  { date:'2026-09-22', title:'יום כיפור', cat:'jewish_holiday' },
+  { date:'2026-09-26', title:'סוכות – יום א׳', cat:'jewish_holiday' },
+  { date:'2026-09-27', title:'סוכות – יום ב׳', cat:'jewish_holiday' },
+  { date:'2026-10-02', title:'הושענא רבה', cat:'jewish' },
+  { date:'2026-10-03', title:'שמיני עצרת', cat:'jewish_holiday' },
+  { date:'2026-10-04', title:'שמחת תורה', cat:'jewish_holiday' },
+  { date:'2026-12-04', title:'חנוכה – נר ראשון', cat:'jewish' },
+  { date:'2026-12-11', title:'חנוכה – נר שמיני', cat:'jewish' },
+  { date:'2027-01-22', title:'ט"ו בשבט', cat:'jewish' },
+  { date:'2027-03-23', title:'פורים', cat:'jewish_holiday' },
+  { date:'2027-04-20', title:'פסח – יום א׳', cat:'jewish_holiday' },
+  { date:'2027-04-21', title:'פסח – יום ב׳', cat:'jewish_holiday' },
+  { date:'2027-04-26', title:'פסח – יום ז׳', cat:'jewish_holiday' },
+  { date:'2027-04-27', title:'פסח – אחרון של פסח', cat:'jewish_holiday' },
+  { date:'2027-06-11', title:'שבועות – יום א׳', cat:'jewish_holiday' },
+  { date:'2027-06-12', title:'שבועות – יום ב׳', cat:'jewish_holiday' },
+
+  // ══ חגים מוסלמיים ══
+  // 1446 (2025)
+  { date:'2025-01-03', title:'מולד א-נביא 1446 (יום הולדת הנביא מוחמד)', cat:'muslim' },
+  { date:'2025-03-01', title:'תחילת רמדאן 1446', cat:'muslim' },
+  { date:'2025-03-27', title:'ליל אל-קאדר (ליל הגורל)', cat:'muslim' },
+  { date:'2025-03-30', title:'עיד אל-פיטר – יום א׳ (חג הפסקת הצום)', cat:'muslim_holiday' },
+  { date:'2025-03-31', title:'עיד אל-פיטר – יום ב׳', cat:'muslim_holiday' },
+  { date:'2025-04-01', title:'עיד אל-פיטר – יום ג׳', cat:'muslim' },
+  { date:'2025-06-05', title:'יום עראפה', cat:'muslim' },
+  { date:'2025-06-06', title:'עיד אל-אדחא – יום א׳ (חג הקרבן)', cat:'muslim_holiday' },
+  { date:'2025-06-07', title:'עיד אל-אדחא – יום ב׳', cat:'muslim_holiday' },
+  { date:'2025-06-08', title:'עיד אל-אדחא – יום ג׳', cat:'muslim' },
+  { date:'2025-06-27', title:'ראס א-סנה אל-הג׳רייה 1447 (שנה חדשה אסלאמית)', cat:'muslim' },
+  { date:'2025-07-06', title:'עאשורא 1447', cat:'muslim' },
+  { date:'2025-09-24', title:'מולד א-נביא 1447', cat:'muslim' },
+  // 1447 (2026)
+  { date:'2026-02-18', title:'תחילת רמדאן 1447', cat:'muslim' },
+  { date:'2026-03-16', title:'ליל אל-קאדר', cat:'muslim' },
+  { date:'2026-03-19', title:'עיד אל-פיטר – יום א׳', cat:'muslim_holiday' },
+  { date:'2026-03-20', title:'עיד אל-פיטר – יום ב׳', cat:'muslim_holiday' },
+  { date:'2026-03-21', title:'עיד אל-פיטר – יום ג׳', cat:'muslim' },
+  { date:'2026-05-26', title:'עיד אל-אדחא – יום א׳', cat:'muslim_holiday' },
+  { date:'2026-05-27', title:'עיד אל-אדחא – יום ב׳', cat:'muslim_holiday' },
+  { date:'2026-05-28', title:'עיד אל-אדחא – יום ג׳', cat:'muslim' },
+  { date:'2026-06-16', title:'ראס א-סנה אל-הג׳רייה 1448', cat:'muslim' },
+  { date:'2026-06-26', title:'עאשורא 1448', cat:'muslim' },
+  { date:'2026-09-13', title:'מולד א-נביא 1448', cat:'muslim' },
+  // 1448 (2027)
+  { date:'2027-02-07', title:'תחילת רמדאן 1448', cat:'muslim' },
+  { date:'2027-03-09', title:'עיד אל-פיטר – יום א׳', cat:'muslim_holiday' },
+  { date:'2027-05-16', title:'עיד אל-אדחא – יום א׳', cat:'muslim_holiday' },
+
+  // ══ חגים נוצריים (קתולי / פרוטסטנטי) ══
+  { date:'2025-01-06', title:'הגלוי (Epiphany) – נוצרי', cat:'christian' },
+  { date:'2025-04-17', title:'חמישי הקדוש (Maundy Thursday) – נוצרי', cat:'christian' },
+  { date:'2025-04-18', title:'שישי הטוב (Good Friday) – נוצרי', cat:'christian_holiday' },
+  { date:'2025-04-20', title:'פסחא (Easter Sunday) – נוצרי', cat:'christian_holiday' },
+  { date:'2025-05-29', title:'עליית ישו לשמים (Ascension) – נוצרי', cat:'christian' },
+  { date:'2025-06-08', title:'שבועות נוצרי (Pentecost) – נוצרי', cat:'christian' },
+  { date:'2025-12-25', title:'חג המולד (Christmas) – נוצרי', cat:'christian_holiday' },
+  { date:'2026-01-06', title:'הגלוי (Epiphany) – נוצרי', cat:'christian' },
+  { date:'2026-04-02', title:'חמישי הקדוש – נוצרי', cat:'christian' },
+  { date:'2026-04-03', title:'שישי הטוב (Good Friday) – נוצרי', cat:'christian_holiday' },
+  { date:'2026-04-05', title:'פסחא (Easter Sunday) – נוצרי', cat:'christian_holiday' },
+  { date:'2026-05-14', title:'עליית ישו לשמים – נוצרי', cat:'christian' },
+  { date:'2026-05-24', title:'שבועות נוצרי (Pentecost) – נוצרי', cat:'christian' },
+  { date:'2026-12-25', title:'חג המולד – נוצרי', cat:'christian_holiday' },
+  { date:'2027-01-06', title:'הגלוי – נוצרי', cat:'christian' },
+  { date:'2027-03-28', title:'פסחא – נוצרי', cat:'christian_holiday' },
+  { date:'2027-12-25', title:'חג המולד – נוצרי', cat:'christian_holiday' },
+
+  // ══ חגים נוצריים אורתודוקסים ══
+  { date:'2025-01-07', title:'חג המולד – אורתודוקסי', cat:'orthodox_holiday' },
+  { date:'2025-01-19', title:'הגלוי – אורתודוקסי', cat:'orthodox' },
+  { date:'2025-04-25', title:'שישי הטוב – אורתודוקסי', cat:'orthodox' },
+  { date:'2025-04-27', title:'פסחא – אורתודוקסי', cat:'orthodox_holiday' },
+  { date:'2026-01-07', title:'חג המולד – אורתודוקסי', cat:'orthodox_holiday' },
+  { date:'2026-01-19', title:'הגלוי – אורתודוקסי', cat:'orthodox' },
+  { date:'2026-04-10', title:'שישי הטוב – אורתודוקסי', cat:'orthodox' },
+  { date:'2026-04-12', title:'פסחא – אורתודוקסי', cat:'orthodox_holiday' },
+  { date:'2027-01-07', title:'חג המולד – אורתודוקסי', cat:'orthodox_holiday' },
+  { date:'2027-04-30', title:'שישי הטוב – אורתודוקסי', cat:'orthodox' },
+  { date:'2027-05-02', title:'פסחא – אורתודוקסי', cat:'orthodox_holiday' },
+
+  // ══ נביא שועיב – דרוזי ══
+  { date:'2025-04-25', title:'חג נביא שועיב (ג׳תרו) – דרוזי', cat:'druze' },
+  { date:'2026-04-25', title:'חג נביא שועיב (ג׳תרו) – דרוזי', cat:'druze' },
+  { date:'2027-04-25', title:'חג נביא שועיב (ג׳תרו) – דרוזי', cat:'druze' },
+];
+
+let calInstance = null;
+let calInitDone = false;
+let calPendingDrop = null; // { studentId, date }
+
+const CAL_TYPE_COLORS = {
+  interview:      '#2563eb',
+  practical_exam: '#7c3aed',
+  batch_open:     '#15803d',
+  batch_official: '#d97706',
+};
+const CAL_TYPE_LABELS = {
+  interview:      'ראיון',
+  practical_exam: 'מבחן מעשי',
+  batch_open:     'פתיחת מחזור',
+  batch_official: 'מחזור פתוח רשמית',
+};
+
+async function calInit() {
+  // Ensure batches and pipeline data are loaded
+  if (typeof bInit === 'function' && bBatches.length === 0) await bInit().catch(()=>{});
+  if (typeof pInit === 'function' && pDays.length === 0)    await pInit().catch(()=>{});
+
+  const el = document.getElementById('cal-el');
+  if (!el) return;
+
+  calRenderPool();
+
+  const events = calBuildEvents();
+
+  if (calInstance) {
+    calInstance.destroy();
+    calInstance = null;
+  }
+
+  calInstance = new FullCalendar.Calendar(el, {
+    locale:       'he',
+    direction:    'rtl',
+    initialView:  'dayGridMonth',
+    height:       '100%',
+    headerToolbar: {
+      start: 'prev,next today',
+      center: 'title',
+      end: 'dayGridMonth,timeGridWeek,timeGridDay',
+    },
+    buttonText: {
+      today: 'היום',
+      month: 'חודש',
+      week:  'שבוע',
+      day:   'יום',
+    },
+    events,
+    editable:          false,
+    droppable:         true,
+    eventReceive:      calEventReceive,
+    eventClick:        calEventClick,
+    dateClick:         calDateClick,
+    eventDidMount: function(info) {
+      const cap  = info.event.extendedProps.capacity || '';
+      const cnt  = info.event.extendedProps.assignedCount || 0;
+      if (cap) info.el.title = `${CAL_TYPE_LABELS[info.event.extendedProps.type] || ''} · ${cnt}/${cap} משתתפים`;
+    },
+  });
+
+  calInstance.render();
+
+  // Set up FullCalendar Draggable on pool items
+  const poolEl = document.getElementById('cal-pool-items');
+  if (poolEl && window.FullCalendar?.Draggable) {
+    new FullCalendar.Draggable(poolEl, {
+      itemSelector: '.cal-pool-item',
+      eventData: function(el) {
+        return {
+          title:     el.dataset.name,
+          duration:  '01:00',
+          extendedProps: { studentId: el.dataset.id, isDrag: true },
+        };
+      },
+    });
+  }
+
+  calInitDone = true;
+}
+
+function calBuildEvents() {
+  const events = [];
+
+  // Holidays
+  if (calShowHolidays) {
+    CAL_HOLIDAYS.forEach(h => {
+      const s = CAL_HOL_STYLE[h.cat] || { bg:'#f1f5f9', text:'#475569', border:'#e2e8f0' };
+      events.push({
+        id:       'hol-' + h.date + '-' + h.cat,
+        title:    h.title,
+        start:    h.date,
+        allDay:   true,
+        color:    s.bg,
+        textColor: s.text,
+        borderColor: s.border,
+        extendedProps: { type:'holiday', cat: h.cat, isHoliday: true },
+        editable: false,
+        classNames: ['cal-holiday-event'],
+      });
+    });
+  }
+
+  // pipeline_days → interview / practical_exam
+  (typeof pDays !== 'undefined' ? pDays : []).forEach(d => {
+    const cnt = typeof pDayAssignedCount === 'function' ? pDayAssignedCount(d.id) : 0;
+    events.push({
+      id:    'pday-' + d.id,
+      title: `${CAL_TYPE_LABELS[d.type] || d.type} · ${d.location || ''} (${cnt}/${d.capacity})`,
+      start: d.time ? d.date + 'T' + d.time : d.date,
+      color: CAL_TYPE_COLORS[d.type] || '#64748b',
+      extendedProps: { type: d.type, sourceType: 'pday', sourceId: d.id, capacity: d.capacity, assignedCount: cnt, location: d.location, notes: d.notes },
+    });
+  });
+
+  // batches → open_date events
+  (typeof bBatches !== 'undefined' ? bBatches : []).forEach(b => {
+    if (!b.date) return;
+    const type  = b.officiallyOpened ? 'batch_official' : 'batch_open';
+    const label = b.officiallyOpened ? 'מחזור פתוח רשמית' : 'פתיחת מחזור';
+    events.push({
+      id:    'batch-' + b.id,
+      title: `${label}: ${b.name}`,
+      start: b.date,
+      allDay: true,
+      color:  CAL_TYPE_COLORS[type],
+      extendedProps: { type, sourceType: 'batch', sourceId: b.id, batchName: b.name },
+    });
+  });
+
+  return events;
+}
+
+function calRenderPool() {
+  const el = document.getElementById('cal-pool-items');
+  if (!el) return;
+
+  const pool = typeof bPool !== 'undefined' ? bPool : [];
+  if (pool.length === 0) {
+    el.innerHTML = `<div style="font-size:0.75rem;color:#94a3b8;text-align:center;padding:2rem 0.5rem;">אין מועמדים במאגר</div>`;
+    return;
+  }
+
+  el.innerHTML = pool.map(s => `
+    <div class="cal-pool-item" data-id="${s.id}" data-name="${s.name || '—'}">
+      <div class="cal-pool-avatar" style="background:#2563eb;">${(s.name||'?').charAt(0)}</div>
+      <span class="cal-pool-name">${s.name || '—'}</span>
+    </div>
+  `).join('');
+}
+
+const CAL_HOL_CAT_LABEL = {
+  jewish:           'חג יהודי',
+  jewish_holiday:   'חג יהודי רשמי',
+  israel_memorial:  'יום זיכרון לאומי',
+  israel_national:  'יום לאומי',
+  muslim:           'חג מוסלמי',
+  muslim_holiday:   'חג מוסלמי רשמי',
+  christian:        'חג נוצרי',
+  christian_holiday:'חג נוצרי רשמי',
+  orthodox:         'חג נוצרי אורתודוקסי',
+  orthodox_holiday: 'חג נוצרי אורתודוקסי רשמי',
+  druze:            'חג דרוזי',
+};
+
+function calEventClick(info) {
+  const p = info.event.extendedProps;
+  const modal = document.getElementById('cal-detail-modal');
+  const title = document.getElementById('cal-detail-title');
+  const body  = document.getElementById('cal-detail-body');
+  if (!modal) return;
+
+  title.textContent = info.event.title;
+
+  // Holiday event — show simple card
+  if (p.isHoliday) {
+    const s = CAL_HOL_STYLE[p.cat] || {};
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:0.6rem;padding:0.75rem 1rem;border-radius:10px;background:${s.bg||'#f1f5f9'};border:1.5px solid ${s.border||'#e2e8f0'};">
+        <i class="ph ph-star" style="font-size:1.3rem;color:${s.text||'#475569'};"></i>
+        <div>
+          <div style="font-size:0.85rem;font-weight:700;color:${s.text||'#334155'};">${info.event.title}</div>
+          <div style="font-size:0.75rem;color:#64748b;margin-top:0.2rem;">${CAL_HOL_CAT_LABEL[p.cat]||''}</div>
+        </div>
+      </div>
+      <div style="font-size:0.8rem;color:#64748b;margin-top:0.85rem;text-align:center;">
+        ${new Date(info.event.start).toLocaleDateString('he-IL', { weekday:'long', year:'numeric', month:'long', day:'numeric' })}
+      </div>
+    `;
+    modal.style.display = 'flex';
+    return;
+  }
+
+  if (p.sourceType === 'pday') {
+    const d = (typeof pDays !== 'undefined' ? pDays : []).find(x => x.id === p.sourceId);
+    const assignments = typeof pAssignments !== 'undefined'
+      ? pAssignments.filter(a => a.day_id === p.sourceId)
+      : [];
+    body.innerHTML = `
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+        <span style="background:#eff6ff;color:#2563eb;border-radius:6px;padding:0.2rem 0.6rem;font-size:0.78rem;font-weight:700;">${CAL_TYPE_LABELS[p.type]||p.type}</span>
+        ${p.location ? `<span style="background:#f1f5f9;color:#475569;border-radius:6px;padding:0.2rem 0.6rem;font-size:0.78rem;">${p.location}</span>` : ''}
+      </div>
+      <div style="font-size:0.82rem;color:#475569;margin-bottom:0.5rem;">
+        <strong>תאריך:</strong> ${new Date(info.event.start).toLocaleDateString('he-IL')}
+        ${d?.time ? ' · ' + d.time : ''}
+      </div>
+      <div style="font-size:0.82rem;color:#475569;margin-bottom:0.5rem;">
+        <strong>קיבולת:</strong> ${p.assignedCount}/${p.capacity}
+      </div>
+      ${d?.notes ? `<div style="font-size:0.8rem;color:#64748b;margin-bottom:0.5rem;"><strong>הערות:</strong> ${d.notes}</div>` : ''}
+      ${assignments.length > 0 ? `
+        <div style="margin-top:0.75rem;">
+          <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:0.4rem;">משתתפים (${assignments.length})</div>
+          ${assignments.map(a => `<div style="font-size:0.8rem;color:#334155;padding:0.25rem 0;border-bottom:1px solid #f1f5f9;">${a.profiles?.full_name || a.profile_id || '—'}</div>`).join('')}
+        </div>
+      ` : ''}
+    `;
+  } else if (p.sourceType === 'batch') {
+    const b = (typeof bBatches !== 'undefined' ? bBatches : []).find(x => x.id === p.sourceId);
+    body.innerHTML = `
+      <div style="display:flex;gap:0.5rem;flex-wrap:wrap;margin-bottom:0.75rem;">
+        <span style="background:${p.type === 'batch_official' ? '#fefce8' : '#f0fdf4'};color:${p.type === 'batch_official' ? '#b45309' : '#15803d'};border-radius:6px;padding:0.2rem 0.6rem;font-size:0.78rem;font-weight:700;">${CAL_TYPE_LABELS[p.type]}</span>
+      </div>
+      ${b ? `
+        <div style="font-size:0.82rem;color:#475569;margin-bottom:0.4rem;"><strong>מסלול:</strong> ${b.track || '—'}</div>
+        <div style="font-size:0.82rem;color:#475569;margin-bottom:0.4rem;"><strong>מיקום:</strong> ${b.loc || '—'}</div>
+        <div style="font-size:0.82rem;color:#475569;margin-bottom:0.4rem;"><strong>לוח זמנים:</strong> ${b.sch || '—'}</div>
+        <div style="font-size:0.82rem;color:#475569;margin-bottom:0.4rem;"><strong>תלמידים:</strong> ${b.students.length}/${b.cap}</div>
+      ` : ''}
+    `;
+  }
+
+  modal.style.display = 'flex';
+}
+
+function calDateClick(info) {
+  // Open quick-add pre-filled with clicked date
+  const input = document.getElementById('cal-q-date');
+  if (input) input.value = info.dateStr;
+  const modal = document.getElementById('cal-quick-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+async function calEventReceive(info) {
+  // A pool student was dropped onto a date
+  const { studentId } = info.event.extendedProps;
+  if (!studentId) { info.revert(); return; }
+
+  const dateStr = info.event.startStr.substring(0, 10);
+
+  // Remove the ghost event — we don't persist drag as calendar event
+  info.event.remove();
+
+  // Show assign modal pre-filtered to that date (reuse pipeline assign)
+  calPendingDrop = { studentId, date: dateStr };
+
+  // Find pipeline days on that date
+  const days = (typeof pDays !== 'undefined' ? pDays : []).filter(d => d.date === dateStr);
+  if (days.length === 0) {
+    alert('אין ימי ראיון/מבחן בתאריך זה. צרי יום חדש תחילה.');
+    return;
+  }
+
+  // If exactly one matching day, auto-assign
+  if (days.length === 1) {
+    await calAssignToPipelineDay(studentId, days[0].id, dateStr);
+    return;
+  }
+
+  // Multiple days — let user pick (reuse pOpenAssign if available)
+  if (typeof pOpenAssign === 'function') {
+    pOpenAssign(studentId);
+  } else {
+    const chosen = days[0];
+    await calAssignToPipelineDay(studentId, chosen.id, dateStr);
+  }
+}
+
+async function calAssignToPipelineDay(studentId, dayId, dateStr) {
+  if (typeof pConfirmAssignDirect === 'function') {
+    await pConfirmAssignDirect(studentId, dayId);
+  } else {
+    // Fallback: direct insert
+    const sb = window._supabase || supabase;
+    const { error } = await sb.from('pipeline_day_assignments').insert({ pipeline_day_id: dayId, student_id: studentId });
+    if (error) { alert('שגיאה בשיבוץ: ' + error.message); return; }
+    if (typeof window.appendActivityLog === 'function') {
+      window.appendActivityLog(studentId, { type: 'pipeline_assigned', label: `שובץ לראיון/מבחן בתאריך ${dateStr}` });
+    }
+    // refresh calendar
+    if (typeof pInit === 'function') await pInit().catch(()=>{});
+    calInit().catch(()=>{});
+  }
+}
+
+window.calToggleHolidays = function() {
+  calShowHolidays = !calShowHolidays;
+  const btn = document.getElementById('cal-holidays-btn');
+  const leg = document.getElementById('cal-legend-holidays');
+  if (btn) {
+    btn.style.background  = calShowHolidays ? '#eff6ff' : '#f1f5f9';
+    btn.style.color       = calShowHolidays ? '#2563eb' : '#475569';
+    btn.style.borderColor = calShowHolidays ? '#93c5fd' : '#e2e8f0';
+  }
+  if (leg) leg.style.display = calShowHolidays ? 'contents' : 'none';
+  // Rebuild calendar events
+  if (calInstance) {
+    calInstance.removeAllEvents();
+    calBuildEvents().forEach(e => calInstance.addEvent(e));
+  }
+};
+
+window.calQuickAdd = function() {
+  const modal = document.getElementById('cal-quick-modal');
+  if (!modal) return;
+  const today = new Date().toISOString().substring(0,10);
+  const dateInput = document.getElementById('cal-q-date');
+  if (dateInput && !dateInput.value) dateInput.value = today;
+  modal.style.display = 'flex';
+};
+
+window.calCreateEvent = async function() {
+  const type     = document.getElementById('cal-q-type')?.value;
+  const date     = document.getElementById('cal-q-date')?.value;
+  const time     = document.getElementById('cal-q-time')?.value;
+  const capacity = parseInt(document.getElementById('cal-q-capacity')?.value) || 10;
+  const location = document.getElementById('cal-q-location')?.value?.trim() || '';
+  const notes    = document.getElementById('cal-q-notes')?.value?.trim() || '';
+
+  if (!date) { alert('יש לבחור תאריך'); return; }
+
+  if (type === 'batch_open') {
+    alert('פתיחת מחזור מנוהלת בלשונית ניהול מחזורים.');
+    document.getElementById('cal-quick-modal').style.display = 'none';
+    return;
+  }
+
+  const sb = window._supabase || supabase;
+  const { data, error } = await sb.from('pipeline_days')
+    .insert({ type, date, time, capacity, location, notes })
+    .select().single();
+
+  if (error) { alert('שגיאה ביצירת אירוע: ' + error.message); return; }
+
+  if (typeof pDays !== 'undefined') pDays.push(data);
+
+  document.getElementById('cal-quick-modal').style.display = 'none';
+
+  // Reset fields
+  ['cal-q-date','cal-q-location','cal-q-notes'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+
+  // Refresh calendar
+  calInit().catch(console.error);
+};
+
+window.calCloseModal = function(e) {
+  if (e.target === document.getElementById('cal-quick-modal'))
+    document.getElementById('cal-quick-modal').style.display = 'none';
+};
+
+window.calCloseDetailModal = function(e) {
+  if (e.target === document.getElementById('cal-detail-modal'))
+    document.getElementById('cal-detail-modal').style.display = 'none';
+};
 </script>
 
 <!-- ══ BATCH MODALS ══ -->
@@ -1496,6 +2803,58 @@ init();
     <button class="b-modal-close" onclick="pCloseModal('pm-day-detail')"><i class="ph ph-x"></i></button>
     <div class="b-modal-title" id="pm-detail-title">פרטי יום</div>
     <div id="pm-detail-body"></div>
+  </div>
+</div>
+
+<!-- ═══ CALENDAR QUICK-ADD MODAL ═══ -->
+<div class="b-overlay" id="cal-quick-modal" onclick="calCloseModal(event)">
+  <div class="b-modal-box" style="max-width:480px;">
+    <button class="b-modal-close" onclick="document.getElementById('cal-quick-modal').style.display='none'"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title"><i class="ph ph-calendar-plus" style="color:#2563eb;"></i> אירוע חדש</div>
+    <div class="b-form-row">
+      <div class="b-form-field">
+        <label>סוג אירוע</label>
+        <select id="cal-q-type" style="width:100%;padding:0.5rem 0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;">
+          <option value="interview">ראיון</option>
+          <option value="practical_exam">מבחן מעשי</option>
+          <option value="batch_open">פתיחת מחזור</option>
+        </select>
+      </div>
+      <div class="b-form-field">
+        <label>תאריך</label>
+        <input type="date" id="cal-q-date">
+      </div>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field">
+        <label>שעה</label>
+        <input type="time" id="cal-q-time" value="09:00">
+      </div>
+      <div class="b-form-field">
+        <label>קיבולת</label>
+        <input type="number" id="cal-q-capacity" value="10" min="1" max="50">
+      </div>
+    </div>
+    <div class="b-form-field">
+      <label>מיקום</label>
+      <input type="text" id="cal-q-location" placeholder="לדוג׳: תל אביב">
+    </div>
+    <div class="b-form-field">
+      <label>הערות</label>
+      <input type="text" id="cal-q-notes" placeholder="הערות אופציונליות...">
+    </div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="calCreateEvent()">
+      <i class="ph ph-check"></i> צור אירוע
+    </button>
+  </div>
+</div>
+
+<!-- ═══ CALENDAR EVENT DETAIL MODAL ═══ -->
+<div class="b-overlay" id="cal-detail-modal" onclick="calCloseDetailModal(event)">
+  <div class="b-modal-box" style="max-width:520px;">
+    <button class="b-modal-close" onclick="document.getElementById('cal-detail-modal').style.display='none'"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" id="cal-detail-title">פרטי אירוע</div>
+    <div id="cal-detail-body"></div>
   </div>
 </div>
 

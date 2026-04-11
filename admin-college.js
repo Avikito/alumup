@@ -56,15 +56,16 @@ async function bInit() {
 
   // 5. Build in-memory shape
   bBatches = (batches || []).map(b => ({
-    id:         b.id,
-    name:       b.name,
-    track:      b.track,
-    loc:        b.location,
-    sch:        b.schedule,
-    date:       b.open_date,
-    cap:        b.capacity,
-    sessions:   b.sessions,
-    instructor: b.instructor || '',
+    id:               b.id,
+    name:             b.name,
+    track:            b.track,
+    loc:              b.location,
+    sch:              b.schedule,
+    date:             b.open_date,
+    cap:              b.capacity,
+    sessions:         b.sessions,
+    instructor:       b.instructor || '',
+    officiallyOpened: !!b.officially_opened,
     students: (bsRows || [])
       .filter(bs => bs.batch_id === b.id)
       .map(bs => ({
@@ -130,7 +131,9 @@ function bRenderGrid() {
     const instructor = (b.instructor || '').replace(/"/g,'&quot;');
 
     let statusHtml;
-    if (count >= b.cap) {
+    if (b.officiallyOpened) {
+      statusHtml = `<div class="b-status-badge b-status-full" style="background:rgba(22,163,74,0.12);color:#15803d;border-color:rgba(22,163,74,0.3);"><i class="ph ph-seal-check"></i> מחזור פתוח רשמית — חומרי לימוד זמינים לסטודנטים</div>`;
+    } else if (count >= b.cap) {
       statusHtml = `<div class="b-status-badge b-status-full"><i class="ph ph-seal-check"></i> המחזור מלא</div>`;
     } else if (count >= B_MIN_TO_OPEN) {
       statusHtml = `<div class="b-status-badge b-status-can-open"><i class="ph ph-check-circle"></i> ניתן לפתיחת מחזור · נותרו ${remaining} מקומות פנויים</div>`;
@@ -138,6 +141,9 @@ function bRenderGrid() {
       const needed = B_MIN_TO_OPEN - count;
       statusHtml = `<div class="b-status-badge b-status-cannot-open"><i class="ph ph-warning-circle"></i> לא ניתן לפתיחה — נדרשים עוד ${needed} נרשמים</div>`;
     }
+    const openBtnHtml = !b.officiallyOpened && count >= B_MIN_TO_OPEN
+      ? `<button class="b-btn" onclick="event.stopPropagation();bOfficiallyOpenBatch('${b.id}')" style="width:100%;justify-content:center;background:#15803d;color:#fff;border-color:#15803d;margin-bottom:0.5rem;font-weight:800;"><i class="ph ph-flag-banner"></i> פתיחת מחזור רשמית</button>`
+      : '';
 
     return `<div class="b-card" onclick="bOpenDetail('${b.id}')">
       <div class="b-card-header">
@@ -162,6 +168,7 @@ function bRenderGrid() {
       <div class="b-prog-bar"><div class="b-prog-fill" style="width:${pct}%;background:${bProgColor(pct)};"></div></div>
       ${statusHtml}
       <div class="b-card-footer" onclick="event.stopPropagation()">
+        ${openBtnHtml}
         <button class="b-btn b-btn-primary" onclick="bOpenDetail('${b.id}')"><i class="ph ph-clipboard-text"></i> ניהול נוכחות</button>
         <button class="b-btn b-btn-export" onclick="bExportBatch('${b.id}')"><i class="ph ph-export"></i> ייצוא</button>
       </div>
@@ -589,6 +596,12 @@ async function bConfirmAssign() {
   const w=bPool.find(x=>x.id===bAssigningId);
   const b=bBatches.find(x=>x.id===bSelectedBatch);
   if(!w||!b) return;
+  if(b.track!==w.track) {
+    const studentTrack=B_TRACK_LABELS[w.track]||w.track||'לא ידוע';
+    const batchTrack=B_TRACK_LABELS[b.track]||b.track||'לא ידוע';
+    const ok=confirm(`⚠️ שים לב: אי-התאמת קורס\n\nהסטודנט ${w.name} נרשם לקורס:\n"${studentTrack}"\n\nאך המחזור שנבחר הוא:\n"${batchTrack}"\n\nהאם להמשיך ולשבץ לקורס שונה מהרישום המקורי?`);
+    if(!ok) return;
+  }
   const newAttend = Array(b.sessions).fill(0);
   const { data: bsData, error: e1 } = await window._supabase.from('batch_students').insert({
     batch_id:   bSelectedBatch,
@@ -597,9 +610,18 @@ async function bConfirmAssign() {
     attendance: newAttend,
   }).select().single();
   if(e1){alert('שגיאה בשיבוץ: '+e1.message);return;}
+  // אם המחזור פתוח רשמית — הסטודנט מקבל גישה לחומרי לימוד מיד
+  const newStatus = b.officiallyOpened ? 'enrolled' : 'assigned_pending_payment';
   await window._supabase.from('students')
-    .update({ status: 'assigned_pending_payment' })
+    .update({ status: newStatus })
     .eq('id', w.id);
+  // Log assignment
+  if (typeof window.appendActivityLog === 'function') {
+    window.appendActivityLog(w.id, {
+      type: 'batch_assigned',
+      label: `שובץ למחזור: "${b.name}" · סטטוס: ${newStatus === 'enrolled' ? 'בהכשרה' : 'משובץ – ממתין לתשלום'}`,
+    });
+  }
   b.students.push({id:w.id,_bsId:bsData?.id,name:w.name,phone:w.phone,paid:false,attend:newAttend});
   bPool=bPool.filter(x=>x.id!==bAssigningId);
   // עדכון מסך נרשמים חדשים אם פתוח
@@ -608,6 +630,32 @@ async function bConfirmAssign() {
   bRenderDashboard();
   if(bCurrentBatchId===bSelectedBatch) bRenderDetail();
 }
+
+async function bOfficiallyOpenBatch(batchId) {
+  const b = bBatches.find(x => x.id === batchId);
+  if (!b) return;
+  const ok = confirm(`פתיחת מחזור רשמית: "${b.name}"\n\nפעולה זו תפתח גישה לחומרי לימוד עצמי לכל ${b.students.length} הסטודנטים הרשומים.\n\nכל סטודנט שיצורף בעתיד יקבל גישה אוטומטית.\n\nלהמשיך?`);
+  if (!ok) return;
+  const sb = window._supabase;
+  const { error: e1 } = await sb.from('batches').update({ officially_opened: true }).eq('id', batchId);
+  if (e1) { alert('שגיאה: ' + e1.message); return; }
+  const studentIds = b.students.map(s => s.id);
+  if (studentIds.length > 0) {
+    const { error: e2 } = await sb.from('students').update({ status: 'enrolled' }).in('id', studentIds);
+    if (e2) { alert('שגיאה בעדכון סטודנטים: ' + e2.message); return; }
+    // Log for each student
+    if (typeof window.appendActivityLog === 'function') {
+      studentIds.forEach(sid => window.appendActivityLog(sid, {
+        type: 'batch_opened',
+        label: `מחזור "${b.name}" נפתח רשמית — חומרי לימוד עצמי נפתחו`,
+      }));
+    }
+  }
+  b.officiallyOpened = true;
+  bRenderGrid();
+  bRenderStats();
+}
+
 function bOpenNewBatch() {
   document.getElementById('bnb-name').value='';
   document.getElementById('bnb-track').value='';
@@ -718,6 +766,13 @@ async function bConfirmRemoveStudent() {
   if (e1) { alert('שגיאה בהסרה: ' + e1.message); return; }
   await window._supabase.from('students')
     .update({ status: 'awaiting_assignment' }).eq('id', bPendingRemoveStudentId);
+  // Log removal
+  if (typeof window.appendActivityLog === 'function') {
+    window.appendActivityLog(bPendingRemoveStudentId, {
+      type: 'batch_removed',
+      label: `הוסר ממחזור: "${b.name}" — הועבר חזרה למאגר ממתינים לשיבוץ`,
+    });
+  }
   b.students = b.students.filter(x => x.id !== bPendingRemoveStudentId);
   bPool.push({ id: st.id, name: st.name, phone: st.phone,
     track: b.track, loc: b.loc, sch: b.sch, payRef: '' });

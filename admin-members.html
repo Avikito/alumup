@@ -173,6 +173,18 @@
   </style>
 </head>
 <body>
+  <script>
+    if (new URLSearchParams(location.search).get('embed') === '1') {
+      document.documentElement.classList.add('embed-mode');
+    }
+  </script>
+  <style>
+    html.embed-mode header,
+    html.embed-mode .admin-sidebar { display:none !important; }
+    html.embed-mode .admin-wrapper { min-height:100vh; }
+    html.embed-mode .admin-content { padding:1.25rem 1.5rem; }
+  </style>
+
   <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
     <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
       <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
@@ -237,7 +249,6 @@ async function requireAdmin() {
   const { data: adminRow } = await supabase
     .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
   if (!adminRow) { window.location.href = 'login.html'; return null; }
-  if (user.email !== 'avihay305@gmail.com') { window.location.href = 'login.html'; return null; }
   return user;
 }
 

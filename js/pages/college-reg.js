@@ -217,13 +217,8 @@ async function save() {
     });
   } catch (_) {}
 
-  // 5. ניקוי session — המשתמש לא אמור להיות מחובר עד לאישור האדמין
-  try {
-    await fetch(AUTH_URL + '/logout', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': ANON, 'Authorization': 'Bearer ' + accessToken }
-    });
-  } catch (_) {}
+  // 5. כניסה אוטומטית לדשבורד — המשתמש מחובר ויכול לראות את כרטיס הסטודנט שלו
+  window.location.href = 'dashboard.html';
 }
 
 window.reg = {
