@@ -414,6 +414,50 @@
       border: 1px solid var(--border);
     }
 
+    /* Health questionnaire */
+    .hq-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 4px;
+      padding: 3px 0;
+      border-bottom: 1px solid #e2e8f0;
+    }
+    .hq-row:last-child { border-bottom: none; }
+    .hq-text {
+      font-size: 0.73rem;
+      color: #334155;
+      line-height: 1.4;
+    }
+    .hq-btns {
+      display: flex;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+    .hq-btn {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      border: 1.5px solid #cbd5e1;
+      background: #fff;
+      color: #64748b;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+    .hq-btn:hover { border-color: #94a3b8; }
+    .hq-btn.active-yes {
+      background: #fee2e2;
+      border-color: #ef4444;
+      color: #dc2626;
+    }
+    .hq-btn.active-no {
+      background: #dcfce7;
+      border-color: #22c55e;
+      color: #16a34a;
+    }
+
     /* Payment summary */
     .pay-box {
       background: #f7f9fc;
@@ -1007,12 +1051,28 @@
               <span class="signed-badge" id="badge-h"><i class="ph ph-check"></i> חתום</span>
             </div>
             <div class="doc-scroll">
-              <strong>הצהרת בריאות — מכללת ALUM-IL</strong><br><br>
-              אני המצהיר/ה מאשר/ת כי:<br>
-              1. אני כשיר/ה פיזית לביצוע עבודות בגובה עד 6 מטר.<br>
-              2. אני מסוגל/ת להרמת משקלים עד 25 ק"ג ללא הגבלה רפואית.<br>
-              3. איני סובל/ת ממחלות לב, יל"ד בלתי מאוזן, סחרחורת כרונית.<br>
-              4. אתחייב/ת להודיע למכללה על כל שינוי במצבי הרפואי.
+              <div style="font-size:0.72rem;font-weight:800;color:#1a5faa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">חלק א׳ — שאלון רפואי</div>
+              <div style="font-size:0.75rem;color:#64748b;margin-bottom:10px;line-height:1.5;">אם התשובה לאחת מהשאלות היא <strong>כן</strong>, עליך להמציא תעודה רפואית מרופא לפני תחילת הלימודים.</div>
+              <div id="hq-list" style="display:flex;flex-direction:column;gap:5px;">
+                <div class="hq-row" data-id="1"><span class="hq-text">האם הרופא שלך אמר לך שאתה סובל ממחלת לב?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="2"><span class="hq-text">האם אתה חש כאבים בחזה בזמן מנוחה?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="3"><span class="hq-text">האם אתה חש כאבים בחזה במהלך פעילויות שגרה ביום-יום?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="4"><span class="hq-text">האם אתה חש כאבים בחזה בזמן פעילות גופנית?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="5"><span class="hq-text">האם במהלך השנה החולפת איבדת שיווי משקל עקב סחרחורת?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="6"><span class="hq-text">האם במהלך השנה החולפת איבדת את הכרתך?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="7"><span class="hq-text">האם הרופא אבחן אסתמה — נזקקת לטיפול תרופתי בשלושת החודשים האחרונים?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="8"><span class="hq-text">האם הרופא אבחן אסתמה — סבלת מקוצר נשימה או צפצופים?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="9"><span class="hq-text">האם בן/בת משפחה מדרגה ראשונה נפטר ממחלת לב?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="10"><span class="hq-text">האם בן/בת משפחה מדרגה ראשונה נפטר ממוות פתאומי בגיל מוקדם? (לפני גיל 55 לגבר / 65 לאישה)</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="11"><span class="hq-text">האם הרופא שלך אמר לך לבצע פעילות גופנית רק תחת השגחה רפואית (ב-5 השנים האחרונות)?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="12"><span class="hq-text">האם אתה סובל ממחלה כרונית שעשויה להגביל אותך בביצוע פעילות גופנית?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+                <div class="hq-row" data-id="13"><span class="hq-text">לנשים בהריון: האם ההיריון הזה או קודם הוגדר כהיריון בסיכון?</span><span class="hq-btns"><button class="hq-btn" data-val="yes" onclick="hqToggle(this)">כן</button><button class="hq-btn" data-val="no" onclick="hqToggle(this)">לא</button></span></div>
+              </div>
+              <div id="hq-warning" style="display:none;margin-top:8px;background:#fef2f2;border:1px solid #fecaca;border-radius:7px;padding:7px 10px;font-size:0.75rem;color:#dc2626;font-weight:700;">⚠️ ענית "כן" לאחת השאלות — עליך להמציא תעודה רפואית מרופא לפני תחילת הלימודים.</div>
+              <div style="margin-top:10px;padding-top:8px;border-top:1px solid #e2e8f0;">
+                <div style="font-size:0.72rem;font-weight:800;color:#1a5faa;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">חלק ב׳ — הצהרה</div>
+                <div style="font-size:0.75rem;color:#334155;line-height:1.6;">אני החתום מטה מצהיר כי קראתי והבנתי את כל השאלון הרפואי שבחלק א' וכל התשובות לשאלות הן שליליות. אני מצהיר כי מסרתי ידיעות מלאות ונכונות על מצבי הרפואי בעבר ובהווה. ידוע לי כי לאחר שנתיים מיום חתימתי אדרש להמציא הצהרת בריאות חדשה.</div>
+              </div>
             </div>
             <div class="sig-box">
               <div class="sig-box-label">
@@ -1030,11 +1090,30 @@
               <span class="signed-badge" id="badge-r"><i class="ph ph-check"></i> חתום</span>
             </div>
             <div class="doc-scroll">
-              <strong>תקנון מכללת ALUM-IL — מחזור 2025</strong><br><br>
-              נוכחות מינימלית: 85% לקבלת תעודה.<br>
-              דמי רישום: 399 ש"ח — מקוזזים מהמחיר הסופי של הקורס (₪8,500 + מע"מ).<br>
-              ביטול עד 14 יום — החזר מלא. 15–30 יום — 50%. מעל 30 יום — ללא החזר.<br>
-              קוד לבוש: נעלי בטיחות S1P + מטר אישי — חובה.
+              <strong>תקנון לימודים והתנהגות – מכללת ALUM-IL</strong><br><br>
+              <strong>1. חובות נוכחות ועמידה במטלות</strong><br>
+              הסטודנט מתחייב לנוכחות של 85% לפחות משעות הקורס (תיאוריה, סדנה ושטח). מובהר כי אי-הגעה למפגשי סדנה או ימי שטח, המהווים ליבת ההכשרה המעשית, תיחשב כאי-עמידה בתנאי הקורס ועשויה להוביל לאי-זכאות לתעודה, ללא החזר כספי.<br>
+              עמידה במבחן המעשי ובמבחן העיוני בסיום הקורס היא תנאי הכרחי לקבלת תעודת "מתקין מוסמך".<br>
+              אי-הגעה לימי שטח או סדנאות מעשיות עלולה להוביל לפסילה מהמשך הקורס, בשל חשיבות ההתנסות המעשית המהווה את עיקר שעות הלימוד.<br><br>
+              <strong>2. מדיניות ביטולים והחזרים כספיים</strong><br>
+              כל סטודנט חייב בדמי הרשמה וביטוח של 399 ש"ח.<br>
+              הסטודנט רשאי לבטל בתוך 14 ימים מיום עשיית ההסכם, בתנאי שהביטול נעשה לפחות 14 ימי עסקים לפני תחילת הקורס. ביטול הרשמה עד 14 ימי עסקים לפני מועד פתיחת הקורס יזכה בהחזר מלא, למעט דמי רישום בסך 399 ש"ח.<br>
+              ביטול בטווח של פחות מ-7 ימי עסקים לפני פתיחת הקורס יגרור דמי ביטול בסך 25% מעלות הקורס.<br>
+              לאחר המפגש השני של הקורס, לא יינתן כל החזר כספי בגין הפסקת לימודים מכל סיבה שהיא.<br><br>
+              <strong>3. בטיחות וציוד מגן</strong><br>
+              חלה חובה להגיע לכל המפגשים (ובפרט לסדנאות ולימי השטח) עם נעלי עבודה סגורות וציוד מגן אישי כפי שיוגדר על ידי המדריך.<br>
+              המכללה שומרת לעצמה את הזכות להרחיק סטודנט מהשיעור במידה ואינו פועל בהתאם להוראות הבטיחות בנוגע לטיפול בזכוכית, חשמל או עבודה בגובה.<br><br>
+              <strong>4. קניין רוחני וסודיות</strong><br>
+              כל חומרי הלימוד, הסילבוסים, שיטות העבודה הייחודיות והתוכניות המקצועיות של ALUM-IL הם רכוש החברה בלבד.<br>
+              חל איסור מוחלט על הקלטה, צילום או הפצה של תכני הקורס לצד ג' ללא אישור מראש ובכתב מטעם הנהלת המכללה.<br><br>
+              <strong>5. אחריות מקצועית</strong><br>
+              תעודת הגמר מעידה על סיום הכשרה ומעבר בחינה בלבד. המכללה ומי מטעמה אינם אחראים לטיב העבודה שיבצע הסטודנט באופן עצמאי מחוץ למסגרת הלימודים או לנזקים שייגרמו לצד ג'.<br>
+              ההכשרה הניתנת במכללה היא לימודית בלבד. המכללה אינה נושאת באחריות מקצועית או משפטית לכל פעולה, התקנה או עבודה שיבצע הסטודנט באופן עצמאי או עבור צד ג', ואין בתעודת הגמר משום הסמכה לביצוע עבודות הדורשות.<br><br>
+              <strong>6. זכות המכללה לשינויים וביטולים</strong><br>
+              <strong>פתיחת הקורס:</strong> פתיחת כל קורס מותנית במספר מינימלי של נרשמים. המכללה שומרת לעצמה את הזכות לדחות את מועד פתיחת הקורס או לבטלו במידה ולא נרשמו מספיק סטודנטים. במקרה של ביטול קורס על ידי המכללה, יושבו לסטודנט כל הכספים ששולמו על ידו, כולל דמי הרישום.<br>
+              <strong>שינויים במהלך הקורס:</strong> המכללה רשאית לבצע שינויים בלוח הזמנים, במיקום השיעורים (בטווח סביר) ובזהות המרצים, וזאת משיקולים מקצועיים, פדגוגיים או במקרים של כוח עליון. הודעה על שינויים תימסר לסטודנטים זמן סביר מראש.<br>
+              <strong>הפסקת לימודים יזומה:</strong> המכללה שומרת לעצמה את הזכות להפסיק את לימודיו של סטודנט בגין התנהגות שאינה הולמת, הפרת משמעת חמורה, אי-תשלום שכר לימוד או אי-עמידה בדרישות הבטיחות, וזאת לאחר שניתנה לסטודנט הזדמנות להשמיע את טענותיו.<br><br>
+              אני מאשר כי קראתי את התקנון ואני מסכים לכל תנאיו.
             </div>
             <div class="sig-box">
               <div class="sig-box-label">
@@ -1082,6 +1161,41 @@
           <div style="display:flex;align-items:flex-start;gap:8px;background:#f0f4ff;border:1px solid #c7d7fb;border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#1e40af;font-weight:600;margin-bottom:1rem;">
             <i class="ph ph-phone-call" style="font-size:1rem;flex-shrink:0;margin-top:1px;"></i>
             לאחר התשלום צוות המכללה יצור אתכם קשר לראיון פרונטלי ותיאום מועד ההכשרה.
+          </div>
+
+          <!-- ID Photo Upload -->
+          <div style="margin-bottom:1rem;">
+            <div style="font-size:0.82rem;font-weight:800;color:var(--navy);margin-bottom:8px;">
+              <i class="ph ph-identification-card"></i> צילום תעודת זהות / דרכון <span style="font-size:0.72rem;font-weight:500;color:#ef4444;">*חובה</span>
+            </div>
+
+            <input type="file" id="id-file-input" accept="image/*" style="display:none" onchange="reg.handleIdPhoto(this)">
+            <input type="file" id="id-camera-input" accept="image/*" capture="environment" style="display:none" onchange="reg.handleIdPhoto(this)">
+
+            <div id="id-drop-area" style="border:2px dashed #cbd5e1;border-radius:10px;padding:18px 12px;text-align:center;cursor:pointer;background:#f8fafc;transition:border-color 0.2s;" onclick="document.getElementById('id-file-input').click()">
+              <i class="ph ph-cloud-arrow-up" style="font-size:1.8rem;color:#94a3b8;display:block;margin-bottom:6px;"></i>
+              <div style="font-size:0.8rem;color:#64748b;font-weight:600;">לחצו להעלאת קובץ</div>
+              <div style="font-size:0.72rem;color:#94a3b8;margin-top:2px;">JPG, PNG, HEIC — עד 10MB</div>
+            </div>
+
+            <div style="display:flex;gap:8px;margin-top:8px;">
+              <button type="button" onclick="document.getElementById('id-file-input').click()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px;font-size:0.78rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+                <i class="ph ph-upload-simple"></i> העלאה מהגלריה
+              </button>
+              <button type="button" onclick="document.getElementById('id-camera-input').click()" style="flex:1;display:flex;align-items:center;justify-content:center;gap:6px;background:#fff;border:1.5px solid #cbd5e1;border-radius:8px;padding:8px;font-size:0.78rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+                <i class="ph ph-camera"></i> צלם עכשיו
+              </button>
+            </div>
+
+            <div id="id-preview" style="display:none;margin-top:10px;position:relative;border-radius:10px;overflow:hidden;border:1.5px solid #e2e8f0;">
+              <img id="id-preview-img" style="width:100%;display:block;max-height:200px;object-fit:contain;background:#f1f5f9;">
+              <button type="button" onclick="reg.clearIdPhoto()" style="position:absolute;top:6px;left:6px;background:rgba(0,0,0,0.55);color:#fff;border:none;border-radius:6px;padding:4px 8px;font-size:0.72rem;cursor:pointer;font-family:inherit;">
+                <i class="ph ph-trash"></i> הסר
+              </button>
+              <div style="background:#f0fdf4;border-top:1px solid #bbf7d0;padding:5px 10px;font-size:0.72rem;color:#15803d;font-weight:700;display:flex;align-items:center;gap:4px;">
+                <i class="ph ph-check-circle"></i> התעודה הועלתה בהצלחה
+              </div>
+            </div>
           </div>
 
           <div class="err" id="err5"><i class="ph ph-warning"></i> <span></span></div>
@@ -1253,6 +1367,24 @@
 </footer>
 
 <script type="module" src="js/pages/college-reg.js"></script>
+
+<script>
+function hqToggle(btn) {
+  const row = btn.closest('.hq-row');
+  row.querySelectorAll('.hq-btn').forEach(b => b.classList.remove('active-yes', 'active-no'));
+  if (btn.dataset.val === 'yes') btn.classList.add('active-yes');
+  else btn.classList.add('active-no');
+
+  const anyYes = [...document.querySelectorAll('#hq-list .hq-btn.active-yes')].length > 0;
+  document.getElementById('hq-warning').style.display = anyYes ? 'block' : 'none';
+
+  const canvas = document.getElementById('cv-h');
+  if (canvas) {
+    canvas.style.opacity = anyYes ? '0.35' : '1';
+    canvas.style.pointerEvents = anyYes ? 'none' : 'auto';
+  }
+}
+</script>
 
 </body>
 </html>

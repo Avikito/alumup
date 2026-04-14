@@ -461,7 +461,16 @@
     .ov-kpi-val { font-size:1.5rem;font-weight:800;color:#0f172a;line-height:1; }
     .ov-kpi-lbl { font-size:0.68rem;font-weight:600;color:#64748b;margin-top:3px; }
     /* ── OVERVIEW CRM LAYOUT ── */
-    .ov-crm-layout { display:flex;gap:1rem;height:calc(100vh - 290px);min-height:420px; }
+    #ov-cal-el .fc-toolbar { padding:0 !important; margin-bottom:4px !important; }
+    #ov-cal-el .fc-toolbar-title { font-size:0.8rem !important; }
+    #ov-cal-el .fc-button { padding:2px 7px !important; font-size:0.7rem !important; }
+    #ov-cal-el .fc-col-header-cell { font-size:0.68rem !important; padding:2px 0 !important; }
+    #ov-cal-el .fc-daygrid-day-number { font-size:0.68rem !important; padding:1px 4px !important; }
+    #ov-cal-el .fc-daygrid-day-top { line-height:1.2 !important; }
+    #ov-cal-el .fc-daygrid-day-frame { min-height:unset !important; }
+    #ov-cal-el .fc-event-title { font-size:0.6rem !important; }
+    #ov-cal-el .fc-daygrid-event { margin:0 !important; padding:0 1px !important; }
+    .ov-crm-layout { display:flex;gap:1rem;height:600px;min-height:400px; }
     .ov-crm-table-wrap { flex:1;min-width:0;display:flex;flex-direction:column;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;overflow:hidden; }
     .ov-crm-toolbar { padding:0.65rem 1rem;border-bottom:1px solid #f1f5f9;display:flex;gap:0.5rem;align-items:center;flex-shrink:0;background:#fafbfc; }
     .ov-crm-search { flex:1;padding:0.42rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-size:0.82rem;font-family:inherit;outline:none;transition:border-color 0.15s;background:#fff; }
@@ -599,6 +608,21 @@
           <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f5f3ff;color:#6d28d9;"><i class="ph ph-hourglass-medium"></i></div><div><div class="ov-kpi-val" id="ov-k-wait">—</div><div class="ov-kpi-lbl">ממתינים לשיבוץ</div></div></div>
           <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f0fdf4;color:#15803d;"><i class="ph ph-student"></i></div><div><div class="ov-kpi-val" id="ov-k-train">—</div><div class="ov-kpi-lbl">בהכשרה</div></div></div>
           <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f0f9ff;color:#0369a1;"><i class="ph ph-seal-check"></i></div><div><div class="ov-kpi-val" id="ov-k-grad">—</div><div class="ov-kpi-lbl">בוגרים מוסמכים</div></div></div>
+        </div>
+
+        <!-- Mini Calendar -->
+        <div style="display:flex;justify-content:center;margin-bottom:1.25rem;">
+        <div id="ov-cal-wrap" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px;width:550px;flex-shrink:0;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+            <div style="font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;">
+              <i class="ph ph-calendar-blank" style="color:#2563eb;"></i> לוח זמנים
+            </div>
+            <button id="ov-cal-fs-btn" onclick="ovCalToggleFullscreen()" style="display:flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+              <i class="ph ph-arrows-out" id="ov-cal-fs-icon"></i> מסך מלא
+            </button>
+          </div>
+          <div id="ov-cal-el" style="height:550px;"></div>
+        </div>
         </div>
 
         <!-- CRM Layout: table + flyout -->
@@ -780,15 +804,8 @@
           </div>
         </div>
         <div class="cal-layout">
-          <!-- Draggable pool sidebar -->
-          <div class="cal-pool-panel">
-            <div class="cal-pool-header"><i class="ph ph-hand-grabbing" style="margin-left:0.3rem;"></i>גרור לשיבוץ</div>
-            <div class="cal-pool-scroll" id="cal-pool-items">
-              <div style="font-size:0.75rem;color:#94a3b8;text-align:center;padding:2rem 0.5rem;">טוען...</div>
-            </div>
-          </div>
           <!-- Calendar -->
-          <div class="cal-main">
+          <div class="cal-main" style="width:100%;">
             <div id="cal-el" style="height:100%;"></div>
           </div>
         </div>
@@ -929,8 +946,7 @@ async function init() {
     const el = document.getElementById('view-' + v);
     if (el) el.style.display = 'none';
   });
-  await loadUsers();
-  ovInit();
+  await Promise.all([loadUsers(), ovInit()]);
 }
 
 async function loadUsers() {
@@ -1467,6 +1483,18 @@ function renderStudents(students) {
           </div>
         </div>
 
+        <!-- תעודת זהות / דרכון -->
+        <div class="det-section">
+          <div class="det-section-title"><i class="ph ph-identification-card"></i> תעודת זהות / דרכון</div>
+          ${s.id_photo_data
+            ? `<div style="border-radius:8px;overflow:hidden;border:1.5px solid var(--border);max-width:320px;margin-bottom:8px;"><img src="${s.id_photo_data}" style="width:100%;display:block;max-height:200px;object-fit:contain;background:#f1f5f9;"></div>`
+            : `<div style="font-size:0.78rem;color:var(--silver-dark);margin-bottom:8px;">לא הועלתה תמונה</div>`}
+          <input type="file" id="reg-id-input-${s.id}" accept="image/*" style="display:none" onchange="adminUploadIdPhoto('${s.id}',this)">
+          <button onclick="document.getElementById('reg-id-input-${s.id}').click()" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid var(--border);border-radius:7px;padding:5px 12px;font-size:0.75rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+            <i class="ph ph-upload-simple"></i> ${s.id_photo_data ? 'החלף תעודה' : 'העלה תעודה'}
+          </button>
+        </div>
+
         <!-- הערות מנהל -->
         <div class="notes-area" style="margin-top:0;">
           <div class="notes-title"><i class="ph ph-note-pencil"></i> הערות מנהל</div>
@@ -1690,6 +1718,7 @@ async function ovInit() {
 
   ovUpdateCounts();
   ovRenderTable();
+  ovCalInit();
 }
 
 function ovUpdateCounts() {
@@ -1970,6 +1999,18 @@ function ovRenderFlyout(s) {
         </div>
       </div>
 
+      <!-- תעודת זהות / דרכון -->
+      <div class="ov-fl-section">
+        <div class="ov-fl-sec-title"><i class="ph ph-identification-card"></i> תעודת זהות / דרכון</div>
+        ${s.id_photo_data
+          ? `<div style="border-radius:8px;overflow:hidden;border:1.5px solid #e2e8f0;max-width:300px;margin-bottom:8px;"><img src="${s.id_photo_data}" style="width:100%;display:block;max-height:190px;object-fit:contain;background:#f1f5f9;"></div>`
+          : `<div style="font-size:0.78rem;color:#94a3b8;margin-bottom:8px;">לא הועלתה תמונה</div>`}
+        <input type="file" id="ov-id-input-${s.id}" accept="image/*" style="display:none" onchange="adminUploadIdPhoto('${s.id}',this)">
+        <button onclick="document.getElementById('ov-id-input-${s.id}').click()" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #e2e8f0;border-radius:7px;padding:5px 12px;font-size:0.75rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+          <i class="ph ph-upload-simple"></i> ${s.id_photo_data ? 'החלף תעודה' : 'העלה תעודה'}
+        </button>
+      </div>
+
       <!-- הערות מנהל -->
       <div class="ov-fl-section">
         <div class="ov-fl-sec-title"><i class="ph ph-note-pencil"></i> הערות מנהל</div>
@@ -2064,28 +2105,12 @@ async function ovOpenMemberFlyout(profileId) {
     </div>`;
 }
 
-async function ovUpdateStatus(studentId, newStatus) {
+window.ovUpdateStatus = async function ovUpdateStatus(studentId, newStatus) {
   const s = ovStudents.find(x => x.id === studentId);
   if (!s || s.status === newStatus) return;
-  const oldStatus = s.status;
-  const entry = {
-    at:    new Date().toISOString(),
-    type:  'status_change',
-    from:  oldStatus,
-    to:    newStatus,
-    by:    currentUserEmail,
-    label: `${OV_ALL_STATUS_LABELS[oldStatus]||oldStatus} → ${OV_ALL_STATUS_LABELS[newStatus]||newStatus}`,
-  };
-  const newLog = [...(Array.isArray(s.activity_log) ? s.activity_log : []), entry];
-  // Try with activity_log; if column missing, fall back to status-only update
-  let { error } = await supabase.from('students').update({ status: newStatus, activity_log: newLog }).eq('id', studentId);
-  if (error && error.message?.includes('activity_log')) {
-    const res = await supabase.from('students').update({ status: newStatus }).eq('id', studentId);
-    error = res.error;
-  }
-  if (error) { alert('שגיאה: ' + error.message); return; }
+  const { error } = await window._supabase.from('students').update({ status: newStatus }).eq('id', studentId);
+  if (error) { alert('שגיאה בעדכון סטטוס: ' + error.message); return; }
   s.status = newStatus;
-  s.activity_log = newLog;
   // Update KPI
   document.getElementById('ov-k-new').textContent   = ovStudents.filter(x => x.status === 'awaiting_coordination').length;
   document.getElementById('ov-k-wait').textContent  = ovStudents.filter(x => ['interview_scheduled','awaiting_assignment','assigned_pending_payment'].includes(x.status)).length;
@@ -2682,6 +2707,55 @@ window.calCloseDetailModal = function(e) {
   if (e.target === document.getElementById('cal-detail-modal'))
     document.getElementById('cal-detail-modal').style.display = 'none';
 };
+
+// ── Overview Mini Calendar ──
+let ovCalInstance = null;
+let ovCalFullscreen = false;
+
+async function ovCalInit() {
+  if (typeof FullCalendar === 'undefined') return;
+  if (typeof bInit === 'function' && bBatches.length === 0) await bInit().catch(()=>{});
+  if (typeof pInit === 'function' && pDays.length === 0)    await pInit().catch(()=>{});
+  const el = document.getElementById('ov-cal-el');
+  if (!el) return;
+  if (ovCalInstance) { ovCalInstance.destroy(); ovCalInstance = null; }
+  const events = typeof calBuildEvents === 'function' ? calBuildEvents() : [];
+  ovCalInstance = new FullCalendar.Calendar(el, {
+    locale: 'he', direction: 'rtl',
+    initialView: 'dayGridMonth',
+    headerToolbar: { start: 'prev,next', center: 'title', end: 'today' },
+    height: '100%',
+    events,
+    eventClick(info) {
+      if (typeof calOnEventClick === 'function') calOnEventClick(info);
+    },
+    eventDidMount(info) {
+      if (typeof calEventDidMount === 'function') calEventDidMount(info);
+    }
+  });
+  ovCalInstance.render();
+}
+
+window.ovCalToggleFullscreen = function() {
+  const wrap = document.getElementById('ov-cal-wrap');
+  const icon = document.getElementById('ov-cal-fs-icon');
+  const btn  = document.getElementById('ov-cal-fs-btn');
+  ovCalFullscreen = !ovCalFullscreen;
+  if (ovCalFullscreen) {
+    wrap.style.cssText += ';position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;border-radius:0;margin:0;height:100vh;display:flex;flex-direction:column;';
+    document.getElementById('ov-cal-el').style.height = 'calc(100vh - 56px)';
+    icon.className = 'ph ph-arrows-in';
+    btn.querySelector('i').nextSibling && (btn.lastChild.textContent = ' סגור');
+    btn.innerHTML = '<i class="ph ph-arrows-in"></i> סגור';
+  } else {
+    wrap.style.position = '';wrap.style.top='';wrap.style.left='';wrap.style.right='';wrap.style.bottom='';
+    wrap.style.zIndex='';wrap.style.borderRadius='14px';wrap.style.margin='';
+    wrap.style.height='';wrap.style.display='';wrap.style.flexDirection='';
+    document.getElementById('ov-cal-el').style.height = '280px';
+    btn.innerHTML = '<i class="ph ph-arrows-out"></i> מסך מלא';
+  }
+  if (ovCalInstance) ovCalInstance.updateSize();
+};
 </script>
 
 <!-- ══ BATCH MODALS ══ -->
@@ -2727,6 +2801,39 @@ window.calCloseDetailModal = function(e) {
       <div class="b-form-field"><label>קיבולת מקסימלית</label><input type="number" id="bnb-cap" value="15" min="1" max="30"></div>
     </div>
     <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="bCreateBatch()"><i class="ph ph-check"></i> צור מחזור</button>
+  </div>
+</div>
+
+<div class="b-overlay" id="bm-edit-batch" onclick="bCloseModal('bm-edit-batch',event)">
+  <div class="b-modal-box">
+    <button class="b-modal-close" onclick="bCloseModal('bm-edit-batch')"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title"><i class="ph ph-pencil" style="color:#2563eb;"></i> עריכת פרטי מחזור</div>
+    <div class="b-form-field"><label>שם המחזור</label><input type="text" id="beb-name" placeholder="לדוג׳: פרגולה אלומיניום — מ׳ 1 · יוני 2025"></div>
+    <div class="b-form-field">
+      <label>מסלול קורס</label>
+      <select id="beb-track">
+        <option value="pergola_al">מתקין מוסמך – פרגולה אלומיניום</option>
+        <option value="pergola_electric">מתקין מוסמך – פרגולה חשמלית ומסכי ZIP</option>
+        <option value="glass_systems">מתקין מוסמך – מערכות זכוכית, ויטרינה ואקורדיון</option>
+        <option value="bioclimatic">מתקין מוסמך – מערכות BIOCLIMATIC</option>
+        <option value="weld_al">מסגרות וריתוך אלומיניום</option>
+        <option value="weld_steel">מסגרות וריתוך קונסטרוקציה</option>
+      </select>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field"><label>מיקום</label><select id="beb-loc"><option value="beer_sheva">באר שבע</option><option value="tel_aviv">תל אביב</option></select></div>
+      <div class="b-form-field"><label>לוח זמנים</label><select id="beb-sch"><option value="morning">בוקר (08:30–16:30 · 5 מפגשים)</option><option value="evening">ערב (16:00–20:30 · 10 מפגשים)</option></select></div>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field"><label>תאריך פתיחה</label><input type="date" id="beb-date"></div>
+      <div class="b-form-field"><label>קיבולת מקסימלית</label><input type="number" id="beb-cap" min="1" max="30"></div>
+    </div>
+    <div class="b-form-field" style="margin-top:0.75rem;border-top:1px solid #e2e8f0;padding-top:0.75rem;">
+      <label>סיסמת מנהל לאישור</label>
+      <input type="password" id="beb-pass" placeholder="הזינו סיסמה" onkeydown="if(event.key==='Enter')bConfirmEditBatch()">
+    </div>
+    <div id="beb-err" style="display:none;font-size:0.8rem;color:#dc2626;font-weight:700;margin-bottom:0.75rem;"></div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="bConfirmEditBatch()"><i class="ph ph-check"></i> שמור שינויים</button>
   </div>
 </div>
 

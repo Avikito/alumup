@@ -206,4 +206,4 @@ CREATE POLICY "batch_students_delete_admin"
 -- ─── ALTER EXISTING TABLES ────────────────────────────────────
 -- Run these if the students table was already created without these columns:
 -- ALTER TABLE students ADD COLUMN IF NOT EXISTS birth_year   INTEGER;
--- ALTER TABLE students ADD COLUMN IF NOT EXISTS id_photo_data TEXT;
+ALTER TABLE students ADD COLUMN IF NOT EXISTS id_photo_data TEXT;

@@ -148,6 +148,7 @@ function bRenderGrid() {
     return `<div class="b-card" onclick="bOpenDetail('${b.id}')">
       <div class="b-card-header">
         <span class="b-tag ${tagMap[b.track]||'b-tag-blue'}" style="font-size:0.72rem;">${B_TRACK_LABELS[b.track]||b.track}</span>
+        <button onclick="event.stopPropagation();bEditBatch('${b.id}')" style="background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;font-size:1.05rem;flex-shrink:0;" title="ערוך מחזור"><i class="ph ph-pencil"></i></button>
         <button onclick="event.stopPropagation();bDeleteBatch('${b.id}')" style="background:none;border:none;cursor:pointer;color:#cbd5e1;padding:2px;font-size:1.05rem;flex-shrink:0;margin-right:auto;" title="מחק מחזור"><i class="ph ph-trash"></i></button>
       </div>
       <div class="b-card-name">${b.name}</div>
@@ -284,6 +285,15 @@ async function bTogglePoolRow(studentId, event) {
     +'<div class="bsc-field"><div class="bsc-label">סכום</div><div class="bsc-val">'+(st.payment_amount?'₪'+st.payment_amount:'—')+'</div></div>'
     +'<div class="bsc-field"><div class="bsc-label">אסמכתא</div><div class="bsc-val" style="font-family:monospace;font-size:0.72rem;">'+(st.payment_ref||'—')+'</div></div>'
     +'</div></div>'
+    +'<div class="bsc-section"><div class="bsc-section-title"><i class="ph ph-identification-card"></i> תעודת זהות / דרכון</div>'
+    +(st.id_photo_data
+      ? '<div style="border-radius:10px;overflow:hidden;border:1.5px solid #e2e8f0;max-width:340px;margin-bottom:6px;">'
+        +'<img src="'+st.id_photo_data+'" style="width:100%;display:block;max-height:220px;object-fit:contain;background:#f1f5f9;">'
+        +'</div>'
+      : '<div style="font-size:0.78rem;color:#94a3b8;padding:4px 0;margin-bottom:6px;">לא הועלתה תמונה</div>')
+    +'<input type="file" id="admin-id-input-'+st.id+'" accept="image/*" style="display:none" onchange="adminUploadIdPhoto(\''+st.id+'\',this)">'
+    +'<button onclick="document.getElementById(\'admin-id-input-'+st.id+'\').click()" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #cbd5e1;border-radius:7px;padding:5px 12px;font-size:0.75rem;font-weight:700;color:#334155;cursor:pointer;font-family:\'Heebo\',sans-serif;">'
+    +'<i class="ph ph-upload-simple"></i> '+(st.id_photo_data?'החלף תעודה':'העלה תעודה')+'</button></div>'
     +'</div>'
     +'<div class="bsc-section" style="margin-top:0.75rem;">'
     +'<div class="bsc-section-title"><i class="ph ph-note-pencil"></i> הערות מנהל</div>'
@@ -303,8 +313,8 @@ async function bDownloadDoc(type, studentId) {
   const sigData  = isHealth ? st.health_signature_data : st.regulations_signature_data;
   const docTitle = isHealth ? 'הצהרת בריאות' : 'תקנון לימודים';
   const docBody  = isHealth
-    ? 'אני המצהיר/ה מאשר/ת כי:<br>1. אני כשיר/ה פיזית לביצוע עבודות בגובה עד 6 מטר.<br>2. אני מסוגל/ת להרמת משקלים עד 25 ק"ג ללא הגבלה רפואית.<br>3. איני סובל/ת ממחלות לב, יל"ד בלתי מאוזן, סחרחורת כרונית.<br>4. אתחייב/ת להודיע למכללה על כל שינוי במצבי הרפואי.'
-    : 'נוכחות מינימלית: 85% לקבלת תעודה.<br>דמי רישום: 399 ש"ח — מקוזזים מהמחיר הסופי של הקורס (₪8,500 + מע"מ).<br>ביטול עד 14 יום — החזר מלא. 15–30 יום — 50%. מעל 30 יום — ללא החזר.<br>קוד לבוש: נעלי בטיחות S1P + מטר אישי — חובה.';
+    ? '<strong>חלק א׳ — שאלון רפואי</strong><br>1. האם הרופא שלך אמר לך שאתה סובל ממחלת לב?<br>2. האם אתה חש כאבים בחזה בזמן מנוחה?<br>3. האם אתה חש כאבים בחזה במהלך פעילויות שגרה ביום-יום?<br>4. האם אתה חש כאבים בחזה בזמן פעילות גופנית?<br>5. האם במהלך השנה החולפת איבדת שיווי משקל עקב סחרחורת?<br>6. האם במהלך השנה החולפת איבדת את הכרתך?<br>7. האם הרופא אבחן אסתמה — נזקקת לטיפול תרופתי בשלושת החודשים האחרונים?<br>8. האם הרופא אבחן אסתמה — סבלת מקוצר נשימה או צפצופים?<br>9. האם בן/בת משפחה מדרגה ראשונה נפטר ממחלת לב?<br>10. האם בן/בת משפחה מדרגה ראשונה נפטר ממוות פתאומי בגיל מוקדם?<br>11. האם הרופא שלך אמר לך לבצע פעילות גופנית רק תחת השגחה רפואית?<br>12. האם אתה סובל ממחלה כרונית שעשויה להגביל אותך בביצוע פעילות גופנית?<br>13. לנשים בהריון: האם ההיריון הוגדר כהיריון בסיכון?<br><br><strong>חלק ב׳ — הצהרה</strong><br>אני החתום מטה מצהיר כי קראתי והבנתי את כל השאלון הרפואי שבחלק א׳ וכל התשובות לשאלות הן שליליות. אני מצהיר כי מסרתי ידיעות מלאות ונכונות על מצבי הרפואי בעבר ובהווה. ידוע לי כי לאחר שנתיים מיום חתימתי אדרש להמציא הצהרת בריאות חדשה.'
+    : '<strong>1. חובות נוכחות ועמידה במטלות</strong><br>הסטודנט מתחייב לנוכחות של 85% לפחות משעות הקורס (תיאוריה, סדנה ושטח). אי-הגעה למפגשי סדנה או ימי שטח תיחשב כאי-עמידה בתנאי הקורס ועשויה להוביל לאי-זכאות לתעודה, ללא החזר כספי.<br>עמידה במבחן המעשי ובמבחן העיוני בסיום הקורס היא תנאי הכרחי לקבלת תעודת "מתקין מוסמך".<br><br><strong>2. מדיניות ביטולים והחזרים כספיים</strong><br>כל סטודנט חייב בדמי הרשמה וביטוח של 399 ש"ח.<br>ביטול עד 14 ימי עסקים לפני פתיחת הקורס — החזר מלא למעט דמי רישום.<br>ביטול פחות מ-7 ימי עסקים לפני פתיחת הקורס — דמי ביטול 25% מעלות הקורס.<br>לאחר המפגש השני — לא יינתן החזר כספי.<br><br><strong>3. בטיחות וציוד מגן</strong><br>חובה להגיע עם נעלי עבודה סגורות וציוד מגן אישי. המכללה רשאית להרחיק סטודנט שאינו עומד בהוראות הבטיחות.<br><br><strong>4. קניין רוחני וסודיות</strong><br>חל איסור על הקלטה, צילום או הפצה של תכני הקורס ללא אישור מראש ובכתב.<br><br><strong>5. אחריות מקצועית</strong><br>תעודת הגמר מעידה על סיום הכשרה ומעבר בחינה בלבד. המכללה אינה נושאת באחריות לפעולות עצמאיות של הסטודנט.<br><br><strong>6. זכות המכללה לשינויים וביטולים</strong><br>המכללה רשאית לדחות או לבטל קורס שלא הגיע למינימום נרשמים, לבצע שינויים בלוח הזמנים ובמרצים, ולהפסיק לימודי סטודנט בגין הפרת משמעת או אי-עמידה בדרישות.';
   const html = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
 <head>
@@ -341,6 +351,53 @@ async function bDownloadDoc(type, studentId) {
   win.document.write(html);
   win.document.close();
   win.onload = () => win.print();
+}
+
+async function adminUploadIdPhoto(studentId, input) {
+  const file = input.files[0];
+  if (!file) return;
+  if (!['image/jpeg','image/png','image/webp','image/heic','image/heif'].includes(file.type)) {
+    alert('יש להעלות קובץ תמונה בלבד (JPG, PNG, HEIC)');
+    input.value = ''; return;
+  }
+  if (file.size > 15 * 1024 * 1024) {
+    alert('גודל הקובץ חייב להיות עד 15MB');
+    input.value = ''; return;
+  }
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = async () => {
+      const MAX = 1200;
+      let w = img.width, h = img.height;
+      if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+      const cv = document.createElement('canvas');
+      cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      const data = cv.toDataURL('image/jpeg', 0.82);
+      const { error } = await window._supabase.from('students').update({ id_photo_data: data }).eq('id', studentId);
+      if (error) { alert('שגיאה בשמירת התמונה: ' + error.message); return; }
+      // Refresh whichever view is showing this student
+      const poolBody  = document.getElementById('bpdb-' + studentId);
+      const ovFlyout  = document.getElementById('ov-flyout');
+      const regDetails = document.getElementById('sdetails-' + studentId);
+      if (poolBody) {
+        delete poolBody.dataset.loaded; poolBody.innerHTML = ''; bTogglePoolRow(studentId, null);
+      } else if (ovFlyout && ovFlyout.classList.contains('open')) {
+        window.ovOpenFlyout(studentId);
+      } else if (regDetails) {
+        loadStudents().then(() => {
+          const r = document.getElementById('sdetails-' + studentId);
+          if (r) r.classList.add('open');
+        });
+      } else {
+        bOpenStudentProfile(studentId);
+      }
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.value = '';
 }
 
 async function bSaveStudentNote(studentId) {
@@ -501,10 +558,23 @@ async function bOpenStudentProfile(studentId) {
     </div>
 
     ${(s.health_signature_data || s.regulations_signature_data) ? `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem;">
       ${s.health_signature_data ? `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:#94a3b8;margin-bottom:4px;">חתימה — הצהרת בריאות</div><img src="${s.health_signature_data}" style="max-height:60px;max-width:100%;"></div>` : ''}
       ${s.regulations_signature_data ? `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:8px;text-align:center;"><div style="font-size:0.65rem;color:#94a3b8;margin-bottom:4px;">חתימה — תקנון</div><img src="${s.regulations_signature_data}" style="max-height:60px;max-width:100%;"></div>` : ''}
     </div>` : ''}
+
+    <div style="background:#f8fafc;border-radius:10px;padding:10px 14px;">
+      <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#0f766e;margin-bottom:8px;"><i class="ph ph-identification-card"></i> תעודת זהות / דרכון</div>
+      ${s.id_photo_data
+        ? `<div style="position:relative;border-radius:8px;overflow:hidden;border:1.5px solid #e2e8f0;max-width:320px;margin-bottom:6px;">
+             <img src="${s.id_photo_data}" style="width:100%;display:block;max-height:200px;object-fit:contain;background:#f1f5f9;">
+           </div>`
+        : `<div style="font-size:0.78rem;color:#94a3b8;margin-bottom:6px;">לא הועלתה תמונה</div>`}
+      <input type="file" id="admin-id-input-${s.id}" accept="image/*" style="display:none" onchange="adminUploadIdPhoto('${s.id}',this)">
+      <button onclick="document.getElementById('admin-id-input-${s.id}').click()" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #cbd5e1;border-radius:7px;padding:5px 12px;font-size:0.75rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+        <i class="ph ph-upload-simple"></i> ${s.id_photo_data ? 'החלף תעודה' : 'העלה תעודה'}
+      </button>
+    </div>
   `;
 }
 
@@ -781,6 +851,52 @@ async function bConfirmRemoveStudent() {
   if (bCurrentBatchId === bPendingRemoveBatchId) bRenderDetail();
 }
 
+// ── Edit Batch ──
+let bEditingBatchId = null;
+
+function bEditBatch(id) {
+  bEditingBatchId = id;
+  const b = bBatches.find(x => x.id === id);
+  if (!b) return;
+  document.getElementById('beb-name').value  = b.name  || '';
+  document.getElementById('beb-track').value = b.track || '';
+  document.getElementById('beb-loc').value   = b.loc   || 'beer_sheva';
+  document.getElementById('beb-sch').value   = b.sch   || 'morning';
+  document.getElementById('beb-date').value  = b.date  || '';
+  document.getElementById('beb-cap').value   = b.cap   || 15;
+  document.getElementById('beb-pass').value  = '';
+  document.getElementById('beb-err').style.display = 'none';
+  document.getElementById('bm-edit-batch').classList.add('open');
+  setTimeout(() => document.getElementById('beb-name').focus(), 100);
+}
+
+async function bConfirmEditBatch() {
+  const errEl = document.getElementById('beb-err');
+  const pass  = document.getElementById('beb-pass').value;
+  if (pass !== B_DELETE_PASSWORD) {
+    errEl.textContent = 'סיסמה שגויה'; errEl.style.display = 'block'; return;
+  }
+  const name = document.getElementById('beb-name').value.trim();
+  if (!name) { errEl.textContent = 'יש להזין שם מחזור'; errEl.style.display = 'block'; return; }
+  const track    = document.getElementById('beb-track').value;
+  const loc      = document.getElementById('beb-loc').value;
+  const sch      = document.getElementById('beb-sch').value;
+  const date     = document.getElementById('beb-date').value;
+  const cap      = parseInt(document.getElementById('beb-cap').value) || 15;
+  const sessions = sch === 'morning' ? 5 : 10;
+
+  const { error } = await window._supabase.from('batches').update({
+    name, track, location: loc, schedule: sch,
+    open_date: date || null, capacity: cap, sessions,
+  }).eq('id', bEditingBatchId);
+  if (error) { errEl.textContent = 'שגיאה בשמירה: ' + error.message; errEl.style.display = 'block'; return; }
+
+  const b = bBatches.find(x => x.id === bEditingBatchId);
+  if (b) { b.name = name; b.track = track; b.loc = loc; b.sch = sch; b.date = date; b.cap = cap; b.sessions = sessions; }
+  bCloseModal('bm-edit-batch');
+  bRenderDashboard();
+}
+
 const B_DELETE_PASSWORD = 'alum2025';
 let bPendingDeleteId = null;
 
@@ -800,8 +916,30 @@ async function bConfirmDelete() {
     err.style.display = 'block';
     return;
   }
+  const batch = bBatches.find(x => x.id === bPendingDeleteId);
+  const studentIds = (batch?.students || []).map(s => s.id);
+
+  // Return all students to awaiting_assignment
+  if (studentIds.length > 0) {
+    await window._supabase.from('students')
+      .update({ status: 'awaiting_assignment' })
+      .in('id', studentIds);
+    await window._supabase.from('batch_students')
+      .delete()
+      .eq('batch_id', bPendingDeleteId);
+  }
+
   const { error } = await window._supabase.from('batches').delete().eq('id', bPendingDeleteId);
   if (error) { alert('שגיאה במחיקה: ' + error.message); return; }
+
+  // Add released students back to local pool
+  if (batch) {
+    (batch.students || []).forEach(s => {
+      bPool.push({ id: s.id, name: s.name, phone: s.phone,
+        track: batch.track, loc: batch.loc, sch: batch.sch, payRef: '' });
+    });
+  }
+
   bBatches = bBatches.filter(x => x.id !== bPendingDeleteId);
   bCloseModal('bm-delete');
   bRenderDashboard();

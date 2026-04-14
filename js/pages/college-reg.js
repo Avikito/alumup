@@ -64,7 +64,8 @@ const s = {
   name: '', birthYear: null, address: '', phone: '', email: '', password: '',
   profession: '', workplace: '', goal: null,
   hSigned: false, rSigned: false,
-  hData: null, rData: null
+  hData: null, rData: null,
+  idData: null
 };
 
 // Canvas binding
@@ -193,6 +194,7 @@ async function save() {
       screening_age:      s.screen?.age      || null,
       health_declaration_signed: s.hSigned, regulations_signed: s.rSigned,
       health_signature_data: s.hData, regulations_signature_data: s.rData,
+      id_photo_data: s.idData || null,
       payment_status: 'registration_paid', payment_amount: 399, payment_ref: ref, status: 'awaiting_coordination'
     })
   });
@@ -217,8 +219,6 @@ async function save() {
     });
   } catch (_) {}
 
-  // 5. כניסה אוטומטית לדשבורד — המשתמש מחובר ויכול לראות את כרטיס הסטודנט שלו
-  window.location.href = 'dashboard.html';
 }
 
 window.reg = {
@@ -424,13 +424,24 @@ window.reg = {
     <strong>מס׳ אישור תשלום:</strong> ${s.payRef || '—'}
   </div>
 
-  <h2>הצהרת בריאות</h2>
+  <h2>הצהרת בריאות — שאלון רפואי</h2>
   <div class="doc-text">
-    אני המצהיר/ה מאשר/ת כי:<br>
-    1. אני כשיר/ה פיזית לביצוע עבודות בגובה עד 6 מטר.<br>
-    2. אני מסוגל/ת להרמת משקלים עד 25 ק"ג ללא הגבלה רפואית.<br>
-    3. איני סובל/ת ממחלות לב, יל"ד בלתי מאוזן, סחרחורת כרונית.<br>
-    4. אתחייב/ת להודיע למכללה על כל שינוי במצבי הרפואי.
+    <strong>חלק א׳ — שאלון רפואי</strong><br>
+    1. האם הרופא שלך אמר לך שאתה סובל ממחלת לב?<br>
+    2. האם אתה חש כאבים בחזה בזמן מנוחה?<br>
+    3. האם אתה חש כאבים בחזה במהלך פעילויות שגרה ביום-יום?<br>
+    4. האם אתה חש כאבים בחזה בזמן פעילות גופנית?<br>
+    5. האם במהלך השנה החולפת איבדת שיווי משקל עקב סחרחורת?<br>
+    6. האם במהלך השנה החולפת איבדת את הכרתך?<br>
+    7. האם הרופא אבחן אסתמה — נזקקת לטיפול תרופתי בשלושת החודשים האחרונים?<br>
+    8. האם הרופא אבחן אסתמה — סבלת מקוצר נשימה או צפצופים?<br>
+    9. האם בן/בת משפחה מדרגה ראשונה נפטר ממחלת לב?<br>
+    10. האם בן/בת משפחה מדרגה ראשונה נפטר ממוות פתאומי בגיל מוקדם?<br>
+    11. האם הרופא שלך אמר לך לבצע פעילות גופנית רק תחת השגחה רפואית?<br>
+    12. האם אתה סובל ממחלה כרונית שעשויה להגביל אותך בביצוע פעילות גופנית?<br>
+    13. לנשים בהריון: האם ההיריון הוגדר כהיריון בסיכון?<br><br>
+    <strong>חלק ב׳ — הצהרה</strong><br>
+    אני החתום מטה מצהיר כי קראתי והבנתי את כל השאלון הרפואי שבחלק א׳ וכל התשובות לשאלות הן שליליות. אני מצהיר כי מסרתי ידיעות מלאות ונכונות על מצבי הרפואי בעבר ובהווה. ידוע לי כי לאחר שנתיים מיום חתימתי אדרש להמציא הצהרת בריאות חדשה.
   </div>
   <div class="sig-label">חתימה:</div>
   ${s.hData ? `<img class="sig-img" src="${s.hData}">` : '<div style="height:60px;border:1px dashed #ccc;border-radius:6px;"></div>'}
@@ -439,10 +450,22 @@ window.reg = {
 
   <h2>תקנון לימודים</h2>
   <div class="doc-text">
-    נוכחות מינימלית: 85% לקבלת תעודה.<br>
-    דמי רישום: 399 ש"ח — מקוזזים מהמחיר הסופי של הקורס (₪8,500 + מע"מ).<br>
-    ביטול עד 14 יום — החזר מלא. 15–30 יום — 50%. מעל 30 יום — ללא החזר.<br>
-    קוד לבוש: נעלי בטיחות S1P + מטר אישי — חובה.
+    <strong>1. חובות נוכחות ועמידה במטלות</strong><br>
+    הסטודנט מתחייב לנוכחות של 85% לפחות משעות הקורס (תיאוריה, סדנה ושטח). אי-הגעה למפגשי סדנה או ימי שטח תיחשב כאי-עמידה בתנאי הקורס ועשויה להוביל לאי-זכאות לתעודה, ללא החזר כספי.<br>
+    עמידה במבחן המעשי ובמבחן העיוני בסיום הקורס היא תנאי הכרחי לקבלת תעודת "מתקין מוסמך".<br><br>
+    <strong>2. מדיניות ביטולים והחזרים כספיים</strong><br>
+    כל סטודנט חייב בדמי הרשמה וביטוח של 399 ש"ח.<br>
+    ביטול עד 14 ימי עסקים לפני פתיחת הקורס — החזר מלא למעט דמי רישום.<br>
+    ביטול פחות מ-7 ימי עסקים לפני פתיחת הקורס — דמי ביטול 25% מעלות הקורס.<br>
+    לאחר המפגש השני — לא יינתן החזר כספי.<br><br>
+    <strong>3. בטיחות וציוד מגן</strong><br>
+    חובה להגיע עם נעלי עבודה סגורות וציוד מגן אישי. המכללה רשאית להרחיק סטודנט שאינו עומד בהוראות הבטיחות.<br><br>
+    <strong>4. קניין רוחני וסודיות</strong><br>
+    חל איסור על הקלטה, צילום או הפצה של תכני הקורס ללא אישור מראש ובכתב.<br><br>
+    <strong>5. אחריות מקצועית</strong><br>
+    תעודת הגמר מעידה על סיום הכשרה ומעבר בחינה בלבד. המכללה אינה נושאת באחריות לפעולות עצמאיות של הסטודנט.<br><br>
+    <strong>6. זכות המכללה לשינויים וביטולים</strong><br>
+    המכללה רשאית לדחות או לבטל קורס שלא הגיע למינימום נרשמים, לבצע שינויים בלוח הזמנים ובמרצים, ולהפסיק לימודי סטודנט בגין הפרת משמעת או אי-עמידה בדרישות.
   </div>
   <div class="sig-label">חתימה:</div>
   ${s.rData ? `<img class="sig-img" src="${s.rData}">` : '<div style="height:60px;border:1px dashed #ccc;border-radius:6px;"></div>'}
@@ -457,7 +480,46 @@ window.reg = {
     win.onload = () => win.print();
   },
 
+  handleIdPhoto(input) {
+    const file = input.files[0];
+    if (!file) return;
+    if (!['image/jpeg','image/png','image/webp','image/heic','image/heif'].includes(file.type)) {
+      alert('יש להעלות קובץ תמונה בלבד (JPG, PNG, HEIC)');
+      input.value = ''; return;
+    }
+    if (file.size > 15 * 1024 * 1024) {
+      alert('גודל הקובץ חייב להיות עד 15MB');
+      input.value = ''; return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1200;
+        let w = img.width, h = img.height;
+        if (w > MAX) { h = Math.round(h * MAX / w); w = MAX; }
+        const cv = document.createElement('canvas');
+        cv.width = w; cv.height = h;
+        cv.getContext('2d').drawImage(img, 0, 0, w, h);
+        s.idData = cv.toDataURL('image/jpeg', 0.82);
+        document.getElementById('id-preview-img').src = s.idData;
+        document.getElementById('id-preview').style.display = 'block';
+        document.getElementById('id-drop-area').style.display = 'none';
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  },
+
+  clearIdPhoto() {
+    s.idData = null;
+    document.getElementById('id-preview').style.display = 'none';
+    document.getElementById('id-drop-area').style.display = 'block';
+  },
+
   async pay() {
+    if (!s.idData) { err(5, 'יש להעלות צילום תעודת זהות או דרכון לפני התשלום.'); return; }
     const btn = document.getElementById('pay-btn');
     btn.disabled = true;
     btn.innerHTML = '<i class="ph ph-spinner" style="animation:spin 0.8s linear infinite;display:inline-block;"></i> מעבד תשלום...';
