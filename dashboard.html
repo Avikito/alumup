@@ -908,9 +908,9 @@ function normalize(row, type) {
     status:    row.status || 'draft',
     category:  row.category || '',
     config:    row.config || {},
-    total:     type === 'quote' ? (row.total_amount || 0) : (row.subtotal || row.total_price || 0),
-    subtotal:  row.subtotal || 0,
-    vat:       row.vat || 0,
+    subtotal:  Number(row.subtotal) || 0,
+    vat:       Number(row.vat) > 0 ? Number(row.vat) : Math.round((Number(row.subtotal) || 0) * 0.18),
+    total:     type === 'quote' ? (Number(row.total_amount) || 0) : (() => { const s = Number(row.subtotal) || 0; const v = Number(row.vat) > 0 ? Number(row.vat) : Math.round(s * 0.18); return s + v; })(),
     created_at: row.created_at
   };
 }
@@ -2071,8 +2071,8 @@ window.openModal = function(id) {
 
     html += `<div class="modal-totals">
       <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
-      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
-      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${(Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18)).toLocaleString()}</span></div>
+      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(Number(o.subtotal) + (Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18))).toLocaleString()}</span></div>
     </div>`;
 
     document.getElementById('modalBody').innerHTML = html;
@@ -2138,8 +2138,8 @@ window.openModal = function(id) {
 
     html += `<div class="modal-totals">
       <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
-      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
-      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${(Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18)).toLocaleString()}</span></div>
+      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(Number(o.subtotal) + (Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18))).toLocaleString()}</span></div>
     </div>`;
 
     document.getElementById('modalBody').innerHTML = html;
@@ -2196,8 +2196,8 @@ window.openModal = function(id) {
     // סיכום
     html += `<div class="modal-totals">
       <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
-      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
-      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+      <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${(Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18)).toLocaleString()}</span></div>
+      <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(Number(o.subtotal) + (Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18))).toLocaleString()}</span></div>
     </div>`;
 
     document.getElementById('modalBody').innerHTML = html;
@@ -2249,8 +2249,8 @@ window.openModal = function(id) {
   // Totals
   html += `<div class="modal-totals">
     <div class="modal-total-row"><span>סה"כ לפני מע"מ</span><span>₪${Number(o.subtotal).toLocaleString()}</span></div>
-    <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${Number(o.vat).toLocaleString()}</span></div>
-    <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.total).toLocaleString()}</span></div>
+    <div class="modal-total-row"><span>מע"מ (18%)</span><span>₪${(Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18)).toLocaleString()}</span></div>
+    <div class="modal-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${(Number(o.subtotal) + (Number(o.vat) > 0 ? Number(o.vat) : Math.round(Number(o.subtotal) * 0.18))).toLocaleString()}</span></div>
   </div>`;
 
   // Customer Quote Section — only for unapproved orders/quotes

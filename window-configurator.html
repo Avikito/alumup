@@ -2073,7 +2073,7 @@ window.placeOrder = async function() {
     });
     if (error) { showMsg('שגיאה: ' + error.message, true); return; }
     showMsg(`ההזמנה נשלחה לבדיקה טכנית \u2014 ${code}`);
-    setTimeout(() => window.location.href = 'dashboard.html', 2500);
+    setTimeout(() => window.location.href = 'dashboard.html?section=saved-quotes', 2500);
   } finally {
     btn.disabled = false; btn.innerHTML = 'שלח להזמנה <i class="ph ph-paper-plane-tilt"></i>';
   }
