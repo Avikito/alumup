@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | ניהול משימות</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+/* ── Layout ── */
+.tm-wrap       { display:flex;flex:1;min-height:calc(100vh - 64px); }
+.tm-sidebar    { width:220px;flex-shrink:0;background:#fff;border-left:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:0.15rem; }
+.tm-content    { flex:1;padding:1.75rem 2rem;overflow-y:auto;background:var(--bg-dark); }
+.tm-nav-item   { display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:500;color:var(--silver-dark);cursor:pointer;transition:all 0.16s; }
+.tm-nav-item:hover { background:var(--blue-dim);color:var(--electric-blue); }
+.tm-nav-item.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+.tm-nav-label  { font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;padding:0.75rem 0.75rem 0.3rem; }
+
+/* ── KPI Bar ── */
+.kpi-bar       { display:grid;grid-template-columns:repeat(5,1fr);gap:0.85rem;margin-bottom:1.5rem; }
+.kpi-card      { background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.1rem;display:flex;flex-direction:column;gap:0.25rem; }
+.kpi-val       { font-size:1.6rem;font-weight:800;color:var(--industrial-silver);line-height:1; }
+.kpi-lbl       { font-size:0.72rem;color:var(--silver-dark);font-weight:500; }
+.kpi-score-card { background:linear-gradient(135deg,#1a5faa 0%,#0d3d7a 100%);border:none; }
+.kpi-score-card .kpi-val  { color:#fff; }
+.kpi-score-card .kpi-lbl  { color:rgba(255,255,255,0.72); }
+.kpi-score-bar { height:4px;border-radius:2px;background:rgba(255,255,255,0.25);margin-top:6px; }
+.kpi-score-fill { height:100%;border-radius:2px;background:#fff;transition:width 0.5s ease; }
+
+/* ── Board ── */
+.board-header  { display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.1rem; }
+.board-tab { padding:4px 14px;font-size:0.78rem;font-weight:600;border:1.5px solid var(--border);border-radius:20px;background:#fff;color:#64748b;cursor:pointer;transition:all 0.15s;display:inline-flex;align-items:center;gap:5px; }
+.board-tab:hover { border-color:#3b82f6;color:#3b82f6; }
+.board-tab.active { background:#3b82f6;border-color:#3b82f6;color:#fff; }
+.board-filters { display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap; }
+.filter-select { padding:0.38rem 0.75rem;border:1.5px solid var(--border);border-radius:8px;font-size:0.8rem;font-family:inherit;color:var(--industrial-silver);background:#fff;cursor:pointer;outline:none; }
+.filter-select:focus { border-color:var(--electric-blue); }
+.btn-new-task  { display:flex;align-items:center;gap:6px;padding:0.5rem 1.1rem;background:var(--electric-blue);color:#fff;border:none;border-radius:9px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.16s; }
+.btn-new-task:hover { background:var(--blue-hover); }
+
+.board-columns { display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;align-items:start; }
+.board-col     { background:#f1f5f9;border-radius:13px;padding:0.85rem;min-height:300px; }
+.col-header    { display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem; }
+.col-title     { font-size:0.78rem;font-weight:800;color:#334155;text-transform:uppercase;letter-spacing:0.5px;display:flex;align-items:center;gap:6px; }
+.col-count     { font-size:0.7rem;font-weight:700;background:#e2e8f0;color:#64748b;padding:2px 7px;border-radius:20px; }
+.col-dot       { width:8px;height:8px;border-radius:50%;display:inline-block; }
+
+/* ── Task Card ── */
+.task-card     { background:#fff;border:1.5px solid var(--border);border-radius:11px;padding:0.85rem 1rem;margin-bottom:0.65rem;cursor:pointer;transition:box-shadow 0.16s,border-color 0.16s;position:relative; }
+.task-card:hover { box-shadow:0 4px 16px rgba(26,64,120,0.1);border-color:#c7d5e8; }
+.task-card.sla-breach { border-color:#fca5a5;background:#fff5f5; }
+.task-card.sla-breach::before { content:'';position:absolute;top:0;right:0;width:3px;height:100%;background:#ef4444;border-radius:0 11px 11px 0; }
+.task-card.strategic { border-right:3px solid #7c3aed; }
+.card-top      { display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:0.5rem; }
+.card-title    { font-size:0.84rem;font-weight:700;color:var(--industrial-silver);line-height:1.35;flex:1; }
+.card-badges   { display:flex;flex-direction:column;gap:3px;align-items:flex-end;flex-shrink:0; }
+.badge         { font-size:0.62rem;font-weight:700;padding:2px 7px;border-radius:20px;white-space:nowrap; }
+.badge-critical { background:#fef2f2;color:#dc2626;border:1px solid #fca5a5; }
+.badge-high    { background:#fff7ed;color:#ea580c;border:1px solid #fed7aa; }
+.badge-medium  { background:#fefce8;color:#ca8a04;border:1px solid #fde68a; }
+.badge-low     { background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0; }
+.badge-strategic { background:#f5f3ff;color:#7c3aed;border:1px solid #ddd6fe; }
+.badge-penalty { background:#fef2f2;color:#dc2626;border:1px solid #fca5a5; }
+.badge-type { display:inline-flex;align-items:center;gap:4px;font-size:0.7rem;font-weight:600;padding:2px 8px;border-radius:20px;border:1px solid; }
+
+/* ── custom type dropdown ── */
+.type-dd { position:relative;user-select:none; }
+.type-dd-trigger { display:flex;align-items:center;gap:8px;padding:8px 12px;border:1.5px solid var(--border);border-radius:8px;background:#fff;cursor:pointer;font-size:0.88rem;transition:border-color 0.15s; }
+.type-dd-trigger:hover,.type-dd-trigger.open { border-color:#3b82f6; }
+.type-dd-trigger i.type-icon { font-size:1rem; }
+.type-dd-trigger .type-label { flex:1; }
+.type-dd-trigger .type-arrow { font-size:0.75rem;color:#94a3b8;transition:transform 0.2s; }
+.type-dd-trigger.open .type-arrow { transform:rotate(180deg); }
+.type-dd-menu { display:none;position:absolute;top:calc(100% + 4px);right:0;left:0;background:#fff;border:1.5px solid var(--border);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,0.12);z-index:300;overflow:hidden; }
+.type-dd-menu.open { display:block; }
+.type-dd-item { display:flex;align-items:center;gap:10px;padding:9px 14px;cursor:pointer;font-size:0.85rem;transition:background 0.12s; }
+.type-dd-item:hover { background:#f1f5f9; }
+.type-dd-item i { font-size:1rem;width:18px;text-align:center; }
+.type-dd-item .item-label { flex:1; }
+.badge-pending { background:#eff6ff;color:#2563eb;border:1px solid #bfdbfe; }
+.card-desc     { font-size:0.75rem;color:#64748b;line-height:1.4;margin-bottom:0.55rem;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden; }
+.card-meta     { display:flex;align-items:center;justify-content:space-between;font-size:0.7rem;color:#94a3b8; }
+.card-assignee { display:flex;align-items:center;gap:5px; }
+.assignee-avatar { width:20px;height:20px;border-radius:50%;background:var(--electric-blue);color:#fff;font-size:0.6rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0; }
+.sla-badge     { display:flex;align-items:center;gap:4px;font-size:0.68rem;font-weight:600; }
+.sla-ok        { color:#16a34a; }
+.sla-warn      { color:#ea580c; }
+.sla-breach-txt { color:#dc2626; }
+
+/* ── Modal ── */
+.modal-overlay { position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem; }
+.modal-overlay.hidden { display:none; }
+.modal-box     { background:#fff;border-radius:16px;width:100%;max-width:640px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(15,23,42,0.22); }
+.modal-box.wide { max-width:800px; }
+.modal-head    { padding:1.25rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0; }
+.modal-title   { font-size:1rem;font-weight:800;color:var(--industrial-silver);display:flex;align-items:center;gap:8px; }
+.modal-close   { width:32px;height:32px;border-radius:8px;border:1.5px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:1rem;color:#64748b;transition:all 0.14s; }
+.modal-close:hover { background:#f1f5f9;border-color:#c7d5e8; }
+.modal-body    { flex:1;overflow-y:auto;padding:1.25rem 1.5rem; }
+.modal-foot    { padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;gap:0.6rem;justify-content:flex-end;flex-shrink:0; }
+
+/* ── Form ── */
+.form-row      { margin-bottom:1rem; }
+.form-label    { display:block;font-size:0.78rem;font-weight:700;color:#334155;margin-bottom:5px; }
+.form-input, .form-select, .form-textarea { width:100%;padding:0.52rem 0.85rem;border:1.5px solid var(--border);border-radius:9px;font-size:0.85rem;font-family:inherit;color:var(--industrial-silver);background:#fff;outline:none;transition:border-color 0.14s; }
+.form-input:focus, .form-select:focus, .form-textarea:focus { border-color:var(--electric-blue); }
+.form-textarea { min-height:90px;resize:vertical; }
+.form-grid     { display:grid;grid-template-columns:1fr 1fr;gap:0.85rem; }
+.form-check    { display:flex;align-items:center;gap:8px;cursor:pointer;font-size:0.84rem;font-weight:600;color:#334155; }
+.form-check input { width:16px;height:16px;accent-color:var(--electric-blue);cursor:pointer; }
+
+/* ── Chat ── */
+.chat-wrap     { display:flex;flex-direction:column;height:340px;border:1.5px solid var(--border);border-radius:11px;overflow:hidden;margin-top:1rem;background:#efeae2; }
+.chat-title    { padding:0.6rem 1rem;background:#075e54;border-bottom:1px solid #054d44;font-size:0.75rem;font-weight:700;color:#fff;display:flex;align-items:center;gap:6px; }
+.chat-msgs     { flex:1;overflow-y:auto;padding:0.75rem 1rem;display:flex;flex-direction:column;gap:0.4rem; }
+.chat-msg      { display:flex;flex-direction:column;gap:2px;max-width:78%; }
+.chat-msg.me   { align-self:flex-end;align-items:flex-end; }
+.chat-msg.other { align-self:flex-start;align-items:flex-start; }
+.msg-bubble    { padding:0.45rem 0.75rem;border-radius:8px;font-size:0.82rem;line-height:1.5;word-break:break-word;position:relative;box-shadow:0 1px 2px rgba(0,0,0,0.1); }
+.chat-msg.me   .msg-bubble { background:#d9fdd3;color:#111b21;border-radius:8px 8px 3px 8px; }
+.chat-msg.other .msg-bubble { background:#fff;color:#111b21;border-radius:8px 8px 8px 3px; }
+.msg-meta      { font-size:0.63rem;color:#667781;padding:0 2px; }
+.msg-media-img { max-width:220px;max-height:180px;border-radius:6px;display:block;cursor:pointer;margin-bottom:4px; }
+.msg-media-video { max-width:220px;border-radius:6px;display:block;margin-bottom:4px; }
+.msg-file-chip  { display:inline-flex;align-items:center;gap:8px;background:rgba(0,0,0,0.06);border-radius:6px;padding:7px 10px;cursor:pointer;text-decoration:none;color:inherit;margin-bottom:4px; }
+.msg-file-chip i { font-size:1.3rem;color:#075e54; }
+.chat-input-row { padding:0.5rem 0.65rem;border-top:1px solid #d1d7db;display:flex;gap:0.4rem;align-items:flex-end;background:#f0f2f5; }
+.chat-input    { flex:1;padding:0.5rem 0.75rem;border:none;border-radius:20px;font-size:0.82rem;font-family:inherit;resize:none;outline:none;background:#fff;max-height:80px;box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+.btn-send      { width:36px;height:36px;background:#075e54;color:#fff;border:none;border-radius:50%;cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.14s; }
+.btn-send:hover { background:#054d44; }
+.btn-attach    { width:36px;height:36px;background:none;border:none;cursor:pointer;color:#54656f;font-size:1.1rem;display:flex;align-items:center;justify-content:center;flex-shrink:0;border-radius:50%;transition:background 0.14s; }
+.btn-attach:hover { background:rgba(0,0,0,0.06); }
+.chat-attach-preview { padding:0.4rem 0.85rem;background:#f0f2f5;border-top:1px solid #d1d7db;display:flex;align-items:center;gap:0.5rem;font-size:0.75rem;color:#54656f; }
+.chat-attach-preview img { height:40px;width:40px;object-fit:cover;border-radius:5px; }
+.chat-attach-preview .remove-attach { cursor:pointer;color:#ef4444;font-size:1rem;margin-right:auto; }
+
+/* ── Detail modal specific ── */
+.detail-section { margin-bottom:1.25rem; }
+.detail-sec-title { font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.5rem; }
+.detail-value  { font-size:0.9rem;color:var(--industrial-silver); }
+.detail-grid   { display:grid;grid-template-columns:1fr 1fr;gap:0.75rem; }
+.detail-item   { background:#f8fafc;border:1px solid var(--border);border-radius:9px;padding:0.65rem 0.85rem; }
+.status-flow   { display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;margin-bottom:1rem; }
+.status-btn    { padding:0.45rem 1rem;border-radius:9px;border:1.5px solid var(--border);background:#fff;font-size:0.8rem;font-weight:700;cursor:pointer;font-family:inherit;transition:all 0.14s;color:#64748b; }
+.status-btn:hover { border-color:var(--electric-blue);color:var(--electric-blue); }
+.status-btn.active { background:var(--electric-blue);border-color:var(--electric-blue);color:#fff; }
+.status-btn:disabled { opacity:0.4;cursor:not-allowed; }
+.btn-close-task { background:#16a34a;border-color:#16a34a;color:#fff; }
+.btn-close-task:hover { background:#15803d;border-color:#15803d; }
+.btn-request-approval { background:#7c3aed;border-color:#7c3aed;color:#fff; }
+.btn-request-approval:hover { background:#6d28d9;border-color:#6d28d9; }
+.btn-reopen    { background:#ea580c;border-color:#ea580c;color:#fff; }
+.btn-reopen:hover { background:#c2410c;border-color:#c2410c; }
+.warning-box   { background:#fef2f2;border:1px solid #fca5a5;border-radius:9px;padding:0.7rem 1rem;font-size:0.8rem;color:#dc2626;display:flex;align-items:flex-start;gap:8px;margin-bottom:1rem; }
+
+/* ── Buttons ── */
+.btn-primary  { padding:0.5rem 1.2rem;background:var(--electric-blue);color:#fff;border:none;border-radius:9px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.16s; }
+.btn-primary:hover { background:var(--blue-hover); }
+.btn-ghost    { padding:0.5rem 1.2rem;background:#fff;color:#64748b;border:1.5px solid var(--border);border-radius:9px;font-size:0.85rem;font-weight:600;cursor:pointer;font-family:inherit;transition:all 0.16s; }
+.btn-ghost:hover { border-color:#c7d5e8;color:var(--industrial-silver); }
+.btn-danger   { padding:0.5rem 1.2rem;background:#dc2626;color:#fff;border:none;border-radius:9px;font-size:0.85rem;font-weight:700;cursor:pointer;font-family:inherit;transition:background 0.16s; }
+.btn-danger:hover { background:#b91c1c; }
+
+/* ── Empty state ── */
+.empty-col    { text-align:center;padding:2rem 0.5rem;color:#94a3b8;font-size:0.78rem; }
+.empty-col i  { font-size:1.8rem;display:block;margin-bottom:0.4rem;opacity:0.4; }
+
+/* ── Spinner ── */
+@keyframes spin { to { transform:rotate(360deg); } }
+.spin { animation:spin 0.9s linear infinite; }
+
+/* ── Strategic indicator ── */
+.modal-box.strategic-mode { border:2px solid #7c3aed;box-shadow:0 0 0 4px rgba(124,58,237,0.07),0 20px 60px rgba(15,23,42,0.22); }
+.strategic-banner { display:flex;align-items:flex-start;gap:10px;background:#f5f3ff;border:1.5px solid #ddd6fe;border-radius:10px;padding:0.75rem 1rem;margin-top:0.85rem;animation:fadeIn 0.2s ease; }
+.strategic-banner.hidden { display:none; }
+@keyframes fadeIn { from { opacity:0;transform:translateY(-6px); } to { opacity:1;transform:none; } }
+
+/* ── Attachments ── */
+.attach-zone { border:2px dashed var(--border);border-radius:10px;padding:1rem 1rem 0.85rem;text-align:center;cursor:pointer;transition:all 0.16s;background:#fafbfc; }
+.attach-zone:hover { border-color:var(--electric-blue);background:var(--blue-dim); }
+.attach-chips { display:flex;flex-wrap:wrap;gap:0.4rem;margin-top:0.6rem; }
+.attach-chip { display:flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid var(--border);border-radius:20px;padding:4px 10px 4px 6px;font-size:0.72rem;color:#334155;font-weight:500; }
+.attach-chip i { color:#64748b;font-size:0.85rem; }
+.attach-chip-remove { background:none;border:none;cursor:pointer;color:#94a3b8;font-size:0.82rem;line-height:1;padding:0;margin-right:2px; }
+.attach-chip-remove:hover { color:#dc2626; }
+.attach-thumb-list { display:flex;flex-wrap:wrap;gap:0.5rem;margin-top:0.75rem; }
+.attach-thumb-item { width:72px;height:72px;border-radius:9px;overflow:hidden;border:1.5px solid var(--border);cursor:pointer;position:relative;transition:box-shadow 0.14s; }
+.attach-thumb-item:hover { box-shadow:0 2px 10px rgba(26,64,120,0.12); }
+.attach-thumb-item img { width:100%;height:100%;object-fit:cover;display:block; }
+.attach-ext-icon { width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f1f5f9;flex-direction:column;gap:3px; }
+.attach-ext-icon i { font-size:1.4rem;color:#64748b; }
+.attach-ext-icon span { font-size:0.6rem;font-weight:700;color:#94a3b8;text-transform:uppercase; }
+.lightbox-overlay { position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1rem; }
+.lightbox-overlay img { max-width:90vw;max-height:80vh;border-radius:10px;box-shadow:0 8px 40px rgba(0,0,0,0.4); }
+.lightbox-overlay .lb-bar { display:flex;gap:0.75rem;align-items:center; }
+.lightbox-overlay .lb-btn { padding:7px 18px;border-radius:8px;border:none;cursor:pointer;font-size:0.85rem;font-weight:600; }
+.lb-close { background:#fff;color:#1e293b; }
+.lb-download { background:#3b82f6;color:#fff; }
+
+/* ── Responsive ── */
+@media (max-width:1200px) { .board-columns { grid-template-columns:repeat(2,1fr); } }
+@media (max-width:800px)  { .board-columns { grid-template-columns:1fr; } .kpi-bar { grid-template-columns:repeat(3,1fr); } }
+</style>
+</head>
+<body>
+
+<!-- ── Top Nav ── -->
+<nav class="top-nav" style="display:flex;align-items:center;justify-content:space-between;padding:0 2rem;height:64px;background:#fff;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:100;">
+  <div style="display:flex;align-items:center;gap:1rem;">
+    <a href="admin-college.html" style="display:flex;align-items:center;gap:6px;font-size:0.82rem;color:var(--silver-dark);text-decoration:none;font-weight:600;">
+      <i class="ph ph-arrow-right"></i> חזרה
+    </a>
+    <div style="width:1px;height:20px;background:var(--border);"></div>
+    <div style="font-size:0.92rem;font-weight:800;color:var(--industrial-silver);display:flex;align-items:center;gap:7px;">
+      <i class="ph ph-check-square" style="color:var(--electric-blue);font-size:1.1rem;"></i>
+      ניהול משימות — ALUM-IL
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <span id="nav-user-name" style="font-size:0.8rem;font-weight:600;color:var(--silver-dark);"></span>
+    <div id="nav-user-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--electric-blue);color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;"></div>
+  </div>
+</nav>
+
+<!-- ── Main Wrap ── -->
+<div class="tm-wrap">
+
+  <!-- Sidebar -->
+  <aside class="tm-sidebar">
+    <div class="tm-nav-label">תצוגות</div>
+    <div class="tm-nav-item active" onclick="setView('board')" id="nav-board">
+      <i class="ph ph-kanban"></i> לוח משימות
+    </div>
+    <div class="tm-nav-item" onclick="setView('strategic')" id="nav-strategic">
+      <i class="ph ph-flag-pennant"></i> אסטרטגיות
+    </div>
+    <div class="tm-nav-item" onclick="setView('overdue')" id="nav-overdue">
+      <i class="ph ph-warning-circle" style="color:#dc2626;"></i> חריגות SLA
+    </div>
+    <div class="tm-nav-label" style="margin-top:0.75rem;">דוחות</div>
+    <div class="tm-nav-item" onclick="setView('kpi')" id="nav-kpi">
+      <i class="ph ph-chart-bar"></i> מדד ביצוע KPI
+    </div>
+  </aside>
+
+  <!-- Content -->
+  <main class="tm-content">
+
+    <!-- Page title + new task btn -->
+    <div class="board-header">
+      <div>
+        <div style="font-size:1.3rem;font-weight:800;color:var(--industrial-silver);" id="page-title">לוח משימות</div>
+        <div style="font-size:0.82rem;color:var(--silver-dark);margin-top:2px;" id="page-sub">כלל המשימות הפעילות במערכת</div>
+        <div class="board-tabs" id="board-tabs" style="display:flex;gap:0.35rem;margin-top:0.65rem;">
+          <button class="board-tab active" id="btab-all"      onclick="setBoardTab('all')">כל המשימות</button>
+          <button class="board-tab"        id="btab-assigned" onclick="setBoardTab('assigned')"><i class="ph ph-user-check"></i> הוקצו לי</button>
+          <button class="board-tab"        id="btab-created"  onclick="setBoardTab('created')"><i class="ph ph-pencil-simple"></i> יצרתי</button>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.6rem;align-items:center;">
+        <div class="board-filters">
+          <select class="filter-select" id="f-dept" onchange="applyFilters()">
+            <option value="">כל המחלקות</option>
+            <option value="college">מכללה</option>
+            <option value="procurement">רכש</option>
+            <option value="general">אדמין ראשי</option>
+          </select>
+          <select class="filter-select" id="f-priority" onchange="applyFilters()">
+            <option value="">כל העדיפויות</option>
+            <option value="critical">קריטי</option>
+            <option value="high">גבוה</option>
+            <option value="medium">בינוני</option>
+            <option value="low">נמוך</option>
+          </select>
+          <select class="filter-select" id="f-assignee" onchange="applyFilters()">
+            <option value="">כל הנציגים</option>
+          </select>
+        </div>
+        <button class="btn-new-task" onclick="openCreateModal()">
+          <i class="ph ph-plus-circle"></i> משימה חדשה
+        </button>
+      </div>
+    </div>
+
+    <!-- KPI Bar -->
+    <div class="kpi-bar" id="kpi-bar">
+      <div class="kpi-card kpi-score-card">
+        <div class="kpi-val" id="k-score">—</div>
+        <div class="kpi-lbl">מדד ביצוע KPI</div>
+        <div class="kpi-score-bar"><div class="kpi-score-fill" id="k-score-fill" style="width:0%"></div></div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="k-open">—</div>
+        <div class="kpi-lbl">משימות פתוחות</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="k-overdue" style="color:#dc2626;">—</div>
+        <div class="kpi-lbl">חריגות SLA</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="k-pending" style="color:#7c3aed;">—</div>
+        <div class="kpi-lbl">ממתינות לאישורי</div>
+      </div>
+      <div class="kpi-card">
+        <div class="kpi-val" id="k-closed" style="color:#16a34a;">—</div>
+        <div class="kpi-lbl">נסגרו החודש</div>
+      </div>
+    </div>
+
+    <!-- Board columns -->
+    <div class="board-columns" id="board-cols">
+      <div class="board-col">
+        <div class="col-header">
+          <span class="col-title"><span class="col-dot" style="background:#94a3b8;"></span>פתוח</span>
+          <span class="col-count" id="cnt-open">0</span>
+        </div>
+        <div id="col-open"></div>
+      </div>
+      <div class="board-col">
+        <div class="col-header">
+          <span class="col-title"><span class="col-dot" style="background:#f59e0b;"></span>בטיפול</span>
+          <span class="col-count" id="cnt-in_progress">0</span>
+        </div>
+        <div id="col-in_progress"></div>
+      </div>
+      <div class="board-col">
+        <div class="col-header">
+          <span class="col-title"><span class="col-dot" style="background:#7c3aed;"></span>ממתין לאישורי</span>
+          <span class="col-count" id="cnt-pending_approval">0</span>
+        </div>
+        <div id="col-pending_approval"></div>
+      </div>
+      <div class="board-col">
+        <div class="col-header">
+          <span class="col-title"><span class="col-dot" style="background:#16a34a;"></span>סגור</span>
+          <span class="col-count" id="cnt-closed">0</span>
+        </div>
+        <div id="col-closed"></div>
+      </div>
+    </div>
+
+    <!-- KPI Detail View (hidden by default) -->
+    <div id="kpi-detail-view" style="display:none;">
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.25rem;margin-bottom:1.5rem;">
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
+          <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;display:flex;align-items:center;gap:6px;"><i class="ph ph-lightning"></i> מהירות סגירה</div>
+          <div style="font-size:2rem;font-weight:800;color:var(--industrial-silver);" id="kpi-speed">—</div>
+          <div style="font-size:0.78rem;color:var(--silver-dark);margin-top:4px;">שעות ממוצע לסגירה</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
+          <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;display:flex;align-items:center;gap:6px;"><i class="ph ph-flag-pennant"></i> אסטרטגיות שאושרו</div>
+          <div style="font-size:2rem;font-weight:800;color:#7c3aed;" id="kpi-strategic-closed">—</div>
+          <div style="font-size:0.78rem;color:var(--silver-dark);margin-top:4px;">מתוך <span id="kpi-strategic-total">—</span> אסטרטגיות</div>
+        </div>
+        <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
+          <div style="font-size:0.72rem;font-weight:800;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.75rem;display:flex;align-items:center;gap:6px;"><i class="ph ph-arrow-counter-clockwise"></i> קנסות חריגת איכות</div>
+          <div style="font-size:2rem;font-weight:800;color:#dc2626;" id="kpi-penalties">—</div>
+          <div style="font-size:0.78rem;color:var(--silver-dark);margin-top:4px;">משימות שנפתחו מחדש</div>
+        </div>
+      </div>
+      <div style="background:#fff;border:1px solid var(--border);border-radius:14px;padding:1.25rem;">
+        <div style="font-size:0.82rem;font-weight:800;color:var(--industrial-silver);margin-bottom:1rem;display:flex;align-items:center;gap:8px;"><i class="ph ph-chart-line-up" style="color:var(--electric-blue);"></i> פירוט ניקוד</div>
+        <div id="kpi-breakdown"></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ══ CREATE MODAL ══ -->
+<div class="modal-overlay hidden" id="modal-create">
+  <div class="modal-box">
+    <div class="modal-head">
+      <div class="modal-title"><i class="ph ph-plus-circle" style="color:var(--electric-blue);"></i> משימה חדשה</div>
+      <button class="modal-close" onclick="closeModal('modal-create')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row" style="margin-bottom:0.75rem;">
+        <label class="form-label">סוג משימה</label>
+        <input type="hidden" id="c-type" value="technical">
+        <div class="type-dd" id="type-dd">
+          <div class="type-dd-trigger" id="type-dd-trigger" onclick="toggleTypeDd()">
+            <i class="ph ph-wrench type-icon" id="type-dd-icon" style="color:#ef4444;"></i>
+            <span class="type-label" id="type-dd-label">תקלה טכנית</span>
+            <i class="ph ph-caret-down type-arrow"></i>
+          </div>
+          <div class="type-dd-menu" id="type-dd-menu"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label class="form-label">כותרת המשימה *</label>
+        <input type="text" class="form-input" id="c-title" placeholder="תיאור קצר וברור">
+      </div>
+      <div class="form-row">
+        <label class="form-label">תיאור מפורט</label>
+        <textarea class="form-textarea" id="c-desc" placeholder="הסבר מלא, קישורים, הנחיות..."></textarea>
+      </div>
+      <div class="form-grid">
+        <div class="form-row" style="margin-bottom:0;">
+          <label class="form-label">מחלקת יעד</label>
+          <select class="form-select" id="c-dept" onchange="filterAssigneesByDept()">
+            <option value="general">אדמין ראשי</option>
+            <option value="college">מכללה</option>
+            <option value="procurement">רכש</option>
+          </select>
+        </div>
+        <div class="form-row" style="margin-bottom:0;">
+          <label class="form-label">עדיפות</label>
+          <select class="form-select" id="c-priority">
+            <option value="medium">בינוני (72 שעות)</option>
+            <option value="high">גבוה (48 שעות)</option>
+            <option value="critical">קריטי (24 שעות)</option>
+            <option value="low">נמוך (7 ימים)</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid" style="margin-top:1rem;">
+        <div class="form-row" style="margin-bottom:0;">
+          <label class="form-label" id="c-due-label">מועד יעד + שעה</label>
+          <input type="datetime-local" class="form-input" id="c-due">
+        </div>
+        <div class="form-row" style="margin-bottom:0;">
+          <label class="form-label">הקצאה לאחראי</label>
+          <select class="form-select" id="c-assignee">
+            <option value="">— ללא שיבוץ —</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:1rem;margin-bottom:0;">
+        <label class="form-label">יישות מקושרת <span style="font-weight:400;color:#94a3b8;">(אופציונלי)</span></label>
+        <select class="form-select" id="c-entity-type" onchange="onEntityTypeChange()">
+          <option value="">— ללא קישור —</option>
+          <option value="course">קורסים והכשרות</option>
+          <option value="user">משתמשים — מספר טלפון</option>
+          <option value="order">מספר הזמנה</option>
+        </select>
+        <!-- קורסים -->
+        <select class="form-select" id="c-entity-course" style="margin-top:6px;display:none;">
+          <option value="">— בחר קורס / מחזור —</option>
+        </select>
+        <!-- משתמש - טלפון -->
+        <input type="tel" class="form-input" id="c-entity-user" placeholder="מספר טלפון (05X-XXXXXXX)" style="margin-top:6px;display:none;" dir="ltr">
+        <!-- מספר הזמנה -->
+        <input type="text" class="form-input" id="c-entity-order" placeholder="מספר הזמנה" style="margin-top:6px;display:none;" dir="ltr">
+      </div>
+
+      <div class="form-row" style="margin-top:1rem;margin-bottom:0;">
+        <label class="form-check">
+          <input type="checkbox" id="c-strategic" onchange="toggleStrategicMode(this.checked)">
+          <span><strong>משימה אסטרטגית</strong> — נדרש אישורי לסגירה</span>
+        </label>
+        <div class="strategic-banner hidden" id="c-strategic-banner">
+          <i class="ph ph-flag-pennant" style="font-size:1.15rem;color:#7c3aed;flex-shrink:0;margin-top:1px;"></i>
+          <div>
+            <div style="font-size:0.82rem;font-weight:700;color:#5b21b6;">משימה מסומנת כאסטרטגית</div>
+            <div style="font-size:0.75rem;color:#6d28d9;margin-top:2px;">המבצע יכול לבקש אישור בלבד — רק אתה כיוצר תסגור את המשימה סופית.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row" style="margin-top:1rem;margin-bottom:0;">
+        <label class="form-label">צרופות <span style="font-weight:400;color:#94a3b8;">(תמונות / PDF / מסמכים, עד 5 קבצים)</span></label>
+        <input type="file" id="c-attach-input" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none" onchange="handleAttachSelect(this)">
+        <div class="attach-zone" onclick="document.getElementById('c-attach-input').click()">
+          <i class="ph ph-paperclip" style="font-size:1.3rem;color:#94a3b8;"></i>
+          <div style="font-size:0.78rem;color:#64748b;margin-top:5px;">לחץ להוספת קובץ</div>
+        </div>
+        <div class="attach-chips" id="c-attach-chips"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-ghost" onclick="closeModal('modal-create')">ביטול</button>
+      <button class="btn-primary" onclick="createTask()">
+        <i class="ph ph-floppy-disk"></i> צור משימה
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DETAIL MODAL ══ -->
+<div class="modal-overlay hidden" id="modal-detail">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <div class="modal-title" id="detail-title-bar"><i class="ph ph-clipboard-text" style="color:var(--electric-blue);"></i> <span id="detail-title-txt">—</span></div>
+      <button class="modal-close" onclick="closeModal('modal-detail')">✕</button>
+    </div>
+    <div class="modal-body" style="display:grid;grid-template-columns:1fr 300px;gap:1.25rem;">
+
+      <!-- Right: task info + actions -->
+      <div>
+        <div id="detail-warning" class="warning-box" style="display:none;">
+          <i class="ph ph-warning" style="font-size:1rem;flex-shrink:0;margin-top:1px;"></i>
+          <span id="detail-warning-txt"></span>
+        </div>
+
+        <!-- Description (top, prominent) -->
+        <div id="detail-desc-section" style="background:#f8fafc;border:1.5px solid var(--border);border-radius:10px;padding:0.85rem 1rem;margin-bottom:1rem;display:none;">
+          <div class="detail-sec-title" style="margin-bottom:0.35rem;">תיאור</div>
+          <div id="detail-desc" style="white-space:pre-wrap;font-size:1rem;line-height:1.75;color:#0f172a;font-weight:600;">—</div>
+        </div>
+
+        <!-- Status actions -->
+        <div class="detail-section">
+          <div class="detail-sec-title">שינוי סטטוס</div>
+          <div class="status-flow" id="detail-status-flow"></div>
+        </div>
+
+        <!-- Meta grid -->
+        <div class="detail-grid" id="detail-meta-grid"></div>
+
+        <!-- Attachments -->
+        <div class="detail-section" id="detail-attach-section" style="margin-top:1rem;display:none;">
+          <div class="detail-sec-title"><i class="ph ph-paperclip"></i> צרופות</div>
+          <div class="attach-thumb-list" id="detail-attach-list"></div>
+        </div>
+      </div>
+
+      <!-- Left: chat -->
+      <div style="display:flex;flex-direction:column;min-width:0;">
+        <div class="detail-sec-title" style="margin-bottom:0.5rem;">צ'אט משימה פנימי</div>
+        <div class="chat-wrap" style="flex:1;min-height:340px;">
+          <div class="chat-title"><i class="ph ph-chat-circle-dots"></i> שיחה פנימית</div>
+          <div class="chat-msgs" id="chat-msgs"></div>
+          <!-- Attach preview strip -->
+          <div class="chat-attach-preview" id="chat-attach-preview" style="display:none;">
+            <span id="chat-attach-thumb"></span>
+            <span id="chat-attach-name" style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:160px;"></span>
+            <span class="remove-attach" onclick="clearChatAttach()"><i class="ph ph-x-circle"></i></span>
+          </div>
+          <div class="chat-input-row">
+            <input type="file" id="chat-file-input" accept="image/*,video/*,.pdf,.doc,.docx,.xls,.xlsx" style="display:none;" onchange="onChatFileSelect(this)">
+            <button class="btn-attach" onclick="document.getElementById('chat-file-input').click()" title="צרף קובץ"><i class="ph ph-paperclip"></i></button>
+            <textarea class="chat-input" id="chat-input" placeholder="הקלד הודעה..." rows="1" tabindex="0"
+              onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();window.sendMessage();}"></textarea>
+            <button class="btn-send" onclick="window.sendMessage()"><i class="ph ph-paper-plane-tilt"></i></button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <div class="modal-foot">
+      <button class="btn-danger" id="detail-delete-btn" onclick="deleteTask()" style="margin-left:auto;">
+        <i class="ph ph-trash"></i> מחק
+      </button>
+      <button class="btn-ghost" onclick="closeModal('modal-detail')">סגור</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const SUPABASE_URL = 'https://exfdjelwyrspfspcevvm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED';
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+window._supabase = sb;
+
+// ─── SLA hours per priority ───────────────────────────────
+const SLA_HOURS = { critical: 24, high: 48, medium: 72, low: 168 };
+
+const PRIORITY_LABELS = { critical:'קריטי', high:'גבוה', medium:'בינוני', low:'נמוך' };
+const DEPT_LABELS     = { college:'מכללה', procurement:'רכש', general:'אדמין ראשי' };
+
+const TASK_TYPES = {
+  technical:   { label: 'תקלה טכנית',      icon: 'ph-wrench',          color: '#ef4444', autoHours: 24,   priority: 'critical' },
+  payments:    { label: 'תשלומים וסליקה',   icon: 'ph-credit-card',     color: '#f59e0b', autoHours: 24,   priority: 'critical' },
+  students:    { label: 'ניהול סטודנטים',   icon: 'ph-users',           color: '#2563eb', autoHours: 72,   priority: 'medium'   },
+  operations:  { label: 'תפעול שוטף',       icon: 'ph-clock',           color: '#10b981', autoHours: 72,   priority: 'medium'   },
+  legal:       { label: 'משפטי ותקנון',     icon: 'ph-gavel',           color: '#6366f1', autoHours: 168,  priority: 'low'      },
+  procurement: { label: 'רכש ומלאי',        icon: 'ph-package',         color: '#8b5cf6', autoHours: 168,  priority: 'low'      },
+  improvement: { label: 'שיפור תהליך',      icon: 'ph-lightbulb',       color: '#f97316', autoHours: 336,  priority: 'low'      },
+  other:       { label: 'אחר',              icon: 'ph-dots-three',      color: '#94a3b8', autoHours: null, priority: 'medium'   },
+};
+const STATUS_LABELS   = { open:'פתוח', in_progress:'בטיפול', pending_approval:'ממתין לאישורי', closed:'סגור' };
+
+// ─── State ───────────────────────────────────────────────
+let currentUser   = null;
+let currentRole   = null; // 'owner'=super, 'college', 'procurement'
+let allTasks      = [];
+let filteredTasks = [];
+let activeView    = 'board';
+let boardTab      = 'all'; // all | assigned | created
+let openTaskId    = null;  // task currently in detail modal
+let msgSub        = null;  // realtime subscription for chat
+
+// ─── Init ─────────────────────────────────────────────────
+async function init() {
+  const { data: { user } } = await sb.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+  currentUser = user;
+
+  const { data: adminRow, error: adminErr } = await sb.from('admin_users')
+    .select('user_id, role').eq('user_id', user.id).maybeSingle();
+  if (adminErr || !adminRow) { window.location.href = 'login.html'; return; }
+
+  currentRole = adminRow.role || 'admin';
+  const displayName = user.email.split('@')[0];
+  document.getElementById('nav-user-name').textContent = displayName;
+  document.getElementById('nav-user-avatar').textContent = initials(displayName);
+
+  await loadTasks();
+  subscribeRealtime();
+  populateAssigneeFilter();
+}
+
+function initials(name) {
+  if (!name) return '?';
+  const parts = name.trim().split(/\s+/);
+  return parts.length >= 2 ? parts[0][0] + parts[parts.length-1][0] : name.slice(0,2);
+}
+
+// ─── Data ─────────────────────────────────────────────────
+async function loadTasks() {
+  const { data, error } = await sb.from('admin_tasks')
+    .select('*').order('created_at', { ascending: false });
+  if (error) { console.error(error); return; }
+  allTasks = data || [];
+  applyFilters();
+}
+
+function applyFilters() {
+  const dept     = document.getElementById('f-dept')?.value     || '';
+  const priority = document.getElementById('f-priority')?.value || '';
+  const assignee = document.getElementById('f-assignee')?.value || '';
+
+  let tasks = [...allTasks];
+  if (dept)     tasks = tasks.filter(t => t.department === dept);
+  if (priority) tasks = tasks.filter(t => t.priority   === priority);
+  if (assignee) tasks = tasks.filter(t => t.assigned_to === assignee);
+
+  if (activeView === 'board' && boardTab === 'assigned') tasks = tasks.filter(t =>
+    t.assigned_to === currentUser.id ||
+    (currentRole === 'college' && t.department === 'college')
+  );
+  if (activeView === 'board' && boardTab === 'created')  tasks = tasks.filter(t => t.created_by  === currentUser.id);
+  if (activeView === 'strategic')  tasks = tasks.filter(t => t.is_strategic);
+  if (activeView === 'overdue')    tasks = tasks.filter(t => isSLABreached(t) && t.status !== 'closed');
+
+  filteredTasks = tasks;
+  renderBoard();
+  updateKPIs();
+}
+
+// ─── SLA ──────────────────────────────────────────────────
+function slaDeadline(task) {
+  if (task.due_date) return new Date(task.due_date);
+  const hours = SLA_HOURS[task.priority] || 72;
+  return new Date(new Date(task.created_at).getTime() + hours * 3600000);
+}
+
+function isSLABreached(task) {
+  if (task.status === 'closed') return false;
+  return slaDeadline(task) < new Date();
+}
+
+function slaLabel(task) {
+  if (task.status === 'closed') return { cls:'sla-ok', text:'סגור', icon:'ph-check-circle' };
+  const deadline = slaDeadline(task);
+  const diffMs   = deadline - new Date();
+  const diffH    = Math.round(diffMs / 3600000);
+  if (diffMs < 0) return { cls:'sla-breach-txt', text:`חריג ב-${Math.abs(diffH)} שע'`, icon:'ph-warning-circle' };
+  if (diffH <= 6) return { cls:'sla-warn', text:`${diffH} שע' נותרו`, icon:'ph-clock-countdown' };
+  if (diffH <= 24){ const h = diffH; return { cls:'sla-warn', text:`${h} שע' נותרו`, icon:'ph-clock' }; }
+  const days = Math.floor(diffH / 24);
+  return { cls:'sla-ok', text:`${days} ימים נותרו`, icon:'ph-clock' };
+}
+
+// ─── KPI ──────────────────────────────────────────────────
+function calcKPI() {
+  const now = new Date();
+  const thisMonth = now.getMonth();
+  const thisYear  = now.getFullYear();
+
+  const overdueTasks  = allTasks.filter(t => isSLABreached(t));
+  const penaltyTasks  = allTasks.filter(t => t.reopened_count > 0);
+  const strategic     = allTasks.filter(t => t.is_strategic);
+  const stratClosed   = strategic.filter(t => t.status === 'closed');
+  const closedMonth   = allTasks.filter(t => {
+    if (!t.closed_at) return false;
+    const d = new Date(t.closed_at);
+    return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
+  });
+
+  // Speed: avg hours to close (closed tasks with both timestamps)
+  const closedWithTime = allTasks.filter(t => t.closed_at && t.created_at);
+  const avgSpeedH = closedWithTime.length
+    ? Math.round(closedWithTime.reduce((acc, t) => acc + (new Date(t.closed_at) - new Date(t.created_at)) / 3600000, 0) / closedWithTime.length)
+    : null;
+
+  // Score formula (0–100):
+  // Base 100
+  // -8 per overdue task (max -40)
+  // -12 per penalty task (max -36)
+  // +5 per strategic task closed this month (max +20)
+  let score = 100;
+  score -= Math.min(overdueTasks.length * 8,  40);
+  score -= Math.min(penaltyTasks.length * 12, 36);
+  score += Math.min(stratClosed.length * 5,   20);
+  score = Math.max(0, Math.min(100, score));
+
+  return {
+    score,
+    overdue:  overdueTasks.length,
+    penalties: penaltyTasks.length,
+    strategic: { total: strategic.length, closed: stratClosed.length },
+    avgSpeedH,
+    closedMonth: closedMonth.length,
+    pendingApproval: allTasks.filter(t => t.status === 'pending_approval' && t.created_by === currentUser.id).length,
+    openCount: allTasks.filter(t => t.status !== 'closed').length,
+  };
+}
+
+function updateKPIs() {
+  const k = calcKPI();
+  document.getElementById('k-score').textContent       = k.score;
+  document.getElementById('k-score-fill').style.width  = k.score + '%';
+  document.getElementById('k-open').textContent        = k.openCount;
+  document.getElementById('k-overdue').textContent     = k.overdue;
+  document.getElementById('k-pending').textContent     = k.pendingApproval;
+  document.getElementById('k-closed').textContent      = k.closedMonth;
+
+  // KPI detail view
+  document.getElementById('kpi-speed').textContent = k.avgSpeedH !== null ? k.avgSpeedH + ' שע\'' : 'אין מידע';
+  document.getElementById('kpi-strategic-closed').textContent = k.strategic.closed;
+  document.getElementById('kpi-strategic-total').textContent  = k.strategic.total;
+  document.getElementById('kpi-penalties').textContent        = k.penalties;
+
+  const breakdownEl = document.getElementById('kpi-breakdown');
+  breakdownEl.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:0.6rem;">
+      ${kpiRow('ניקוד בסיס', 100, '#16a34a')}
+      ${kpiRow(`ניכוי חריגות SLA (${calcKPI().overdue} × 8)`, -Math.min(calcKPI().overdue * 8, 40), '#dc2626')}
+      ${kpiRow(`ניכוי קנסות איכות (${k.penalties} × 12)`, -Math.min(k.penalties * 12, 36), '#ea580c')}
+      ${kpiRow(`בונוס אסטרטגיות (${k.strategic.closed} × 5)`, Math.min(k.strategic.closed * 5, 20), '#7c3aed')}
+      <div style="border-top:2px solid var(--border);padding-top:0.5rem;margin-top:0.25rem;display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:0.85rem;font-weight:800;color:var(--industrial-silver);">ציון סופי</span>
+        <span style="font-size:1.1rem;font-weight:800;color:${k.score >= 70 ? '#16a34a' : k.score >= 50 ? '#ea580c' : '#dc2626'};">${k.score} / 100</span>
+      </div>
+    </div>`;
+}
+
+function kpiRow(label, value, color) {
+  const sign = value >= 0 ? '+' : '';
+  return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;">
+    <span style="font-size:0.82rem;color:#64748b;">${label}</span>
+    <span style="font-size:0.85rem;font-weight:700;color:${color};">${sign}${value}</span>
+  </div>`;
+}
+
+// ─── Render board ─────────────────────────────────────────
+function renderBoard() {
+  const cols = ['open','in_progress','pending_approval','closed'];
+  cols.forEach(st => {
+    const el = document.getElementById('col-' + st);
+    const tasks = filteredTasks.filter(t => t.status === st);
+    document.getElementById('cnt-' + st).textContent = tasks.length;
+    if (!tasks.length) {
+      el.innerHTML = `<div class="empty-col"><i class="ph ph-clipboard"></i>אין משימות</div>`;
+      return;
+    }
+    el.innerHTML = tasks.map(cardHTML).join('');
+  });
+}
+
+function cardHTML(t) {
+  const breached = isSLABreached(t);
+  const sla = slaLabel(t);
+  const cls = [
+    'task-card',
+    breached  ? 'sla-breach' : '',
+    t.is_strategic ? 'strategic' : ''
+  ].filter(Boolean).join(' ');
+
+  const priorityCls = { critical:'badge-critical', high:'badge-high', medium:'badge-medium', low:'badge-low' };
+  const deptColor   = { college:'#2563eb', procurement:'#7c3aed', general:'#475569' };
+  const avatarBg    = deptColor[t.department] || '#475569';
+  const assigneeName = t.assigned_to_name || 'לא שובץ';
+  const initTxt     = t.assigned_to_name ? initials(t.assigned_to_name) : '—';
+
+  const typeInfo = TASK_TYPES[t.task_type] || null;
+  return `<div class="${cls}" onclick="openTask('${t.id}')">
+    <div class="card-top">
+      <div class="card-title">${escHtml(t.title)}</div>
+      <div class="card-badges">
+        ${typeInfo ? `<span class="badge-type" style="color:${typeInfo.color};border-color:${typeInfo.color}22;background:${typeInfo.color}11;"><i class="ph ${typeInfo.icon}"></i>${typeInfo.label}</span>` : ''}
+        <span class="badge ${priorityCls[t.priority]}">${PRIORITY_LABELS[t.priority]}</span>
+        ${t.is_strategic ? `<span class="badge badge-strategic"><i class="ph ph-flag-pennant"></i> אסטרטגי</span>` : ''}
+        ${t.quality_penalty ? `<span class="badge badge-penalty"><i class="ph ph-arrow-counter-clockwise"></i> חריגת איכות</span>` : ''}
+      </div>
+    </div>
+    ${t.description ? `<div class="card-desc">${escHtml(t.description)}</div>` : ''}
+    <div class="card-meta">
+      <div class="card-assignee">
+        <div class="assignee-avatar" style="background:${avatarBg};">${initTxt}</div>
+        <span>${escHtml(assigneeName)}</span>
+      </div>
+      <div class="sla-badge ${sla.cls}">
+        <i class="ph ${sla.icon}"></i>
+        <span>${sla.text}</span>
+      </div>
+    </div>
+  </div>`;
+}
+
+// ─── Task detail modal ────────────────────────────────────
+window.openTask = async function(id) {
+  openTaskId = id;
+  const t = allTasks.find(x => x.id === id);
+  if (!t) return;
+
+  document.getElementById('detail-title-txt').textContent = t.title;
+  const descEl = document.getElementById('detail-desc');
+  const descSection = document.getElementById('detail-desc-section');
+  if (t.description) {
+    descEl.textContent = t.description;
+    descSection.style.display = 'block';
+  } else {
+    descSection.style.display = 'none';
+  }
+  document.getElementById('modal-detail').classList.remove('hidden');
+
+  // Warning banners
+  const warnEl  = document.getElementById('detail-warning');
+  const warnTxt = document.getElementById('detail-warning-txt');
+  if (isSLABreached(t)) {
+    warnTxt.textContent = 'משימה זו חרגה מהSLA המוגדר. יש לטפל בה בהקדם.';
+    warnEl.style.display = 'flex';
+  } else if (t.quality_penalty) {
+    warnTxt.textContent = 'משימה זו נפתחה מחדש — מסומנת כחריגת איכות ותשפיע על ציון ה-KPI.';
+    warnEl.style.display = 'flex';
+  } else {
+    warnEl.style.display = 'none';
+  }
+
+  // Meta grid
+  const sla = slaLabel(t);
+  const typeInfo = TASK_TYPES[t.task_type] || null;
+  document.getElementById('detail-meta-grid').innerHTML = `
+    ${typeInfo ? `<div class="detail-item" style="grid-column:1/-1;">
+      <div class="detail-sec-title">סוג משימה</div>
+      <div class="detail-value"><span class="badge-type" style="color:${typeInfo.color};border-color:${typeInfo.color}22;background:${typeInfo.color}11;font-size:0.8rem;padding:3px 10px;"><i class="ph ${typeInfo.icon}"></i>${typeInfo.label}</span></div>
+    </div>` : ''}
+    <div class="detail-item">
+      <div class="detail-sec-title">מחלקת יעד</div>
+      <div class="detail-value">${DEPT_LABELS[t.department] || t.department}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">עדיפות</div>
+      <div class="detail-value">${PRIORITY_LABELS[t.priority]}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">נציג מבצע</div>
+      <div class="detail-value">${escHtml(t.assigned_to_name || '—')}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">יוצר</div>
+      <div class="detail-value">${escHtml(t.created_by_name || '—')}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">SLA</div>
+      <div class="detail-value ${sla.cls}"><i class="ph ${sla.icon}"></i> ${sla.text}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">נפתח מחדש</div>
+      <div class="detail-value">${t.reopened_count} פעמים</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">נוצר ב</div>
+      <div class="detail-value">${fmtDate(t.created_at)}</div>
+    </div>
+    <div class="detail-item">
+      <div class="detail-sec-title">עודכן ב</div>
+      <div class="detail-value">${fmtDate(t.updated_at)}</div>
+    </div>
+    ${t.linked_entity_label ? `
+    <div class="detail-item" style="grid-column:1/-1;">
+      <div class="detail-sec-title"><i class="ph ph-link"></i> יישות מקושרת</div>
+      <div class="detail-value">${escHtml(t.linked_entity_label)}</div>
+    </div>` : ''}`;
+
+  // Attachments
+  const attachments = Array.isArray(t.attachments) ? t.attachments
+    : (typeof t.attachments === 'string' && t.attachments ? JSON.parse(t.attachments) : []);
+  const attachSec  = document.getElementById('detail-attach-section');
+  const attachList = document.getElementById('detail-attach-list');
+  if (attachments.length) {
+    attachSec.style.display = 'block';
+    attachList.innerHTML = attachments.map(a => `
+      <div class="attach-thumb-item" title="${escHtml(a.name)}"
+           onclick="event.stopPropagation();openAttachment('${escHtml(a.url)}','${a.isImage}','${escHtml(a.name)}')">
+        ${a.isImage
+          ? `<img src="${escHtml(a.url)}" alt="${escHtml(a.name)}">`
+          : `<div class="attach-ext-icon"><i class="ph ph-file-text"></i><span>${escHtml(a.ext||'')}</span></div>`}
+      </div>`).join('');
+  } else {
+    attachSec.style.display = 'none';
+  }
+
+  // Delete button: only owner
+  document.getElementById('detail-delete-btn').style.display =
+    (t.created_by === currentUser.id || currentRole === 'main') ? 'inline-flex' : 'none';
+
+  // Status flow buttons
+  renderStatusFlow(t);
+
+  // Load chat
+  await loadMessages(id);
+  subscribeMessages(id);
+};
+
+function renderStatusFlow(t) {
+  const isOwner = t.created_by === currentUser.id;
+  // Any authenticated admin can act on tasks (assignee rules apply only to strategic approval)
+  const flow = document.getElementById('detail-status-flow');
+  let html = '';
+
+  if (t.status !== 'closed') {
+    if (t.status === 'open') {
+      html += `<button class="status-btn" onclick="updateStatus('${t.id}','in_progress')">
+        <i class="ph ph-play"></i> התחל טיפול
+      </button>`;
+    }
+
+    if (t.status === 'in_progress' || t.status === 'open') {
+      if (t.is_strategic) {
+        // Strategic: non-owners request approval, owner approves directly
+        if (!isOwner) {
+          html += `<button class="status-btn btn-request-approval"
+            onclick="updateStatus('${t.id}','pending_approval')">
+            <i class="ph ph-flag-pennant"></i> שלח לאישורי
+          </button>`;
+        } else {
+          html += `<button class="status-btn btn-close-task" onclick="updateStatus('${t.id}','closed')">
+            <i class="ph ph-seal-check"></i> אשר וסגור
+          </button>`;
+        }
+      } else {
+        html += `<button class="status-btn btn-close-task"
+          onclick="updateStatus('${t.id}','closed')">
+          <i class="ph ph-check-circle"></i> סגור משימה
+        </button>`;
+      }
+    }
+
+    if (t.status === 'pending_approval' && t.is_strategic && isOwner) {
+      html += `<button class="status-btn btn-close-task" onclick="updateStatus('${t.id}','closed')">
+        <i class="ph ph-seal-check"></i> אשר וסגור
+      </button>`;
+    }
+  }
+
+  if (t.status === 'closed' && isOwner) {
+    html += `<button class="status-btn btn-reopen" onclick="reopenTask('${t.id}')">
+      <i class="ph ph-arrow-counter-clockwise"></i> פתח מחדש
+    </button>`;
+  }
+
+  if (!html) html = `<span style="font-size:0.8rem;color:#94a3b8;">אין פעולות זמינות עבורך</span>`;
+  flow.innerHTML = html;
+}
+
+// ─── Status updates ───────────────────────────────────────
+window.updateStatus = async function(id, newStatus) {
+  const t = allTasks.find(x => x.id === id);
+  if (!t) return;
+
+  const isOwner = t.created_by === currentUser.id;
+
+  // Strategic tasks: only owner can close directly
+  if (t.is_strategic && newStatus === 'closed' && !isOwner) {
+    alert('משימה אסטרטגית — רק יוצר המשימה יכול לסגור אותה.');
+    return;
+  }
+
+  const patch = {
+    status: newStatus,
+    status_changed_at: new Date().toISOString(),
+  };
+  if (newStatus === 'closed') patch.closed_at = new Date().toISOString();
+
+  const { error } = await sb.from('admin_tasks').update(patch).eq('id', id);
+  if (error) { alert('שגיאה: ' + error.message); return; }
+
+  t.status = newStatus;
+  if (newStatus === 'closed') t.closed_at = patch.closed_at;
+  t.status_changed_at = patch.status_changed_at;
+
+  renderStatusFlow(t);
+  applyFilters();
+};
+
+window.reopenTask = async function(id) {
+  const t = allTasks.find(x => x.id === id);
+  if (!t || t.created_by !== currentUser.id) return;
+  if (!confirm('פתיחה מחדש תסמן את המשימה כ"חריגת איכות" ותשפיע על ציון ה-KPI. להמשיך?')) return;
+
+  const { error } = await sb.from('admin_tasks').update({
+    status: 'open',
+    closed_at: null,
+    reopened_count: t.reopened_count + 1,
+    quality_penalty: true,
+    status_changed_at: new Date().toISOString(),
+  }).eq('id', id);
+
+  if (error) { alert('שגיאה: ' + error.message); return; }
+  t.status         = 'open';
+  t.closed_at      = null;
+  t.reopened_count = t.reopened_count + 1;
+  t.quality_penalty = true;
+
+  renderStatusFlow(t);
+  applyFilters();
+  // re-open detail warning
+  document.getElementById('detail-warning').style.display = 'flex';
+  document.getElementById('detail-warning-txt').textContent = 'משימה זו נפתחה מחדש — מסומנת כחריגת איכות ותשפיע על ציון ה-KPI.';
+};
+
+window.deleteTask = async function() {
+  const t = allTasks.find(x => x.id === openTaskId);
+  if (!t) return;
+  if (t.created_by !== currentUser.id && currentRole !== 'main') { alert('רק יוצר המשימה יכול למחוק.'); return; }
+  if (!confirm(`למחוק את המשימה "${t.title}"? פעולה זו בלתי הפיכה.`)) return;
+
+  const { error } = await sb.from('admin_tasks').delete().eq('id', openTaskId);
+  if (error) { alert('שגיאה: ' + error.message); return; }
+  allTasks = allTasks.filter(x => x.id !== openTaskId);
+  closeModal('modal-detail');
+  applyFilters();
+};
+
+// ─── Attachments state ────────────────────────────────────
+let pendingAttachments = []; // { file, name, ext, isImage, previewUrl }
+
+window.handleAttachSelect = function(input) {
+  const files = [...input.files];
+  input.value = '';
+  files.forEach(file => {
+    if (pendingAttachments.length >= 5) { alert('ניתן לצרף עד 5 קבצים.'); return; }
+    if (file.size > 10 * 1024 * 1024) { alert(`${file.name} גדול מ-10MB.`); return; }
+    const ext = file.name.split('.').pop().toLowerCase();
+    const isImage = file.type.startsWith('image/');
+    const previewUrl = isImage ? URL.createObjectURL(file) : null;
+    pendingAttachments.push({ file, name: file.name, ext, isImage, previewUrl });
+  });
+  renderAttachChips();
+};
+
+function renderAttachChips() {
+  const el = document.getElementById('c-attach-chips');
+  if (!el) return;
+  el.innerHTML = pendingAttachments.map((a, i) => `
+    <div class="attach-chip">
+      <i class="ph ${a.isImage ? 'ph-image' : 'ph-file-text'}"></i>
+      ${escHtml(a.name.length > 22 ? a.name.slice(0,20)+'…' : a.name)}
+      <button class="attach-chip-remove" onclick="removeAttachment(${i})" title="הסר">✕</button>
+    </div>`).join('');
+}
+
+window.removeAttachment = function(idx) {
+  pendingAttachments.splice(idx, 1);
+  renderAttachChips();
+};
+
+async function uploadAttachments(taskId) {
+  const urls = [];
+  for (const a of pendingAttachments) {
+    const fileExt  = a.name.includes('.') ? a.name.split('.').pop() : '';
+    const safeName = a.name
+      .replace(/[\u0590-\u05FF\uFB1D-\uFB4F]/g, '')  // הסר עברית
+      .replace(/\s+/g, '_')
+      .replace(/[^a-zA-Z0-9._-]/g, '')
+      .replace(/^[._-]+/, '') || 'file';
+    const path = `${taskId}/${Date.now()}_${safeName || ('file.' + fileExt)}`;
+    const { data, error } = await sb.storage.from('task-attachments').upload(path, a.file, { upsert: true });
+    if (error) {
+      alert(`שגיאה בהעלאת קובץ "${a.name}":\n${error.message}`);
+      continue;
+    }
+    const { data: pub } = sb.storage.from('task-attachments').getPublicUrl(data.path);
+    urls.push({ name: a.name, url: pub.publicUrl, ext: a.ext, isImage: a.isImage });
+  }
+  return urls;
+}
+
+// ─── Strategic toggle ─────────────────────────────────────
+window.toggleStrategicMode = function(checked) {
+  const box    = document.getElementById('modal-create').querySelector('.modal-box');
+  const banner = document.getElementById('c-strategic-banner');
+  box.classList.toggle('strategic-mode', checked);
+  banner.classList.toggle('hidden', !checked);
+};
+
+// ─── Linked entities ──────────────────────────────────────
+async function loadLinkedEntities() {
+  const { data } = await sb.from('batches')
+    .select('id, name, track, location').order('created_at', { ascending: false });
+  const sel = document.getElementById('c-entity-course');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— בחר קורס / מחזור —</option>';
+  (data || []).forEach(b => {
+    const opt = document.createElement('option');
+    opt.value = b.id;
+    opt.dataset.label = b.name;
+    opt.textContent = b.name + (b.location ? ` (${b.location === 'tel_aviv' ? 'ת"א' : 'ב"ש'})` : '');
+    sel.appendChild(opt);
+  });
+}
+
+window.onEntityTypeChange = function() {
+  const type = document.getElementById('c-entity-type').value;
+  document.getElementById('c-entity-course').style.display = type === 'course' ? 'block' : 'none';
+  document.getElementById('c-entity-user').style.display   = type === 'user'   ? 'block' : 'none';
+  document.getElementById('c-entity-order').style.display  = type === 'order'  ? 'block' : 'none';
+};
+
+// ─── Custom task-type dropdown ─────────────────────────────
+function buildTypeDdMenu() {
+  const menu = document.getElementById('type-dd-menu');
+  if (!menu) return;
+  menu.innerHTML = Object.entries(TASK_TYPES).map(([val, info]) => `
+    <div class="type-dd-item" onclick="selectTaskType('${val}')">
+      <i class="ph ${info.icon}" style="color:${info.color};"></i>
+      <span class="item-label">${info.label}</span>
+    </div>`).join('');
+}
+
+window.toggleTypeDd = function() {
+  const trigger = document.getElementById('type-dd-trigger');
+  const menu    = document.getElementById('type-dd-menu');
+  const isOpen  = menu.classList.contains('open');
+  if (!isOpen) buildTypeDdMenu();
+  trigger.classList.toggle('open', !isOpen);
+  menu.classList.toggle('open', !isOpen);
+};
+
+window.selectTaskType = function(val) {
+  const info = TASK_TYPES[val];
+  if (!info) return;
+  document.getElementById('c-type').value               = val;
+  document.getElementById('type-dd-label').textContent  = info.label;
+  document.getElementById('type-dd-icon').className     = `ph ${info.icon} type-icon`;
+  document.getElementById('type-dd-icon').style.color   = info.color;
+  document.getElementById('type-dd-trigger').classList.remove('open');
+  document.getElementById('type-dd-menu').classList.remove('open');
+
+  // Auto-set priority
+  if (info.priority) document.getElementById('c-priority').value = info.priority;
+
+  const dueInput  = document.getElementById('c-due');
+  const dueLabel  = document.getElementById('c-due-label');
+
+  if (info.autoHours !== null) {
+    // Auto-fill due date
+    const d = new Date(Date.now() + info.autoHours * 3600 * 1000);
+    d.setMinutes(0, 0, 0);
+    // datetime-local format: YYYY-MM-DDTHH:MM
+    const pad = n => String(n).padStart(2,'0');
+    dueInput.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:00`;
+    if (dueLabel) dueLabel.innerHTML = 'מועד יעד + שעה <span style="font-size:0.72rem;color:#10b981;font-weight:600;">(מולא אוטומטית)</span>';
+  } else {
+    // "other" — clear and mark required
+    dueInput.value = '';
+    if (dueLabel) dueLabel.innerHTML = 'מועד יעד + שעה <span style="color:#ef4444;">*</span> <span style="font-size:0.72rem;color:#94a3b8;">(חובה לסוג זה)</span>';
+  }
+};
+
+// Close dropdown when clicking outside
+document.addEventListener('click', e => {
+  const dd = document.getElementById('type-dd');
+  if (dd && !dd.contains(e.target)) {
+    document.getElementById('type-dd-trigger')?.classList.remove('open');
+    document.getElementById('type-dd-menu')?.classList.remove('open');
+  }
+});
+
+// kept for reset call compatibility
+window.updateTypeIcon = function() { selectTaskType('technical'); };
+
+// ─── Create task ──────────────────────────────────────────
+window.openCreateModal = async function() {
+  if (!adminUsers.length) await loadAdminUsers();
+  const sel = document.getElementById('c-assignee');
+  populateSelectWithAdmins(sel);
+  loadLinkedEntities();
+  updateTypeIcon();
+  document.getElementById('modal-create').classList.remove('hidden');
+};
+
+window.createTask = async function() {
+  const title = document.getElementById('c-title').value.trim();
+  if (!title) { alert('יש להזין כותרת.'); return; }
+
+  const taskType = document.getElementById('c-type').value;
+  const dueVal   = document.getElementById('c-due').value;
+  if (taskType === 'other' && !dueVal) {
+    alert('סוג משימה "אחר" מחייב הגדרת מועד יעד.');
+    document.getElementById('c-due').focus();
+    return;
+  }
+
+  const assigneeId   = document.getElementById('c-assignee').value || null;
+  const assigneeSel  = document.getElementById('c-assignee');
+  const assigneeName = assigneeId ? assigneeSel.options[assigneeSel.selectedIndex].text : null;
+  const due          = document.getElementById('c-due').value;
+
+  // Linked entity — resolve by type
+  const entityType = document.getElementById('c-entity-type').value;
+  let entityId    = null;
+  let entityLabel = null;
+  if (entityType === 'course') {
+    const sel = document.getElementById('c-entity-course');
+    if (sel.value) { entityId = sel.value; entityLabel = sel.options[sel.selectedIndex].dataset.label || sel.options[sel.selectedIndex].text; }
+  } else if (entityType === 'user') {
+    const v = document.getElementById('c-entity-user').value.trim();
+    if (v) { entityLabel = 'טלפון: ' + v; }
+  } else if (entityType === 'order') {
+    const v = document.getElementById('c-entity-order').value.trim();
+    if (v) { entityLabel = 'הזמנה: ' + v; }
+  }
+
+  // Insert task first to get ID
+  const { data, error } = await sb.from('admin_tasks').insert({
+    created_by:          currentUser.id,
+    created_by_name:     document.getElementById('nav-user-name').textContent,
+    assigned_to:         assigneeId,
+    assigned_to_name:    assigneeName,
+    department:          document.getElementById('c-dept').value,
+    task_type:           document.getElementById('c-type').value,
+    title,
+    description:         document.getElementById('c-desc').value.trim() || null,
+    priority:            document.getElementById('c-priority').value,
+    is_strategic:        document.getElementById('c-strategic').checked,
+    due_date:            due ? new Date(due).toISOString() : null,
+    linked_entity_id:    entityId,
+    linked_entity_label: entityLabel,
+    attachments:         '[]',
+  }).select().single();
+
+  if (error) { alert('שגיאה ביצירת משימה: ' + error.message); return; }
+
+  // Upload attachments if any
+  if (pendingAttachments.length > 0) {
+    const urls = await uploadAttachments(data.id);
+    if (urls.length) {
+      await sb.from('admin_tasks').update({ attachments: JSON.stringify(urls) }).eq('id', data.id);
+      data.attachments = urls;
+    }
+  }
+
+  allTasks.unshift(data);
+  pendingAttachments = [];
+  closeModal('modal-create');
+  applyFilters();
+
+  // Reset form
+  ['c-title','c-desc','c-due'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('c-type').value = 'technical';
+  updateTypeIcon();
+  document.getElementById('c-strategic').checked = false;
+  document.getElementById('c-attach-chips').innerHTML = '';
+  toggleStrategicMode(false);
+  document.getElementById('c-entity-type').value = '';
+  ['c-entity-course','c-entity-user','c-entity-order'].forEach(id => {
+    const el = document.getElementById(id);
+    el.value = ''; el.style.display = 'none';
+  });
+};
+
+// ─── Chat ─────────────────────────────────────────────────
+async function loadMessages(taskId) {
+  const msgsEl = document.getElementById('chat-msgs');
+  msgsEl.innerHTML = `<div style="text-align:center;padding:1rem;color:#94a3b8;font-size:0.8rem;"><i class="ph ph-circle-notch spin"></i></div>`;
+
+  const { data } = await sb.from('task_messages')
+    .select('*').eq('task_id', taskId).order('created_at', { ascending: true });
+
+  renderMessages(data || []);
+}
+
+function msgMediaHTML(m) {
+  if (!m.attachment_url) return '';
+  const t = m.attachment_type || '';
+  if (t === 'image') return `<img class="msg-media-img" src="${escHtml(m.attachment_url)}" onclick="openAttachment('${escHtml(m.attachment_url)}','true','${escHtml(m.attachment_name||'')}')" alt="${escHtml(m.attachment_name||'')}">`;
+  if (t === 'video') return `<video class="msg-media-video" src="${escHtml(m.attachment_url)}" controls></video>`;
+  return `<a class="msg-file-chip" href="${escHtml(m.attachment_url)}" target="_blank"><i class="ph ph-file-text"></i><span>${escHtml(m.attachment_name||'קובץ')}</span><i class="ph ph-download-simple" style="font-size:0.8rem;opacity:0.6;"></i></a>`;
+}
+
+function renderMessages(msgs) {
+  const msgsEl = document.getElementById('chat-msgs');
+  if (!msgs.length) {
+    msgsEl.innerHTML = `<div style="text-align:center;padding:2rem;color:#94a3b8;font-size:0.78rem;"><i class="ph ph-chat-circle" style="font-size:1.5rem;display:block;margin-bottom:4px;opacity:0.4;"></i>אין הודעות עדיין</div>`;
+    return;
+  }
+  msgsEl.innerHTML = msgs.map(m => {
+    const isMe = m.sender_id === currentUser.id;
+    return `<div class="chat-msg ${isMe ? 'me' : 'other'}" data-msg-id="${m.id}">
+      <div class="msg-bubble">${msgMediaHTML(m)}${m.body ? escHtml(m.body) : ''}</div>
+      <div class="msg-meta">${escHtml(m.sender_name || '?')} · ${fmtTime(m.created_at)}</div>
+    </div>`;
+  }).join('');
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+}
+
+function subscribeMessages(taskId) {
+  if (msgSub) { sb.removeChannel(msgSub); msgSub = null; }
+  msgSub = sb.channel('task-msgs-' + taskId)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'task_messages',
+      filter: `task_id=eq.${taskId}`
+    }, payload => {
+      const msgsEl = document.getElementById('chat-msgs');
+      const m = payload.new;
+      // Skip if already added optimistically
+      if (msgsEl.querySelector(`[data-msg-id="${m.id}"]`)) return;
+      const isMe = m.sender_id === currentUser.id;
+      const bubble = document.createElement('div');
+      bubble.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+      bubble.dataset.msgId = m.id;
+      bubble.innerHTML = `<div class="msg-bubble">${msgMediaHTML(m)}${m.body ? escHtml(m.body) : ''}</div>
+        <div class="msg-meta">${escHtml(m.sender_name || '?')} · ${fmtTime(m.created_at)}</div>`;
+      // Remove empty state
+      const emptyEl = msgsEl.querySelector('div[style]');
+      if (emptyEl && msgsEl.children.length === 1) msgsEl.innerHTML = '';
+      msgsEl.appendChild(bubble);
+      msgsEl.scrollTop = msgsEl.scrollHeight;
+    })
+    .subscribe();
+}
+
+// ─── Chat file attach ──────────────────────────────────────
+let chatPendingFile = null;
+
+window.onChatFileSelect = function(input) {
+  const file = input.files[0];
+  if (!file) return;
+  chatPendingFile = file;
+  const preview = document.getElementById('chat-attach-preview');
+  const thumb   = document.getElementById('chat-attach-thumb');
+  const name    = document.getElementById('chat-attach-name');
+  name.textContent = file.name;
+  if (file.type.startsWith('image/')) {
+    const url = URL.createObjectURL(file);
+    thumb.innerHTML = `<img src="${url}" style="height:40px;width:40px;object-fit:cover;border-radius:5px;">`;
+  } else if (file.type.startsWith('video/')) {
+    thumb.innerHTML = `<i class="ph ph-video" style="font-size:1.5rem;color:#075e54;"></i>`;
+  } else {
+    thumb.innerHTML = `<i class="ph ph-file-text" style="font-size:1.5rem;color:#075e54;"></i>`;
+  }
+  preview.style.display = 'flex';
+  input.value = '';
+};
+
+window.clearChatAttach = function() {
+  chatPendingFile = null;
+  document.getElementById('chat-attach-preview').style.display = 'none';
+  document.getElementById('chat-attach-thumb').innerHTML = '';
+  document.getElementById('chat-attach-name').textContent = '';
+};
+
+window.sendMessage = async function() {
+  const input = document.getElementById('chat-input');
+  const body  = input.value.trim();
+  if (!body && !chatPendingFile) return;
+  if (!openTaskId) return;
+
+  input.value = '';
+  const senderName = document.getElementById('nav-user-name').textContent;
+  let attachmentUrl = null, attachmentType = null, attachmentName = null;
+
+  // Upload file if present
+  if (chatPendingFile) {
+    const f    = chatPendingFile;
+    const ext  = f.name.includes('.') ? f.name.split('.').pop() : '';
+    const safe = f.name.replace(/[\u0590-\u05FF\uFB1D-\uFB4F]/g,'').replace(/\s+/g,'_').replace(/[^a-zA-Z0-9._-]/g,'').replace(/^[._-]+/,'') || 'file';
+    const path = `chat/${openTaskId}/${Date.now()}_${safe || 'file.' + ext}`;
+    const { data: upData, error: upErr } = await sb.storage.from('task-attachments').upload(path, f, { upsert: true });
+    if (upErr) { alert('שגיאה בהעלאת קובץ: ' + upErr.message); return; }
+    const { data: pub } = sb.storage.from('task-attachments').getPublicUrl(upData.path);
+    attachmentUrl  = pub.publicUrl;
+    attachmentName = f.name;
+    attachmentType = f.type.startsWith('image/') ? 'image' : f.type.startsWith('video/') ? 'video' : 'file';
+    clearChatAttach();
+  }
+
+  const { data, error } = await sb.from('task_messages').insert({
+    task_id:         openTaskId,
+    sender_id:       currentUser.id,
+    sender_name:     senderName,
+    body:            body || null,
+    attachment_url:  attachmentUrl,
+    attachment_type: attachmentType,
+    attachment_name: attachmentName,
+  }).select().single();
+
+  if (error) { alert('שגיאה בשליחה: ' + error.message); return; }
+
+  const msgsEl = document.getElementById('chat-msgs');
+  const emptyEl = msgsEl.querySelector('div[style]');
+  if (emptyEl && msgsEl.children.length === 1) msgsEl.innerHTML = '';
+  const bubble = document.createElement('div');
+  bubble.className = 'chat-msg me';
+  bubble.dataset.msgId = data.id;
+  bubble.innerHTML = `<div class="msg-bubble">${msgMediaHTML(data)}${body ? escHtml(body) : ''}</div>
+    <div class="msg-meta">${escHtml(senderName)} · ${fmtTime(data.created_at)}</div>`;
+  msgsEl.appendChild(bubble);
+  msgsEl.scrollTop = msgsEl.scrollHeight;
+};
+
+// ─── Realtime (board updates) ─────────────────────────────
+function subscribeRealtime() {
+  sb.channel('tasks-board')
+    .on('postgres_changes', { event: '*', schema: 'public', table: 'admin_tasks' }, async () => {
+      await loadTasks();
+    })
+    .subscribe();
+}
+
+// ─── Views ────────────────────────────────────────────────
+window.setBoardTab = function(tab) {
+  boardTab = tab;
+  document.querySelectorAll('.board-tab').forEach(b => b.classList.remove('active'));
+  document.getElementById('btab-' + tab)?.classList.add('active');
+  applyFilters();
+};
+
+window.setView = function(view) {
+  activeView = view;
+  document.querySelectorAll('.tm-nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-' + view)?.classList.add('active');
+
+  const boardCols = document.getElementById('board-cols');
+  const kpiDetail = document.getElementById('kpi-detail-view');
+  const kpiBar    = document.getElementById('kpi-bar');
+
+  const titles = {
+    board:       ['לוח משימות',        'כלל המשימות הפעילות במערכת'],
+    my_assigned: ['משימות שהוקצו לי',  'משימות שאתה האחראי לביצוען'],
+    my_created:  ['משימות שיצרתי',     'משימות שפתחת ואתה הבעלים שלהן'],
+    strategic:   ['משימות אסטרטגיות',  'משימות שדורשות אישורי לסגירה'],
+    overdue:     ['חריגות SLA',        'משימות שחרגו מזמן הטיפול המוגדר'],
+    kpi:         ['מדד ביצוע KPI',     'ציון ביצוע חודשי מבוסס מדדים'],
+  };
+
+  const [title, sub] = titles[view] || titles.board;
+  document.getElementById('page-title').textContent = title;
+  document.getElementById('page-sub').textContent   = sub;
+
+  // Show board tabs only on main board view
+  const tabsEl = document.getElementById('board-tabs');
+  if (tabsEl) tabsEl.style.display = view === 'board' ? 'flex' : 'none';
+
+  if (view === 'kpi') {
+    boardCols.style.display = 'none';
+    kpiDetail.style.display = 'block';
+    updateKPIs();
+  } else {
+    boardCols.style.display = 'grid';
+    kpiDetail.style.display = 'none';
+  }
+
+  applyFilters();
+};
+
+// ─── Assignee filter / dropdown population ────────────────
+let adminUsers = [];
+async function loadAdminUsers() {
+  const { data } = await sb.from('admin_users').select('user_id, role, display_name');
+  adminUsers = data || [];
+}
+
+function populateAssigneeFilter() {
+  loadAdminUsers().then(() => {
+    const sel = document.getElementById('f-assignee');
+    adminUsers.forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.user_id;
+      opt.textContent = u.display_name || u.role;
+      sel.appendChild(opt);
+    });
+  });
+}
+
+const ROLE_DEPT_MAP = { college: 'college', main: 'general', admin: 'general' };
+
+function populateSelectWithAdmins(sel, deptFilter) {
+  while (sel.options.length > 1) sel.remove(1);
+  adminUsers
+    .filter(u => !deptFilter || ROLE_DEPT_MAP[u.role] === deptFilter || deptFilter === 'general')
+    .forEach(u => {
+      const opt = document.createElement('option');
+      opt.value = u.user_id;
+      opt.textContent = u.display_name || u.role;
+      sel.appendChild(opt);
+    });
+}
+
+window.filterAssigneesByDept = function() {
+  const dept = document.getElementById('c-dept').value;
+  const sel  = document.getElementById('c-assignee');
+  populateSelectWithAdmins(sel, dept);
+
+  // Auto-select the matching admin when dept is college
+  if (dept === 'college') {
+    const collegeAdmin = adminUsers.find(u => u.role === 'college');
+    if (collegeAdmin) sel.value = collegeAdmin.user_id;
+  } else {
+    sel.value = '';
+  }
+};
+
+// ─── Modals ───────────────────────────────────────────────
+window.closeModal = function(id) {
+  document.getElementById(id).classList.add('hidden');
+  if (id === 'modal-detail') {
+    openTaskId = null;
+    if (msgSub) { sb.removeChannel(msgSub); msgSub = null; }
+  }
+};
+
+// Close on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => {
+    if (e.target === overlay) closeModal(overlay.id);
+  });
+});
+
+// ─── Helpers ──────────────────────────────────────────────
+function escHtml(s) {
+  if (!s) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function fmtDate(iso) {
+  if (!iso) return '—';
+  return new Date(iso).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+function fmtTime(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleTimeString('he-IL', { hour:'2-digit', minute:'2-digit' });
+}
+
+// ─── Attachment viewer ────────────────────────────────────
+window.openAttachment = function(url, isImage, name) {
+  const lb = document.createElement('div');
+  lb.className = 'lightbox-overlay';
+  lb.innerHTML = isImage === 'true'
+    ? `<img src="${url}" alt="${name}">
+       <div class="lb-bar">
+         <button class="lb-btn lb-download" onclick="window.open('${url}','_blank')"><i class="ph ph-download-simple"></i> הורד</button>
+         <button class="lb-btn lb-close" onclick="this.closest('.lightbox-overlay').remove()"><i class="ph ph-x"></i> סגור</button>
+       </div>`
+    : `<div style="color:#fff;font-size:1rem;font-weight:600;">${name}</div>
+       <div class="lb-bar">
+         <button class="lb-btn lb-download" onclick="window.open('${url}','_blank')"><i class="ph ph-download-simple"></i> פתח / הורד</button>
+         <button class="lb-btn lb-close" onclick="this.closest('.lightbox-overlay').remove()"><i class="ph ph-x"></i> סגור</button>
+       </div>`;
+  lb.addEventListener('click', e => { if (e.target === lb) lb.remove(); });
+  document.body.appendChild(lb);
+};
+
+// ─── Boot ─────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

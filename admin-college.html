@@ -586,6 +586,7 @@
       <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
       <ul class="admin-nav">
         <li><a href="#" id="nav-calendar" onclick="switchView('calendar');return false;"><i class="ph ph-calendar-dots"></i> לוח זמנים</a></li>
+        <li><a href="admin-tasks.html"><i class="ph ph-check-square"></i> ניהול משימות</a></li>
       </ul>
     </aside>
 
@@ -610,19 +611,52 @@
           <div class="ov-kpi"><div class="ov-kpi-icon" style="background:#f0f9ff;color:#0369a1;"><i class="ph ph-seal-check"></i></div><div><div class="ov-kpi-val" id="ov-k-grad">—</div><div class="ov-kpi-lbl">בוגרים מוסמכים</div></div></div>
         </div>
 
-        <!-- Mini Calendar -->
-        <div style="display:flex;justify-content:center;margin-bottom:1.25rem;">
-        <div id="ov-cal-wrap" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px;width:550px;flex-shrink:0;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-            <div style="font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;">
-              <i class="ph ph-calendar-blank" style="color:#2563eb;"></i> לוח זמנים
+        <!-- Calendar + Tasks Panel -->
+        <div style="display:flex;gap:1.25rem;margin-bottom:1.25rem;align-items:flex-start;">
+
+          <!-- Mini Calendar -->
+          <div id="ov-cal-wrap" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px;flex:1;min-width:0;height:582px;display:flex;flex-direction:column;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+              <div style="font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;">
+                <i class="ph ph-calendar-blank" style="color:#2563eb;"></i> לוח זמנים
+              </div>
+              <button id="ov-cal-fs-btn" onclick="ovCalToggleFullscreen()" style="display:flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+                <i class="ph ph-arrows-out" id="ov-cal-fs-icon"></i> מסך מלא
+              </button>
             </div>
-            <button id="ov-cal-fs-btn" onclick="ovCalToggleFullscreen()" style="display:flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
-              <i class="ph ph-arrows-out" id="ov-cal-fs-icon"></i> מסך מלא
-            </button>
+            <div id="ov-cal-el" style="flex:1;min-height:0;"></div>
           </div>
-          <div id="ov-cal-el" style="height:550px;"></div>
-        </div>
+
+          <!-- Tasks Panel — single card, same height as calendar -->
+          <div style="flex:1;min-width:0;height:582px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:0;">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
+              <div style="font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;">
+                <i class="ph ph-gauge" style="color:#2563eb;"></i> מדדי SLA ומשימות מכללה
+              </div>
+              <a href="admin-tasks.html" style="font-size:0.72rem;font-weight:600;color:#2563eb;text-decoration:none;">כל המשימות ←</a>
+            </div>
+
+            <!-- SLA Stats grid -->
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;flex-shrink:0;margin-bottom:14px;" id="ov-sla-grid">
+              <div style="text-align:center;padding:1rem;color:#94a3b8;font-size:0.8rem;grid-column:1/-1;"><i class="ph ph-circle-notch spin"></i></div>
+            </div>
+
+            <!-- Divider -->
+            <div style="border-top:1px solid #e2e8f0;margin-bottom:12px;flex-shrink:0;"></div>
+
+            <!-- Tasks list header -->
+            <div style="font-size:0.75rem;font-weight:800;color:#64748b;margin-bottom:8px;flex-shrink:0;display:flex;align-items:center;gap:6px;">
+              <i class="ph ph-bell-ringing" style="color:#f59e0b;"></i> משימות פתוחות
+            </div>
+
+            <!-- Tasks list — scrollable -->
+            <div id="ov-tasks-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0.45rem;">
+              <div style="text-align:center;padding:1.5rem;color:#94a3b8;font-size:0.8rem;"><i class="ph ph-circle-notch spin"></i></div>
+            </div>
+
+          </div>
         </div>
 
         <!-- CRM Layout: table + flyout -->
@@ -1719,6 +1753,79 @@ async function ovInit() {
   ovUpdateCounts();
   ovRenderTable();
   ovCalInit();
+  ovLoadTasks();
+}
+
+async function ovLoadTasks() {
+  const SLA_HOURS = { critical:24, high:48, medium:72, low:168 };
+  const now = new Date();
+
+  const { data: tasks } = await supabase
+    .from('admin_tasks')
+    .select('id,title,status,priority,due_date,created_at,task_type')
+    .eq('department','college')
+    .neq('status','closed')
+    .order('created_at', { ascending: false });
+
+  if (!tasks) return;
+
+  // ── SLA stats ──
+  let open=0, inProgress=0, breached=0, onTime=0;
+  tasks.forEach(t => {
+    if (t.status === 'open') open++;
+    if (t.status === 'in_progress') inProgress++;
+    const slaMs = (SLA_HOURS[t.priority] || 72) * 3600000;
+    const ref   = new Date(t.status === 'open' ? t.created_at : t.created_at);
+    if (now - ref > slaMs) breached++; else onTime++;
+  });
+
+  const slaGrid = document.getElementById('ov-sla-grid');
+  if (slaGrid) slaGrid.innerHTML = [
+    { label:'פתוחות',        val:open,       bg:'#eff6ff', color:'#2563eb', icon:'ph-folder-open' },
+    { label:'בטיפול',        val:inProgress, bg:'#f0fdf4', color:'#16a34a', icon:'ph-arrows-clockwise' },
+    { label:'חריגות SLA',    val:breached,   bg:'#fef2f2', color:'#dc2626', icon:'ph-warning-circle' },
+    { label:'בזמן',          val:onTime,     bg:'#f0fdf4', color:'#15803d', icon:'ph-check-circle' },
+  ].map(s => `
+    <div style="background:${s.bg};border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+      <i class="ph ${s.icon}" style="font-size:1.4rem;color:${s.color};"></i>
+      <div>
+        <div style="font-size:1.4rem;font-weight:800;color:${s.color};line-height:1;">${s.val}</div>
+        <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">${s.label}</div>
+      </div>
+    </div>`).join('');
+
+  // ── New tasks list ──
+  const TASK_TYPE_LABELS = {
+    technical:'תקלה טכנית', payments:'תשלומים וסליקה', students:'ניהול סטודנטים',
+    operations:'תפעול שוטף', legal:'משפטי ותקנון', procurement:'רכש ומלאי',
+    improvement:'שיפור תהליך', other:'אחר'
+  };
+  const PRIORITY_COLOR = { critical:'#ef4444', high:'#f59e0b', medium:'#3b82f6', low:'#10b981' };
+  const listEl = document.getElementById('ov-tasks-list');
+  if (!listEl) return;
+
+  const recent = tasks.slice(0, 8);
+  if (!recent.length) {
+    listEl.innerHTML = `<div style="text-align:center;padding:2rem;color:#94a3b8;font-size:0.8rem;">אין משימות פתוחות</div>`;
+    return;
+  }
+  listEl.innerHTML = recent.map(t => {
+    const slaMs   = (SLA_HOURS[t.priority]||72)*3600000;
+    const age     = now - new Date(t.created_at);
+    const isBreached = age > slaMs;
+    const typeLabel  = TASK_TYPE_LABELS[t.task_type] || t.task_type || '';
+    const pColor     = PRIORITY_COLOR[t.priority] || '#94a3b8';
+    return `<div onclick="openTaskPopup('${t.id}')" style="border:1.5px solid ${isBreached?'#fca5a5':'#e2e8f0'};background:${isBreached?'#fff5f5':'#fff'};border-radius:9px;padding:9px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="font-size:0.83rem;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div>
+        <span style="font-size:0.68rem;font-weight:700;color:${pColor};background:${pColor}18;border:1px solid ${pColor}33;border-radius:20px;padding:1px 7px;white-space:nowrap;">${t.priority==='critical'?'קריטי':t.priority==='high'?'גבוה':t.priority==='medium'?'בינוני':'נמוך'}</span>
+      </div>
+      <div style="font-size:0.72rem;color:#64748b;margin-top:3px;display:flex;align-items:center;gap:8px;">
+        ${typeLabel ? `<span>${typeLabel}</span>` : ''}
+        ${isBreached ? `<span style="color:#ef4444;font-weight:700;"><i class="ph ph-warning"></i> חריגת SLA</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function ovUpdateCounts() {
@@ -2751,10 +2858,86 @@ window.ovCalToggleFullscreen = function() {
     wrap.style.position = '';wrap.style.top='';wrap.style.left='';wrap.style.right='';wrap.style.bottom='';
     wrap.style.zIndex='';wrap.style.borderRadius='14px';wrap.style.margin='';
     wrap.style.height='';wrap.style.display='';wrap.style.flexDirection='';
-    document.getElementById('ov-cal-el').style.height = '280px';
+    document.getElementById('ov-cal-el').style.height = '';
     btn.innerHTML = '<i class="ph ph-arrows-out"></i> מסך מלא';
   }
   if (ovCalInstance) ovCalInstance.updateSize();
+};
+
+// ─── Task Popup ───────────────────────────────────────────
+const TASK_TYPE_ICONS = {
+  technical:'ph-wrench', payments:'ph-credit-card', students:'ph-users',
+  operations:'ph-clock', legal:'ph-gavel', procurement:'ph-package',
+  improvement:'ph-lightbulb', other:'ph-dots-three'
+};
+const TASK_TYPE_COLORS = {
+  technical:'#ef4444', payments:'#f59e0b', students:'#2563eb',
+  operations:'#10b981', legal:'#6366f1', procurement:'#8b5cf6',
+  improvement:'#f97316', other:'#94a3b8'
+};
+const TASK_TYPE_LABELS_POPUP = {
+  technical:'תקלה טכנית', payments:'תשלומים וסליקה', students:'ניהול סטודנטים',
+  operations:'תפעול שוטף', legal:'משפטי ותקנון', procurement:'רכש ומלאי',
+  improvement:'שיפור תהליך', other:'אחר'
+};
+const PRIORITY_LABELS_POPUP = { critical:'קריטי', high:'גבוה', medium:'בינוני', low:'נמוך' };
+const PRIORITY_COLORS_POPUP = { critical:'#ef4444', high:'#f59e0b', medium:'#3b82f6', low:'#10b981' };
+const STATUS_LABELS_POPUP   = { open:'פתוח', in_progress:'בטיפול', pending_approval:'ממתין לאישורי', closed:'סגור' };
+
+window.openTaskPopup = async function(taskId) {
+  const popup = document.getElementById('ov-task-popup');
+  popup.style.display = 'flex';
+  document.getElementById('tp-title').textContent = '...';
+  document.getElementById('tp-badges').innerHTML  = '<i class="ph ph-circle-notch" style="animation:spin 1s linear infinite;"></i>';
+  document.getElementById('tp-meta').innerHTML    = '';
+  document.getElementById('tp-desc-wrap').style.display = 'none';
+  document.getElementById('tp-status-wrap').style.display = 'none';
+
+  const sb = window._supabase || supabase;
+  const { data: t } = await sb.from('admin_tasks').select('*').eq('id', taskId).single();
+  if (!t) { document.getElementById('tp-title').textContent = 'שגיאה בטעינה'; return; }
+
+  document.getElementById('tp-title').textContent = t.title;
+
+  // Badges
+  const pColor   = PRIORITY_COLORS_POPUP[t.priority] || '#94a3b8';
+  const typeInfo = TASK_TYPE_LABELS_POPUP[t.task_type];
+  const typeIcon = TASK_TYPE_ICONS[t.task_type] || 'ph-tag';
+  const typeColor= TASK_TYPE_COLORS[t.task_type] || '#94a3b8';
+  document.getElementById('tp-badges').innerHTML = `
+    ${typeInfo ? `<span style="display:inline-flex;align-items:center;gap:4px;font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;color:${typeColor};background:${typeColor}15;border:1px solid ${typeColor}30;"><i class="ph ${typeIcon}"></i>${typeInfo}</span>` : ''}
+    <span style="font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;color:${pColor};background:${pColor}15;border:1px solid ${pColor}30;">${PRIORITY_LABELS_POPUP[t.priority]||t.priority}</span>
+    <span style="font-size:0.75rem;font-weight:700;padding:3px 10px;border-radius:20px;color:#475569;background:#f1f5f9;border:1px solid #e2e8f0;">${STATUS_LABELS_POPUP[t.status]||t.status}</span>`;
+
+  // Description
+  if (t.description) {
+    document.getElementById('tp-desc').textContent = t.description;
+    document.getElementById('tp-desc-wrap').style.display = 'block';
+  }
+
+  // Meta
+  const slaHours = { critical:24, high:48, medium:72, low:168 };
+  const slaMs    = (slaHours[t.priority]||72) * 3600000;
+  const breached = t.status !== 'closed' && (Date.now() - new Date(t.created_at)) > slaMs;
+  const fmtDate  = d => d ? new Date(d).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'}) : '—';
+  document.getElementById('tp-meta').innerHTML = [
+    { label:'יוצר',        val: t.created_by_name || '—' },
+    { label:'אחראי',       val: t.assigned_to_name || 'לא שובץ' },
+    { label:'נוצר',        val: fmtDate(t.created_at) },
+    { label:'מועד יעד',    val: t.due_date ? fmtDate(t.due_date) : '—' },
+    { label:'SLA',         val: breached ? '<span style="color:#ef4444;font-weight:700;">חריגה</span>' : '<span style="color:#16a34a;font-weight:700;">תקין</span>' },
+    { label:'נפתח מחדש',   val: `${t.reopened_count} פעמים` },
+  ].map(m => `
+    <div style="background:#f8fafc;border-radius:8px;padding:8px 12px;">
+      <div style="font-size:0.68rem;font-weight:800;color:#94a3b8;margin-bottom:3px;">${m.label}</div>
+      <div style="font-size:0.82rem;font-weight:600;color:#1e293b;">${m.val}</div>
+    </div>`).join('');
+
+  popup.addEventListener('click', e => { if (e.target === popup) closeTaskPopup(); }, { once: true });
+};
+
+window.closeTaskPopup = function() {
+  document.getElementById('ov-task-popup').style.display = 'none';
 };
 </script>
 
@@ -2966,5 +3149,43 @@ window.ovCalToggleFullscreen = function() {
 </div>
 
 <script src="admin-college.js"></script>
+
+<!-- ══ TASK POPUP ══ -->
+<div id="ov-task-popup" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:8000;align-items:center;justify-content:center;">
+  <div style="background:#fff;border-radius:16px;width:520px;max-width:94vw;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.2);overflow:hidden;">
+    <!-- Head -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #e2e8f0;flex-shrink:0;">
+      <div style="font-size:0.95rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:8px;">
+        <i class="ph ph-clipboard-text" style="color:#2563eb;"></i>
+        <span id="tp-title">—</span>
+      </div>
+      <button onclick="closeTaskPopup()" style="background:none;border:none;font-size:1.2rem;color:#64748b;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <!-- Body -->
+    <div style="padding:18px 20px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:14px;">
+      <!-- Type + Priority row -->
+      <div style="display:flex;gap:8px;align-items:center;" id="tp-badges"></div>
+      <!-- Description -->
+      <div id="tp-desc-wrap" style="display:none;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:12px 14px;">
+        <div style="font-size:0.72rem;font-weight:800;color:#64748b;margin-bottom:6px;">תיאור</div>
+        <div id="tp-desc" style="font-size:0.92rem;font-weight:600;color:#0f172a;line-height:1.65;white-space:pre-wrap;"></div>
+      </div>
+      <!-- Meta grid -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;" id="tp-meta"></div>
+      <!-- Status actions -->
+      <div id="tp-status-wrap" style="display:none;">
+        <div style="font-size:0.72rem;font-weight:800;color:#64748b;margin-bottom:8px;">שינוי סטטוס</div>
+        <div id="tp-status-flow" style="display:flex;gap:0.5rem;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+    <!-- Footer -->
+    <div style="padding:12px 20px;border-top:1px solid #e2e8f0;display:flex;justify-content:flex-end;gap:0.5rem;flex-shrink:0;">
+      <a id="tp-full-link" href="admin-tasks.html" style="font-size:0.8rem;font-weight:600;color:#2563eb;text-decoration:none;padding:7px 16px;border:1.5px solid #2563eb;border-radius:8px;display:inline-flex;align-items:center;gap:5px;">
+        <i class="ph ph-arrow-square-out"></i> פתח בדף המשימות
+      </a>
+      <button onclick="closeTaskPopup()" style="font-size:0.8rem;font-weight:600;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:8px;padding:7px 16px;cursor:pointer;">סגור</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
