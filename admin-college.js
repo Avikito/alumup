@@ -42,7 +42,7 @@ async function bInit() {
   if (assignedStudentIds.size > 0) {
     const { data: studs } = await sb
       .from('students')
-      .select('id, full_name, phone')
+      .select('id, full_name, phone, cert_type, height_cert_expiry')
       .in('id', [...assignedStudentIds]);
     (studs || []).forEach(s => { studentMap[s.id] = s; });
   }
@@ -71,10 +71,12 @@ async function bInit() {
       .map(bs => ({
         id:     bs.student_id,
         _bsId:  bs.id,
-        name:   studentMap[bs.student_id]?.full_name || '—',
-        phone:  studentMap[bs.student_id]?.phone     || '',
-        paid:   bs.paid,
-        attend: Array.isArray(bs.attendance) ? bs.attendance : Array(b.sessions || 5).fill(0),
+        name:        studentMap[bs.student_id]?.full_name        || '—',
+        phone:       studentMap[bs.student_id]?.phone            || '',
+        certType:    studentMap[bs.student_id]?.cert_type        || null,
+        certExpiry:  studentMap[bs.student_id]?.height_cert_expiry || null,
+        paid:        bs.paid,
+        attend:      Array.isArray(bs.attendance) ? bs.attendance : Array(b.sessions || 5).fill(0),
       }))
   }));
 
@@ -400,6 +402,28 @@ async function adminUploadIdPhoto(studentId, input) {
   input.value = '';
 }
 
+window.adminSaveCert = async function(studentId, userId) {
+  const certType   = (document.getElementById('cert-type-'  + studentId) || {}).value || null;
+  const certExpiry = (document.getElementById('cert-expiry-' + studentId) || {}).value || null;
+  const msgEl      = document.getElementById('cert-msg-' + studentId);
+  if (!certType || !certExpiry) {
+    if (msgEl) { msgEl.style.color='#dc2626'; msgEl.textContent='יש למלא סוג הסמכה ותאריך תוקף'; }
+    return;
+  }
+  // עדכון students
+  const { error: e1 } = await window._supabase.from('students')
+    .update({ cert_type: certType, height_cert_expiry: certExpiry, cert_issued_at: new Date().toISOString() })
+    .eq('id', studentId);
+  if (e1) { if (msgEl) { msgEl.style.color='#dc2626'; msgEl.textContent='שגיאה: '+e1.message; } return; }
+  // עדכון profiles דרך user_id
+  if (userId) {
+    await window._supabase.from('profiles')
+      .update({ height_cert_expiry: certExpiry, cert_type: certType, height_cert_issued_by_college: true })
+      .eq('id', userId);
+  }
+  if (msgEl) { msgEl.style.color='#16a34a'; msgEl.textContent='✓ נשמר בהצלחה'; setTimeout(()=>{ if(msgEl) msgEl.textContent=''; },3000); }
+};
+
 async function bSaveStudentNote(studentId) {
   const input = document.getElementById('bsc-ni-' + studentId);
   const text = input && input.value.trim();
@@ -462,9 +486,17 @@ function bRenderStudentsTab(b) {
       const lbl = v===1?'✓':v===0?'✗':'';
       return `<div class="b-att-box ${cls}" onclick="bToggleAttend('${b.id}','${st.id}',${i})">${lbl}</div>`;
     }).join('');
+    const certBadge = (() => {
+      if (!st.certExpiry) return '<span style="background:#f1f5f9;color:#94a3b8;border-radius:20px;padding:2px 8px;font-size:0.68rem;font-weight:700;">לא הוגדר</span>';
+      const days = Math.floor((new Date(st.certExpiry) - new Date()) / 86400000);
+      if (days < 0) return '<span style="background:#fef2f2;color:#dc2626;border-radius:20px;padding:2px 8px;font-size:0.68rem;font-weight:700;">פג תוקף</span>';
+      if (days <= 30) return `<span style="background:#fefce8;color:#ca8a04;border-radius:20px;padding:2px 8px;font-size:0.68rem;font-weight:700;">פג בעוד ${days}י'</span>`;
+      return '<span style="background:#f0fdf4;color:#16a34a;border-radius:20px;padding:2px 8px;font-size:0.68rem;font-weight:700;">בתוקף</span>';
+    })();
     return `<tr>
       <td><div class="b-s-cell" style="cursor:pointer;" onclick="bOpenStudentProfile('${st.id}')"><div class="b-s-avatar" style="background:${bAvatarColor(st.id)};">${bInitials(st.name)}</div><div><div class="b-s-name" style="color:#2563eb;text-decoration:underline;text-underline-offset:2px;">${st.name}</div><div class="b-s-phone">${st.phone}</div></div></div></td>
       <td><span class="b-pill ${st.paid?'b-pill-paid':'b-pill-pending'}">${st.paid?'<i class="ph ph-check"></i> שולמה':'<i class="ph ph-warning"></i> חסרה'}</span></td>
+      <td>${certBadge}</td>
       <td><div class="b-attend-cell">${boxes}</div></td>
       <td style="font-weight:700;color:${pct>=85?'#16a34a':pct>=60?'#2563eb':'#dc2626'};">${pct}%</td>
       <td style="display:flex;gap:6px;align-items:center;">
@@ -476,7 +508,7 @@ function bRenderStudentsTab(b) {
   const hdrs = sessions.map(i=>`<th style="min-width:26px;text-align:center;">${i+1}</th>`).join('');
   document.getElementById('b-tab-students').innerHTML = `
     <div class="b-table-wrap"><table>
-      <thead><tr><th>תלמיד</th><th>יתרה</th><th colspan="${b.sessions}">נוכחות — מפגשים ${hdrs}</th><th>%</th><th></th></tr></thead>
+      <thead><tr><th>תלמיד</th><th>יתרה</th><th>הסמכה</th><th colspan="${b.sessions}">נוכחות — מפגשים ${hdrs}</th><th>%</th><th></th></tr></thead>
       <tbody>${rows}</tbody>
     </table></div>`;
 }
@@ -574,6 +606,44 @@ async function bOpenStudentProfile(studentId) {
       <button onclick="document.getElementById('admin-id-input-${s.id}').click()" style="display:inline-flex;align-items:center;gap:5px;background:#fff;border:1.5px solid #cbd5e1;border-radius:7px;padding:5px 12px;font-size:0.75rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
         <i class="ph ph-upload-simple"></i> ${s.id_photo_data ? 'החלף תעודה' : 'העלה תעודה'}
       </button>
+    </div>
+
+    <!-- ── הסמכות ובטיחות ── -->
+    <div style="background:#fff7ed;border:1.5px solid #fed7aa;border-radius:10px;padding:12px 14px;margin-top:1rem;">
+      <div style="font-size:0.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#c2410c;margin-bottom:10px;display:flex;align-items:center;gap:5px;">
+        <i class="ph ph-certificate"></i> הסמכות ובטיחות
+        ${s.height_cert_expiry ? (() => {
+          const d = new Date(s.height_cert_expiry), now = new Date();
+          const days = Math.floor((d - now) / 86400000);
+          return days < 0
+            ? '<span style="background:#fef2f2;color:#dc2626;border-radius:20px;padding:1px 8px;font-size:0.65rem;font-weight:700;">פג תוקף</span>'
+            : days <= 30
+            ? `<span style="background:#fefce8;color:#ca8a04;border-radius:20px;padding:1px 8px;font-size:0.65rem;font-weight:700;">פג בעוד ${days} ימים</span>`
+            : '<span style="background:#f0fdf4;color:#16a34a;border-radius:20px;padding:1px 8px;font-size:0.65rem;font-weight:700;">בתוקף</span>';
+        })() : '<span style="background:#f1f5f9;color:#94a3b8;border-radius:20px;padding:1px 8px;font-size:0.65rem;font-weight:700;">לא הוגדר</span>'}
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:4px;">סוג הסמכה</div>
+          <select id="cert-type-${s.id}" style="width:100%;padding:5px 8px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:0.8rem;font-family:'Heebo',sans-serif;background:#fff;">
+            <option value="">-- בחר --</option>
+            <option value="עבודה בגובה" ${s.cert_type==='עבודה בגובה'?'selected':''}>עבודה בגובה</option>
+            <option value="ריתוך" ${s.cert_type==='ריתוך'?'selected':''}>ריתוך</option>
+            <option value="עבודה בגובה + ריתוך" ${s.cert_type==='עבודה בגובה + ריתוך'?'selected':''}>עבודה בגובה + ריתוך</option>
+            <option value="אחר" ${s.cert_type==='אחר'?'selected':''}>אחר</option>
+          </select>
+        </div>
+        <div>
+          <div style="font-size:0.7rem;font-weight:700;color:#7c3aed;margin-bottom:4px;">תוקף ההסמכה</div>
+          <input type="date" id="cert-expiry-${s.id}" value="${s.height_cert_expiry||''}" style="width:100%;padding:5px 8px;border:1.5px solid #e2e8f0;border-radius:7px;font-size:0.8rem;font-family:'Heebo',sans-serif;box-sizing:border-box;">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;">
+        <button onclick="adminSaveCert('${s.id}','${s.user_id||''}')" style="display:inline-flex;align-items:center;gap:5px;background:#c2410c;color:#fff;border:none;border-radius:7px;padding:6px 14px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Heebo',sans-serif;">
+          <i class="ph ph-floppy-disk"></i> שמור הסמכה
+        </button>
+        <span id="cert-msg-${s.id}" style="font-size:0.75rem;"></span>
+      </div>
     </div>
   `;
 }

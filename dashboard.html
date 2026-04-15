@@ -405,6 +405,9 @@
     .btn-approve-order:disabled { opacity: 0.5; pointer-events: none; }
 
     /* ── PLACEHOLDER SECTION ── */
+    .doc-tab { background: var(--surface-elevated,#f0f4f8); border: 1.5px solid var(--border-color,#e2e8f0); border-radius: 8px; padding: 0.4rem 1rem; font-family: inherit; font-size: 0.88rem; font-weight: 600; color: var(--silver-dark,#6b7a99); cursor: pointer; display: flex; align-items: center; gap: 0.4rem; transition: all 0.15s; }
+    .doc-tab.active { background: var(--electric-blue,#1a5faa); border-color: var(--electric-blue,#1a5faa); color: #fff; }
+    .doc-tab:hover:not(.active) { border-color: var(--electric-blue,#1a5faa); color: var(--electric-blue,#1a5faa); }
     .section-coming-soon {
       text-align: center; padding: 4rem 1rem; color: var(--silver-dark);
     }
@@ -565,7 +568,6 @@
         <li><a class="active" onclick="showSection('home')" id="nav-home"><i class="ph ph-house"></i> דף הבית</a></li>
         <li><a onclick="showSection('saved-quotes')" id="nav-saved-quotes"><i class="ph ph-note-pencil"></i> הצעות מחיר שמורות</a></li>
         <li><a onclick="showSection('in-progress')" id="nav-in-progress"><i class="ph ph-factory"></i> הזמנות בתהליך</a></li>
-        <li><a onclick="showSection('history')" id="nav-history"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות שסופקו</a></li>
         <li><a onclick="showSection('documents')" id="nav-documents"><i class="ph ph-files"></i> חשבוניות ומסמכים</a></li>
         <li><a onclick="showSection('settings')" id="nav-settings"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
         <li class="nav-admin-link" id="adminNavItem" style="display:none;">
@@ -576,10 +578,7 @@
       <div class="sidebar-section-divider"></div>
       <div class="sidebar-label">כלים</div>
       <ul class="dashboard-nav">
-        <li><a href="configurator.html"><i class="ph ph-sliders"></i> קונפיגורטור פרגולות</a></li>
-        <li><a href="window-configurator.html"><i class="ph ph-browser"></i> קונפיגורטור חלונות</a></li>
-        <li><a href="kits.html"><i class="ph ph-package"></i> קיטים</a></li>
-        <li><a href="tenders.html"><i class="ph ph-briefcase"></i> מכרזים</a></li>
+        <li><a onclick="showSection('quote-calculator')" id="nav-quote-calculator"><i class="ph ph-calculator"></i> מחשבון הצעת מחיר</a></li>
       </ul>
 
       <div class="sidebar-user-footer">
@@ -622,19 +621,23 @@
       </section>
 
       <!-- ── HISTORY ── -->
-      <section class="dash-section" id="sec-history">
-        <div class="dashboard-title">היסטוריית הזמנות שסופקו</div>
-        <div class="dashboard-subtitle">הזמנות שנמסרו ללקוח</div>
-        <div id="orders-delivered"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
-      </section>
-
-      <!-- ── DOCUMENTS (placeholder) ── -->
+      <!-- ── DOCUMENTS ── -->
       <section class="dash-section" id="sec-documents">
         <div class="dashboard-title">חשבוניות ומסמכים</div>
-        <div class="section-coming-soon">
-          <i class="ph ph-files"></i>
-          <h3>בקרוב</h3>
-          <p>חשבוניות, קבלות ומסמכים מסחריים יוצגו כאן בקרוב.</p>
+        <div style="display:flex;gap:0.5rem;margin-bottom:1.5rem;">
+          <button class="doc-tab active" id="doc-tab-invoices" onclick="switchDocTab('invoices')"><i class="ph ph-receipt"></i> חשבוניות</button>
+          <button class="doc-tab" id="doc-tab-history" onclick="switchDocTab('history')"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית הזמנות שסופקו</button>
+        </div>
+        <div id="doc-panel-invoices">
+          <div class="section-coming-soon">
+            <i class="ph ph-files"></i>
+            <h3>בקרוב</h3>
+            <p>חשבוניות, קבלות ומסמכים מסחריים יוצגו כאן בקרוב.</p>
+          </div>
+        </div>
+        <div id="doc-panel-history" style="display:none;">
+          <div class="dashboard-subtitle">הזמנות שנמסרו ללקוח</div>
+          <div id="orders-delivered"><div class="orders-loading"><i class="ph ph-circle-notch spin"></i> טוען...</div></div>
         </div>
       </section>
 
@@ -770,22 +773,6 @@
                 </div>
               </div>
 
-              <!-- ביטוח -->
-              <div class="cert-block" style="margin-top:1.25rem;">
-                <div class="cert-block-title">
-                  <i class="ph ph-shield-check"></i> ביטוח צד ג׳
-                  <span class="cert-status-badge" id="badge-insurance"></span>
-                </div>
-                <div class="sform-group">
-                  <label class="sform-label">העלה קובץ (PDF / תמונה)</label>
-                  <input type="file" id="insurance-input" accept="image/*,application/pdf" class="sform-file">
-                  <div class="cert-current-link" id="insurance-link"></div>
-                </div>
-                <div class="sform-group">
-                  <label class="sform-label">תאריך תפוגה</label>
-                  <input type="date" id="insurance-expiry" class="sform-input">
-                </div>
-              </div>
             </div>
             <div class="scard-footer">
               <button class="btn-scard-save" id="btn-save-certs" onclick="saveCerts()">
@@ -1712,13 +1699,21 @@ window.submitMemberApp = async function() {
 };
 
 /* ── NAVIGATION ── */
+window.switchDocTab = function(tab) {
+  document.getElementById('doc-panel-invoices').style.display = tab === 'invoices' ? '' : 'none';
+  document.getElementById('doc-panel-history').style.display  = tab === 'history'  ? '' : 'none';
+  document.getElementById('doc-tab-invoices').classList.toggle('active', tab === 'invoices');
+  document.getElementById('doc-tab-history').classList.toggle('active', tab === 'history');
+  if (tab === 'history') loadAll();
+};
+
 window.showSection = function(id) {
   document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.dashboard-nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
   const navEl = document.getElementById('nav-' + id);
   if (navEl) navEl.classList.add('active');
-  if (['saved-quotes', 'in-progress', 'history'].includes(id)) loadAll();
+  if (['saved-quotes', 'in-progress', 'history', 'documents'].includes(id)) loadAll();
   if (id === 'settings') initSettingsSection();
 };
 
@@ -1979,7 +1974,7 @@ function itemCard(o, showApprove) {
     : isFenceGate
       ? `גדרות ושערים · ${fenceCount} פריט${fenceCount > 1 ? 'ים' : ''}`
       : isWindows
-        ? `חלונות ויטרינה · ${windowCount} חלון${windowCount > 1 ? 'ות' : ''}`
+        ? `חלונות ויטרינה · ${windowCount} ${windowCount > 1 ? 'חלונות' : 'חלון'}`
         : `פרגולה PVC חשמלית · ${systemCount} מערכת${systemCount > 1 ? 'ות' : ''}`;
 
   return `<div class="order-card" onclick="openModal('${o._id}')">
@@ -2522,12 +2517,9 @@ async function initSettingsSection() {
 
   // Certs
   _renderCertLink('height-cert-link', p?.height_cert_url, 'תעודת גובה');
-  _renderCertLink('insurance-link', p?.insurance_url, 'ביטוח');
   if (p?.height_cert_expiry) document.getElementById('height-cert-expiry').value = p.height_cert_expiry;
-  if (p?.insurance_expiry)   document.getElementById('insurance-expiry').value   = p.insurance_expiry;
 
-  checkExpiryAlert('badge-height',    p?.height_cert_expiry);
-  checkExpiryAlert('badge-insurance', p?.insurance_expiry);
+  checkExpiryAlert('badge-height', p?.height_cert_expiry);
 }
 
 function _renderCertLink(elId, path, label) {
@@ -2771,14 +2763,11 @@ window.saveCerts = async function() {
   msg.className = 'scard-msg'; msg.textContent = '';
   btn.disabled = true; btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
 
-  const heightFile    = document.getElementById('height-cert-input').files[0];
-  const insuranceFile = document.getElementById('insurance-input').files[0];
-  const heightExpiry  = document.getElementById('height-cert-expiry').value || null;
-  const insExpiry     = document.getElementById('insurance-expiry').value || null;
+  const heightFile   = document.getElementById('height-cert-input').files[0];
+  const heightExpiry = document.getElementById('height-cert-expiry').value || null;
 
   const updates = {};
-  if (heightExpiry)  updates.height_cert_expiry = heightExpiry;
-  if (insExpiry)     updates.insurance_expiry   = insExpiry;
+  if (heightExpiry) updates.height_cert_expiry = heightExpiry;
 
   try {
     if (heightFile) {
@@ -2786,12 +2775,6 @@ window.saveCerts = async function() {
       const { data } = await supabase.storage.from('member-docs')
         .upload(`${currentUserId}/height-cert-${Date.now()}.${ext}`, heightFile, { upsert: true });
       if (data) { updates.height_cert_url = data.path; _renderCertLink('height-cert-link', data.path, 'תעודת גובה'); }
-    }
-    if (insuranceFile) {
-      const ext = insuranceFile.name.split('.').pop();
-      const { data } = await supabase.storage.from('member-docs')
-        .upload(`${currentUserId}/insurance-${Date.now()}.${ext}`, insuranceFile, { upsert: true });
-      if (data) { updates.insurance_url = data.path; _renderCertLink('insurance-link', data.path, 'ביטוח'); }
     }
   } catch(e) {
     btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור הסמכות';
@@ -2808,8 +2791,7 @@ window.saveCerts = async function() {
   }
 
   // Re-check expiry badges
-  checkExpiryAlert('badge-height',    updates.height_cert_expiry    ?? _settingsProfile.height_cert_expiry);
-  checkExpiryAlert('badge-insurance', updates.insurance_expiry      ?? _settingsProfile.insurance_expiry);
+  checkExpiryAlert('badge-height', updates.height_cert_expiry ?? _settingsProfile.height_cert_expiry);
 
   btn.disabled = false; btn.innerHTML = '<i class="ph ph-cloud-arrow-up"></i> שמור הסמכות';
   msg.className = 'scard-msg ok'; msg.textContent = 'ההסמכות עודכנו בהצלחה';

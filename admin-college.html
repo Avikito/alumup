@@ -574,13 +574,13 @@
       <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
       <div class="sidebar-label">קורסי מכללה</div>
       <ul class="admin-nav">
-        <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;"><i class="ph ph-books"></i> נרשמים חדשים</a></li>
+        <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;"><i class="ph ph-books"></i> נרשמים חדשים <span id="badge-new-registrations" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span></a></li>
         <li><a href="#" id="nav-batches" onclick="switchView('batches');return false;"><i class="ph ph-squares-four"></i> ניהול מחזורים</a></li>
       </ul>
       <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
       <div class="sidebar-label">חברי אלום</div>
       <ul class="admin-nav">
-        <li><a href="#" id="nav-members" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום</a></li>
+        <li><a href="#" id="nav-members" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום <span id="badge-new-applicants" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span></a></li>
         <li><a href="#" id="nav-pipeline" onclick="switchView('pipeline');return false;"><i class="ph ph-git-branch"></i> ניהול תהליך חבר</a></li>
       </ul>
       <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
@@ -980,7 +980,7 @@ async function init() {
     const el = document.getElementById('view-' + v);
     if (el) el.style.display = 'none';
   });
-  await Promise.all([loadUsers(), ovInit()]);
+  await Promise.all([loadUsers(), ovInit(), loadNewApplicantsBadge()]);
 }
 
 async function loadUsers() {
@@ -1278,7 +1278,46 @@ window.filterRows = function() {
 // ═══════════════════════════════════════════════
 // VIEW SWITCHING
 // ═══════════════════════════════════════════════
+async function loadNewApplicantsBadge() {
+  const lastMembers = localStorage.getItem('college_last_seen_members') || new Date(0).toISOString();
+  const lastRegs    = localStorage.getItem('college_last_seen_registrations') || new Date(0).toISOString();
+
+  const [applicantsRes, registrationsRes] = await Promise.all([
+    supabase.from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .not('member_requested_at', 'is', null)
+      .gt('member_requested_at', lastMembers),
+    supabase.from('students')
+      .select('id', { count: 'exact', head: true })
+      .gt('created_at', lastRegs)
+  ]);
+
+  const bApplicants = document.getElementById('badge-new-applicants');
+  if (bApplicants) {
+    const c = applicantsRes.count || 0;
+    bApplicants.textContent = c;
+    bApplicants.style.display = c > 0 ? 'inline' : 'none';
+  }
+
+  const bRegistrations = document.getElementById('badge-new-registrations');
+  if (bRegistrations) {
+    const c = registrationsRes.count || 0;
+    bRegistrations.textContent = c;
+    bRegistrations.style.display = c > 0 ? 'inline' : 'none';
+  }
+}
+
 window.switchView = function(view) {
+  if (view === 'members') {
+    localStorage.setItem('college_last_seen_members', new Date().toISOString());
+    const b = document.getElementById('badge-new-applicants');
+    if (b) b.style.display = 'none';
+  }
+  if (view === 'registrations') {
+    localStorage.setItem('college_last_seen_registrations', new Date().toISOString());
+    const b = document.getElementById('badge-new-registrations');
+    if (b) b.style.display = 'none';
+  }
   ['overview','members','registrations','batches','pipeline','calendar'].forEach(v => {
     const el = document.getElementById('view-' + v);
     if (el) el.style.display = v === view ? '' : 'none';
