@@ -187,6 +187,25 @@
     }
     .btn-pdf:hover { background:var(--blue-dim); }
     .btn-pdf:disabled { opacity:0.5;pointer-events:none; }
+
+    /* ── AUDIT LOG ── */
+    .audit-log-section { margin-top:1.25rem;border-top:1px solid var(--border);padding-top:1rem; }
+    .audit-log-title { font-size:0.75rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.6rem;display:flex;align-items:center;gap:0.4rem; }
+    .audit-entry { display:flex;align-items:flex-start;gap:0.65rem;padding:0.5rem 0;border-bottom:1px dashed var(--border); }
+    .audit-entry:last-child { border-bottom:none; }
+    .audit-dot { width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px; }
+    .audit-dot-edit   { background:#0891b2; }
+    .audit-dot-status { background:#1a5faa; }
+    .audit-dot-delete { background:#dc2626; }
+    .audit-meta { font-size:0.78rem;line-height:1.5; }
+    .audit-who { font-weight:700;color:var(--industrial-silver); }
+    .audit-what { color:var(--silver-dark); }
+    .audit-time { font-size:0.72rem;color:#94a3b8;margin-top:0.1rem; }
+    .audit-change { display:inline-flex;align-items:center;gap:0.3rem;margin-top:0.15rem; }
+    .audit-before { background:#fef2f2;color:#b91c1c;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.73rem;font-weight:600; }
+    .audit-arrow  { color:#94a3b8;font-size:0.7rem; }
+    .audit-after  { background:#f0fdf4;color:#15803d;padding:0.1rem 0.4rem;border-radius:4px;font-size:0.73rem;font-weight:600; }
+    .audit-empty  { font-size:0.8rem;color:#94a3b8;text-align:center;padding:0.5rem 0; }
   </style>
 </head>
 <body>
@@ -560,6 +579,7 @@ window.updateStatus = async function(sel) {
     const o = allOrders.find(x => x.id === id);
     if (o) { o.status = newStatus; o.status_updated_at = now; }
     sel.dataset.prev = newStatus;
+    logOrderAction(id, 'status_change', { status: prevStatus }, { status: newStatus });
     renderTable();
     const siAfter = document.getElementById(`si-${id}`);
     if (siAfter) {
@@ -806,7 +826,10 @@ window.openDetail = function(id) {
     <i class="ph ph-file-pdf"></i> הפק PDF
   </button>`;
 
+  html += `<div class="audit-log-section" id="audit-section"></div>`;
+
   document.getElementById('detailBody').innerHTML = html;
+  renderAuditSection(o.id);
   document.getElementById('detailOverlay').classList.add('open');
 
   // Render barcode after DOM update
@@ -886,7 +909,9 @@ window.approveToProduction = async function(id) {
 
   // Update local cache + close panel + refresh table
   const o = allOrders.find(x => x.id === id);
+  const prevSt = o?.status || 'technical_review';
   if (o) o.status = 'in_production';
+  logOrderAction(id, 'approve', { status: prevSt }, { status: 'in_production' });
   document.getElementById('detailOverlay').classList.remove('open');
   renderTable();
 };
@@ -896,6 +921,88 @@ window.closeDetail = function(e) {
     document.getElementById('detailOverlay').classList.remove('open');
   }
 };
+
+/* ── AUDIT LOG ── */
+async function logOrderAction(orderId, action, beforeData, afterData) {
+  try {
+    const { data: { user } } = await supabase.auth.getUser();
+    await supabase.from('orders_audit_log').insert({
+      order_id: orderId,
+      action,
+      admin_id: user?.id || null,
+      admin_email: user?.email || 'unknown',
+      before_data: beforeData,
+      after_data: afterData
+    });
+  } catch(e) { console.warn('audit log:', e); }
+}
+
+async function loadAuditLog(orderId) {
+  try {
+    const { data, error } = await supabase
+      .from('orders_audit_log')
+      .select('*')
+      .eq('order_id', orderId)
+      .order('created_at', { ascending: false })
+      .limit(30);
+    if (error) throw error;
+    return data || [];
+  } catch(e) { return null; }
+}
+
+const STATUS_LABELS_AUDIT = {
+  quote:'הצעת מחיר', draft:'טיוטה', pending:'ממתין לאישור',
+  technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור',
+  ready_for_delivery:'מוכן למסירה', delivered:'נמסר',
+  cancelled:'בוטל', dispute:'מחלוקת'
+};
+const ACTION_LABELS = { status_change:'שינוי סטטוס', approve:'אושר לייצור', edit:'עריכה', delete:'מחיקה' };
+
+async function renderAuditSection(orderId) {
+  const el = document.getElementById('audit-section');
+  if (!el) return;
+  el.innerHTML = `<div class="audit-log-title"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית עריכות</div><div class="audit-empty"><i class="ph ph-circle-notch spin"></i></div>`;
+
+  const entries = await loadAuditLog(orderId);
+  if (entries === null) {
+    el.innerHTML = `<div class="audit-log-title"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית עריכות</div><div class="audit-empty">טבלת audit לא נמצאה</div>`;
+    return;
+  }
+  if (entries.length === 0) {
+    el.innerHTML = `<div class="audit-log-title"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית עריכות</div><div class="audit-empty">אין רשומות עדיין</div>`;
+    return;
+  }
+
+  const rows = entries.map(e => {
+    const fmtDate = iso => {
+      const d = new Date(iso);
+      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+    };
+    const dotClass = e.action === 'delete' ? 'audit-dot-delete' : e.action === 'status_change' || e.action === 'approve' ? 'audit-dot-status' : 'audit-dot-edit';
+    const actionLabel = ACTION_LABELS[e.action] || e.action;
+    let changeHtml = '';
+    if (e.action === 'status_change' && e.before_data?.status && e.after_data?.status) {
+      changeHtml = `<div class="audit-change">
+        <span class="audit-before">${STATUS_LABELS_AUDIT[e.before_data.status] || e.before_data.status}</span>
+        <span class="audit-arrow">←</span>
+        <span class="audit-after">${STATUS_LABELS_AUDIT[e.after_data.status] || e.after_data.status}</span>
+      </div>`;
+    } else if (e.action === 'approve') {
+      changeHtml = `<div class="audit-change"><span class="audit-after">אושר לייצור</span></div>`;
+    }
+    return `<div class="audit-entry">
+      <div class="audit-dot ${dotClass}"></div>
+      <div class="audit-meta">
+        <span class="audit-who">${e.admin_email || 'לא ידוע'}</span>
+        <span class="audit-what"> — ${actionLabel}</span>
+        ${changeHtml}
+        <div class="audit-time">${fmtDate(e.created_at)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="audit-log-title"><i class="ph ph-clock-counter-clockwise"></i> היסטוריית עריכות</div>${rows}`;
+}
 
 init();
 </script>

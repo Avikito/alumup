@@ -2795,6 +2795,14 @@ function calEventClick(info) {
           ${assignments.map(a => `<div style="font-size:0.8rem;color:#334155;padding:0.25rem 0;border-bottom:1px solid #f1f5f9;">${a.profiles?.full_name || a.profile_id || '—'}</div>`).join('')}
         </div>
       ` : ''}
+      <div style="display:flex;gap:0.5rem;margin-top:1rem;padding-top:0.85rem;border-top:1px solid #f1f5f9;">
+        <button onclick="calOpenEdit('${p.sourceId}')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.35rem;padding:0.5rem;background:#eff6ff;color:#2563eb;border:1.5px solid #bfdbfe;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">
+          <i class="ph ph-pencil"></i> ערוך
+        </button>
+        <button onclick="calOpenDelete('${p.sourceId}')" style="flex:1;display:flex;align-items:center;justify-content:center;gap:0.35rem;padding:0.5rem;background:#fff5f5;color:#dc2626;border:1.5px solid #fecaca;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">
+          <i class="ph ph-trash"></i> מחק
+        </button>
+      </div>
     `;
   } else if (p.sourceType === 'batch') {
     const b = (typeof bBatches !== 'undefined' ? bBatches : []).find(x => x.id === p.sourceId);
@@ -2822,6 +2830,124 @@ function calDateClick(info) {
   if (calInstance) calInstance.changeView('timeGridDay', info.dateStr);
   // Populate day events in sidebar
   calSidebarPopulateDay(info.dateStr);
+}
+
+/* ── Calendar Edit ── */
+window.calOpenEdit = function(sourceId) {
+  document.getElementById('cal-detail-modal').style.display = 'none';
+  const d = (typeof pDays !== 'undefined' ? pDays : []).find(x => x.id === sourceId);
+  if (!d) return;
+  document.getElementById('cal-edit-id').value       = sourceId;
+  document.getElementById('cal-edit-type').value     = d.type || 'meeting';
+  document.getElementById('cal-edit-date').value     = d.date || '';
+  document.getElementById('cal-edit-time').value     = d.time || '';
+  document.getElementById('cal-edit-capacity').value = d.capacity || 1;
+  document.getElementById('cal-edit-location').value = d.location || '';
+  document.getElementById('cal-edit-notes').value    = d.notes || '';
+  document.getElementById('cal-edit-modal').style.display = 'flex';
+};
+
+window.calSaveEdit = async function() {
+  const sourceId = document.getElementById('cal-edit-id')?.value;
+  if (!sourceId) return;
+  const type     = document.getElementById('cal-edit-type')?.value;
+  const date     = document.getElementById('cal-edit-date')?.value;
+  const time     = document.getElementById('cal-edit-time')?.value;
+  const capacity = parseInt(document.getElementById('cal-edit-capacity')?.value) || 1;
+  const location = document.getElementById('cal-edit-location')?.value?.trim() || '';
+  const notes    = document.getElementById('cal-edit-notes')?.value?.trim() || '';
+
+  const oldData = (typeof pDays !== 'undefined' ? pDays : []).find(x => x.id === sourceId);
+
+  const btn = document.getElementById('cal-edit-modal')?.querySelector('button.btn-batch-primary');
+  if (btn) { btn.disabled = true; btn.textContent = 'שומר...'; }
+
+  try {
+    const sb = window._supabase || supabase;
+    const { error } = await sb.from('pipeline_days')
+      .update({ type, date, time, capacity, location, notes })
+      .eq('id', sourceId);
+    if (error) throw error;
+
+    // Audit log
+    await calLogAction('edit', sourceId, {
+      before: oldData ? { type: oldData.type, date: oldData.date, time: oldData.time, location: oldData.location, notes: oldData.notes } : null,
+      after:  { type, date, time, capacity, location, notes },
+    });
+
+    document.getElementById('cal-edit-modal').style.display = 'none';
+    if (typeof pInit === 'function') await pInit().catch(()=>{});
+    calInit().catch(()=>{});
+  } catch(e) {
+    alert('שגיאה בשמירה: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-check"></i> שמור שינויים'; }
+  }
+};
+
+/* ── Calendar Delete ── */
+let _calDeleteCode = '';
+
+window.calOpenDelete = function(sourceId) {
+  document.getElementById('cal-detail-modal').style.display = 'none';
+  document.getElementById('cal-delete-id').value = sourceId;
+  document.getElementById('cal-delete-code-input').value = '';
+  // Generate a random 4-digit code each time
+  _calDeleteCode = String(Math.floor(1000 + Math.random() * 9000));
+  document.getElementById('cal-delete-expected-code').textContent = _calDeleteCode;
+  document.getElementById('cal-delete-modal').style.display = 'flex';
+  setTimeout(() => document.getElementById('cal-delete-code-input')?.focus(), 100);
+};
+
+window.calConfirmDelete = async function() {
+  const sourceId  = document.getElementById('cal-delete-id')?.value;
+  const inputCode = document.getElementById('cal-delete-code-input')?.value?.trim();
+  if (!sourceId) return;
+  if (inputCode !== _calDeleteCode) {
+    document.getElementById('cal-delete-code-input').style.border = '2px solid #dc2626';
+    document.getElementById('cal-delete-code-input').placeholder = 'קוד שגוי — נסה שוב';
+    return;
+  }
+
+  const btn = document.getElementById('cal-delete-confirm-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'מוחק...'; }
+
+  try {
+    const oldData = (typeof pDays !== 'undefined' ? pDays : []).find(x => x.id === sourceId);
+    await calLogAction('delete', sourceId, { before: oldData || null, after: null });
+
+    const sb = window._supabase || supabase;
+    const { error } = await sb.from('pipeline_days').delete().eq('id', sourceId);
+    if (error) throw error;
+
+    document.getElementById('cal-delete-modal').style.display = 'none';
+    if (typeof pInit === 'function') await pInit().catch(()=>{});
+    calInit().catch(()=>{});
+  } catch(e) {
+    alert('שגיאה במחיקה: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-trash"></i> אשר מחיקה'; }
+  }
+};
+
+/* ── Audit Logger ── */
+async function calLogAction(action, eventId, data) {
+  try {
+    const sb = window._supabase || supabase;
+    const { data: { user } } = await sb.auth.getUser();
+    await sb.from('cal_audit_log').insert({
+      event_id:    eventId,
+      action:      action,
+      admin_id:    user?.id   || null,
+      admin_email: user?.email || 'unknown',
+      before_data: data?.before || null,
+      after_data:  data?.after  || null,
+      created_at:  new Date().toISOString(),
+    });
+  } catch(_) {
+    // Table may not exist yet — log to console only
+    console.warn('[calLogAction]', action, eventId, data);
+  }
 }
 
 function calSelectRange(info) {
@@ -3381,6 +3507,74 @@ window.closeTaskPopup = function() {
     <button class="b-modal-close" onclick="document.getElementById('cal-detail-modal').style.display='none'"><i class="ph ph-x"></i></button>
     <div class="b-modal-title" id="cal-detail-title">פרטי אירוע</div>
     <div id="cal-detail-body"></div>
+  </div>
+</div>
+
+<!-- ═══ CALENDAR EDIT MODAL ═══ -->
+<div class="b-overlay" id="cal-edit-modal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="b-modal-box" style="max-width:480px;">
+    <button class="b-modal-close" onclick="document.getElementById('cal-edit-modal').style.display='none'"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title"><i class="ph ph-pencil" style="color:#2563eb;"></i> עריכת אירוע</div>
+    <input type="hidden" id="cal-edit-id">
+    <div class="b-form-row">
+      <div class="b-form-field">
+        <label>סוג אירוע</label>
+        <select id="cal-edit-type" style="width:100%;padding:0.5rem 0.7rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;">
+          <option value="interview">ראיון</option>
+          <option value="practical_exam">מבחן מעשי</option>
+          <option value="meeting">פגישה</option>
+          <option value="course_session">שיעור</option>
+          <option value="batch_open">פתיחת מחזור</option>
+          <option value="other">אחר</option>
+        </select>
+      </div>
+      <div class="b-form-field">
+        <label>תאריך</label>
+        <input type="date" id="cal-edit-date">
+      </div>
+    </div>
+    <div class="b-form-row">
+      <div class="b-form-field">
+        <label>שעה</label>
+        <input type="time" id="cal-edit-time">
+      </div>
+      <div class="b-form-field">
+        <label>קיבולת</label>
+        <input type="number" id="cal-edit-capacity" min="1" max="200">
+      </div>
+    </div>
+    <div class="b-form-field">
+      <label>מיקום</label>
+      <input type="text" id="cal-edit-location">
+    </div>
+    <div class="b-form-field">
+      <label>הערות</label>
+      <input type="text" id="cal-edit-notes">
+    </div>
+    <button class="btn-batch-primary" style="width:100%;justify-content:center;margin-top:0.5rem;" onclick="calSaveEdit()">
+      <i class="ph ph-check"></i> שמור שינויים
+    </button>
+  </div>
+</div>
+
+<!-- ═══ CALENDAR DELETE CONFIRM MODAL ═══ -->
+<div class="b-overlay" id="cal-delete-modal" onclick="if(event.target===this)this.style.display='none'">
+  <div class="b-modal-box" style="max-width:400px;">
+    <button class="b-modal-close" onclick="document.getElementById('cal-delete-modal').style.display='none'"><i class="ph ph-x"></i></button>
+    <div class="b-modal-title" style="color:#dc2626;"><i class="ph ph-trash" style="color:#dc2626;"></i> מחיקת אירוע</div>
+    <input type="hidden" id="cal-delete-id">
+    <div style="font-size:0.88rem;color:#475569;margin-bottom:1rem;line-height:1.6;">
+      פעולה זו <strong>בלתי הפיכה</strong>.<br>
+      לאישור המחיקה הקלד את קוד האימות:
+      <div style="margin-top:0.5rem;padding:0.5rem 0.75rem;background:#fef2f2;border:1.5px solid #fecaca;border-radius:8px;font-size:1.1rem;font-weight:800;color:#dc2626;letter-spacing:0.15em;text-align:center;" id="cal-delete-expected-code">—</div>
+    </div>
+    <div class="b-form-field" style="margin-bottom:1rem;">
+      <label>קוד אימות</label>
+      <input type="text" id="cal-delete-code-input" placeholder="הקלד את הקוד..." style="text-align:center;font-size:1rem;font-weight:700;letter-spacing:0.1em;">
+    </div>
+    <button id="cal-delete-confirm-btn" onclick="calConfirmDelete()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:0.4rem;padding:0.55rem;background:#dc2626;color:#fff;border:none;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;">
+      <i class="ph ph-trash"></i> אשר מחיקה
+    </button>
   </div>
 </div>
 
