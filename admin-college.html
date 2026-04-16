@@ -549,6 +549,25 @@
     .cal-legend { display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:0.75rem; }
     .cal-legend-item { display:flex;align-items:center;gap:0.35rem;font-size:0.72rem;font-weight:600;color:#334155; }
     .cal-legend-dot { width:11px;height:11px;border-radius:3px;flex-shrink:0; }
+    /* ── Sidebar ── */
+    .cal-sidebar { width:248px;flex-shrink:0;background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;display:flex;flex-direction:column;overflow:hidden; }
+    .cal-sb-header { padding:0.7rem 1rem;border-bottom:1px solid #e2e8f0;font-size:0.76rem;font-weight:800;color:#2563eb;background:#f8faff;display:flex;align-items:center;gap:0.4rem;flex-shrink:0; }
+    .cal-sb-scroll { flex:1;overflow-y:auto;padding:0.75rem;display:flex;flex-direction:column;gap:0.55rem; }
+    .cal-sb-field { display:flex;flex-direction:column;gap:0.22rem; }
+    .cal-sb-field label { font-size:0.68rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.4px; }
+    .cal-sb-field input,.cal-sb-field select,.cal-sb-field textarea { padding:0.38rem 0.6rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;color:#334155;background:#f8fafc;outline:none;transition:border-color 0.15s;width:100%;box-sizing:border-box; }
+    .cal-sb-field input:focus,.cal-sb-field select:focus,.cal-sb-field textarea:focus { border-color:#2563eb;background:#fff; }
+    .cal-sb-field textarea { resize:vertical;min-height:52px; }
+    .cal-sb-time-row { display:flex;align-items:center;gap:0.3rem; }
+    .cal-sb-time-row input { flex:1;min-width:0; }
+    .cal-sb-sep { color:#94a3b8;font-size:0.75rem;flex-shrink:0; }
+    .cal-sb-save-btn { width:100%;padding:0.52rem;background:#2563eb;color:#fff;border:none;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:0.4rem;transition:background 0.15s;margin-top:0.2rem; }
+    .cal-sb-save-btn:hover { background:#1d4ed8; }
+    .cal-sb-divider { border:none;border-top:1px solid #f1f5f9;margin:0.4rem 0; }
+    .cal-sb-day-title { font-size:0.68rem;font-weight:800;text-transform:uppercase;letter-spacing:0.5px;color:#94a3b8;margin-bottom:0.35rem; }
+    .cal-sb-ev { padding:0.35rem 0.55rem;border-radius:7px;font-size:0.74rem;font-weight:700;color:#fff;margin-bottom:0.22rem;display:flex;align-items:center;gap:0.35rem;cursor:pointer;transition:opacity 0.12s; }
+    .cal-sb-ev:hover { opacity:0.85; }
+    .cal-sb-empty { font-size:0.76rem;color:#94a3b8;text-align:center;padding:0.8rem 0; }
   </style>
 </head>
 <body>
@@ -819,6 +838,9 @@
             <button id="cal-holidays-btn" onclick="calToggleHolidays()" style="display:flex;align-items:center;gap:0.4rem;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:9px;padding:0.5rem 0.9rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">
               <i class="ph ph-star"></i> חגים ומועדים
             </button>
+            <button id="cal-color-btn" onclick="calToggleColors()" style="display:flex;align-items:center;gap:0.4rem;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:9px;padding:0.5rem 0.9rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;">
+              <i class="ph ph-palette"></i> צבעים
+            </button>
             <button onclick="calQuickAdd()" style="display:flex;align-items:center;gap:0.4rem;background:#2563eb;color:#fff;border:none;border-radius:9px;padding:0.55rem 1.1rem;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;">
               <i class="ph ph-plus"></i> אירוע חדש
             </button>
@@ -829,6 +851,9 @@
           <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#7c3aed;"></span>מבחן מעשי</div>
           <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#15803d;"></span>פתיחת מחזור</div>
           <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#d97706;"></span>מחזור פתוח רשמית</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#0891b2;"></span>פגישה</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#0f766e;"></span>שיעור</div>
+          <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#64748b;"></span>אחר</div>
           <div id="cal-legend-holidays" style="display:none;contents:'';">
             <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#1e40af;"></span>יהודי</div>
             <div class="cal-legend-item"><span class="cal-legend-dot" style="background:#dc2626;"></span>לאומי/זיכרון</div>
@@ -838,8 +863,59 @@
           </div>
         </div>
         <div class="cal-layout">
+          <!-- Sidebar (right side in RTL) -->
+          <div class="cal-sidebar">
+            <div class="cal-sb-header"><i class="ph ph-calendar-plus"></i> הוסף לוז</div>
+            <div class="cal-sb-scroll">
+              <!-- Form fields -->
+              <div class="cal-sb-field">
+                <label>סוג</label>
+                <select id="csb-type">
+                  <option value="meeting">פגישה</option>
+                  <option value="interview">ראיון</option>
+                  <option value="practical_exam">מבחן מעשי</option>
+                  <option value="course_session">שיעור</option>
+                  <option value="batch_open">פתיחת מחזור</option>
+                  <option value="other">אחר</option>
+                </select>
+              </div>
+              <div class="cal-sb-field">
+                <label>כותרת</label>
+                <input type="text" id="csb-title" placeholder="כותרת האירוע...">
+              </div>
+              <div class="cal-sb-field">
+                <label>תאריך</label>
+                <input type="date" id="csb-date">
+              </div>
+              <div class="cal-sb-field">
+                <label>שעות</label>
+                <div class="cal-sb-time-row">
+                  <input type="time" id="csb-start" value="09:00">
+                  <span class="cal-sb-sep">–</span>
+                  <input type="time" id="csb-end" value="10:00">
+                </div>
+              </div>
+              <div class="cal-sb-field">
+                <label>מיקום</label>
+                <input type="text" id="csb-location" placeholder="לדוג׳: תל אביב">
+              </div>
+              <div class="cal-sb-field">
+                <label>הערות</label>
+                <textarea id="csb-notes" placeholder="הערות..."></textarea>
+              </div>
+              <button class="cal-sb-save-btn" onclick="calSidebarSave()">
+                <i class="ph ph-check"></i> הוסף אירוע
+              </button>
+              <hr class="cal-sb-divider">
+              <!-- Day events -->
+              <div id="csb-day-section" style="display:none;">
+                <div class="cal-sb-day-title" id="csb-day-label">אירועי היום</div>
+                <div id="csb-day-list"></div>
+              </div>
+            </div>
+          </div>
           <!-- Calendar -->
-          <div class="cal-main" style="width:100%;">
+          <div class="cal-main">
             <div id="cal-el" style="height:100%;"></div>
           </div>
         </div>
@@ -2297,6 +2373,7 @@ async function ovSaveNote(studentId) {
 // ═══════════════════════════════════════════════
 // ── Holiday data (2024-2027) ──────────────────────
 let calShowHolidays = false;
+let calColorMode = true; // true = colored, false = neutral gray
 
 // cat → { bg, text, border }
 const CAL_HOL_STYLE = {
@@ -2492,12 +2569,18 @@ const CAL_TYPE_COLORS = {
   practical_exam: '#7c3aed',
   batch_open:     '#15803d',
   batch_official: '#d97706',
+  meeting:        '#0891b2',
+  course_session: '#0f766e',
+  other:          '#64748b',
 };
 const CAL_TYPE_LABELS = {
   interview:      'ראיון',
   practical_exam: 'מבחן מעשי',
   batch_open:     'פתיחת מחזור',
   batch_official: 'מחזור פתוח רשמית',
+  meeting:        'פגישה',
+  course_session: 'שיעור',
+  other:          'אחר',
 };
 
 async function calInit() {
@@ -2539,6 +2622,9 @@ async function calInit() {
     eventReceive:      calEventReceive,
     eventClick:        calEventClick,
     dateClick:         calDateClick,
+    selectable:        true,
+    selectMirror:      true,
+    select:            calSelectRange,
     eventDidMount: function(info) {
       const cap  = info.event.extendedProps.capacity || '';
       const cnt  = info.event.extendedProps.assignedCount || 0;
@@ -2564,6 +2650,11 @@ async function calInit() {
   }
 
   calInitDone = true;
+
+  // Pre-fill sidebar with today
+  const todayStr = new Date().toISOString().substring(0,10);
+  const csbDate = document.getElementById('csb-date');
+  if (csbDate && !csbDate.value) csbDate.value = todayStr;
 }
 
 function calBuildEvents() {
@@ -2588,14 +2679,16 @@ function calBuildEvents() {
     });
   }
 
-  // pipeline_days → interview / practical_exam
+  const colOf = (type) => calColorMode ? (CAL_TYPE_COLORS[type] || '#64748b') : '#64748b';
+
+  // pipeline_days → interview / practical_exam / meeting / etc.
   (typeof pDays !== 'undefined' ? pDays : []).forEach(d => {
     const cnt = typeof pDayAssignedCount === 'function' ? pDayAssignedCount(d.id) : 0;
     events.push({
       id:    'pday-' + d.id,
       title: `${CAL_TYPE_LABELS[d.type] || d.type} · ${d.location || ''} (${cnt}/${d.capacity})`,
       start: d.time ? d.date + 'T' + d.time : d.date,
-      color: CAL_TYPE_COLORS[d.type] || '#64748b',
+      color: colOf(d.type),
       extendedProps: { type: d.type, sourceType: 'pday', sourceId: d.id, capacity: d.capacity, assignedCount: cnt, location: d.location, notes: d.notes },
     });
   });
@@ -2610,7 +2703,7 @@ function calBuildEvents() {
       title: `${label}: ${b.name}`,
       start: b.date,
       allDay: true,
-      color:  CAL_TYPE_COLORS[type],
+      color:  colOf(type),
       extendedProps: { type, sourceType: 'batch', sourceId: b.id, batchName: b.name },
     });
   });
@@ -2722,12 +2815,99 @@ function calEventClick(info) {
 }
 
 function calDateClick(info) {
-  // Open quick-add pre-filled with clicked date
-  const input = document.getElementById('cal-q-date');
-  if (input) input.value = info.dateStr;
-  const modal = document.getElementById('cal-quick-modal');
-  if (modal) modal.style.display = 'flex';
+  // Pre-fill sidebar date
+  const dateInput = document.getElementById('csb-date');
+  if (dateInput) dateInput.value = info.dateStr;
+  // Switch to day view
+  if (calInstance) calInstance.changeView('timeGridDay', info.dateStr);
+  // Populate day events in sidebar
+  calSidebarPopulateDay(info.dateStr);
 }
+
+function calSelectRange(info) {
+  const dateInput  = document.getElementById('csb-date');
+  const startInput = document.getElementById('csb-start');
+  const endInput   = document.getElementById('csb-end');
+  if (dateInput)  dateInput.value  = info.startStr.substring(0, 10);
+  if (startInput) startInput.value = info.startStr.substring(11, 16) || '09:00';
+  if (endInput)   endInput.value   = info.endStr.substring(11, 16)   || '10:00';
+  calSidebarPopulateDay(info.startStr.substring(0, 10));
+}
+
+function calSidebarPopulateDay(dateStr) {
+  const section = document.getElementById('csb-day-section');
+  const label   = document.getElementById('csb-day-label');
+  const list    = document.getElementById('csb-day-list');
+  if (!section || !list) return;
+
+  const d = new Date(dateStr);
+  const dayLabel = d.toLocaleDateString('he-IL', { weekday:'long', day:'numeric', month:'long' });
+  if (label) label.textContent = dayLabel;
+
+  const events = calInstance ? calInstance.getEvents().filter(e => {
+    const s = e.startStr || '';
+    return s.startsWith(dateStr) && !e.extendedProps?.isHoliday;
+  }) : [];
+
+  if (events.length === 0) {
+    list.innerHTML = `<div class="cal-sb-empty">אין אירועים ביום זה</div>`;
+  } else {
+    list.innerHTML = events.map(e => {
+      const col = e.backgroundColor || CAL_TYPE_COLORS[e.extendedProps?.type] || '#64748b';
+      const time = e.startStr ? e.startStr.substring(11,16) : '';
+      return `<div class="cal-sb-ev" style="background:${col};" onclick="calEventClick({event:calInstance.getEventById('${e.id}')})">
+        ${time ? `<span style="font-size:0.68rem;opacity:0.85;">${time}</span>` : ''}
+        <span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${e.title}</span>
+      </div>`;
+    }).join('');
+  }
+  section.style.display = 'block';
+}
+
+window.calSidebarSave = async function() {
+  const type     = document.getElementById('csb-type')?.value;
+  const title    = document.getElementById('csb-title')?.value?.trim() || '';
+  const date     = document.getElementById('csb-date')?.value;
+  const start    = document.getElementById('csb-start')?.value || '09:00';
+  const end      = document.getElementById('csb-end')?.value   || '10:00';
+  const location = document.getElementById('csb-location')?.value?.trim() || '';
+  const notes    = document.getElementById('csb-notes')?.value?.trim() || '';
+
+  if (!date) { alert('יש לבחור תאריך'); return; }
+
+  const btn = document.querySelector('.cal-sb-save-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'שומר...'; }
+
+  try {
+    const sb = window._supabase || supabase;
+    const { error } = await sb.from('pipeline_days').insert({
+      type,
+      date,
+      time: start,
+      capacity: 1,
+      location,
+      notes: (title ? title + (notes ? ' | ' + notes : '') : notes),
+    });
+    if (error) throw error;
+
+    // Clear form
+    if (document.getElementById('csb-title'))    document.getElementById('csb-title').value = '';
+    if (document.getElementById('csb-location')) document.getElementById('csb-location').value = '';
+    if (document.getElementById('csb-notes'))    document.getElementById('csb-notes').value = '';
+
+    // Refresh
+    if (typeof pInit === 'function') await pInit().catch(()=>{});
+    if (calInstance) {
+      calInstance.removeAllEvents();
+      calBuildEvents().forEach(e => calInstance.addEvent(e));
+    }
+    if (date) calSidebarPopulateDay(date);
+  } catch(e) {
+    alert('שגיאה: ' + e.message);
+  } finally {
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ph ph-check"></i> הוסף אירוע'; }
+  }
+};
 
 async function calEventReceive(info) {
   // A pool student was dropped onto a date
@@ -2792,6 +2972,23 @@ window.calToggleHolidays = function() {
   }
   if (leg) leg.style.display = calShowHolidays ? 'contents' : 'none';
   // Rebuild calendar events
+  if (calInstance) {
+    calInstance.removeAllEvents();
+    calBuildEvents().forEach(e => calInstance.addEvent(e));
+  }
+};
+
+window.calToggleColors = function() {
+  calColorMode = !calColorMode;
+  const btn = document.getElementById('cal-color-btn');
+  if (btn) {
+    btn.style.background  = calColorMode ? '#eff6ff' : '#f1f5f9';
+    btn.style.color       = calColorMode ? '#2563eb' : '#475569';
+    btn.style.borderColor = calColorMode ? '#93c5fd' : '#e2e8f0';
+    btn.innerHTML = calColorMode
+      ? '<i class="ph ph-palette"></i> צבעים'
+      : '<i class="ph ph-circle-half"></i> גוון רגיל';
+  }
   if (calInstance) {
     calInstance.removeAllEvents();
     calBuildEvents().forEach(e => calInstance.addEvent(e));
