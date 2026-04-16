@@ -28,6 +28,15 @@
     }
     .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
     .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+    /* ── ACCORDION NAV GROUPS ── */
+    .nav-group-hdr { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;user-select:none; }
+    .nav-group-hdr:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .nav-group-hdr.open { color:var(--electric-blue); }
+    .nav-grp-left { display:flex;align-items:center;gap:0.65rem; }
+    .nav-caret { font-size:0.72rem;transition:transform 0.22s ease; }
+    .nav-group-hdr.open .nav-caret { transform:rotate(180deg); }
+    .nav-sub { list-style:none;flex-direction:column;gap:0.08rem;padding:0.1rem 0 0.1rem 0.9rem;margin:0; }
+    .nav-sub a { font-size:0.84rem !important;padding:0.42rem 0.75rem !important; }
 
     .admin-content { flex:1;padding:2rem;overflow-y:auto; }
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }

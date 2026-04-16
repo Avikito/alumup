@@ -12,19 +12,38 @@
 <style>
 /* ── Layout ── */
 .tm-wrap       { display:flex;flex:1;min-height:calc(100vh - 64px); }
-.tm-sidebar    { width:220px;flex-shrink:0;background:#fff;border-left:1px solid var(--border);padding:1.5rem 1rem;display:flex;flex-direction:column;gap:0.15rem; }
+/* ── Admin sidebar (right, from admin-core) ── */
+#admin-sidebar-placeholder { width:220px;flex-shrink:0;background:var(--surface-dark);border-left:1px solid var(--border);padding:1.5rem 1rem;overflow-y:auto; }
+.sidebar-label { font-size:0.72rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;padding:0 0.75rem;margin-bottom:0.75rem; }
+.admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+.admin-nav a { display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.9rem;font-weight:500;color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;text-decoration:none; }
+.admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+.admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+.nav-group-hdr { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.85rem;font-weight:700;color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;user-select:none;margin-top:0.2rem; }
+.nav-group-hdr:hover { background:var(--blue-dim);color:var(--electric-blue); }
+.nav-group-hdr.open { color:var(--electric-blue); }
+.nav-grp-left { display:flex;align-items:center;gap:0.65rem; }
+.nav-caret { font-size:0.72rem;transition:transform 0.22s ease; }
+.nav-group-hdr.open .nav-caret { transform:rotate(180deg); }
+.nav-sub { list-style:none;flex-direction:column;gap:0.08rem;padding:0.15rem 0 0.15rem 0.85rem;margin:0; }
+.nav-sub a { font-size:0.84rem !important;padding:0.42rem 0.75rem !important; }
+/* ── Tasks sub-nav inside admin sidebar ── */
+.tasks-sub-nav { list-style:none;display:flex;flex-direction:column;gap:0.05rem;padding:0.1rem 0 0.1rem 0.85rem;margin:0; }
+.tasks-sub-nav a { display:flex;align-items:center;gap:0.55rem;padding:0.38rem 0.75rem;border-radius:8px;font-size:0.83rem;font-weight:500;color:var(--silver-dark);cursor:pointer;transition:all 0.16s;text-decoration:none; }
+.tasks-sub-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+.tasks-sub-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
 .tm-content    { flex:1;padding:1.75rem 2rem;overflow-y:auto;background:var(--bg-dark); }
-.tm-nav-item   { display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:500;color:var(--silver-dark);cursor:pointer;transition:all 0.16s; }
-.tm-nav-item:hover { background:var(--blue-dim);color:var(--electric-blue); }
-.tm-nav-item.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
-.tm-nav-label  { font-size:0.68rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:1px;padding:0.75rem 0.75rem 0.3rem; }
+
 
 /* ── KPI Bar ── */
 .kpi-bar       { display:grid;grid-template-columns:repeat(5,1fr);gap:0.85rem;margin-bottom:1.5rem; }
 .kpi-card      { background:#fff;border:1px solid var(--border);border-radius:12px;padding:0.9rem 1.1rem;display:flex;flex-direction:column;gap:0.25rem; }
 .kpi-val       { font-size:1.6rem;font-weight:800;color:var(--industrial-silver);line-height:1; }
 .kpi-lbl       { font-size:0.72rem;color:var(--silver-dark);font-weight:500; }
-.kpi-score-card { background:linear-gradient(135deg,#1a5faa 0%,#0d3d7a 100%);border:none; }
+.kpi-score-card { background:linear-gradient(135deg,#1a5faa 0%,#0d3d7a 100%);border:none;transition:background 0.5s ease; }
+.kpi-score-card.score-good { background:linear-gradient(135deg,#15803d 0%,#166534 100%); }
+.kpi-score-card.score-warn { background:linear-gradient(135deg,#b45309 0%,#92400e 100%); }
+.kpi-score-card.score-bad  { background:linear-gradient(135deg,#dc2626 0%,#991b1b 100%); }
 .kpi-score-card .kpi-val  { color:#fff; }
 .kpi-score-card .kpi-lbl  { color:rgba(255,255,255,0.72); }
 .kpi-score-bar { height:4px;border-radius:2px;background:rgba(255,255,255,0.25);margin-top:6px; }
@@ -91,6 +110,23 @@
 .sla-ok        { color:#16a34a; }
 .sla-warn      { color:#ea580c; }
 .sla-breach-txt { color:#dc2626; }
+
+/* ── Task Timeline ── */
+.task-tl       { margin-top:0.55rem; }
+.task-tl-bar   { height:5px;background:#f1f5f9;border-radius:4px;overflow:hidden;display:flex;gap:1px; }
+.task-tl-wait  { background:#94a3b8;border-radius:4px 0 0 4px;transition:width 0.3s; }
+.task-tl-handle { border-radius:0 4px 4px 0;transition:width 0.3s; }
+.task-tl-handle.active { background:#f59e0b; }
+.task-tl-handle.done   { background:#16a34a; }
+.task-tl-wait.only    { border-radius:4px; }
+.task-tl-labels { display:flex;justify-content:space-between;font-size:0.63rem;margin-top:3px;color:#94a3b8; }
+.task-tl-labels .tl-handle-lbl { font-weight:600; }
+.task-tl-labels .tl-handle-lbl.active { color:#f59e0b; }
+.task-tl-labels .tl-handle-lbl.done   { color:#16a34a; }
+@keyframes tl-pulse { 0%,100%{opacity:1} 50%{opacity:0.45} }
+.tl-pulse { animation:tl-pulse 2s ease-in-out infinite; }
+.tl-live-dot { color:#ef4444;font-size:0.55rem;animation:tl-pulse 1.2s ease-in-out infinite; }
+.tl-live-wait { color:#dc2626 !important;font-weight:700 !important; }
 
 /* ── Modal ── */
 .modal-overlay { position:fixed;inset:0;background:rgba(15,23,42,0.5);z-index:1000;display:flex;align-items:center;justify-content:center;padding:1rem; }
@@ -205,6 +241,31 @@
 /* ── Responsive ── */
 @media (max-width:1200px) { .board-columns { grid-template-columns:repeat(2,1fr); } }
 @media (max-width:800px)  { .board-columns { grid-template-columns:1fr; } .kpi-bar { grid-template-columns:repeat(3,1fr); } }
+
+/* ── Live KPI Strip ── */
+.kpi-strip { display:flex;align-items:center;gap:1.25rem;padding:0.55rem 1.5rem;border-bottom:1px solid var(--border);background:#fff;position:sticky;top:0;z-index:90;flex-wrap:wrap; }
+.kpi-strip-score { display:flex;align-items:center;gap:0.6rem;padding:0.35rem 0.9rem;border-radius:9px;font-size:0.92rem;font-weight:800;transition:background 0.4s,color 0.4s; }
+.kpi-strip-score.good  { background:#f0fdf4;color:#15803d;border:1.5px solid #bbf7d0; }
+.kpi-strip-score.warn  { background:#fffbeb;color:#b45309;border:1.5px solid #fde68a; }
+.kpi-strip-score.bad   { background:#fef2f2;color:#dc2626;border:1.5px solid #fca5a5; }
+.kpi-strip-pill { display:flex;align-items:center;gap:5px;font-size:0.78rem;font-weight:600;color:#64748b;padding:0.28rem 0.75rem;border-radius:20px;background:#f8fafc;border:1px solid var(--border); }
+.kpi-strip-pill.pill-red   { background:#fef2f2;color:#dc2626;border-color:#fca5a5; }
+.kpi-strip-pill.pill-amber { background:#fffbeb;color:#b45309;border-color:#fde68a; }
+.kpi-strip-pill.pill-green { background:#f0fdf4;color:#15803d;border-color:#bbf7d0; }
+.live-dot { width:7px;height:7px;border-radius:50%;background:#16a34a;display:inline-block;flex-shrink:0;animation:tl-pulse 1.4s ease-in-out infinite; }
+.kpi-strip-sep { width:1px;height:20px;background:var(--border);flex-shrink:0; }
+@keyframes kpi-flash { 0%{opacity:1} 20%{opacity:0.15} 40%{opacity:1} 60%{opacity:0.15} 80%{opacity:1} }
+.kpi-flash { animation:kpi-flash 0.7s ease; }
+
+/* ── Toast notifications ── */
+.kpi-toast-wrap { position:fixed;bottom:1.5rem;left:1.5rem;z-index:9000;display:flex;flex-direction:column;gap:0.5rem;pointer-events:none; }
+.kpi-toast { display:flex;align-items:flex-start;gap:10px;padding:0.75rem 1rem;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);font-size:0.82rem;font-weight:600;max-width:300px;pointer-events:all;animation:toast-in 0.3s ease;color:#fff; }
+.kpi-toast.toast-breach { background:#dc2626; }
+.kpi-toast.toast-warn   { background:#ea580c; }
+.kpi-toast.toast-score  { background:#1a5faa; }
+.kpi-toast i { font-size:1.1rem;flex-shrink:0;margin-top:1px; }
+@keyframes toast-in { from{transform:translateY(20px);opacity:0} to{transform:none;opacity:1} }
+@keyframes toast-out { to{transform:translateY(20px);opacity:0} }
 </style>
 </head>
 <body>
@@ -227,26 +288,30 @@
   </div>
 </nav>
 
+<!-- ── Live KPI Strip ── -->
+<div class="kpi-strip">
+  <div class="kpi-strip-score good" id="kpi-strip-score">
+    <span class="live-dot"></span>
+    <i class="ph ph-chart-line-up"></i>
+    <span>מדד KPI: <span id="kpi-strip-val">—</span></span>
+    <span style="font-size:0.7rem;font-weight:500;opacity:0.7;">/ 100</span>
+  </div>
+  <div class="kpi-strip-sep"></div>
+  <div class="kpi-strip-pill" id="kpi-strip-open"><i class="ph ph-stack"></i> <span id="kpi-strip-open-val">—</span> פתוחות</div>
+  <div class="kpi-strip-pill" id="kpi-strip-overdue"><i class="ph ph-warning-circle"></i> <span id="kpi-strip-overdue-val">—</span> חריגות SLA</div>
+  <div class="kpi-strip-pill" id="kpi-strip-closed"><i class="ph ph-check-circle"></i> <span id="kpi-strip-closed-val">—</span> נסגרו החודש</div>
+  <div style="margin-right:auto;font-size:0.68rem;color:#94a3b8;display:flex;align-items:center;gap:5px;">
+    <span class="live-dot" style="background:#3b82f6;width:5px;height:5px;"></span> עדכון חי
+  </div>
+</div>
+<div class="kpi-toast-wrap" id="kpi-toast-wrap"></div>
+
 <!-- ── Main Wrap ── -->
 <div class="tm-wrap">
 
-  <!-- Sidebar -->
-  <aside class="tm-sidebar">
-    <div class="tm-nav-label">תצוגות</div>
-    <div class="tm-nav-item active" onclick="setView('board')" id="nav-board">
-      <i class="ph ph-kanban"></i> לוח משימות
-    </div>
-    <div class="tm-nav-item" onclick="setView('strategic')" id="nav-strategic">
-      <i class="ph ph-flag-pennant"></i> אסטרטגיות
-    </div>
-    <div class="tm-nav-item" onclick="setView('overdue')" id="nav-overdue">
-      <i class="ph ph-warning-circle" style="color:#dc2626;"></i> חריגות SLA
-    </div>
-    <div class="tm-nav-label" style="margin-top:0.75rem;">דוחות</div>
-    <div class="tm-nav-item" onclick="setView('kpi')" id="nav-kpi">
-      <i class="ph ph-chart-bar"></i> מדד ביצוע KPI
-    </div>
-  </aside>
+  <!-- Admin sidebar (right) -->
+  <div id="admin-sidebar-placeholder"></div>
+
 
   <!-- Content -->
   <main class="tm-content">
@@ -555,6 +620,7 @@
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { requireAdmin, renderSidebar } from './js/admin-core.js';
 
 const SUPABASE_URL = 'https://exfdjelwyrspfspcevvm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED';
@@ -604,6 +670,9 @@ async function init() {
   document.getElementById('nav-user-name').textContent = displayName;
   document.getElementById('nav-user-avatar').textContent = initials(displayName);
 
+  renderSidebar('tasks');
+  injectTasksSubNav();
+
   await loadTasks();
   subscribeRealtime();
   populateAssigneeFilter();
@@ -613,6 +682,26 @@ function initials(name) {
   if (!name) return '?';
   const parts = name.trim().split(/\s+/);
   return parts.length >= 2 ? parts[0][0] + parts[parts.length-1][0] : name.slice(0,2);
+}
+
+// ─── Inject tasks sub-nav into admin sidebar ──────────────
+function injectTasksSubNav() {
+  const tasksLi = document.querySelector('#admin-sidebar-placeholder a[href="admin-tasks.html"]')?.closest('li');
+  if (!tasksLi) return;
+  const subItems = [
+    { id:'board',     icon:'ph-kanban',         label:'לוח משימות' },
+    { id:'strategic', icon:'ph-flag-pennant',    label:'אסטרטגיות' },
+    { id:'overdue',   icon:'ph-warning-circle',  label:'חריגות SLA', style:'color:#dc2626;' },
+    { id:'kpi',       icon:'ph-chart-bar',       label:'מדד ביצוע KPI' },
+  ];
+  const ul = document.createElement('ul');
+  ul.className = 'tasks-sub-nav';
+  ul.innerHTML = subItems.map(it =>
+    `<li><a id="tsub-${it.id}" href="#" onclick="setView('${it.id}');return false;">` +
+    `<i class="ph ${it.icon}"${it.style ? ` style="${it.style}"` : ''}></i> ${it.label}</a></li>`
+  ).join('');
+  tasksLi.appendChild(ul);
+  document.getElementById('tsub-board')?.classList.add('active');
 }
 
 // ─── Data ─────────────────────────────────────────────────
@@ -671,6 +760,67 @@ function slaLabel(task) {
   return { cls:'sla-ok', text:`${days} ימים נותרו`, icon:'ph-clock' };
 }
 
+// ─── Timeline helpers ─────────────────────────────────────
+function fmtDuration(ms) {
+  if (!ms || ms < 0) return '—';
+  const mins = Math.floor(ms / 60000);
+  if (mins < 60)  return `${mins} דק'`;
+  const h = Math.floor(mins / 60);
+  if (h < 24) return `${h} שע'`;
+  const d = Math.floor(h / 24);
+  const rem = h % 24;
+  return rem > 0 ? `${d}י ${rem}ש'` : `${d} ימים`;
+}
+
+function taskTimeline(t) {
+  const slaMs    = (SLA_HOURS[t.priority] || 72) * 3600000;
+  const created  = new Date(t.created_at);
+  const started  = t.started_at  ? new Date(t.started_at)  : null;
+  const closed   = t.closed_at   ? new Date(t.closed_at)   : null;
+  const now      = new Date();
+
+  const waitMs   = started ? (started - created) : (now - created);
+  const handleMs = started ? (closed  ? (closed - started) : (now - started)) : 0;
+
+  const ref      = Math.max(slaMs, waitMs + handleMs, 1);
+  const waitPct  = Math.min((waitMs / ref) * 100, 100);
+  const hndlPct  = Math.min((handleMs / ref) * 100, 100 - waitPct);
+
+  return {
+    waitMs, handleMs,
+    waitPct, hndlPct,
+    waitLabel:   fmtDuration(waitMs),
+    handleLabel: started ? fmtDuration(handleMs) : null,
+    isDone:      !!closed,
+    hasHandle:   !!started,
+  };
+}
+
+function timelineHTML(t) {
+  if (t.status === 'open' && !t.started_at) {
+    const age = Date.now() - new Date(t.created_at).getTime();
+    return `<div class="task-tl">
+      <div class="task-tl-bar"><div class="task-tl-wait only tl-pulse" style="width:100%;"></div></div>
+      <div class="task-tl-labels">
+        <span class="tl-live-wait" data-tl-created="${t.created_at}">ממתין לטיפול: ${fmtDuration(age)}</span>
+        <span class="tl-live-dot">●</span>
+      </div>
+    </div>`;
+  }
+  const tl = taskTimeline(t);
+  const hCls = tl.isDone ? 'done' : 'active';
+  return `<div class="task-tl">
+    <div class="task-tl-bar">
+      <div class="task-tl-wait${tl.hasHandle ? '' : ' only'}" style="width:${tl.waitPct}%;"></div>
+      ${tl.hasHandle ? `<div class="task-tl-handle ${hCls}" style="width:${tl.hndlPct}%;"></div>` : ''}
+    </div>
+    <div class="task-tl-labels">
+      <span>המתנה: ${tl.waitLabel}</span>
+      ${tl.hasHandle ? `<span class="tl-handle-lbl ${hCls}">טיפול: ${tl.handleLabel}</span>` : ''}
+    </div>
+  </div>`;
+}
+
 // ─── KPI ──────────────────────────────────────────────────
 function calcKPI() {
   const now = new Date();
@@ -687,43 +837,110 @@ function calcKPI() {
     return d.getMonth() === thisMonth && d.getFullYear() === thisYear;
   });
 
-  // Speed: avg hours to close (closed tasks with both timestamps)
+  // Speed: avg hours to close
   const closedWithTime = allTasks.filter(t => t.closed_at && t.created_at);
   const avgSpeedH = closedWithTime.length
     ? Math.round(closedWithTime.reduce((acc, t) => acc + (new Date(t.closed_at) - new Date(t.created_at)) / 3600000, 0) / closedWithTime.length)
     : null;
 
+  // ── Speed bonus: reward fast closures this month ──
+  // For each task closed this month, compare actual time vs SLA time:
+  //   closed in < 40% of SLA → +4 pts (מצוין)
+  //   closed in 40–70% of SLA → +2 pts (טוב)
+  //   closed in 70–100% of SLA → +1 pt (בזמן)
+  //   closed after SLA → 0 (already penalized via overdue)
+  let speedBonus = 0;
+  let fastCount = 0, veryFastCount = 0;
+  closedMonth.forEach(t => {
+    const slaMs   = (SLA_HOURS[t.priority] || 72) * 3600000;
+    const actualMs = new Date(t.closed_at) - new Date(t.created_at);
+    const ratio   = actualMs / slaMs;
+    if (ratio < 0.4)       { speedBonus += 4; veryFastCount++; }
+    else if (ratio < 0.7)  { speedBonus += 2; fastCount++; }
+    else if (ratio <= 1.0) { speedBonus += 1; }
+  });
+  speedBonus = Math.min(speedBonus, 25); // cap at +25
+
   // Score formula (0–100):
-  // Base 100
+  // Base 70 (so speed bonus can push to 100 max with cap)
   // -8 per overdue task (max -40)
   // -12 per penalty task (max -36)
-  // +5 per strategic task closed this month (max +20)
-  let score = 100;
+  // +5 per strategic task closed (max +20)
+  // +speedBonus for fast closures (max +25)
+  let score = 70;
   score -= Math.min(overdueTasks.length * 8,  40);
   score -= Math.min(penaltyTasks.length * 12, 36);
   score += Math.min(stratClosed.length * 5,   20);
+  score += speedBonus;
   score = Math.max(0, Math.min(100, score));
 
   return {
     score,
-    overdue:  overdueTasks.length,
-    penalties: penaltyTasks.length,
-    strategic: { total: strategic.length, closed: stratClosed.length },
+    overdue:      overdueTasks.length,
+    penalties:    penaltyTasks.length,
+    strategic:    { total: strategic.length, closed: stratClosed.length },
     avgSpeedH,
-    closedMonth: closedMonth.length,
+    closedMonth:  closedMonth.length,
+    speedBonus,
+    fastCount,
+    veryFastCount,
     pendingApproval: allTasks.filter(t => t.status === 'pending_approval' && t.created_by === currentUser.id).length,
     openCount: allTasks.filter(t => t.status !== 'closed').length,
   };
 }
 
+let _lastKpiScore = null;
+let _lastOverdue  = null;
+
 function updateKPIs() {
   const k = calcKPI();
   document.getElementById('k-score').textContent       = k.score;
   document.getElementById('k-score-fill').style.width  = k.score + '%';
+  // Color the score card based on score
+  const scoreCard = document.querySelector('.kpi-score-card');
+  if (scoreCard) {
+    scoreCard.classList.remove('score-good','score-warn','score-bad');
+    scoreCard.classList.add(k.score >= 75 ? 'score-good' : k.score >= 50 ? 'score-warn' : 'score-bad');
+  }
   document.getElementById('k-open').textContent        = k.openCount;
   document.getElementById('k-overdue').textContent     = k.overdue;
   document.getElementById('k-pending').textContent     = k.pendingApproval;
   document.getElementById('k-closed').textContent      = k.closedMonth;
+
+  // ── Live KPI strip ──
+  const stripScore = document.getElementById('kpi-strip-score');
+  const stripVal   = document.getElementById('kpi-strip-val');
+  const stripOpen  = document.getElementById('kpi-strip-open');
+  const stripOverdue = document.getElementById('kpi-strip-overdue');
+  const stripClosed  = document.getElementById('kpi-strip-closed');
+
+  // Detect score change → flash animation
+  if (_lastKpiScore !== null && _lastKpiScore !== k.score) {
+    stripScore.classList.remove('kpi-flash');
+    void stripScore.offsetWidth; // reflow
+    stripScore.classList.add('kpi-flash');
+  }
+  // Detect new SLA breach → toast
+  if (_lastOverdue !== null && k.overdue > _lastOverdue) {
+    const diff = k.overdue - _lastOverdue;
+    showKpiToast(`⚠ ${diff} חריגת SLA חדשה! ציון ירד ל-${k.score}`, 'toast-breach');
+  }
+
+  _lastKpiScore = k.score;
+  _lastOverdue  = k.overdue;
+
+  // Score color
+  const scoreClass = k.score >= 75 ? 'good' : k.score >= 50 ? 'warn' : 'bad';
+  stripScore.className = `kpi-strip-score ${scoreClass}`;
+  stripVal.textContent = k.score;
+
+  // Pills
+  stripOpen.className    = 'kpi-strip-pill';
+  stripOverdue.className = `kpi-strip-pill${k.overdue > 0 ? ' pill-red' : ''}`;
+  stripClosed.className  = `kpi-strip-pill${k.closedMonth > 0 ? ' pill-green' : ''}`;
+  document.getElementById('kpi-strip-open-val').textContent    = k.openCount;
+  document.getElementById('kpi-strip-overdue-val').textContent = k.overdue;
+  document.getElementById('kpi-strip-closed-val').textContent  = k.closedMonth;
 
   // KPI detail view
   document.getElementById('kpi-speed').textContent = k.avgSpeedH !== null ? k.avgSpeedH + ' שע\'' : 'אין מידע';
@@ -734,26 +951,47 @@ function updateKPIs() {
   const breakdownEl = document.getElementById('kpi-breakdown');
   breakdownEl.innerHTML = `
     <div style="display:flex;flex-direction:column;gap:0.6rem;">
-      ${kpiRow('ניקוד בסיס', 100, '#16a34a')}
-      ${kpiRow(`ניכוי חריגות SLA (${calcKPI().overdue} × 8)`, -Math.min(calcKPI().overdue * 8, 40), '#dc2626')}
+      ${kpiRow('ניקוד בסיס', 70, '#64748b')}
+      ${kpiRow(`ניכוי חריגות SLA (${k.overdue} × 8)`, -Math.min(k.overdue * 8, 40), '#dc2626')}
       ${kpiRow(`ניכוי קנסות איכות (${k.penalties} × 12)`, -Math.min(k.penalties * 12, 36), '#ea580c')}
       ${kpiRow(`בונוס אסטרטגיות (${k.strategic.closed} × 5)`, Math.min(k.strategic.closed * 5, 20), '#7c3aed')}
+      ${kpiRow(`בונוס מהירות סגירה (${k.closedMonth} משימות החודש)`, k.speedBonus,
+        k.speedBonus >= 15 ? '#15803d' : k.speedBonus >= 6 ? '#16a34a' : '#22c55e',
+        k.veryFastCount > 0
+          ? `${k.veryFastCount} מצוינות ⚡ · ${k.fastCount} טובות`
+          : k.fastCount > 0 ? `${k.fastCount} טובות` : ''
+      )}
       <div style="border-top:2px solid var(--border);padding-top:0.5rem;margin-top:0.25rem;display:flex;justify-content:space-between;align-items:center;">
         <span style="font-size:0.85rem;font-weight:800;color:var(--industrial-silver);">ציון סופי</span>
-        <span style="font-size:1.1rem;font-weight:800;color:${k.score >= 70 ? '#16a34a' : k.score >= 50 ? '#ea580c' : '#dc2626'};">${k.score} / 100</span>
+        <span style="font-size:1.1rem;font-weight:800;color:${k.score >= 75 ? '#16a34a' : k.score >= 50 ? '#ea580c' : '#dc2626'};">${k.score} / 100</span>
       </div>
     </div>`;
 }
 
-function kpiRow(label, value, color) {
+function showKpiToast(msg, cls = 'toast-score') {
+  const wrap = document.getElementById('kpi-toast-wrap');
+  if (!wrap) return;
+  const t = document.createElement('div');
+  t.className = `kpi-toast ${cls}`;
+  t.innerHTML = `<i class="ph ph-warning-circle"></i><span>${msg}</span>`;
+  wrap.appendChild(t);
+  setTimeout(() => {
+    t.style.animation = 'toast-out 0.3s ease forwards';
+    setTimeout(() => t.remove(), 320);
+  }, 4500);
+}
+
+function kpiRow(label, value, color, sub = '') {
   const sign = value >= 0 ? '+' : '';
   return `<div style="display:flex;justify-content:space-between;align-items:center;padding:0.4rem 0;border-bottom:1px solid #f1f5f9;">
-    <span style="font-size:0.82rem;color:#64748b;">${label}</span>
+    <span style="font-size:0.82rem;color:#64748b;">${label}${sub ? `<span style="display:block;font-size:0.7rem;color:${color};font-weight:600;">${sub}</span>` : ''}</span>
     <span style="font-size:0.85rem;font-weight:700;color:${color};">${sign}${value}</span>
   </div>`;
 }
 
 // ─── Render board ─────────────────────────────────────────
+let _liveTimerInterval = null;
+
 function renderBoard() {
   const cols = ['open','in_progress','pending_approval','closed'];
   cols.forEach(st => {
@@ -766,6 +1004,17 @@ function renderBoard() {
     }
     el.innerHTML = tasks.map(cardHTML).join('');
   });
+  startLiveWaitTimers();
+}
+
+function startLiveWaitTimers() {
+  if (_liveTimerInterval) clearInterval(_liveTimerInterval);
+  _liveTimerInterval = setInterval(() => {
+    document.querySelectorAll('.tl-live-wait[data-tl-created]').forEach(el => {
+      const age = Date.now() - new Date(el.dataset.tlCreated).getTime();
+      el.textContent = 'ממתין לטיפול: ' + fmtDuration(age);
+    });
+  }, 60000); // update every minute
 }
 
 function cardHTML(t) {
@@ -811,6 +1060,7 @@ function cardHTML(t) {
         <span>${sla.text}</span>
       </div>
     </div>
+    ${timelineHTML(t)}
   </div>`;
 }
 
@@ -895,6 +1145,51 @@ window.openTask = async function(id) {
       <div class="detail-sec-title"><i class="ph ph-link"></i> יישות מקושרת</div>
       <div class="detail-value">${escHtml(t.linked_entity_label)}</div>
     </div>` : ''}`;
+
+  // Timeline section in detail modal
+  (function() {
+    let tls = document.getElementById('detail-timeline-section');
+    if (!tls) {
+      tls = document.createElement('div');
+      tls.id = 'detail-timeline-section';
+      tls.className = 'detail-section';
+      tls.style.marginTop = '1rem';
+      document.getElementById('detail-meta-grid').after(tls);
+    }
+    const tl = taskTimeline(t);
+    const hCls  = tl.isDone ? 'done' : 'active';
+    const hClr  = tl.isDone ? '#16a34a' : '#f59e0b';
+    const phases = [
+      { label: 'ממתין לטיפול', ms: tl.waitMs,   color: '#94a3b8' },
+      ...(tl.hasHandle ? [{ label: tl.isDone ? 'זמן טיפול' : 'בטיפול (עד כה)', ms: tl.handleMs, color: hClr }] : []),
+    ];
+    const totalMs = phases.reduce((s, p) => s + p.ms, 0) || 1;
+    const phaseBars = phases.map((p, i) => {
+      const pct = Math.round((p.ms / totalMs) * 100);
+      const rr  = i === 0 && phases.length === 1 ? '4px' : i === 0 ? '4px 0 0 4px' : '0 4px 4px 0';
+      return `<div style="width:${pct}%;background:${p.color};border-radius:${rr};height:100%;"></div>`;
+    }).join('');
+    const phaseLabels = phases.map(p =>
+      `<div style="display:flex;align-items:center;gap:6px;font-size:0.8rem;">
+        <span style="width:10px;height:10px;border-radius:50%;background:${p.color};display:inline-block;flex-shrink:0;"></span>
+        <span style="color:#64748b;">${p.label}:</span>
+        <span style="font-weight:700;color:#0f172a;">${fmtDuration(p.ms)}</span>
+      </div>`
+    ).join('');
+    tls.innerHTML = `
+      <div class="detail-sec-title" style="margin-bottom:0.6rem;"><i class="ph ph-timer" style="color:var(--electric-blue);"></i> ציר זמן משימה</div>
+      <div style="height:10px;background:#f1f5f9;border-radius:4px;overflow:hidden;display:flex;gap:1px;margin-bottom:0.65rem;">
+        ${phaseBars}
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.75rem;">
+        ${phaseLabels}
+        ${tl.isDone && tl.hasHandle ? `<div style="display:flex;align-items:center;gap:6px;font-size:0.8rem;">
+          <span style="width:10px;height:10px;border-radius:50%;background:#2563eb;display:inline-block;flex-shrink:0;"></span>
+          <span style="color:#64748b;">סה"כ:</span>
+          <span style="font-weight:700;color:#0f172a;">${fmtDuration(tl.waitMs + tl.handleMs)}</span>
+        </div>` : ''}
+      </div>`;
+  })();
 
   // Attachments
   const attachments = Array.isArray(t.attachments) ? t.attachments
@@ -994,12 +1289,14 @@ window.updateStatus = async function(id, newStatus) {
     status: newStatus,
     status_changed_at: new Date().toISOString(),
   };
+  if (newStatus === 'in_progress' && !t.started_at) patch.started_at = new Date().toISOString();
   if (newStatus === 'closed') patch.closed_at = new Date().toISOString();
 
   const { error } = await sb.from('admin_tasks').update(patch).eq('id', id);
   if (error) { alert('שגיאה: ' + error.message); return; }
 
   t.status = newStatus;
+  if (newStatus === 'in_progress' && !t.started_at) t.started_at = patch.started_at;
   if (newStatus === 'closed') t.closed_at = patch.closed_at;
   t.status_changed_at = patch.status_changed_at;
 
@@ -1461,8 +1758,8 @@ window.setBoardTab = function(tab) {
 
 window.setView = function(view) {
   activeView = view;
-  document.querySelectorAll('.tm-nav-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('nav-' + view)?.classList.add('active');
+  document.querySelectorAll('.tasks-sub-nav a').forEach(el => el.classList.remove('active'));
+  document.getElementById('tsub-' + view)?.classList.add('active');
 
   const boardCols = document.getElementById('board-cols');
   const kpiDetail = document.getElementById('kpi-detail-view');

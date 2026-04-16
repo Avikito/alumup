@@ -28,6 +28,16 @@
     }
     .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
     .admin-nav a.active { background:rgba(212,175,55,0.1);color:#d4af37;font-weight:700; }
+    /* ── Accordion sidebar ── */
+    .nav-group-hdr { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.85rem;font-weight:700;color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;user-select:none;margin-top:0.2rem; }
+    .nav-group-hdr:hover { background:rgba(212,175,55,0.08);color:#d4af37; }
+    .nav-group-hdr.open { color:#d4af37; }
+    .nav-grp-left { display:flex;align-items:center;gap:0.65rem; }
+    .nav-caret { font-size:0.72rem;transition:transform 0.22s ease; }
+    .nav-group-hdr.open .nav-caret { transform:rotate(180deg); }
+    .nav-sub { list-style:none;flex-direction:column;gap:0.08rem;padding:0.15rem 0 0.15rem 0.85rem;margin:0; }
+    .nav-sub a { font-size:0.84rem !important;padding:0.42rem 0.75rem !important; }
+    .nav-divider { height:1px;background:#e2e8f0;margin:0.6rem 0.75rem; }
 
     .admin-content { flex:1;padding:2rem;overflow-y:auto; }
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
@@ -587,26 +597,67 @@
 
   <div class="admin-wrapper">
     <aside class="admin-sidebar">
+
+      <!-- מבט על — standalone -->
       <ul class="admin-nav">
-        <li><a href="#" id="nav-overview" class="active" onclick="switchView('overview');return false;"><i class="ph ph-squares-four"></i> מבט על</a></li>
+        <li><a href="#" id="nav-overview" class="active" onclick="switchView('overview');return false;">
+          <i class="ph ph-squares-four"></i> מבט על
+        </a></li>
       </ul>
-      <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
-      <div class="sidebar-label">קורסי מכללה</div>
-      <ul class="admin-nav">
-        <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;"><i class="ph ph-books"></i> נרשמים חדשים <span id="badge-new-registrations" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span></a></li>
-        <li><a href="#" id="nav-batches" onclick="switchView('batches');return false;"><i class="ph ph-squares-four"></i> ניהול מחזורים</a></li>
+
+      <div class="nav-divider"></div>
+
+      <!-- Group 1: ניהול לימודים -->
+      <div class="nav-group-hdr open" id="grp-hdr-study" onclick="navGroupToggle('grp-study',this)">
+        <span class="nav-grp-left"><i class="ph ph-graduation-cap"></i> ניהול לימודים</span>
+        <i class="ph ph-caret-down nav-caret"></i>
+      </div>
+      <ul class="admin-nav nav-sub" id="grp-study" style="display:flex;">
+        <li><a href="#" id="nav-registrations" onclick="switchView('registrations');return false;">
+          <i class="ph ph-books"></i> קורסי מכללה
+          <span id="badge-new-registrations" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span>
+        </a></li>
+        <li><a href="#" id="nav-batches" onclick="switchView('batches');return false;">
+          <i class="ph ph-stack"></i> ניהול מחזורים
+        </a></li>
       </ul>
-      <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
-      <div class="sidebar-label">חברי אלום</div>
-      <ul class="admin-nav">
-        <li><a href="#" id="nav-members" onclick="switchView('members');return false;"><i class="ph ph-graduation-cap"></i> מועמדי חבר אלום <span id="badge-new-applicants" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span></a></li>
-        <li><a href="#" id="nav-pipeline" onclick="switchView('pipeline');return false;"><i class="ph ph-git-branch"></i> ניהול תהליך חבר</a></li>
+
+      <!-- Group 2: מועמדים ורישום חבר -->
+      <div class="nav-group-hdr" id="grp-hdr-members" onclick="navGroupToggle('grp-members',this)">
+        <span class="nav-grp-left"><i class="ph ph-user-plus"></i> מועמדים ורישום חבר</span>
+        <i class="ph ph-caret-down nav-caret"></i>
+      </div>
+      <ul class="admin-nav nav-sub" id="grp-members" style="display:none;">
+        <li><a href="#" id="nav-registrations-2" onclick="switchView('registrations');return false;">
+          <i class="ph ph-user-list"></i> נרשמים חדשים
+          <span id="badge-new-registrations-2" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span>
+        </a></li>
+        <li><a href="#" id="nav-members" onclick="switchView('members');return false;">
+          <i class="ph ph-medal"></i> מועמדי חבר אלום
+          <span id="badge-new-applicants" style="display:none;background:#dc2626;color:#fff;border-radius:20px;font-size:0.65rem;font-weight:800;padding:1px 7px;margin-right:4px;"></span>
+        </a></li>
+        <li><a href="#" id="nav-pipeline" onclick="switchView('pipeline');return false;">
+          <i class="ph ph-git-branch"></i> ניהול תהליך חבר
+        </a></li>
       </ul>
-      <div style="margin:0.75rem 0;border-top:1px solid #e2e8f0;"></div>
-      <ul class="admin-nav">
-        <li><a href="#" id="nav-calendar" onclick="switchView('calendar');return false;"><i class="ph ph-calendar-dots"></i> לוח זמנים</a></li>
-        <li><a href="admin-tasks.html"><i class="ph ph-check-square"></i> ניהול משימות</a></li>
+
+      <!-- Group 3: כלים וניהול -->
+      <div class="nav-group-hdr" id="grp-hdr-tools" onclick="navGroupToggle('grp-tools',this)">
+        <span class="nav-grp-left"><i class="ph ph-wrench"></i> כלים וניהול</span>
+        <i class="ph ph-caret-down nav-caret"></i>
+      </div>
+      <ul class="admin-nav nav-sub" id="grp-tools" style="display:none;">
+        <li><a href="#" id="nav-calendar" onclick="switchView('calendar');return false;">
+          <i class="ph ph-calendar-dots"></i> לוח זמנים
+        </a></li>
+        <li><a href="admin-tasks.html" target="_blank">
+          <i class="ph ph-check-square"></i> ניהול משימות
+        </a></li>
+        <li><a href="#" id="nav-col-financial" onclick="switchView('col_financial');return false;">
+          <i class="ph ph-currency-circle-dollar"></i> ניהול פיננסי
+        </a></li>
       </ul>
+
     </aside>
 
     <main class="admin-content">
@@ -825,6 +876,27 @@
           style="width:100%;height:calc(100vh - 64px);border:none;display:block;"
           onload="this.style.opacity=1"
         ></iframe>
+      </div>
+
+      <!-- ═══ VIEW: COLLEGE FINANCIAL ═══ -->
+      <div id="view-col_financial" style="display:none;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+          <div>
+            <div class="page-title" style="margin-bottom:0.2rem;"><i class="ph ph-currency-circle-dollar" style="color:#d4af37;margin-left:0.4rem;"></i>ניהול פיננסי — מכללת ALUM-IL</div>
+            <div class="page-subtitle" style="margin-bottom:0;">מעקב הכנסות, תשלומים וניהול כספי המכללה בלבד</div>
+          </div>
+        </div>
+        <!-- Placeholder – יוגדר בעתיד -->
+        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:320px;background:#fff;border:2px dashed #e2e8f0;border-radius:16px;gap:1rem;padding:2.5rem;">
+          <div style="width:64px;height:64px;border-radius:50%;background:rgba(212,175,55,0.1);display:flex;align-items:center;justify-content:center;">
+            <i class="ph ph-currency-circle-dollar" style="font-size:2rem;color:#d4af37;"></i>
+          </div>
+          <div style="font-size:1.1rem;font-weight:800;color:#334155;">מודול בפיתוח</div>
+          <div style="font-size:0.88rem;color:#64748b;text-align:center;max-width:340px;line-height:1.6;">
+            פה יוצג ניהול פיננסי ייעודי למכללה — תשלומי קורסים, חיובים, חשבוניות וסיכומי הכנסות.<br>
+            <span style="color:#d4af37;font-weight:600;">המידע מופרד לחלוטין ממערכות אלום הכללית.</span>
+          </div>
+        </div>
       </div>
 
       <!-- ═══ VIEW: CALENDAR ═══ -->
@@ -1375,12 +1447,11 @@ async function loadNewApplicantsBadge() {
     bApplicants.style.display = c > 0 ? 'inline' : 'none';
   }
 
-  const bRegistrations = document.getElementById('badge-new-registrations');
-  if (bRegistrations) {
-    const c = registrationsRes.count || 0;
-    bRegistrations.textContent = c;
-    bRegistrations.style.display = c > 0 ? 'inline' : 'none';
-  }
+  const regCount = registrationsRes.count || 0;
+  ['badge-new-registrations','badge-new-registrations-2'].forEach(id => {
+    const b = document.getElementById(id);
+    if (b) { b.textContent = regCount; b.style.display = regCount > 0 ? 'inline' : 'none'; }
+  });
 }
 
 window.switchView = function(view) {
@@ -1391,20 +1462,59 @@ window.switchView = function(view) {
   }
   if (view === 'registrations') {
     localStorage.setItem('college_last_seen_registrations', new Date().toISOString());
-    const b = document.getElementById('badge-new-registrations');
-    if (b) b.style.display = 'none';
+    ['badge-new-registrations','badge-new-registrations-2'].forEach(id => {
+      const b = document.getElementById(id); if (b) b.style.display = 'none';
+    });
   }
   ['overview','members','registrations','batches','pipeline','calendar'].forEach(v => {
     const el = document.getElementById('view-' + v);
     if (el) el.style.display = v === view ? '' : 'none';
-    const nav = document.getElementById('nav-' + v);
-    if (nav) nav.classList.toggle('active', v === view);
+    // Toggle active on all nav items pointing to this view
+    [`nav-${v}`, v === 'registrations' ? 'nav-registrations-2' : null].forEach(id => {
+      if (!id) return;
+      const nav = document.getElementById(id);
+      if (nav) nav.classList.toggle('active', v === view);
+    });
   });
+  // Auto-open the accordion group that contains this view
+  const groupMap = {
+    registrations: 'grp-study', batches: 'grp-study',
+    members: 'grp-members', pipeline: 'grp-members',
+    calendar: 'grp-tools',
+  };
+  const targetGrp = groupMap[view];
+  if (targetGrp) {
+    ['grp-study','grp-members','grp-tools'].forEach(g => {
+      const sub = document.getElementById(g);
+      const hdr = document.getElementById('grp-hdr-' + g.replace('grp-',''));
+      if (!sub || !hdr) return;
+      const open = g === targetGrp;
+      sub.style.display = open ? 'flex' : 'none';
+      hdr.classList.toggle('open', open);
+    });
+  }
   if (view === 'overview')      ovInit();
   if (view === 'registrations' && allStudents.length === 0) loadStudents();
   if (view === 'batches')       bInit().catch(console.error);
   if (view === 'pipeline')      pInit().catch(console.error);
   if (view === 'calendar')      calInit().catch(console.error);
+};
+
+window.navGroupToggle = function(grpId, hdr) {
+  const isOpen = hdr.classList.contains('open');
+  // Close all groups
+  ['grp-study','grp-members','grp-tools'].forEach(g => {
+    const sub = document.getElementById(g);
+    const h   = document.getElementById('grp-hdr-' + g.replace('grp-',''));
+    if (sub) sub.style.display = 'none';
+    if (h)   h.classList.remove('open');
+  });
+  // Open clicked one if it was closed
+  if (!isOpen) {
+    const sub = document.getElementById(grpId);
+    if (sub) sub.style.display = 'flex';
+    hdr.classList.add('open');
+  }
 };
 
 // ═══════════════════════════════════════════════
