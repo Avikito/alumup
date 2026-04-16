@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ALUM-IL | סקירה כללית</title>
+  <title>ALUM-IL | מבט על</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <style>
     .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
-
     .admin-sidebar {
       width:220px; flex-shrink:0;
       background:var(--surface-dark);
@@ -30,138 +30,68 @@
 
     .admin-content { flex:1;padding:2rem;overflow-y:auto; }
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
-    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:2rem; }
+    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.5rem; }
 
-    /* ── STAT CARDS ── */
-    .stats-grid {
-      display:grid;
-      grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
-      gap:1.25rem;
-      margin-bottom:2.5rem;
-    }
-    .stat-card {
-      background:var(--surface-dark);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:1.5rem 1.75rem;
-      display:flex;
-      flex-direction:column;
-      gap:0.5rem;
-      position:relative;
-      overflow:hidden;
-      transition:box-shadow 0.2s ease;
-    }
-    .stat-card:hover { box-shadow:0 4px 20px rgba(26,95,170,0.1); }
-    .stat-card::before {
-      content:'';
-      position:absolute;
-      top:0; right:0;
-      width:4px; height:100%;
-    }
-    .stat-card.blue::before  { background:var(--electric-blue); }
-    .stat-card.green::before { background:#16a34a; }
-    .stat-card.gold::before  { background:#d97706; }
-    .stat-card.purple::before{ background:#7c3aed; }
-
-    .stat-icon {
-      width:42px; height:42px;
-      border-radius:10px;
-      display:flex;align-items:center;justify-content:center;
-      font-size:1.3rem;
-      margin-bottom:0.25rem;
-    }
-    .stat-card.blue  .stat-icon { background:rgba(26,95,170,0.09); color:var(--electric-blue); }
-    .stat-card.green .stat-icon { background:rgba(22,163,74,0.09); color:#16a34a; }
-    .stat-card.gold  .stat-icon { background:rgba(217,119,6,0.09);  color:#d97706; }
-    .stat-card.purple .stat-icon { background:rgba(124,58,237,0.09);color:#7c3aed; }
-
-    .stat-value {
-      font-size:2rem;
-      font-weight:800;
-      color:var(--industrial-silver);
-      line-height:1;
-    }
-    .stat-label {
-      font-size:0.82rem;
-      font-weight:600;
-      color:var(--silver-dark);
-    }
-    .stat-loading { opacity:0.35; }
-
-    /* ── RECENT ACTIVITY ── */
-    .section-title {
-      font-size:1rem;
-      font-weight:800;
-      color:var(--industrial-silver);
-      margin-bottom:1rem;
-      display:flex;align-items:center;gap:0.5rem;
-    }
-    .activity-wrap {
-      background:var(--surface-dark);
-      border:1px solid var(--border);
-      border-radius:14px;
-      overflow:hidden;
-    }
-    .activity-table { width:100%;border-collapse:collapse;font-size:0.88rem; }
-    .activity-table th {
-      background:#f7f9fd;
-      padding:0.7rem 1rem;
-      text-align:right;
-      font-size:0.72rem;font-weight:700;color:var(--silver-dark);
-      text-transform:uppercase;letter-spacing:0.5px;
-      border-bottom:1px solid var(--border);
-    }
-    .activity-table td { padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:middle; }
-    .activity-table tr:last-child td { border-bottom:none; }
-    .activity-table tr:hover td { background:var(--blue-dim); }
-
-    .status-badge {
-      display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.6rem;
-      border-radius:20px;font-size:0.74rem;font-weight:700;white-space:nowrap;
-    }
-    .status-draft      { background:rgba(196,124,0,0.1); color:#a06000;border:1px solid rgba(196,124,0,0.25); }
-    .status-production { background:rgba(26,95,170,0.1); color:var(--electric-blue);border:1px solid rgba(26,95,170,0.25); }
-    .status-delivered  { background:rgba(22,163,74,0.1); color:#16a34a;border:1px solid rgba(22,163,74,0.25); }
-
-    .empty-state { text-align:center;padding:2.5rem;color:var(--silver-dark); }
-    .empty-state i { font-size:2rem;display:block;margin-bottom:0.5rem;opacity:0.3; }
-
-    @keyframes spin { to { transform:rotate(360deg); } }
-    .spin { animation:spin 0.8s linear infinite;display:inline-block; }
-
-    .order-code { font-weight:700;color:var(--electric-blue);font-size:0.82rem; }
+    /* ── KPI ROW ── */
+    .ov-kpi-row { display:grid;grid-template-columns:repeat(4,1fr);gap:0.85rem;margin-bottom:1.25rem; }
+    .ov-kpi { background:#fff;border:1.5px solid #e2e8f0;border-radius:12px;padding:0.9rem 1.1rem;display:flex;align-items:center;gap:0.85rem; }
+    .ov-kpi-icon { width:38px;height:38px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem; }
+    .ov-kpi-val { font-size:1.5rem;font-weight:800;color:#0f172a;line-height:1; }
+    .ov-kpi-lbl { font-size:0.68rem;font-weight:600;color:#64748b;margin-top:3px; }
 
     /* ── ORDERS FILTER PILLS ── */
-    .orders-filter { display:flex; gap:0.25rem; margin-top:0.6rem; flex-wrap:wrap; }
+    .orders-filter { display:flex; gap:0.25rem; margin-top:0.5rem; flex-wrap:wrap; }
     .ofb {
       padding:0.16rem 0.55rem; border-radius:20px;
       border:1.5px solid rgba(217,119,6,0.35);
       background:transparent; font-family:'Heebo',sans-serif;
       font-size:0.7rem; font-weight:700; color:#d97706;
-      cursor:pointer; transition:all 0.15s ease; letter-spacing:0.2px;
+      cursor:pointer; transition:all 0.15s ease;
     }
     .ofb:hover { background:rgba(217,119,6,0.1); border-color:#d97706; }
-    .ofb.active {
-      background:#d97706; color:#fff; border-color:#d97706;
-      box-shadow:0 2px 8px rgba(217,119,6,0.3);
-    }
+    .ofb.active { background:#d97706; color:#fff; border-color:#d97706; }
 
-    /* ── ACTIVITY TABLE STATUS COLORS ── */
-    .activity-table tr.row-s-pending td             { background:#FFF4E5; color:#663C00; }
-    .activity-table tr.row-s-pending td:first-child { border-right:3px solid #FFB74D; }
-    .activity-table tr.row-s-pending:hover td       { background:#FFE0B2; }
+    /* ── MINI CAL ── */
+    #ov-cal-el .fc-toolbar { padding:0 !important; margin-bottom:4px !important; }
+    #ov-cal-el .fc-toolbar-title { font-size:0.8rem !important; }
+    #ov-cal-el .fc-button { padding:2px 7px !important; font-size:0.7rem !important; font-family:'Heebo',sans-serif; }
+    #ov-cal-el .fc-button-primary { background:#2563eb;border-color:#2563eb; }
+    #ov-cal-el .fc-col-header-cell { font-size:0.68rem !important; padding:2px 0 !important; }
+    #ov-cal-el .fc-daygrid-day-number { font-size:0.68rem !important; padding:1px 4px !important; text-decoration:none; }
+    #ov-cal-el .fc-daygrid-day-frame { min-height:unset !important; }
+    #ov-cal-el .fc-event-title { font-size:0.6rem !important; }
+    #ov-cal-el .fc-daygrid-event { margin:0 !important; padding:0 1px !important; }
+    #ov-cal-el .fc { font-family:'Heebo',sans-serif; }
 
-    .activity-table tr.row-s-technical_review td             { background:#F3E5F5; color:#4A148C; }
+    /* ── ACTIVITY TABLE ── */
+    .activity-wrap { background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;margin-bottom:1.25rem; }
+    .activity-table { width:100%;border-collapse:collapse;font-size:0.88rem; }
+    .activity-table th { background:#f8faff;padding:0.7rem 1rem;text-align:right;font-size:0.72rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;border-bottom:1px solid #e2e8f0; }
+    .activity-table td { padding:0.85rem 1rem;border-bottom:1px solid #e2e8f0;vertical-align:middle; }
+    .activity-table tr:last-child td { border-bottom:none; }
+    .activity-table tr:hover td { background:#f8faff; }
+    .activity-table tr.row-s-pending td             { background:#FFF4E5;color:#663C00; }
+    .activity-table tr.row-s-pending td:first-child  { border-right:3px solid #FFB74D; }
+    .activity-table tr.row-s-pending:hover td        { background:#FFE0B2; }
+    .activity-table tr.row-s-technical_review td             { background:#F3E5F5;color:#4A148C; }
     .activity-table tr.row-s-technical_review td:first-child { border-right:3px solid #CE93D8; }
     .activity-table tr.row-s-technical_review:hover td       { background:#E1BEE7; }
-
-    .activity-table tr.row-s-in_production td             { background:#E3F2FD; color:#0D47A1; }
+    .activity-table tr.row-s-in_production td             { background:#E3F2FD;color:#0D47A1; }
     .activity-table tr.row-s-in_production td:first-child { border-right:3px solid #64B5F6; }
     .activity-table tr.row-s-in_production:hover td       { background:#BBDEFB; }
-
-    .activity-table tr.row-s-ready_for_delivery td             { background:#C8E6C9; color:#1B5E20; }
+    .activity-table tr.row-s-ready_for_delivery td             { background:#C8E6C9;color:#1B5E20; }
     .activity-table tr.row-s-ready_for_delivery td:first-child { border-right:3px solid #81C784; }
     .activity-table tr.row-s-ready_for_delivery:hover td       { background:#A5D6A7; }
+
+    .status-badge { display:inline-flex;align-items:center;gap:0.3rem;padding:0.2rem 0.6rem;border-radius:20px;font-size:0.74rem;font-weight:700;white-space:nowrap; }
+    .status-review     { background:rgba(234,88,12,0.12);color:#ea580c;border:1px solid rgba(234,88,12,0.3); }
+    .status-production { background:rgba(26,95,170,0.1);color:#1a5faa;border:1px solid rgba(26,95,170,0.25); }
+
+    .order-code { font-weight:700;color:#2563eb;font-size:0.82rem; }
+    .section-hdr { font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;margin-bottom:10px; }
+
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .spin { animation:spin 0.8s linear infinite;display:inline-block; }
   </style>
 </head>
 <body>
@@ -186,66 +116,128 @@
     </aside>
 
     <main class="admin-content">
-      <div class="page-title">סקירה כללית</div>
-      <div class="page-subtitle" id="pageSubtitle">טוען נתונים...</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.1rem;">
+        <div>
+          <div class="page-title" style="margin-bottom:0.2rem;"><i class="ph ph-squares-four" style="color:#2563eb;margin-left:0.4rem;"></i>מבט על</div>
+          <div class="page-subtitle" style="margin-bottom:0;" id="pageSubtitle">טוען נתונים...</div>
+        </div>
+        <button onclick="init()" style="display:flex;align-items:center;gap:5px;background:none;color:var(--silver-dark);border:1.5px solid var(--border);border-radius:8px;padding:0.42rem 0.85rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer;">
+          <i class="ph ph-arrows-clockwise"></i> רענן
+        </button>
+      </div>
 
-      <div class="stats-grid">
-        <div class="stat-card blue">
-          <div class="stat-icon"><i class="ph ph-hourglass-medium"></i></div>
-          <div class="stat-value" id="statPending">—</div>
-          <div class="stat-label">ממתינים לאישור</div>
-        </div>
-        <div class="stat-card gold">
-          <div class="stat-icon"><i class="ph ph-list-bullets"></i></div>
-          <div class="stat-value" id="statOrders">—</div>
-          <div class="stat-label">סה"כ הזמנות</div>
-          <div class="orders-filter">
-            <button class="ofb active" onclick="setOrdersFilter('today',this)">היום</button>
-            <button class="ofb" onclick="setOrdersFilter('7',this)">7 ימים</button>
-            <button class="ofb" onclick="setOrdersFilter('30',this)">30 ימים</button>
-            <button class="ofb" onclick="setOrdersFilter('all',this)">הכל</button>
+      <!-- KPI Row -->
+      <div class="ov-kpi-row">
+        <div class="ov-kpi">
+          <div class="ov-kpi-icon" style="background:#fff7ed;color:#d97706;"><i class="ph ph-hourglass-medium"></i></div>
+          <div>
+            <div class="ov-kpi-val" id="statPending">—</div>
+            <div class="ov-kpi-lbl">ממתינים לאישור</div>
           </div>
         </div>
-        <div class="stat-card green">
-          <div class="stat-icon"><i class="ph ph-currency-circle-dollar"></i></div>
-          <div class="stat-value" id="statRevenue">—</div>
-          <div class="stat-label">מחזור כולל</div>
-          <div style="margin-top:8px;display:flex;gap:6px;align-items:center;flex-wrap:wrap;justify-content:center;">
-            <input type="date" id="revenueFrom" style="font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid #ccc;">
-            <span style="font-size:11px">עד</span>
-            <input type="date" id="revenueTo" style="font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid #ccc;">
-            <button onclick="applyRevenuePicker()" style="font-size:11px;padding:2px 8px;border-radius:6px;background:#2e7d32;color:#fff;border:none;cursor:pointer;">הצג</button>
+        <div class="ov-kpi">
+          <div class="ov-kpi-icon" style="background:#eff6ff;color:#2563eb;"><i class="ph ph-list-bullets"></i></div>
+          <div>
+            <div class="ov-kpi-val" id="statOrders">—</div>
+            <div class="ov-kpi-lbl">סה"כ הזמנות</div>
+            <div class="orders-filter">
+              <button class="ofb active" onclick="setOrdersFilter('today',this)">היום</button>
+              <button class="ofb" onclick="setOrdersFilter('7',this)">7 ימים</button>
+              <button class="ofb" onclick="setOrdersFilter('30',this)">30 ימים</button>
+              <button class="ofb" onclick="setOrdersFilter('all',this)">הכל</button>
+            </div>
           </div>
         </div>
-        <div class="stat-card purple">
-          <div class="stat-icon"><i class="ph ph-factory"></i></div>
-          <div class="stat-value" id="statProduction">—</div>
-          <div class="stat-label">בתהליך ייצור</div>
+        <div class="ov-kpi">
+          <div class="ov-kpi-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-currency-circle-dollar"></i></div>
+          <div style="flex:1;">
+            <div class="ov-kpi-val" id="statRevenue">—</div>
+            <div class="ov-kpi-lbl">מחזור כולל</div>
+            <div style="display:flex;gap:4px;align-items:center;margin-top:5px;flex-wrap:wrap;">
+              <input type="date" id="revenueFrom" style="font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid #e2e8f0;font-family:'Heebo',sans-serif;">
+              <span style="font-size:11px;color:#94a3b8;">עד</span>
+              <input type="date" id="revenueTo" style="font-size:11px;padding:2px 4px;border-radius:6px;border:1px solid #e2e8f0;font-family:'Heebo',sans-serif;">
+              <button onclick="applyRevenuePicker()" style="font-size:11px;padding:2px 8px;border-radius:6px;background:#16a34a;color:#fff;border:none;cursor:pointer;font-family:'Heebo',sans-serif;">הצג</button>
+            </div>
+          </div>
+        </div>
+        <div class="ov-kpi">
+          <div class="ov-kpi-icon" style="background:#f5f3ff;color:#7c3aed;"><i class="ph ph-factory"></i></div>
+          <div>
+            <div class="ov-kpi-val" id="statProduction">—</div>
+            <div class="ov-kpi-lbl">בתהליך ייצור</div>
+          </div>
         </div>
       </div>
 
-      <div class="section-title">
-        <i class="ph ph-clock-countdown"></i> פעילות אחרונה — הועברו לייצור
+      <!-- Calendar + Tasks -->
+      <div style="display:flex;gap:1.25rem;align-items:flex-start;margin-bottom:1.25rem;">
+
+        <!-- Mini Calendar -->
+        <div id="ov-cal-wrap" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px;flex:1;min-width:0;height:520px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-shrink:0;">
+            <div class="section-hdr" style="margin-bottom:0;">
+              <i class="ph ph-calendar-blank" style="color:#2563eb;"></i> לוח זמנים
+            </div>
+            <div style="display:flex;gap:6px;">
+              <button id="ov-cal-fs-btn" onclick="ovCalToggleFullscreen()" style="display:flex;align-items:center;gap:5px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:7px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#334155;cursor:pointer;font-family:inherit;">
+                <i class="ph ph-arrows-out" id="ov-cal-fs-icon"></i> מסך מלא
+              </button>
+              <a href="admin-calendar.html" style="display:flex;align-items:center;gap:5px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:7px;padding:4px 10px;font-size:0.72rem;font-weight:700;color:#2563eb;text-decoration:none;">
+                <i class="ph ph-arrow-square-out"></i> פתח
+              </a>
+            </div>
+          </div>
+          <div id="ov-cal-el" style="flex:1;min-height:0;"></div>
+        </div>
+
+        <!-- Tasks Panel -->
+        <div style="flex:1;min-width:0;height:520px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
+            <div class="section-hdr" style="margin-bottom:0;">
+              <i class="ph ph-gauge" style="color:#2563eb;"></i> מדדי SLA ומשימות
+            </div>
+            <a href="admin-tasks.html" style="font-size:0.72rem;font-weight:600;color:#2563eb;text-decoration:none;">כל המשימות ←</a>
+          </div>
+
+          <!-- SLA grid -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;flex-shrink:0;margin-bottom:14px;" id="ov-sla-grid">
+            <div style="text-align:center;padding:1rem;color:#94a3b8;font-size:0.8rem;grid-column:1/-1;"><i class="ph ph-circle-notch spin"></i></div>
+          </div>
+
+          <div style="border-top:1px solid #e2e8f0;margin-bottom:12px;flex-shrink:0;"></div>
+
+          <div style="font-size:0.75rem;font-weight:800;color:#64748b;margin-bottom:8px;flex-shrink:0;display:flex;align-items:center;gap:6px;">
+            <i class="ph ph-bell-ringing" style="color:#f59e0b;"></i> משימות פתוחות
+          </div>
+
+          <div id="ov-tasks-list" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:0.45rem;">
+            <div style="text-align:center;padding:1.5rem;color:#94a3b8;font-size:0.8rem;"><i class="ph ph-circle-notch spin"></i></div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Recent Activity Table -->
+      <div style="font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;margin-bottom:10px;">
+        <i class="ph ph-clock-countdown" style="color:#2563eb;"></i> פעילות אחרונה — הועברו לייצור
       </div>
       <div class="activity-wrap">
         <table class="activity-table">
           <thead>
             <tr>
-              <th>קוד הזמנה</th>
-              <th>רוכש</th>
-              <th>מערכות</th>
-              <th>סה"כ כולל מע"מ</th>
-              <th>תאריך</th>
-              <th>סטטוס</th>
+              <th>קוד הזמנה</th><th>רוכש</th><th>מערכות</th>
+              <th>סה"כ כולל מע"מ</th><th>תאריך</th><th>סטטוס</th>
             </tr>
           </thead>
           <tbody id="activityBody">
-            <tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--silver-dark);">
+            <tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">
               <i class="ph ph-circle-notch spin"></i> טוען...
             </td></tr>
           </tbody>
         </table>
       </div>
+
     </main>
   </div>
 
@@ -257,26 +249,19 @@ const supabase = createClient(
   'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
 );
 
-async function requireAdmin() {
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) { window.location.href = 'login.html'; return null; }
-  const { data: adminRow } = await supabase
-    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
-  if (!adminRow) { window.location.href = 'dashboard.html'; return null; }
-  return user;
-}
-
+// ── SIDEBAR ──
 (function() {
   const items = [
-    { id: 'overview',  icon: 'ph-chart-bar',       label: 'סקירה כללית',    href: 'admin-overview.html' },
-    { id: 'users',     icon: 'ph-users',            label: 'אישור משתמשים', href: 'admin-users.html' },
-    { id: 'members',   icon: 'ph-medal',            label: 'חבר אלום',       href: 'admin-members.html' },
-    { id: 'crm',       icon: 'ph-address-book',     label: 'קהילה ו-CRM',   href: 'approved-users.html' },
-    { id: 'orders',    icon: 'ph-list-bullets',     label: 'הזמנות',         href: 'admin.html' },
-    { id: 'quotes',    icon: 'ph-file-text',        label: 'הצעות מחיר',     href: 'admin-quotes.html' },
-    { id: 'financial', icon: 'ph-currency-circle-dollar', label: 'ניהול פיננסי', href: 'admin-financial.html' },
-    { id: 'settings',  icon: 'ph-gear-six',         label: 'תמחור גלובלי',  href: 'admin-settings.html' },
-    { id: 'tasks',     icon: 'ph-check-square',     label: 'ניהול משימות',   href: 'admin-tasks.html' },
+    { id: 'overview',  icon: 'ph-squares-four',          label: 'מבט על',          href: 'admin-overview.html' },
+    { id: 'users',     icon: 'ph-users',                 label: 'אישור משתמשים',   href: 'admin-users.html' },
+    { id: 'members',   icon: 'ph-medal',                 label: 'חבר אלום',         href: 'admin-members.html' },
+    { id: 'crm',       icon: 'ph-address-book',          label: 'קהילה ו-CRM',     href: 'approved-users.html' },
+    { id: 'orders',    icon: 'ph-list-bullets',          label: 'הזמנות',           href: 'admin.html' },
+    { id: 'quotes',    icon: 'ph-file-text',             label: 'הצעות מחיר',       href: 'admin-quotes.html' },
+    { id: 'financial', icon: 'ph-currency-circle-dollar',label: 'ניהול פיננסי',     href: 'admin-financial.html' },
+    { id: 'settings',  icon: 'ph-gear-six',              label: 'תמחור גלובלי',    href: 'admin-settings.html' },
+    { id: 'calendar',  icon: 'ph-calendar-dots',         label: 'לוח זמנים',        href: 'admin-calendar.html' },
+    { id: 'tasks',     icon: 'ph-check-square',          label: 'ניהול משימות',     href: 'admin-tasks.html' },
   ];
   const el = document.getElementById('admin-sidebar-placeholder');
   if (el) el.innerHTML = `<div class="sidebar-label">ניהול</div><ul class="admin-nav">${
@@ -284,124 +269,214 @@ async function requireAdmin() {
   }</ul>`;
 })();
 
-async function init() {
-  const user = await requireAdmin();
-  if (!user) return;
-
+// ── AUTH ──
+const { data: { user } } = await supabase.auth.getUser();
+if (!user) { window.location.href = 'login.html'; }
+else {
   document.getElementById('adminEmail').textContent = user.email;
   document.getElementById('pageSubtitle').textContent = `שלום, ${user.email}`;
-
-  await Promise.all([loadStats(), loadActivity()]);
 }
 
+// ── MINI CALENDAR ──
+let ovCalInstance = null;
+let ovCalFullscreen = false;
+const CAL_TYPE_COLORS = {
+  interview:'#2563eb', practical_exam:'#7c3aed', batch_open:'#15803d',
+  batch_official:'#d97706', meeting:'#0891b2', course_session:'#0f766e', other:'#64748b',
+};
+
+async function ovCalInit() {
+  if (typeof FullCalendar === 'undefined') return;
+  const { data } = await supabase.from('admin_events').select('*').order('date', { ascending: true });
+  const events = (data || []).map(d => ({
+    id: d.id,
+    title: d.notes || d.type,
+    start: d.time ? d.date + 'T' + d.time : d.date,
+    color: CAL_TYPE_COLORS[d.type] || '#64748b',
+  }));
+  const el = document.getElementById('ov-cal-el');
+  if (!el) return;
+  if (ovCalInstance) { ovCalInstance.destroy(); ovCalInstance = null; }
+  ovCalInstance = new FullCalendar.Calendar(el, {
+    locale: 'he', direction: 'rtl',
+    initialView: 'dayGridMonth',
+    headerToolbar: { start:'prev,next', center:'title', end:'today' },
+    height: '100%',
+    events,
+  });
+  ovCalInstance.render();
+}
+
+window.ovCalToggleFullscreen = function() {
+  const wrap = document.getElementById('ov-cal-wrap');
+  const btn  = document.getElementById('ov-cal-fs-btn');
+  ovCalFullscreen = !ovCalFullscreen;
+  if (ovCalFullscreen) {
+    wrap.style.cssText += ';position:fixed;top:0;left:0;right:0;bottom:0;z-index:9999;border-radius:0;margin:0;height:100vh;';
+    btn.innerHTML = '<i class="ph ph-arrows-in"></i> סגור';
+  } else {
+    wrap.style.position = ''; wrap.style.top=''; wrap.style.left=''; wrap.style.right='';
+    wrap.style.bottom=''; wrap.style.zIndex=''; wrap.style.borderRadius='14px';
+    wrap.style.margin=''; wrap.style.height='520px';
+    btn.innerHTML = '<i class="ph ph-arrows-out"></i> מסך מלא';
+  }
+  if (ovCalInstance) ovCalInstance.updateSize();
+};
+
+// ── TASKS ──
+async function ovLoadTasks() {
+  const SLA_HOURS = { critical:24, high:48, medium:72, low:168 };
+  const now = new Date();
+
+  const { data: tasks } = await supabase
+    .from('admin_tasks')
+    .select('id,title,status,priority,due_date,created_at,task_type')
+    .neq('department','college')
+    .neq('status','closed')
+    .order('created_at', { ascending: false });
+
+  if (!tasks) return;
+
+  let open=0, inProgress=0, breached=0, onTime=0;
+  tasks.forEach(t => {
+    if (t.status === 'open') open++;
+    if (t.status === 'in_progress') inProgress++;
+    const slaMs = (SLA_HOURS[t.priority] || 72) * 3600000;
+    if (now - new Date(t.created_at) > slaMs) breached++; else onTime++;
+  });
+
+  const slaGrid = document.getElementById('ov-sla-grid');
+  if (slaGrid) slaGrid.innerHTML = [
+    { label:'פתוחות',     val:open,       bg:'#eff6ff', color:'#2563eb', icon:'ph-folder-open' },
+    { label:'בטיפול',     val:inProgress, bg:'#f0fdf4', color:'#16a34a', icon:'ph-arrows-clockwise' },
+    { label:'חריגות SLA', val:breached,   bg:'#fef2f2', color:'#dc2626', icon:'ph-warning-circle' },
+    { label:'בזמן',       val:onTime,     bg:'#f0fdf4', color:'#15803d', icon:'ph-check-circle' },
+  ].map(s => `
+    <div style="background:${s.bg};border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;">
+      <i class="ph ${s.icon}" style="font-size:1.4rem;color:${s.color};"></i>
+      <div>
+        <div style="font-size:1.4rem;font-weight:800;color:${s.color};line-height:1;">${s.val}</div>
+        <div style="font-size:0.72rem;color:#64748b;margin-top:2px;">${s.label}</div>
+      </div>
+    </div>`).join('');
+
+  const PRIORITY_COLOR = { critical:'#ef4444', high:'#f59e0b', medium:'#3b82f6', low:'#10b981' };
+  const listEl = document.getElementById('ov-tasks-list');
+  if (!listEl) return;
+  const recent = tasks.slice(0, 8);
+  if (!recent.length) {
+    listEl.innerHTML = `<div style="text-align:center;padding:2rem;color:#94a3b8;font-size:0.8rem;">אין משימות פתוחות</div>`;
+    return;
+  }
+  listEl.innerHTML = recent.map(t => {
+    const slaMs      = (SLA_HOURS[t.priority]||72)*3600000;
+    const isBreached = (now - new Date(t.created_at)) > slaMs;
+    const pColor     = PRIORITY_COLOR[t.priority] || '#94a3b8';
+    const pLabel     = t.priority==='critical'?'קריטי':t.priority==='high'?'גבוה':t.priority==='medium'?'בינוני':'נמוך';
+    return `<div style="border:1.5px solid ${isBreached?'#fca5a5':'#e2e8f0'};background:${isBreached?'#fff5f5':'#fff'};border-radius:9px;padding:9px 12px;cursor:pointer;transition:box-shadow 0.15s;" onmouseover="this.style.boxShadow='0 2px 12px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+        <div style="font-size:0.83rem;font-weight:700;color:#0f172a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${t.title}</div>
+        <span style="font-size:0.68rem;font-weight:700;color:${pColor};background:${pColor}18;border:1px solid ${pColor}33;border-radius:20px;padding:1px 7px;white-space:nowrap;">${pLabel}</span>
+      </div>
+      ${isBreached ? `<div style="font-size:0.72rem;color:#ef4444;margin-top:3px;font-weight:700;"><i class="ph ph-warning"></i> חריגת SLA</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── STATS ──
 async function loadRevenue(from, to) {
   let revenue = 0;
   if (from && to) {
-    const { data } = await supabase
-      .from('totals_ledger')
-      .select('total_production_revenue')
-      .gte('entry_date', from)
-      .lte('entry_date', to);
+    const { data } = await supabase.from('totals_ledger').select('total_production_revenue').gte('entry_date', from).lte('entry_date', to);
     revenue = (data || []).reduce((s, r) => s + (r.total_production_revenue || 0), 0);
   } else {
     const today = new Date().toISOString().slice(0, 10);
-    const { data } = await supabase
-      .from('totals_ledger')
-      .select('total_production_revenue')
-      .eq('entry_date', today)
-      .maybeSingle();
+    const { data } = await supabase.from('totals_ledger').select('total_production_revenue').eq('entry_date', today).maybeSingle();
     revenue = data?.total_production_revenue || 0;
   }
   document.getElementById('statRevenue').textContent = '₪' + revenue.toLocaleString('he-IL');
 }
 
-async function setOrdersFilter(range, btn) {
-  document.querySelectorAll('.ofb').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  await loadOrdersCount(range);
-}
-window.setOrdersFilter = setOrdersFilter;
-
 async function loadOrdersCount(range = 'today') {
   let query = supabase.from('orders_with_names').select('id', { count:'exact', head:true });
   const now = new Date();
   if (range === 'today') {
-    const start = new Date(now); start.setHours(0,0,0,0);
-    const end   = new Date(now); end.setHours(23,59,59,999);
-    query = query.gte('created_at', start.toISOString()).lte('created_at', end.toISOString());
+    const s = new Date(now); s.setHours(0,0,0,0);
+    const e = new Date(now); e.setHours(23,59,59,999);
+    query = query.gte('created_at', s.toISOString()).lte('created_at', e.toISOString());
   } else if (range === '7') {
-    const start = new Date(now); start.setDate(start.getDate()-7);
-    query = query.gte('created_at', start.toISOString());
+    const s = new Date(now); s.setDate(s.getDate()-7);
+    query = query.gte('created_at', s.toISOString());
   } else if (range === '30') {
-    const start = new Date(now); start.setDate(start.getDate()-30);
-    query = query.gte('created_at', start.toISOString());
+    const s = new Date(now); s.setDate(s.getDate()-30);
+    query = query.gte('created_at', s.toISOString());
   }
   const { count } = await query;
   document.getElementById('statOrders').textContent = count ?? '—';
 }
 
-async function applyRevenuePicker() {
+window.setOrdersFilter = async function(range, btn) {
+  document.querySelectorAll('.ofb').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  await loadOrdersCount(range);
+};
+
+window.applyRevenuePicker = async function() {
   const from = document.getElementById('revenueFrom').value;
   const to   = document.getElementById('revenueTo').value;
   if (from && to) await loadRevenue(from, to);
-}
-window.applyRevenuePicker = applyRevenuePicker;
-
-async function loadStats() {
-  const [pendingRes, ordersRes] = await Promise.all([
-    supabase.from('profiles').select('id', { count: 'exact', head: true }).eq('is_approved', false),
-    supabase.from('orders_with_names').select('id, status')
-  ]);
-
-  document.getElementById('statPending').textContent = pendingRes.count ?? '—';
-
-  const orders = ordersRes.data || [];
-  await loadOrdersCount('today');
-
-  const inProd = orders.filter(o => o.status === 'in_production').length;
-  document.getElementById('statProduction').textContent = inProd;
-
-  await loadRevenue();
-}
+};
 
 async function loadActivity() {
-  const ACTIVE_STATUSES = ['pending', 'technical_review', 'in_production', 'ready_for_delivery'];
-
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from('orders_with_names')
     .select('*')
-    .in('status', ACTIVE_STATUSES)
+    .in('status', ['pending','technical_review','in_production','ready_for_delivery'])
     .order('updated_at', { ascending: false })
     .limit(8);
-
   const tbody = document.getElementById('activityBody');
-
-  if (error || !data || data.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ph ph-inbox"></i><p>אין הזמנות בתהליך</p></div></td></tr>`;
+  if (!data || data.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:2rem;color:#94a3b8;">אין הזמנות בתהליך</td></tr>`;
     return;
   }
-
+  const statusMap = {
+    pending:            ['status-review',     'ממתין לאישור'],
+    technical_review:   ['status-review',     'בבדיקה טכנית'],
+    in_production:      ['status-production', 'בייצור'],
+    ready_for_delivery: ['status-production', 'מוכן למסירה'],
+  };
   tbody.innerHTML = data.map(o => {
     const sys = (o.order_data?.systems || []).length;
     const date = new Date(o.updated_at || o.created_at).toLocaleDateString('he-IL');
-    const statusMap = {
-      pending:              ['status-review',      'ממתין לאישור'],
-      technical_review:     ['status-review',      'בבדיקה טכנית'],
-      in_production:        ['status-production',  'בייצור'],
-      ready_for_delivery:   ['status-production',  'מוכן למסירה'],
-    };
     const [cls, label] = statusMap[o.status] || ['', o.status];
-
     return `<tr class="row-s-${o.status}">
       <td class="order-code">${o.order_code}</td>
       <td>${o.customer_name || o.vendor_name || '—'}</td>
-      <td style="color:var(--silver-dark)">${sys} מערכת${sys !== 1 ? 'ות' : ''}</td>
-      <td style="font-weight:700">₪${(o.grand_total || 0).toLocaleString()}</td>
+      <td style="color:#64748b">${sys} מערכת${sys!==1?'ות':''}</td>
+      <td style="font-weight:700">₪${(o.grand_total||0).toLocaleString()}</td>
       <td>${date}</td>
       <td><span class="status-badge ${cls}">${label}</span></td>
     </tr>`;
   }).join('');
 }
+
+window.init = async function() {
+  document.getElementById('pageSubtitle').textContent = user ? `שלום, ${user.email}` : 'טוען...';
+  await Promise.all([
+    loadOrdersCount('today'),
+    loadRevenue(),
+    loadActivity(),
+    ovCalInit(),
+    ovLoadTasks(),
+    supabase.from('profiles').select('id',{count:'exact',head:true}).eq('is_approved',false).then(r => {
+      document.getElementById('statPending').textContent = r.count ?? '—';
+    }),
+    supabase.from('orders_with_names').select('id,status').then(r => {
+      const inProd = (r.data||[]).filter(o=>o.status==='in_production').length;
+      document.getElementById('statProduction').textContent = inProd;
+    }),
+  ]);
+};
 
 init();
 </script>
