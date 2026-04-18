@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | מוניטור אדמינים</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .mon-wrap    { display:flex;flex:1;min-height:calc(100vh - 64px); }
+    .mon-content { flex:1;padding:2rem;overflow-y:auto;background:#f8fafc; }
+
+    /* sidebar */
+    #admin-sidebar-placeholder { width:220px;flex-shrink:0;background:var(--surface-dark);border-left:1px solid var(--border);padding:1.5rem 1rem;overflow-y:auto; }
+    .sidebar-label { font-size:0.72rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;padding:0 0.75rem;margin-bottom:0.75rem; }
+    .admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+    .admin-nav a { display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.9rem;font-weight:500;color:var(--silver-dark);text-decoration:none;transition:all 0.18s; }
+    .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+    .nav-group-hdr { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.85rem;font-weight:700;color:var(--silver-dark);cursor:pointer;transition:all 0.18s;user-select:none;margin-top:0.2rem; }
+    .nav-group-hdr:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .nav-group-hdr.open { color:var(--electric-blue); }
+    .nav-grp-left { display:flex;align-items:center;gap:0.65rem; }
+    .nav-caret { font-size:0.72rem;transition:transform 0.22s; }
+    .nav-group-hdr.open .nav-caret { transform:rotate(180deg); }
+    .nav-sub { list-style:none;flex-direction:column;gap:0.08rem;padding:0.15rem 0 0.15rem 0.85rem;margin:0; }
+    .nav-sub a { font-size:0.84rem !important;padding:0.42rem 0.75rem !important; }
+
+    @keyframes pulse { 0%,100%{opacity:1}50%{opacity:0.3} }
+    @keyframes spin  { to{transform:rotate(360deg)} }
+    .spin { animation:spin 1s linear infinite; display:inline-block; }
+
+    /* summary strip */
+    .sum-row { display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem; }
+    .sum-card { background:#fff;border:1px solid #e2e8f0;border-radius:12px;padding:1rem 1.2rem;display:flex;align-items:center;gap:0.85rem; }
+    .sum-icon { width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0; }
+    .sum-val  { font-size:1.55rem;font-weight:800;color:#0f172a;line-height:1; }
+    .sum-lbl  { font-size:0.72rem;color:#64748b;margin-top:2px; }
+
+    /* main panel */
+    .panel { background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;margin-bottom:1.5rem; }
+    .panel-hdr { padding:1rem 1.5rem;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;justify-content:space-between; }
+    .panel-title { font-size:0.88rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px; }
+
+    /* admins table */
+    .adm-table { width:100%;border-collapse:collapse; }
+    .adm-table th { padding:0.65rem 1.1rem;text-align:right;font-size:0.67rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.4px;background:#f8fafc;border-bottom:1.5px solid #e8edf4;white-space:nowrap; }
+    .adm-table td { padding:0.85rem 1.1rem;border-bottom:1px solid #f8fafc;vertical-align:middle;font-size:0.84rem;color:#334155; }
+    .adm-table tr:last-child td { border-bottom:none; }
+    .adm-table tr:hover td { background:#fafbfc; }
+
+    /* avatar */
+    .av { width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:800;color:#fff;flex-shrink:0; }
+
+    /* status dot */
+    .dot { width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0; }
+    .dot-online  { background:#22c55e;box-shadow:0 0 0 2px #dcfce7; animation:pulse 2s infinite; }
+    .dot-away    { background:#f59e0b;box-shadow:0 0 0 2px #fef3c7; }
+    .dot-offline { background:#cbd5e1; }
+
+    /* chips */
+    .chip { display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:0.7rem;font-weight:700;white-space:nowrap; }
+    .chip-college     { background:#eff6ff;color:#1d4ed8; }
+    .chip-procurement { background:#fdf4ff;color:#7c3aed; }
+    .chip-admin       { background:#f0fdf4;color:#15803d; }
+    .chip-online  { background:#f0fdf4;color:#16a34a; }
+    .chip-away    { background:#fffbeb;color:#b45309; }
+    .chip-offline { background:#f8fafc;color:#64748b; }
+
+    /* usage cells */
+    .usage-row { display:flex;gap:0.5rem; }
+    .usage-pill { background:#f1f5f9;border-radius:6px;padding:3px 8px;font-size:0.72rem;font-weight:700;color:#334155;white-space:nowrap; }
+    .usage-pill span { color:#64748b;font-weight:500;margin-left:2px; }
+
+    /* action buttons */
+    .btn-sm { display:inline-flex;align-items:center;gap:3px;padding:0.32rem 0.75rem;border-radius:7px;font-size:0.76rem;font-weight:600;cursor:pointer;font-family:'Heebo',sans-serif;border:1.5px solid;transition:all 0.13s; }
+    .btn-edit-role { background:#f8fafc;color:#334155;border-color:#e2e8f0; }
+    .btn-edit-role:hover { background:#f1f5f9; }
+    .btn-remove { background:#fef2f2;color:#dc2626;border-color:#fca5a5; }
+    .btn-remove:hover { background:#fee2e2; }
+    .btn-add { display:inline-flex;align-items:center;gap:5px;padding:0.48rem 1.1rem;background:#2563eb;color:#fff;border:none;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;transition:background 0.15s; }
+    .btn-add:hover { background:#1d4ed8; }
+    .btn-refresh { display:inline-flex;align-items:center;gap:5px;padding:0.42rem 0.9rem;background:#fff;color:#334155;border:1.5px solid #e2e8f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:600;cursor:pointer; }
+
+    /* log table */
+    .log-table { width:100%;border-collapse:collapse; }
+    .log-table th { padding:0.6rem 1rem;text-align:right;font-size:0.66rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.4px;background:#f8fafc;border-bottom:1.5px solid #e8edf4; }
+    .log-table td { padding:0.68rem 1rem;border-bottom:1px solid #f8fafc;font-size:0.8rem;color:#334155;vertical-align:middle; }
+    .log-table tr:last-child td { border-bottom:none; }
+    .log-table tr.breach-row { background:#fff8f8; }
+    .sla-breach { color:#dc2626;font-weight:700;font-size:0.75rem;display:flex;align-items:center;gap:3px; }
+    .sla-ok     { color:#16a34a;font-size:0.75rem; }
+
+    /* modals */
+    .modal-bg  { position:fixed;inset:0;background:rgba(15,23,42,0.45);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(2px); }
+    .modal-bg.open { display:flex; }
+    .modal-box { background:#fff;border-radius:16px;padding:2rem;width:480px;max-width:92vw;box-shadow:0 20px 60px rgba(0,0,0,0.18);max-height:88vh;overflow-y:auto; }
+    .modal-title { font-size:1.05rem;font-weight:800;color:#0f172a;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.5rem; }
+    .mfield { margin-bottom:1rem; }
+    .mlabel { font-size:0.76rem;font-weight:700;color:#475569;margin-bottom:4px; }
+    .minput, .mselect { width:100%;padding:0.55rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.88rem;color:#0f172a;outline:none;transition:border-color 0.15s;box-sizing:border-box; }
+    .minput:focus, .mselect:focus { border-color:#2563eb; }
+    .modal-actions { display:flex;gap:0.6rem;justify-content:flex-end;margin-top:1.4rem; }
+    .mbtn-cancel  { padding:0.48rem 1.1rem;border:1.5px solid #e2e8f0;border-radius:9px;background:#fff;color:#475569;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:600;cursor:pointer; }
+    .mbtn-ok      { padding:0.48rem 1.25rem;border:none;border-radius:9px;background:#2563eb;color:#fff;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer; }
+    .mbtn-ok:disabled { opacity:0.4;cursor:not-allowed; }
+    .mbtn-danger  { padding:0.48rem 1.25rem;border:none;border-radius:9px;background:#dc2626;color:#fff;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer; }
+
+    /* user search list */
+    .user-list { max-height:220px;overflow-y:auto;border:1.5px solid #e2e8f0;border-radius:9px;margin-top:0.5rem; }
+    .uitem { padding:0.6rem 1rem;cursor:pointer;border-bottom:1px solid #f1f5f9;display:flex;align-items:center;gap:0.7rem;transition:background 0.1s; }
+    .uitem:last-child { border-bottom:none; }
+    .uitem:hover { background:#f8fafc; }
+    .uitem.selected { background:#eff6ff; }
+
+    /* toast */
+    .toast { position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:0.6rem 1.4rem;border-radius:10px;font-size:0.84rem;font-weight:600;z-index:400;opacity:0;transition:opacity 0.22s;pointer-events:none; }
+    .toast.show { opacity:1; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="admin-nav-top">
+  <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+    <img src="img/logo.png" alt="ALUM" style="height:32px;" onerror="this.style.display='none'">
+    <span style="font-weight:800;font-size:1rem;color:var(--industrial-silver);">ALUM IL</span>
+  </a>
+  <div style="display:flex;align-items:center;gap:1rem;margin-right:auto;">
+    <span id="nav-user-name" style="font-size:0.8rem;font-weight:600;color:var(--silver-dark);"></span>
+    <div id="nav-user-avatar" style="width:34px;height:34px;border-radius:50%;background:var(--electric-blue);color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;"></div>
+  </div>
+</nav>
+
+<div class="mon-wrap">
+  <div id="admin-sidebar-placeholder"></div>
+
+  <main class="mon-content">
+
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-size:1.35rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:0.4rem;">
+          <i class="ph ph-monitor" style="color:#2563eb;"></i> מוניטור אדמינים
+        </div>
+        <div style="font-size:0.81rem;color:#64748b;margin-top:3px;">
+          ניהול הרשאות · מעקב שימוש · היסטוריית כניסות
+        </div>
+      </div>
+      <div style="display:flex;gap:0.5rem;">
+        <button class="btn-refresh" onclick="loadAll()"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+        <button class="btn-add" onclick="openAddModal()"><i class="ph ph-user-plus"></i> הוסף אדמין</button>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="sum-row">
+      <div class="sum-card">
+        <div class="sum-icon" style="background:#eff6ff;color:#2563eb;"><i class="ph ph-users-three"></i></div>
+        <div><div class="sum-val" id="s-total">—</div><div class="sum-lbl">סה"כ אדמינים</div></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-wifi-high"></i></div>
+        <div><div class="sum-val" id="s-online">—</div><div class="sum-lbl">מחוברים עכשיו</div></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon" style="background:#fff7ed;color:#d97706;"><i class="ph ph-clock-countdown"></i></div>
+        <div><div class="sum-val" id="s-logins">—</div><div class="sum-lbl">כניסות החודש</div></div>
+      </div>
+      <div class="sum-card">
+        <div class="sum-icon" style="background:#fef2f2;color:#dc2626;"><i class="ph ph-warning-circle"></i></div>
+        <div><div class="sum-val" id="s-breach">—</div><div class="sum-lbl">חריגות SLA</div></div>
+      </div>
+    </div>
+
+    <!-- Admins table -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <div class="panel-title"><i class="ph ph-identification-card" style="color:#2563eb;"></i> רשימת אדמינים</div>
+        <div style="font-size:0.75rem;color:#94a3b8;" id="last-updated">עודכן: —</div>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="adm-table">
+          <thead><tr>
+            <th>אדמין</th>
+            <th>תפקיד</th>
+            <th>סטטוס</th>
+            <th>כניסה אחרונה</th>
+            <th>פעילות שבוע</th>
+            <th>פעילות חודש</th>
+            <th>SLA (פתוח / חריגות)</th>
+            <th>פעולות</th>
+          </tr></thead>
+          <tbody id="adm-tbody">
+            <tr><td colspan="8" style="text-align:center;padding:2.5rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Login history log -->
+    <div class="panel">
+      <div class="panel-hdr">
+        <div class="panel-title"><i class="ph ph-list-magnifying-glass" style="color:#2563eb;"></i> היסטוריית כניסות</div>
+        <select id="log-filter" onchange="renderLog()" style="font-size:0.77rem;padding:0.3rem 0.6rem;border:1.5px solid #e2e8f0;border-radius:7px;font-family:'Heebo',sans-serif;background:#fff;">
+          <option value="all">כולם</option>
+          <option value="college">אדמין מכללה</option>
+          <option value="procurement">אדמין רכש</option>
+          <option value="admin">אדמין ראשי</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;max-height:360px;overflow-y:auto;">
+        <table class="log-table">
+          <thead><tr>
+            <th>אדמין</th><th>תפקיד</th><th>עמוד</th><th>מיקום</th><th>תאריך ושעה</th>
+          </tr></thead>
+          <tbody id="log-tbody">
+            <tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── MODAL: ADD ADMIN ── -->
+<div class="modal-bg" id="modal-add">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ph ph-user-plus" style="color:#2563eb;"></i> הוספת אדמין חדש</div>
+    <div class="mfield">
+      <div class="mlabel">חיפוש משתמש</div>
+      <input type="text" id="add-search" class="minput" placeholder="שם או אימייל..." oninput="filterAddUsers()">
+    </div>
+    <div class="user-list" id="add-user-list">
+      <div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem;">הקלד לחיפוש...</div>
+    </div>
+    <input type="hidden" id="add-uid">
+    <div class="mfield" style="margin-top:1rem;">
+      <div class="mlabel">תפקיד</div>
+      <select id="add-role" class="mselect">
+        <option value="college">אדמין מכללה</option>
+        <option value="procurement">אדמין רכש</option>
+        <option value="admin">אדמין ראשי</option>
+      </select>
+    </div>
+    <div id="add-selected-info" style="display:none;background:#f0fdf4;border-radius:8px;padding:0.65rem 0.85rem;font-size:0.82rem;color:#15803d;margin-top:0.25rem;"></div>
+    <div class="modal-actions">
+      <button class="mbtn-cancel" onclick="closeModal('modal-add')">ביטול</button>
+      <button class="mbtn-ok" id="add-confirm-btn" onclick="confirmAdd()" disabled>הוסף אדמין</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: EDIT ROLE ── -->
+<div class="modal-bg" id="modal-edit">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ph ph-pencil-simple" style="color:#2563eb;"></i> עריכת אדמין</div>
+    <input type="hidden" id="edit-uid">
+    <input type="hidden" id="edit-new-uid">
+    <div id="edit-admin-info" style="background:#f8fafc;border-radius:8px;padding:0.65rem 0.85rem;font-size:0.84rem;color:#334155;margin-bottom:1rem;"></div>
+    <div class="mfield">
+      <div class="mlabel">שם תצוגה</div>
+      <input type="text" id="edit-name" class="minput" placeholder="שם לתצוגה">
+    </div>
+    <div class="mfield">
+      <div class="mlabel">תפקיד</div>
+      <select id="edit-role" class="mselect">
+        <option value="college">אדמין מכללה</option>
+        <option value="procurement">אדמין רכש</option>
+        <option value="admin">אדמין ראשי</option>
+      </select>
+    </div>
+    <div class="mfield" style="margin-top:1.1rem;border-top:1px solid #f1f5f9;padding-top:1rem;">
+      <div class="mlabel" style="display:flex;align-items:center;gap:5px;">
+        <i class="ph ph-swap" style="color:#2563eb;"></i> החלפת נציג מתפעל
+      </div>
+      <input type="text" id="edit-rep-search" class="minput" placeholder="חפש משתמש חדש..." oninput="filterEditUsers()" style="margin-top:4px;">
+      <div class="user-list" id="edit-user-list" style="display:none;margin-top:6px;"></div>
+      <div id="edit-new-rep-info" style="display:none;background:#eff6ff;border-radius:8px;padding:0.55rem 0.85rem;font-size:0.81rem;color:#1d4ed8;margin-top:6px;"></div>
+    </div>
+    <div class="modal-actions">
+      <button class="mbtn-cancel" onclick="closeModal('modal-edit')">ביטול</button>
+      <button class="mbtn-ok" onclick="confirmEdit()">שמור שינויים</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: REMOVE ── -->
+<div class="modal-bg" id="modal-remove">
+  <div class="modal-box">
+    <div class="modal-title"><i class="ph ph-trash" style="color:#dc2626;"></i> הסרת אדמין</div>
+    <input type="hidden" id="remove-uid">
+    <div style="background:#fef2f2;border-radius:10px;padding:1rem 1.1rem;margin-bottom:0.5rem;">
+      <p id="remove-msg" style="color:#7f1d1d;font-size:0.88rem;line-height:1.65;margin:0;"></p>
+    </div>
+    <div class="modal-actions">
+      <button class="mbtn-cancel" onclick="closeModal('modal-remove')">ביטול</button>
+      <button class="mbtn-danger" onclick="confirmRemove()">הסר לצמיתות</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { requireAdmin, renderSidebar } from './js/admin-core.js';
+
+const sb = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+const SLA_H    = { critical:24, high:48, medium:72, low:168 };
+const ROLE_LBL = { college:'אדמין מכללה', procurement:'אדמין רכש', admin:'אדמין ראשי' };
+const DEPT_MAP = { college:'college', procurement:'procurement', admin:'general' };
+const PAL      = ['#2563eb','#7c3aed','#0891b2','#16a34a','#b45309','#dc2626','#334155'];
+
+function avColor(id='') { return PAL[(id.charCodeAt(0)||0) % PAL.length]; }
+function initials(n='') {
+  const p = n.trim().split(/\s+/);
+  return p.length >= 2 ? p[0][0]+p[1][0] : (p[0]||'?').slice(0,2);
+}
+function timeAgo(d) {
+  if (!d) return '<span style="color:#94a3b8;">—</span>';
+  const m = Math.floor((Date.now()-new Date(d))/60000);
+  if (m < 1)   return '<span style="color:#16a34a;font-weight:700;">עכשיו</span>';
+  if (m < 60)  return `לפני ${m} דק'`;
+  const h = Math.floor(m/60);
+  if (h < 24)  return `לפני ${h} שע'`;
+  const day = Math.floor(h/24);
+  return `לפני ${day} ימים`;
+}
+function fmtDateTime(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleString('he-IL',{day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'});
+}
+function statusOf(last_seen) {
+  if (!last_seen) return 'offline';
+  const m = (Date.now()-new Date(last_seen))/60000;
+  return m < 8 ? 'online' : m < 35 ? 'away' : 'offline';
+}
+const STATUS_LBL = { online:'מחובר', away:'זמין', offline:'מנותק' };
+
+let allAdmins=[], allTasks=[], allProfiles=[], allLogs=[];
+
+// ── WORK HOURS ────────────────────────────────────────────
+// Sum gaps between consecutive page visits that are < 30 min
+function calcWorkMinutes(userId, fromDate) {
+  const entries = allLogs
+    .filter(l => l.user_id === userId && new Date(l.logged_in_at) >= fromDate)
+    .map(l => new Date(l.logged_in_at).getTime())
+    .sort((a,b) => a-b);
+  let mins = 0;
+  for (let i = 1; i < entries.length; i++) {
+    const gap = (entries[i] - entries[i-1]) / 60000;
+    if (gap < 30) mins += gap;
+  }
+  return Math.round(mins);
+}
+function fmtMins(m) {
+  if (!m) return '<span style="color:#cbd5e1;">—</span>';
+  if (m < 60) return `<span style="font-weight:700;">${m}</span><span style="color:#64748b;font-size:0.7rem;margin-right:2px;">דק'</span>`;
+  const h = Math.floor(m/60), rem = m % 60;
+  return `<span style="font-weight:700;">${h}</span><span style="color:#64748b;font-size:0.7rem;margin-right:2px;">שע'</span>` +
+         (rem ? ` <span style="font-weight:700;">${rem}</span><span style="color:#64748b;font-size:0.7rem;margin-right:2px;">דק'</span>` : '');
+}
+
+// ── LOAD ──────────────────────────────────────────────────
+window.loadAll = async function() {
+  document.getElementById('last-updated').textContent = 'עודכן: ' + new Date().toLocaleTimeString('he-IL');
+
+  const [ar, tr, pr, lr] = await Promise.all([
+    sb.from('admin_users').select('*').neq('role','admin_main'),          // all non-super admins + admins
+    sb.from('admin_tasks').select('id,status,priority,created_at,department').limit(500),
+    sb.from('profiles').select('id,full_name,email,phone').limit(600),
+    sb.from('admin_session_logs').select('*').order('logged_in_at',{ascending:false}).limit(200),
+  ]);
+
+  allAdmins   = ar.data || [];
+  allTasks    = tr.data || [];
+  allProfiles = pr.data || [];
+  allLogs     = lr.data || [];
+
+  renderSummary();
+  renderTable();
+  renderLog();
+};
+
+// ── SUMMARY ───────────────────────────────────────────────
+function renderSummary() {
+  const now    = Date.now();
+  const online = allAdmins.filter(a => a.last_seen && (now-new Date(a.last_seen)) < 8*60000).length;
+  const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0,0,0,0);
+  const logins = allLogs.filter(l => new Date(l.logged_in_at) >= monthStart).length;
+  const openT  = allTasks.filter(t => !['closed','rejected'].includes(t.status));
+  const breach = openT.filter(t => (now-new Date(t.created_at)) > (SLA_H[t.priority]||72)*3600000);
+
+  document.getElementById('s-total').textContent  = allAdmins.length;
+  document.getElementById('s-online').textContent = online;
+  document.getElementById('s-logins').textContent = logins;
+  document.getElementById('s-breach').textContent = breach.length;
+}
+
+// ── TABLE ─────────────────────────────────────────────────
+function renderTable() {
+  const tbody = document.getElementById('adm-tbody');
+  if (!allAdmins.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:3rem;color:#94a3b8;">אין אדמינים. לחץ "הוסף אדמין" להתחיל.</td></tr>';
+    return;
+  }
+
+  const now = Date.now();
+  const weekAgo  = new Date(now - 7*864e5);
+  const monthAgo = new Date(now - 30*864e5);
+
+  tbody.innerHTML = allAdmins.map(a => {
+    const name   = a.display_name || a.email?.split('@')[0] || '—';
+    const color  = avColor(a.user_id||'');
+    const st     = statusOf(a.last_seen);
+    const dept   = DEPT_MAP[a.role] || a.role;
+
+    // login counts + work hours from session logs
+    const userLogs    = allLogs.filter(l => l.user_id === a.user_id);
+    const weekLogins  = userLogs.filter(l => new Date(l.logged_in_at) >= weekAgo).length;
+    const monthLogins = userLogs.filter(l => new Date(l.logged_in_at) >= monthAgo).length;
+    const weekMins    = calcWorkMinutes(a.user_id, weekAgo);
+    const monthMins   = calcWorkMinutes(a.user_id, monthAgo);
+
+    // SLA stats
+    const deptTasks = allTasks.filter(t => t.department === dept);
+    const openT     = deptTasks.filter(t => !['closed','rejected'].includes(t.status));
+    const breach    = openT.filter(t => (now-new Date(t.created_at)) > (SLA_H[t.priority]||72)*3600000);
+
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:0.65rem;">
+          <div class="av" style="background:${color};">${initials(name)}</div>
+          <div>
+            <div style="font-weight:700;color:#0f172a;">${name}</div>
+            <div style="font-size:0.72rem;color:#94a3b8;">${a.email||''}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="chip chip-${a.role||'admin'}">${ROLE_LBL[a.role]||a.role}</span></td>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <span class="dot dot-${st}"></span>
+          <span class="chip chip-${st}" style="padding:2px 7px;">${STATUS_LBL[st]}</span>
+        </div>
+      </td>
+      <td style="font-size:0.8rem;">${timeAgo(a.last_seen)}<br><span style="font-size:0.69rem;color:#94a3b8;">${a.last_seen?fmtDateTime(a.last_seen):''}</span></td>
+      <td>
+        <div style="line-height:1.6;">
+          <div>${fmtMins(weekMins)}</div>
+          <div style="font-size:0.69rem;color:#94a3b8;">${weekLogins} כניסות</div>
+        </div>
+      </td>
+      <td>
+        <div style="line-height:1.6;">
+          <div>${fmtMins(monthMins)}</div>
+          <div style="font-size:0.69rem;color:#94a3b8;">${monthLogins} כניסות</div>
+        </div>
+      </td>
+      <td>
+        ${(() => {
+          const score = openT.length === 0 ? 100 : Math.round(((openT.length - breach.length) / openT.length) * 100);
+          const color = score >= 90 ? '#16a34a' : score >= 70 ? '#d97706' : '#dc2626';
+          const bg    = score >= 90 ? '#f0fdf4' : score >= 70 ? '#fffbeb' : '#fef2f2';
+          const grade = score >= 90 ? 'A' : score >= 70 ? 'B' : score >= 50 ? 'C' : 'D';
+          return `<div style="display:flex;align-items:center;gap:8px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:${bg};border:2px solid ${color};display:flex;align-items:center;justify-content:center;font-size:0.82rem;font-weight:800;color:${color};">${grade}</div>
+            <div style="line-height:1.5;">
+              <div style="font-size:0.82rem;font-weight:700;color:${color};">${score}%</div>
+              <div style="font-size:0.68rem;color:#94a3b8;">${openT.length} פתוח · ${breach.length} חריגות</div>
+            </div>
+          </div>`;
+        })()}
+      </td>
+      <td>
+        <div style="display:flex;gap:0.4rem;flex-wrap:wrap;">
+          <button class="btn-sm btn-edit-role" onclick="openEditModal('${a.user_id}')">
+            <i class="ph ph-pencil-simple"></i> עריכה
+          </button>
+          <button class="btn-sm btn-remove" onclick="openRemoveModal('${a.user_id}')">
+            <i class="ph ph-trash"></i> הסר
+          </button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+// ── LOG ───────────────────────────────────────────────────
+window.renderLog = function() {
+  const filter = document.getElementById('log-filter').value;
+  const tbody  = document.getElementById('log-tbody');
+  const rows   = allLogs.filter(l => filter === 'all' || l.role === filter).slice(0, 80);
+
+  if (!rows.length) {
+    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8;">אין היסטוריית כניסות עדיין</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = rows.map(l => {
+    const adm   = allAdmins.find(a => a.user_id === l.user_id);
+    const name  = adm ? (adm.display_name || adm.email?.split('@')[0] || '—') : (l.user_id?.slice(0,8)||'—');
+    const color = avColor(l.user_id||'');
+    const page  = l.page ? l.page.replace(/^\/|\.html$/g,'').replace(/admin-/,'') : '—';
+
+    let locHtml = '<span style="color:#cbd5e1;font-size:0.75rem;">—</span>';
+    if (l.city || l.country) {
+      const label = [l.city, l.country].filter(Boolean).join(', ');
+      const mapsUrl = l.lat && l.lng
+        ? `https://www.google.com/maps?q=${l.lat},${l.lng}`
+        : `https://www.google.com/maps/search/${encodeURIComponent(label)}`;
+      locHtml = `<a href="${mapsUrl}" target="_blank" style="display:flex;align-items:center;gap:3px;color:#2563eb;font-size:0.77rem;text-decoration:none;white-space:nowrap;" title="${l.address||label}">
+        <i class="ph ph-map-pin" style="font-size:0.85rem;"></i>${label}
+      </a>`;
+    }
+
+    return `<tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="width:26px;height:26px;border-radius:50%;background:${color};display:flex;align-items:center;justify-content:center;font-size:0.62rem;font-weight:800;color:#fff;flex-shrink:0;">${initials(name)}</div>
+          ${name}
+        </div>
+      </td>
+      <td><span class="chip chip-${l.role||'admin'}" style="font-size:0.67rem;">${ROLE_LBL[l.role]||l.role||'—'}</span></td>
+      <td style="color:#64748b;font-size:0.78rem;">${page}</td>
+      <td>${locHtml}</td>
+      <td style="color:#64748b;font-size:0.78rem;">${fmtDateTime(l.logged_in_at)}</td>
+    </tr>`;
+  }).join('');
+};
+
+// ── ADD ADMIN ─────────────────────────────────────────────
+window.openAddModal = function() {
+  document.getElementById('add-search').value  = '';
+  document.getElementById('add-uid').value     = '';
+  document.getElementById('add-confirm-btn').disabled = true;
+  document.getElementById('add-selected-info').style.display = 'none';
+  document.getElementById('add-user-list').innerHTML =
+    '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem;">הקלד לחיפוש משתמש...</div>';
+  openModal('modal-add');
+};
+
+window.filterAddUsers = function() {
+  const q    = document.getElementById('add-search').value.toLowerCase().trim();
+  const list = document.getElementById('add-user-list');
+  if (!q) {
+    list.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem;">הקלד לחיפוש...</div>';
+    return;
+  }
+  const cands = allProfiles
+    .filter(p => !allAdmins.find(a => a.user_id === p.id))
+    .filter(p => (p.full_name||'').toLowerCase().includes(q) || (p.email||'').toLowerCase().includes(q))
+    .slice(0, 20);
+
+  if (!cands.length) {
+    list.innerHTML = '<div style="padding:1rem;text-align:center;color:#94a3b8;font-size:0.82rem;">לא נמצאו משתמשים</div>';
+    return;
+  }
+  const selId = document.getElementById('add-uid').value;
+  list.innerHTML = cands.map(p => {
+    const n = p.full_name || p.email?.split('@')[0] || '—';
+    return `<div class="uitem${p.id===selId?' selected':''}" onclick="selectAddUser('${p.id}','${n.replace(/'/g,"\\'")}','${(p.email||'').replace(/'/g,"\\'")}')">
+      <div style="width:30px;height:30px;border-radius:50%;background:${avColor(p.id)};display:flex;align-items:center;justify-content:center;font-size:0.68rem;font-weight:800;color:#fff;flex-shrink:0;">${initials(n)}</div>
+      <div><div style="font-weight:700;font-size:0.84rem;color:#0f172a;">${n}</div><div style="font-size:0.71rem;color:#94a3b8;">${p.email||''}</div></div>
+    </div>`;
+  }).join('');
+};
+
+window.selectAddUser = function(uid, name, email) {
+  document.getElementById('add-uid').value = uid;
+  document.querySelectorAll('.uitem').forEach(el => el.classList.remove('selected'));
+  event?.currentTarget?.classList.add('selected');
+  const info = document.getElementById('add-selected-info');
+  info.style.display = 'block';
+  info.innerHTML = `<i class="ph ph-check-circle"></i> נבחר: <strong>${name}</strong> (${email})`;
+  document.getElementById('add-confirm-btn').disabled = false;
+};
+
+window.confirmAdd = async function() {
+  const uid  = document.getElementById('add-uid').value; if (!uid) return;
+  const role = document.getElementById('add-role').value;
+  const { error } = await sb.from('admin_users').upsert(
+    { user_id: uid, role, last_seen: null, display_name: null },
+    { onConflict: 'user_id' }
+  );
+  if (error) { toast('שגיאה: ' + error.message); return; }
+  closeModal('modal-add');
+  toast('האדמין נוסף בהצלחה ✓');
+  await loadAll();
+};
+
+// ── EDIT ──────────────────────────────────────────────────
+window.openEditModal = function(uid) {
+  const a = allAdmins.find(x => x.user_id === uid); if (!a) return;
+  const name = a.display_name || a.email?.split('@')[0] || '';
+  document.getElementById('edit-uid').value        = uid;
+  document.getElementById('edit-new-uid').value    = '';
+  document.getElementById('edit-name').value       = a.display_name || '';
+  document.getElementById('edit-role').value       = a.role || 'college';
+  document.getElementById('edit-rep-search').value = '';
+  document.getElementById('edit-user-list').style.display = 'none';
+  document.getElementById('edit-user-list').innerHTML = '';
+  document.getElementById('edit-new-rep-info').style.display = 'none';
+  document.getElementById('edit-admin-info').innerHTML =
+    `<strong>${name}</strong> — <span style="color:#64748b;">${a.email||''}</span>`;
+  openModal('modal-edit');
+};
+
+window.filterEditUsers = function() {
+  const q    = document.getElementById('edit-rep-search').value.toLowerCase().trim();
+  const list = document.getElementById('edit-user-list');
+  if (!q) { list.style.display = 'none'; return; }
+  const cands = allProfiles
+    .filter(p => (p.full_name||'').toLowerCase().includes(q) || (p.email||'').toLowerCase().includes(q))
+    .slice(0, 15);
+  if (!cands.length) {
+    list.innerHTML = '<div style="padding:0.75rem;text-align:center;color:#94a3b8;font-size:0.82rem;">לא נמצאו משתמשים</div>';
+    list.style.display = 'block'; return;
+  }
+  const selId = document.getElementById('edit-new-uid').value;
+  list.style.display = 'block';
+  list.innerHTML = cands.map(p => {
+    const n = p.full_name || p.email?.split('@')[0] || '—';
+    return `<div class="uitem${p.id===selId?' selected':''}" onclick="selectEditUser('${p.id}','${n.replace(/'/g,"\\'")}','${(p.email||'').replace(/'/g,"\\'")}')">
+      <div style="width:28px;height:28px;border-radius:50%;background:${avColor(p.id)};display:flex;align-items:center;justify-content:center;font-size:0.65rem;font-weight:800;color:#fff;flex-shrink:0;">${initials(n)}</div>
+      <div><div style="font-weight:700;font-size:0.83rem;">${n}</div><div style="font-size:0.7rem;color:#94a3b8;">${p.email||''}</div></div>
+    </div>`;
+  }).join('');
+};
+
+window.selectEditUser = function(uid, name, email) {
+  document.getElementById('edit-new-uid').value = uid;
+  document.querySelectorAll('#edit-user-list .uitem').forEach(el => el.classList.remove('selected'));
+  event?.currentTarget?.classList.add('selected');
+  const info = document.getElementById('edit-new-rep-info');
+  info.style.display = 'block';
+  info.innerHTML = `<i class="ph ph-swap"></i> נציג חדש: <strong>${name}</strong> (${email}) — הנציג הנוכחי יאבד גישה`;
+};
+
+window.confirmEdit = async function() {
+  const uid    = document.getElementById('edit-uid').value;
+  const newUid = document.getElementById('edit-new-uid').value;
+  const name   = document.getElementById('edit-name').value.trim();
+  const role   = document.getElementById('edit-role').value;
+
+  if (newUid && newUid !== uid) {
+    // reassign: delete old row, insert new one (preserve display_name + role)
+    const { error: delErr } = await sb.from('admin_users').delete().eq('user_id', uid);
+    if (delErr) { toast('שגיאה: ' + delErr.message); return; }
+    const { error: insErr } = await sb.from('admin_users').insert({ user_id: newUid, role, display_name: name||null });
+    if (insErr) { toast('שגיאה: ' + insErr.message); return; }
+  } else {
+    const { error } = await sb.from('admin_users').update({ display_name: name||null, role }).eq('user_id', uid);
+    if (error) { toast('שגיאה: ' + error.message); return; }
+  }
+
+  closeModal('modal-edit');
+  toast(newUid && newUid !== uid ? 'הנציג הוחלף בהצלחה ✓' : 'נשמר בהצלחה ✓');
+  await loadAll();
+};
+
+// ── REMOVE ────────────────────────────────────────────────
+window.openRemoveModal = function(uid) {
+  const a = allAdmins.find(x => x.user_id === uid); if (!a) return;
+  const name = a.display_name || a.email?.split('@')[0] || 'האדמין';
+  document.getElementById('remove-uid').value = uid;
+  document.getElementById('remove-msg').innerHTML =
+    `האם להסיר לצמיתות את <strong>${name}</strong> מרשימת האדמינים?<br>
+     <span style="font-size:0.82rem;opacity:0.8;">המשתמש יאבד גישה לממשקי הניהול מיידית. לא ניתן לבטל פעולה זו.</span>`;
+  openModal('modal-remove');
+};
+
+window.confirmRemove = async function() {
+  const uid = document.getElementById('remove-uid').value;
+  const { error } = await sb.from('admin_users').delete().eq('user_id', uid);
+  if (error) { toast('שגיאה: ' + error.message); return; }
+  closeModal('modal-remove');
+  toast('האדמין הוסר ✓');
+  await loadAll();
+};
+
+// ── UTILS ─────────────────────────────────────────────────
+window.openModal  = id => document.getElementById(id).classList.add('open');
+window.closeModal = id => document.getElementById(id).classList.remove('open');
+document.querySelectorAll('.modal-bg').forEach(m =>
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); })
+);
+function toast(msg, dur=3500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+window.toast = toast;
+
+// ── AUTH + INIT ───────────────────────────────────────────
+const user = await requireAdmin();
+if (!user) throw new Error('no access');
+renderSidebar('monitor');
+const dn = user.email.split('@')[0];
+document.getElementById('nav-user-name').textContent = dn;
+document.getElementById('nav-user-avatar').textContent = initials(dn);
+await loadAll();
+</script>
+</body>
+</html>

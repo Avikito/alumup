@@ -670,8 +670,25 @@ async function init() {
   document.getElementById('nav-user-name').textContent = displayName;
   document.getElementById('nav-user-avatar').textContent = initials(displayName);
 
-  renderSidebar('tasks');
-  injectTasksSubNav();
+  if (currentRole === 'procurement') {
+    // Replace sidebar with procurement sidebar — no access to main admin nav
+    const placeholder = document.getElementById('admin-sidebar-placeholder');
+    if (placeholder) placeholder.innerHTML = `
+      <div class="sidebar-label">רכש ולוגיסטיקה</div>
+      <ul class="admin-nav">
+        <li><a href="admin-procurement.html"><i class="ph ph-squares-four"></i> מבט על</a></li>
+        <li><a href="admin-procurement.html"><i class="ph ph-list-bullets"></i> הזמנות נכנסות</a></li>
+        <li><a href="procurement-calendar.html"><i class="ph ph-calendar-dots"></i> לוח זמנים</a></li>
+        <li><a href="admin-tasks.html?dept=procurement" class="active"><i class="ph ph-check-square"></i> ניהול משימות</a></li>
+        <li><a href="admin-procurement.html"><i class="ph ph-clock-countdown"></i> יומן פעילות</a></li>
+      </ul>`;
+    // Hide department filter — procurement sees only their tasks
+    const deptFilter = document.getElementById('f-dept');
+    if (deptFilter) deptFilter.closest('select') && (deptFilter.style.display = 'none');
+  } else {
+    renderSidebar('tasks');
+    injectTasksSubNav();
+  }
 
   await loadTasks();
   subscribeRealtime();
@@ -706,8 +723,9 @@ function injectTasksSubNav() {
 
 // ─── Data ─────────────────────────────────────────────────
 async function loadTasks() {
-  const { data, error } = await sb.from('admin_tasks')
-    .select('*').order('created_at', { ascending: false });
+  let q = sb.from('admin_tasks').select('*').order('created_at', { ascending: false });
+  if (currentRole === 'procurement') q = q.eq('department', 'procurement');
+  const { data, error } = await q;
   if (error) { console.error(error); return; }
   allTasks = data || [];
   applyFilters();

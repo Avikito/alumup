@@ -1053,6 +1053,8 @@ async function requireCollegeAdmin() {
     .from('admin_users').select('user_id, role').eq('user_id', user.id).maybeSingle();
   if (!adminRow) { window.location.href = 'login.html'; return null; }
   if (adminRow.role !== 'college') { window.location.href = 'login.html'; return null; }
+  // Update last_seen for monitor
+  supabase.from('admin_users').update({ last_seen: new Date().toISOString() }).eq('user_id', user.id);
   return user;
 }
 

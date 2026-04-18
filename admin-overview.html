@@ -276,7 +276,8 @@ const supabase = createClient(
     ]},
     { id:'ops-g', icon:'ph-wrench', label:'תפעול ולו"ז', items:[
       { id:'calendar', icon:'ph-calendar-dots', label:'לוח זמנים',    href:'admin-calendar.html' },
-      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות', href:'admin-tasks.html' },
+      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות',    href:'admin-tasks.html' },
+      { id:'monitor',  icon:'ph-monitor',       label:'מוניטור אדמינים', href:'admin-monitor.html' },
     ]},
   ];
   const activeGroup = groups.find(g => !g.single && g.items && g.items.some(i => i.id === ACTIVE));
@@ -295,11 +296,21 @@ const supabase = createClient(
 })();
 
 // ── AUTH ──
+let _authOk = false;
 const { data: { user } } = await supabase.auth.getUser();
 if (!user) { window.location.href = 'login.html'; }
 else {
-  document.getElementById('adminEmail').textContent = user.email;
-  document.getElementById('pageSubtitle').textContent = `שלום, ${user.email}`;
+  // Role check — college admins belong on admin-college.html
+  const { data: adminRow } = await supabase
+    .from('admin_users').select('role').eq('user_id', user.id).maybeSingle();
+  if (!adminRow) { window.location.href = 'login.html'; }
+  else if (adminRow.role === 'college') { window.location.href = 'admin-college.html'; }
+  else if (adminRow.role === 'procurement') { window.location.href = 'admin-procurement.html'; }
+  else {
+    document.getElementById('adminEmail').textContent = user.email;
+    document.getElementById('pageSubtitle').textContent = `שלום, ${user.email}`;
+    _authOk = true;
+  }
 }
 
 // ── MINI CALENDAR ──
@@ -503,7 +514,7 @@ window.init = async function() {
   ]);
 };
 
-init();
+if (_authOk) init();
 </script>
 </body>
 </html>

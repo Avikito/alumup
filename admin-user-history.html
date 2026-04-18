@@ -263,7 +263,8 @@ const supabase = createClient(
     ]},
     { id:'ops-g', icon:'ph-wrench', label:'תפעול ולו"ז', items:[
       { id:'calendar', icon:'ph-calendar-dots', label:'לוח זמנים',    href:'admin-calendar.html' },
-      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות', href:'admin-tasks.html' },
+      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות',    href:'admin-tasks.html' },
+      { id:'monitor',  icon:'ph-monitor',       label:'מוניטור אדמינים', href:'admin-monitor.html' },
     ]},
   ];
   const activeGroup = groups.find(g => !g.single && g.items && g.items.some(i => i.id === ACTIVE));

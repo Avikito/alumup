@@ -5,15 +5,97 @@ export const supabase = createClient(
   'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
 );
 
+async function getLocationData() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) { resolve({}); return; }
+    navigator.geolocation.getCurrentPosition(
+      async pos => {
+        const { latitude: lat, longitude: lng } = pos.coords;
+        let city = '', country = '', address = '';
+        try {
+          const r = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`,
+            { headers: { 'Accept-Language': 'he' } }
+          );
+          const d = await r.json();
+          city    = d.address?.city || d.address?.town || d.address?.village || d.address?.county || '';
+          country = d.address?.country || '';
+          address = d.display_name || '';
+        } catch {}
+        resolve({ lat, lng, city, country, address });
+      },
+      async () => {
+        // GPS denied — fallback to IP geolocation (no permission needed)
+        try {
+          const r = await fetch('https://ipapi.co/json/');
+          const d = await r.json();
+          resolve({ city: d.city||'', country: d.country_name||'', address: '' });
+        } catch { resolve({}); }
+      },
+      { enableHighAccuracy: true, timeout: 6000, maximumAge: 0 }
+    );
+  });
+}
+
 export async function requireAdmin() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) { window.location.href = 'login.html'; return null; }
 
   const { data: adminRow } = await supabase
-    .from('admin_users').select('user_id').eq('user_id', user.id).maybeSingle();
+    .from('admin_users').select('user_id, role').eq('user_id', user.id).maybeSingle();
 
   if (!adminRow) { window.location.href = 'dashboard.html'; return null; }
+  if (adminRow.role === 'procurement') { window.location.href = 'admin-procurement.html'; return null; }
+  if (adminRow.role === 'college') { window.location.href = 'admin-college.html'; return null; }
+
+  // update last_seen + log session with location (fire-and-forget)
+  const now = new Date().toISOString();
+  supabase.from('admin_users').update({ last_seen: now }).eq('user_id', user.id);
+  getLocationData().then(loc => {
+    supabase.from('admin_session_logs').insert({
+      user_id: user.id, role: adminRow.role, page: location.pathname, logged_in_at: now,
+      lat: loc.lat || null, lng: loc.lng || null,
+      city: loc.city || null, country: loc.country || null, address: loc.address || null
+    });
+  });
+
   return user;
+}
+
+export async function requireProcurementAdmin() {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return null; }
+
+  const { data: adminRow } = await supabase
+    .from('admin_users').select('user_id, role').eq('user_id', user.id).maybeSingle();
+
+  if (!adminRow) { window.location.href = 'login.html'; return null; }
+  if (adminRow.role !== 'procurement') { window.location.href = 'login.html'; return null; }
+
+  const now = new Date().toISOString();
+  supabase.from('admin_users').update({ last_seen: now }).eq('user_id', user.id);
+  getLocationData().then(loc => {
+    supabase.from('admin_session_logs').insert({
+      user_id: user.id, role: 'procurement', page: location.pathname, logged_in_at: now,
+      lat: loc.lat || null, lng: loc.lng || null,
+      city: loc.city || null, country: loc.country || null, address: loc.address || null
+    });
+  });
+
+  return user;
+}
+
+// ── DATA MASKING PLACEHOLDER ──────────────────────────────
+// כדי להפעיל masking בעתיד — שנה MASK_FIELDS לאמת עבור שדות רגישים
+export const MASK_CONFIG = {
+  enabled: false,
+  fields: { phone: false, email: false, id_number: false, bank_account: false }
+};
+export function maskField(value, fieldName) {
+  if (!MASK_CONFIG.enabled || !MASK_CONFIG.fields[fieldName]) return value;
+  if (!value) return value;
+  const s = String(value);
+  return s.slice(0, 2) + '*'.repeat(Math.max(0, s.length - 4)) + s.slice(-2);
 }
 
 export function renderSidebar(activePage) {
@@ -32,8 +114,9 @@ export function renderSidebar(activePage) {
       { id:'settings',  icon:'ph-gear-six',               label:'תמחור גלובלי', href:'admin-settings.html' },
     ]},
     { id:'ops-g', icon:'ph-wrench', label:'תפעול ולו"ז', items:[
-      { id:'calendar', icon:'ph-calendar-dots', label:'לוח זמנים',    href:'admin-calendar.html' },
-      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות', href:'admin-tasks.html' },
+      { id:'calendar', icon:'ph-calendar-dots', label:'לוח זמנים',       href:'admin-calendar.html' },
+      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות',    href:'admin-tasks.html' },
+      { id:'monitor',  icon:'ph-monitor',       label:'מוניטור אדמינים', href:'admin-monitor.html' },
     ]},
   ];
   const activeGroup = groups.find(g => !g.single && g.items && g.items.some(i => i.id === ACTIVE));
