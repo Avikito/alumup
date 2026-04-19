@@ -40,10 +40,11 @@ async function bInit() {
   const assignedStudentIds = new Set((bsRows || []).map(r => r.student_id));
   let studentMap = {};
   if (assignedStudentIds.size > 0) {
-    const { data: studs } = await sb
+    const { data: studs, error: e3s } = await sb
       .from('students')
-      .select('id, full_name, phone, cert_type, height_cert_expiry')
+      .select('id, full_name, phone')
       .in('id', [...assignedStudentIds]);
+    if (e3s) console.error('[bInit] students lookup:', e3s.message);
     (studs || []).forEach(s => { studentMap[s.id] = s; });
   }
 
@@ -73,8 +74,8 @@ async function bInit() {
         _bsId:  bs.id,
         name:        studentMap[bs.student_id]?.full_name        || '—',
         phone:       studentMap[bs.student_id]?.phone            || '',
-        certType:    studentMap[bs.student_id]?.cert_type        || null,
-        certExpiry:  studentMap[bs.student_id]?.height_cert_expiry || null,
+        certType:    null,
+        certExpiry:  null,
         paid:        bs.paid,
         attend:      Array.isArray(bs.attendance) ? bs.attendance : Array(b.sessions || 5).fill(0),
       }))
