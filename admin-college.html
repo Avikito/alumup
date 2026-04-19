@@ -1053,8 +1053,21 @@ async function requireCollegeAdmin() {
     .from('admin_users').select('user_id, role').eq('user_id', user.id).maybeSingle();
   if (!adminRow) { window.location.href = 'login.html'; return null; }
   if (adminRow.role !== 'college') { window.location.href = 'login.html'; return null; }
-  // Update last_seen for monitor
-  supabase.from('admin_users').update({ last_seen: new Date().toISOString() }).eq('user_id', user.id);
+  // Update last_seen + log session for monitor
+  const now = new Date().toISOString();
+  supabase.rpc('update_admin_last_seen');
+  (async () => {
+    let loc = {};
+    try {
+      const r = await fetch('https://ipapi.co/json/');
+      const d = await r.json();
+      loc = { city: d.city||'', country: d.country_name||'' };
+    } catch {}
+    supabase.from('admin_session_logs').insert({
+      user_id: user.id, role: 'college', page: location.pathname, logged_in_at: now,
+      lat: null, lng: null, city: loc.city||null, country: loc.country||null, address: null
+    });
+  })();
   return user;
 }
 

@@ -48,15 +48,15 @@ export async function requireAdmin() {
   if (adminRow.role === 'procurement') { window.location.href = 'admin-procurement.html'; return null; }
   if (adminRow.role === 'college') { window.location.href = 'admin-college.html'; return null; }
 
-  // update last_seen + log session with location (fire-and-forget)
+  // update last_seen + log session with location
   const now = new Date().toISOString();
-  supabase.from('admin_users').update({ last_seen: now }).eq('user_id', user.id);
+  supabase.rpc('update_admin_last_seen');
   getLocationData().then(loc => {
     supabase.from('admin_session_logs').insert({
       user_id: user.id, role: adminRow.role, page: location.pathname, logged_in_at: now,
       lat: loc.lat || null, lng: loc.lng || null,
       city: loc.city || null, country: loc.country || null, address: loc.address || null
-    });
+    }).then(({ error }) => { if (error) console.error('[monitor] session_log insert failed:', error); });
   });
 
   return user;
@@ -73,7 +73,7 @@ export async function requireProcurementAdmin() {
   if (adminRow.role !== 'procurement') { window.location.href = 'login.html'; return null; }
 
   const now = new Date().toISOString();
-  supabase.from('admin_users').update({ last_seen: now }).eq('user_id', user.id);
+  supabase.rpc('update_admin_last_seen');
   getLocationData().then(loc => {
     supabase.from('admin_session_logs').insert({
       user_id: user.id, role: 'procurement', page: location.pathname, logged_in_at: now,
