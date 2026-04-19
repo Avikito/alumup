@@ -670,7 +670,15 @@ async function init() {
   document.getElementById('nav-user-name').textContent = displayName;
   document.getElementById('nav-user-avatar').textContent = initials(displayName);
 
-  if (currentRole === 'procurement') {
+  if (currentRole === 'college') {
+    const placeholder = document.getElementById('admin-sidebar-placeholder');
+    if (placeholder) placeholder.innerHTML = `
+      <div class="sidebar-label">מכללה</div>
+      <ul class="admin-nav">
+        <li><a href="admin-college.html"><i class="ph ph-squares-four"></i> מבט על</a></li>
+        <li><a href="admin-tasks.html?dept=college" class="active"><i class="ph ph-check-square"></i> ניהול משימות</a></li>
+      </ul>`;
+  } else if (currentRole === 'procurement') {
     // Replace sidebar with procurement sidebar — no access to main admin nav
     const placeholder = document.getElementById('admin-sidebar-placeholder');
     if (placeholder) placeholder.innerHTML = `
