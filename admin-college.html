@@ -1055,7 +1055,7 @@ async function requireCollegeAdmin() {
   if (adminRow.role !== 'college') { window.location.href = 'login.html'; return null; }
   // Update last_seen + log session for monitor
   const now = new Date().toISOString();
-  supabase.rpc('update_admin_last_seen');
+  supabase.rpc('update_admin_last_seen', { p_user_id: user.id });
   (async () => {
     let loc = {};
     try {

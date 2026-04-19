@@ -50,7 +50,7 @@ export async function requireAdmin() {
 
   // update last_seen + log session with location
   const now = new Date().toISOString();
-  supabase.rpc('update_admin_last_seen');
+  supabase.rpc('update_admin_last_seen', { p_user_id: user.id });
   getLocationData().then(loc => {
     supabase.from('admin_session_logs').insert({
       user_id: user.id, role: adminRow.role, page: location.pathname, logged_in_at: now,
@@ -73,7 +73,7 @@ export async function requireProcurementAdmin() {
   if (adminRow.role !== 'procurement') { window.location.href = 'login.html'; return null; }
 
   const now = new Date().toISOString();
-  supabase.rpc('update_admin_last_seen');
+  supabase.rpc('update_admin_last_seen', { p_user_id: user.id });
   getLocationData().then(loc => {
     supabase.from('admin_session_logs').insert({
       user_id: user.id, role: 'procurement', page: location.pathname, logged_in_at: now,
