@@ -419,10 +419,13 @@ function renderTable() {
   const monthAgo = new Date(now - 30*864e5);
 
   tbody.innerHTML = allAdmins.map(a => {
-    const name   = a.display_name || a.email?.split('@')[0] || '—';
-    const color  = avColor(a.user_id||'');
-    const st     = statusOf(a.last_seen);
-    const dept   = DEPT_MAP[a.role] || a.role;
+    const profile = allProfiles.find(p => p.id === a.user_id) || {};
+    const email   = profile.email || a.email || '';
+    const phone   = profile.phone || '';
+    const name    = a.display_name || profile.full_name || email.split('@')[0] || '—';
+    const color   = avColor(a.user_id||'');
+    const st      = statusOf(a.last_seen);
+    const dept    = DEPT_MAP[a.role] || a.role;
 
     // login counts + work hours from session logs
     const userLogs    = allLogs.filter(l => l.user_id === a.user_id);
@@ -442,7 +445,8 @@ function renderTable() {
           <div class="av" style="background:${color};">${initials(name)}</div>
           <div>
             <div style="font-weight:700;color:#0f172a;">${name}</div>
-            <div style="font-size:0.72rem;color:#94a3b8;">${a.email||''}</div>
+            ${email ? `<div style="font-size:0.72rem;color:#64748b;"><i class="ph ph-envelope" style="font-size:0.65rem;"></i> ${email}</div>` : ''}
+            ${phone ? `<div style="font-size:0.72rem;color:#64748b;"><i class="ph ph-phone" style="font-size:0.65rem;"></i> ${phone}</div>` : ''}
           </div>
         </div>
       </td>

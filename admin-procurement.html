@@ -9,6 +9,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@ericblade/quagga2@1.7.4/dist/quagga.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
   <style>
@@ -160,15 +164,15 @@
 <body>
 
 <!-- NAV -->
-<nav class="admin-nav-top">
-  <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
-    <img src="img/logo.png" alt="ALUM" style="height:32px;" onerror="this.style.display='none'">
-    <span style="font-weight:800;font-size:1rem;color:var(--industrial-silver);">ALUM IL</span>
-  </a>
-  <div style="display:flex;align-items:center;gap:1rem;margin-right:auto;">
+<nav class="admin-nav-top" style="display:flex;align-items:center;justify-content:space-between;padding:0 1.5rem;height:64px;background:var(--surface-dark,#1e2433);border-bottom:1px solid var(--border,#2d3448);">
+  <div style="display:flex;align-items:center;gap:1rem;">
     <span id="nav-user-name" style="font-size:0.8rem;font-weight:600;color:var(--silver-dark);"></span>
     <div id="nav-user-avatar" style="width:34px;height:34px;border-radius:50%;background:#7c3aed;color:#fff;font-size:0.75rem;font-weight:800;display:flex;align-items:center;justify-content:center;"></div>
   </div>
+  <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;text-decoration:none;">
+    <span style="font-weight:800;font-size:1rem;color:var(--industrial-silver);">ALUM IL</span>
+    <img src="logo.PNG" alt="ALUM" style="height:32px;" onerror="this.style.display='none'">
+  </a>
 </nav>
 
 <div class="pr-wrap">
@@ -208,6 +212,7 @@
           <div id="page-subtitle" style="font-size:0.81rem;color:#64748b;margin-top:3px;">שלום, טוען...</div>
         </div>
         <button class="btn-export" onclick="loadAll()"><i class="ph ph-arrows-clockwise"></i> רענן</button>
+        <button class="btn-primary" onclick="openScanModal()" style="gap:6px;"><i class="ph ph-barcode"></i> סרוק ברקוד</button>
       </div>
 
       <div class="sum-row">
@@ -377,6 +382,55 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<!-- ── SCAN MODAL ── -->
+<div id="scan-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,23,42,0.6);z-index:300;align-items:center;justify-content:center;backdrop-filter:blur(3px);">
+  <div style="background:#fff;border-radius:18px;padding:2rem;width:420px;max-width:92vw;box-shadow:0 24px 64px rgba(0,0,0,0.22);">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;">
+      <div style="font-size:1.05rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:0.5rem;">
+        <i class="ph ph-barcode" style="color:#7c3aed;"></i> סריקת ברקוד
+      </div>
+      <button onclick="closeScanModal()" style="background:none;border:none;cursor:pointer;font-size:1.3rem;color:#94a3b8;"><i class="ph ph-x"></i></button>
+    </div>
+
+    <!-- Tabs -->
+    <div style="display:flex;gap:0.5rem;margin-bottom:1.25rem;background:#f1f5f9;border-radius:10px;padding:4px;">
+      <button id="scan-tab-cam" onclick="scanSwitchTab('cam')" style="flex:1;padding:0.45rem;border:none;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;background:#7c3aed;color:#fff;transition:all 0.15s;">
+        <i class="ph ph-camera"></i> מצלמה
+      </button>
+      <button id="scan-tab-file" onclick="scanSwitchTab('file')" style="flex:1;padding:0.45rem;border:none;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;background:transparent;color:#64748b;transition:all 0.15s;">
+        <i class="ph ph-image"></i> העלאת תמונה
+      </button>
+    </div>
+
+    <!-- Camera tab -->
+    <div id="scan-pane-cam">
+      <div style="position:relative;border-radius:12px;overflow:hidden;background:#0f172a;aspect-ratio:4/3;">
+        <video id="scan-video" style="width:100%;height:100%;object-fit:cover;" autoplay muted playsinline></video>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;pointer-events:none;">
+          <div style="width:65%;height:30%;border:2.5px solid #a78bfa;border-radius:8px;box-shadow:0 0 0 2000px rgba(0,0,0,0.35);"></div>
+        </div>
+      </div>
+      <div id="scan-cam-status" style="text-align:center;margin-top:0.75rem;font-size:0.82rem;color:#64748b;">מאתחל מצלמה...</div>
+    </div>
+
+    <!-- File tab -->
+    <div id="scan-pane-file" style="display:none;">
+      <label style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.5rem;border:2px dashed #c4b5fd;border-radius:12px;padding:2rem;cursor:pointer;background:#faf5ff;transition:background 0.15s;" onmouseover="this.style.background='#f5f3ff'" onmouseout="this.style.background='#faf5ff'">
+        <i class="ph ph-upload-simple" style="font-size:2rem;color:#7c3aed;"></i>
+        <span style="font-size:0.85rem;font-weight:700;color:#7c3aed;">לחץ לבחירת תמונה</span>
+        <span style="font-size:0.75rem;color:#94a3b8;">JPG, PNG, צילום מסך וכד'</span>
+        <input type="file" accept="image/*" id="scan-file-input" style="display:none;" onchange="scanFromFile(this)">
+      </label>
+      <div id="scan-file-status" style="text-align:center;margin-top:0.75rem;font-size:0.82rem;color:#64748b;"></div>
+    </div>
+
+    <div id="scan-result" style="display:none;margin-top:1rem;padding:0.75rem 1rem;border-radius:10px;background:#f0fdf4;border:1.5px solid #bbf7d0;">
+      <div style="font-size:0.75rem;font-weight:700;color:#15803d;margin-bottom:2px;">ברקוד זוהה</div>
+      <div id="scan-result-code" style="font-size:0.9rem;font-weight:800;color:#0f172a;font-family:monospace;"></div>
+    </div>
+  </div>
+</div>
 
 <!-- CANCEL PASSWORD MODAL -->
 <div class="cancel-modal-bg" id="cancelModalBg">
@@ -889,14 +943,56 @@ window.viewOrder = async function(id) {
     <div class="detail-total-row grand"><span>סה"כ כולל מע"מ</span><span>₪${Number(o.subtotal||o.total_price||0).toLocaleString()}</span></div>
   </div>`;
 
+  html += `<div style="text-align:center;margin:1rem 0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;">
+    <svg id="barcode-${o.id}"></svg>
+  </div>`;
+
   if (o.status === 'technical_review') {
     html += `<button class="btn-approve-prod" id="approveBtn-${o.id}" onclick="approveToProduction('${o.id}')">
       <i class="ph ph-check-circle"></i> נבדק — אשר לייצור
     </button>`;
   }
 
+  html += `<button onclick="generatePDF('${o.id}')" style="display:inline-flex;align-items:center;gap:6px;margin-top:0.75rem;padding:0.5rem 1.2rem;background:#2563eb;color:#fff;border:none;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;">
+    <i class="ph ph-file-pdf"></i> הפק PDF
+  </button>`;
+
   document.getElementById('detailBody').innerHTML = html;
   document.getElementById('detailOverlay').classList.add('open');
+
+  try {
+    JsBarcode(`#barcode-${o.id}`, code, {
+      format: 'CODE128', width: 2, height: 50,
+      displayValue: true, fontSize: 13, margin: 8
+    });
+  } catch(e) { console.warn('JsBarcode:', e); }
+};
+
+window.generatePDF = async function(id) {
+  const o = allOrders.find(x => x.id === id);
+  if (!o || !window.jspdf) return;
+  const code = o.order_code || o.id.slice(0, 8);
+  const detailBody = document.getElementById('detailBody');
+  const btns = detailBody.querySelectorAll('button');
+  btns.forEach(b => b.style.display = 'none');
+  try {
+    const canvas = await html2canvas(detailBody, { scale:2, useCORS:true, backgroundColor:'#ffffff', logging:false });
+    const imgData = canvas.toDataURL('image/png');
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+    const pageW = 210, marginX = 10, imgW = pageW - marginX*2;
+    const imgH = canvas.height * imgW / canvas.width;
+    doc.setFillColor(26,95,170); doc.rect(0,0,210,18,'F');
+    doc.setTextColor(255,255,255);
+    doc.setFontSize(14); doc.setFont('helvetica','bold'); doc.text('ALUM-IL',190,12,{align:'right'});
+    doc.setFontSize(10); doc.setFont('helvetica','normal'); doc.text('Order Confirmation | '+code,20,12);
+    doc.addImage(imgData,'PNG',marginX,22,imgW,imgH);
+    doc.setFontSize(8); doc.setTextColor(150,160,180);
+    doc.text('Generated by ALUM-IL Platform',105,285,{align:'center'});
+    doc.save('order_'+code+'.pdf');
+  } finally {
+    btns.forEach(b => b.style.display = '');
+  }
 };
 
 window.approveToProduction = async function(id) {
@@ -934,6 +1030,111 @@ document.getElementById('page-subtitle').textContent = `שלום, ${dn} | אדמ
 
 await loadAll();
 initMiniCalendar(user.id);
+
+// ── BARCODE SCANNER ──────────────────────────────────────
+let scanCameraActive = false;
+
+window.openScanModal = function() {
+  document.getElementById('scan-overlay').style.display = 'flex';
+  document.getElementById('scan-result').style.display = 'none';
+  document.getElementById('scan-file-input').value = '';
+  document.getElementById('scan-file-status').textContent = '';
+  scanSwitchTab('cam');
+};
+
+window.closeScanModal = function() {
+  stopCamera();
+  document.getElementById('scan-overlay').style.display = 'none';
+};
+
+window.scanSwitchTab = function(tab) {
+  const isCam = tab === 'cam';
+  document.getElementById('scan-pane-cam').style.display  = isCam ? '' : 'none';
+  document.getElementById('scan-pane-file').style.display = isCam ? 'none' : '';
+  document.getElementById('scan-tab-cam').style.background  = isCam ? '#7c3aed' : 'transparent';
+  document.getElementById('scan-tab-cam').style.color       = isCam ? '#fff' : '#64748b';
+  document.getElementById('scan-tab-file').style.background = isCam ? 'transparent' : '#7c3aed';
+  document.getElementById('scan-tab-file').style.color      = isCam ? '#64748b' : '#fff';
+  if (isCam) startCamera(); else stopCamera();
+};
+
+function startCamera() {
+  const statusEl = document.getElementById('scan-cam-status');
+  if (!window.Quagga) { statusEl.textContent = 'ספריית הסריקה טוענת, נסה שוב...'; return; }
+  if (scanCameraActive) return;
+  scanCameraActive = true;
+  statusEl.innerHTML = '<span style="color:#7c3aed;">⬤</span> סורק...';
+  Quagga.init({
+    inputStream: { type: 'LiveStream', target: document.getElementById('scan-video').parentElement,
+      constraints: { facingMode: 'environment', width: 640, height: 480 } },
+    decoder: { readers: ['code_128_reader','ean_reader','ean_8_reader','code_39_reader'] },
+    locate: true
+  }, err => {
+    if (err) { statusEl.textContent = 'לא ניתן לגשת למצלמה — נסה העלאת תמונה'; scanCameraActive = false; return; }
+    Quagga.start();
+  });
+  Quagga.onDetected(result => {
+    const code = result.codeResult.code;
+    if (code) handleScanResult(code);
+  });
+}
+
+function stopCamera() {
+  if (scanCameraActive && window.Quagga) { try { Quagga.stop(); } catch {} }
+  scanCameraActive = false;
+}
+
+window.scanFromFile = function(input) {
+  const file = input.files[0]; if (!file) return;
+  const statusEl = document.getElementById('scan-file-status');
+  statusEl.innerHTML = '<i class="ph ph-circle-notch spin"></i> מפענח...';
+  document.getElementById('scan-result').style.display = 'none';
+
+  if (!window.Quagga) { statusEl.textContent = 'ספריית הסריקה לא נטענה'; return; }
+
+  const url = URL.createObjectURL(file);
+  Quagga.decodeSingle({
+    decoder: { readers: ['code_128_reader','ean_reader','ean_8_reader','code_39_reader'] },
+    locate: true,
+    src: url
+  }, result => {
+    URL.revokeObjectURL(url);
+    if (result && result.codeResult && result.codeResult.code) {
+      handleScanResult(result.codeResult.code);
+      statusEl.textContent = '';
+    } else {
+      statusEl.textContent = 'לא זוהה ברקוד — נסה תמונה ברורה יותר עם תאורה טובה';
+      input.value = '';
+    }
+  });
+};
+
+function handleScanResult(code) {
+  stopCamera();
+  const resultEl = document.getElementById('scan-result');
+  resultEl.style.cssText += ';display:block;background:#f0fdf4;border-color:#bbf7d0;';
+  const codeEl = document.getElementById('scan-result-code');
+  codeEl.style.color = '#0f172a';
+  codeEl.textContent = code;
+  document.getElementById('scan-cam-status').textContent = '✓ ברקוד זוהה';
+
+  const match = allOrders.find(o =>
+    (o.order_code || o.id.slice(0,8)).toUpperCase() === code.toUpperCase() ||
+    o.id.toUpperCase() === code.toUpperCase()
+  );
+  if (match) {
+    setTimeout(() => { closeScanModal(); viewOrder(match.id); }, 700);
+  } else {
+    resultEl.style.background = '#fef2f2';
+    resultEl.style.borderColor = '#fca5a5';
+    codeEl.style.color = '#dc2626';
+    codeEl.textContent = `"${code}" — לא נמצאה הזמנה תואמת`;
+  }
+}
+
+document.getElementById('scan-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('scan-overlay')) closeScanModal();
+});
 </script>
 </body>
 </html>

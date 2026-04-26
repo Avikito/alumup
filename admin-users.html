@@ -520,17 +520,28 @@ window.handleCr = async function(id, action) {
       let profileUpdate = { member_activity_log: log };
 
       // אם אושר — עדכן גם את שדות הפרופיל
+      let newAuthEmail = null;
       if (action === 'approved') {
         const changes = parseNewValue(req.new_value);
         changes.forEach(c => {
           const col = FIELD_TO_COL[c.label];
           if (col) profileUpdate[col] = c.newVal;
+          if (c.label === 'אימייל' && c.newVal) newAuthEmail = c.newVal;
         });
       }
 
       const { error: profErr } = await supabase
         .from('profiles').update(profileUpdate).eq('id', req.user_id);
       if (profErr) throw profErr;
+
+      // עדכן גם auth.users.email כדי שהמשתמש יוכל להתחבר עם המייל החדש
+      if (newAuthEmail) {
+        const { error: authErr } = await supabase.rpc('update_user_email', {
+          p_user_id:  req.user_id,
+          p_new_email: newAuthEmail
+        });
+        if (authErr) console.error('[handleCr] auth email update failed:', authErr.message);
+      }
     }
 
     // fade out row
