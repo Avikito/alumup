@@ -540,7 +540,7 @@ window.handleCr = async function(id, action) {
           p_user_id:  req.user_id,
           p_new_email: newAuthEmail
         });
-        if (authErr) console.error('[handleCr] auth email update failed:', authErr.message);
+        if (authErr) throw new Error('עדכון מייל כניסה נכשל: ' + authErr.message);
       }
     }
 
