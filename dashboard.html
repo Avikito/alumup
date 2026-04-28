@@ -555,24 +555,31 @@
       .dashboard-sidebar {
         position: fixed; top: 0; right: 0; bottom: 0;
         width: 260px; z-index: 500;
-        transform: translateX(110%);
+        transform: translateX(calc(100% + 40px));
         transition: transform 0.28s ease;
-        box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+        box-shadow: none;
         overflow-y: auto;
       }
-      .dashboard-sidebar.mob-open { transform: translateX(0); }
+      .dashboard-sidebar.mob-open {
+        transform: translateX(0);
+        box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+      }
 
-      .dashboard-content { padding: 1.25rem 1rem; width: 100%; box-sizing: border-box; }
+      .dashboard-content { padding: 1.25rem 1rem; width: 100%; box-sizing: border-box; overflow-x: hidden; }
 
       /* Member top card — stack vertically */
       .member-top-card { flex-direction: column !important; }
-      .member-top-card > * { min-width: 0 !important; width: 100% !important; flex-shrink: 1 !important; }
+      .member-top-card * { min-width: 0 !important; max-width: 100% !important; box-sizing: border-box; }
+      #savings-summary-cards { display: flex !important; flex-direction: column !important; }
 
       /* Simulator sliders grid */
       .sim-sliders-grid { grid-template-columns: 1fr !important; }
 
-      /* Card secondary grid */
+      /* Card secondary */
       .card-secondary { padding: 1rem 0.75rem !important; }
+    }
+    @media (max-width: 768px) {
+      body { overflow-x: hidden; }
     }
   </style>
 </head>
