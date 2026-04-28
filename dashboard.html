@@ -545,6 +545,23 @@
     @media (max-width: 640px) {
       .settings-grid { grid-template-columns: 1fr; }
     }
+
+    /* ── MOBILE ── */
+    @media (max-width: 768px) {
+      .dashboard-wrapper { flex-direction: column; }
+
+      .dashboard-sidebar {
+        position: fixed; top: 0; right: 0; bottom: 0;
+        width: 260px; z-index: 500;
+        transform: translateX(110%);
+        transition: transform 0.28s ease;
+        box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+        overflow-y: auto;
+      }
+      .dashboard-sidebar.mob-open { transform: translateX(0); }
+
+      .dashboard-content { padding: 1.25rem 1rem; width: 100%; }
+    }
   </style>
 </head>
 <body>
