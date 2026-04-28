@@ -549,9 +549,12 @@
 </head>
 <body>
   <header class="header" style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
-    <a href="index.html" class="logo" style="display:flex;align-items:center;gap:0.6rem;">
-      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;display:block;">
-    </a>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <button class="mob-burger" id="mob-burger" aria-label="פתח תפריט"><i class="ph ph-list"></i></button>
+      <a href="index.html" class="logo" style="display:flex;align-items:center;gap:0.6rem;">
+        <img src="logo.PNG" alt="ALUM-IL" style="height:36px;display:block;">
+      </a>
+    </div>
     <div style="display:flex;align-items:center;gap:0.75rem;">
       <span id="userEmail" style="font-size:0.85rem;color:var(--silver-dark);"></span>
       <i class="ph ph-user-circle" style="font-size:2rem;color:var(--electric-blue);"></i>
@@ -561,6 +564,7 @@
     </div>
   </header>
 
+  <div class="mob-overlay" id="mob-overlay"></div>
   <div class="dashboard-wrapper">
     <aside class="dashboard-sidebar">
       <div class="sidebar-label">תפריט</div>
@@ -579,6 +583,7 @@
       <div class="sidebar-label">כלים</div>
       <ul class="dashboard-nav">
         <li><a onclick="showSection('quote-calculator')" id="nav-quote-calculator"><i class="ph ph-calculator"></i> מחשבון הצעת מחיר</a></li>
+        <li><a href="supplier-apply.html"><i class="ph ph-storefront"></i> הצטרפות כספק</a></li>
       </ul>
 
       <div class="sidebar-user-footer">
@@ -3086,5 +3091,21 @@ init();
   </div>
 </div>
 
+<script>
+// Mobile hamburger menu
+(function() {
+  const burger  = document.getElementById('mob-burger');
+  const sidebar = document.querySelector('.dashboard-sidebar');
+  const overlay = document.getElementById('mob-overlay');
+  function openSidebar()  { sidebar.classList.add('mob-open');    overlay.classList.add('open'); }
+  function closeSidebar() { sidebar.classList.remove('mob-open'); overlay.classList.remove('open'); }
+  burger?.addEventListener('click', () => sidebar.classList.contains('mob-open') ? closeSidebar() : openSidebar());
+  overlay?.addEventListener('click', closeSidebar);
+  // Close sidebar when a nav link is clicked on mobile
+  document.querySelectorAll('.dashboard-nav a').forEach(a => a.addEventListener('click', () => {
+    if (window.innerWidth <= 768) closeSidebar();
+  }));
+})();
+</script>
 </body>
 </html>

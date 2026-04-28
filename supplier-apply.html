@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUM-IL | הצטרפות כספק</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  font-family: 'Heebo', sans-serif;
+  background: #f3f6fb;
+  color: #1a2640;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── HEADER ── */
+.apply-header {
+  background: #ffffff;
+  border-bottom: 1px solid #dde4f0;
+  padding: 0.9rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 8px rgba(26,64,120,0.06);
+}
+.apply-header img { height: 36px; display: block; }
+.header-user {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.85rem;
+  color: #6b7a99;
+}
+.header-user strong { color: #1a2640; }
+
+/* ── MAIN LAYOUT ── */
+.apply-body {
+  flex: 1;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2.5rem 1.5rem 4rem;
+}
+.apply-container {
+  width: 100%;
+  max-width: 760px;
+}
+
+/* ── STEP INDICATOR ── */
+.step-indicator {
+  display: flex;
+  align-items: center;
+  margin-bottom: 2rem;
+  position: relative;
+}
+.step-indicator::before {
+  content: '';
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  left: 20px;
+  height: 2px;
+  background: #dde4f0;
+  z-index: 0;
+}
+.step-node {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  position: relative;
+  z-index: 1;
+}
+.step-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #dde4f0;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #9baabf;
+  transition: all 0.25s ease;
+  margin-bottom: 0.5rem;
+}
+.step-node.active .step-circle {
+  border-color: #1a5faa;
+  background: #1a5faa;
+  color: #ffffff;
+  box-shadow: 0 0 0 4px rgba(26,95,170,0.14);
+}
+.step-node.done .step-circle {
+  border-color: #16a34a;
+  background: #16a34a;
+  color: #ffffff;
+}
+.step-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #9baabf;
+  white-space: nowrap;
+  text-align: center;
+}
+.step-node.active .step-label { color: #1a5faa; }
+.step-node.done  .step-label { color: #16a34a; }
+
+/* ── PROGRESS BAR ── */
+.progress-track {
+  height: 4px;
+  background: #dde4f0;
+  border-radius: 4px;
+  margin-bottom: 0.5rem;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1a5faa, #0d4d96);
+  border-radius: 4px;
+  transition: width 0.4s ease;
+}
+
+/* ── CARD ── */
+.form-card {
+  background: #ffffff;
+  border: 1px solid #dde4f0;
+  border-radius: 16px;
+  box-shadow: 0 2px 20px rgba(26,64,120,0.07);
+  overflow: hidden;
+}
+.card-head {
+  padding: 1.75rem 2rem 1.25rem;
+  border-bottom: 1px solid #f0f4fb;
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.card-head-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: #eaf2ff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.card-head-icon i { font-size: 1.4rem; color: #1a5faa; }
+.card-head-title { font-size: 1.2rem; font-weight: 800; color: #1a2640; margin-bottom: 0.2rem; }
+.card-head-sub   { font-size: 0.85rem; color: #6b7a99; line-height: 1.5; }
+.card-body { padding: 2rem; }
+
+/* ── FORM ELEMENTS ── */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.25rem; }
+.form-row.single { grid-template-columns: 1fr; }
+.form-row.triple { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+.form-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #1a2640;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.form-label .req { color: #dc2626; }
+.form-input, .form-select, .form-textarea {
+  padding: 0.65rem 0.9rem;
+  border: 1.5px solid #dde4f0;
+  border-radius: 8px;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  color: #1a2640;
+  background: #ffffff;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  width: 100%;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: #1a5faa;
+  box-shadow: 0 0 0 3px rgba(26,95,170,0.1);
+}
+.form-input.error, .form-select.error { border-color: #dc2626; }
+.form-textarea { resize: vertical; min-height: 100px; }
+.form-hint { font-size: 0.75rem; color: #9baabf; margin-top: 0.2rem; }
+.form-error { font-size: 0.75rem; color: #dc2626; margin-top: 0.2rem; display: none; }
+.form-error.show { display: block; }
+
+/* ── RADIO CARDS ── */
+.radio-group { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+.radio-card {
+  flex: 1;
+  min-width: 120px;
+  border: 2px solid #dde4f0;
+  border-radius: 10px;
+  padding: 0.9rem 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  transition: all 0.18s ease;
+  background: #ffffff;
+}
+.radio-card:hover { border-color: #a0bcdf; background: #f7f9fd; }
+.radio-card input[type=radio] { display: none; }
+.radio-card.selected {
+  border-color: #1a5faa;
+  background: #eaf2ff;
+}
+.radio-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid #9baabf;
+  flex-shrink: 0;
+  transition: all 0.18s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.radio-card.selected .radio-dot {
+  border-color: #1a5faa;
+  background: #1a5faa;
+}
+.radio-card.selected .radio-dot::after {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ffffff;
+}
+.radio-card-label { font-size: 0.88rem; font-weight: 600; color: #1a2640; }
+.radio-card-sub { font-size: 0.74rem; color: #9baabf; }
+
+/* ── FILE UPLOAD ── */
+.file-upload-area {
+  border: 2px dashed #c8d6eb;
+  border-radius: 10px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  background: #fafcff;
+  position: relative;
+}
+.file-upload-area:hover { border-color: #1a5faa; background: #f0f6ff; }
+.file-upload-area.has-file { border-color: #16a34a; background: #f0fdf4; border-style: solid; }
+.file-upload-area input[type=file] {
+  position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.file-icon { font-size: 1.6rem; color: #9baabf; margin-bottom: 0.4rem; }
+.file-upload-area.has-file .file-icon { color: #16a34a; }
+.file-label { font-size: 0.82rem; font-weight: 600; color: #6b7a99; }
+.file-sub { font-size: 0.72rem; color: #9baabf; margin-top: 0.2rem; }
+.file-name {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #16a34a;
+  margin-top: 0.3rem;
+  display: none;
+}
+.file-upload-area.has-file .file-name { display: block; }
+.file-upload-area.has-file .file-label { display: none; }
+.file-upload-area.has-file .file-sub { display: none; }
+
+/* ── CATEGORY GRID ── */
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+}
+.cat-card {
+  border: 2px solid #dde4f0;
+  border-radius: 10px;
+  padding: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  transition: all 0.18s ease;
+  background: #ffffff;
+  user-select: none;
+}
+.cat-card:hover { border-color: #a0bcdf; background: #f7f9fd; }
+.cat-card.selected { border-color: #1a5faa; background: #eaf2ff; }
+.cat-card input[type=checkbox] { display: none; }
+.cat-checkbox {
+  width: 20px;
+  height: 20px;
+  border-radius: 5px;
+  border: 2px solid #9baabf;
+  flex-shrink: 0;
+  margin-top: 1px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.18s ease;
+}
+.cat-card.selected .cat-checkbox {
+  border-color: #1a5faa;
+  background: #1a5faa;
+}
+.cat-card.selected .cat-checkbox::after {
+  content: '';
+  width: 10px;
+  height: 7px;
+  border-left: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+  display: block;
+}
+.cat-icon { font-size: 1.25rem; color: #9baabf; flex-shrink: 0; margin-top: 0px; }
+.cat-card.selected .cat-icon { color: #1a5faa; }
+.cat-name { font-size: 0.84rem; font-weight: 700; color: #1a2640; line-height: 1.3; }
+.cat-desc { font-size: 0.72rem; color: #9baabf; margin-top: 0.15rem; }
+.cat-info { flex: 1; }
+
+/* ── AREA CHIPS ── */
+.area-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.area-chip {
+  padding: 0.45rem 1rem;
+  border: 1.5px solid #dde4f0;
+  border-radius: 50px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #6b7a99;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  user-select: none;
+  background: #ffffff;
+}
+.area-chip:hover { border-color: #a0bcdf; color: #1a5faa; }
+.area-chip.selected { border-color: #1a5faa; background: #1a5faa; color: #ffffff; }
+
+/* ── PRODUCT DATA SECTION ── */
+.product-section {
+  border: 1px solid #dde4f0;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+.product-section-head {
+  background: #f7f9fd;
+  border-bottom: 1px solid #dde4f0;
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #1a2640;
+}
+.product-section-head i { font-size: 1.1rem; color: #1a5faa; }
+.product-section-body { padding: 1.25rem; display: flex; flex-direction: column; gap: 1rem; }
+
+/* ── STEP VISIBILITY ── */
+.form-step { display: none; }
+.form-step.active { display: block; }
+
+/* ── NAV FOOTER ── */
+.form-footer {
+  padding: 1.5rem 2rem;
+  border-top: 1px solid #f0f4fb;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fafcff;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.5rem;
+  font-family: 'Heebo', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  text-decoration: none;
+}
+.btn-primary {
+  background: #1a5faa;
+  color: #ffffff;
+}
+.btn-primary:hover { background: #0d4d96; }
+.btn-primary:disabled { background: #9baabf; cursor: not-allowed; }
+.btn-ghost {
+  background: transparent;
+  color: #6b7a99;
+  border: 1.5px solid #dde4f0;
+}
+.btn-ghost:hover { border-color: #a0bcdf; color: #1a2640; }
+.btn-success {
+  background: #16a34a;
+  color: #ffffff;
+}
+.btn-success:hover { background: #15803d; }
+
+/* ── STEP COUNTER ── */
+.step-counter {
+  font-size: 0.8rem;
+  color: #9baabf;
+  font-weight: 500;
+}
+
+/* ── SUCCESS STATE ── */
+#success-state {
+  display: none;
+  text-align: center;
+  padding: 4rem 2rem;
+}
+#success-state.show { display: block; }
+.success-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: #dcfce7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.5rem;
+}
+.success-icon i { font-size: 2.5rem; color: #16a34a; }
+.success-title { font-size: 1.6rem; font-weight: 800; color: #1a2640; margin-bottom: 0.5rem; }
+.success-sub { font-size: 0.95rem; color: #6b7a99; line-height: 1.6; margin-bottom: 0.5rem; }
+.success-app-num {
+  display: inline-block;
+  background: #eaf2ff;
+  border: 1px solid #c0d8f0;
+  border-radius: 8px;
+  padding: 0.5rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #1a5faa;
+  margin: 1rem 0 2rem;
+  letter-spacing: 1px;
+}
+
+/* ── DIVIDER ── */
+.section-divider {
+  border: none;
+  border-top: 1px solid #f0f4fb;
+  margin: 1.5rem 0;
+}
+
+/* ── INFO BOX ── */
+.info-box {
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  border-right: 3px solid #f59e0b;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-size: 0.82rem;
+  color: #78350f;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+.info-box i { font-size: 1rem; color: #f59e0b; flex-shrink: 0; margin-top: 1px; }
+
+/* ── UPLOAD SPINNER ── */
+.upload-spinner {
+  display: none;
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: #1a2640;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 0.88rem;
+  font-weight: 600;
+  z-index: 9999;
+  transition: transform 0.3s ease;
+  pointer-events: none;
+}
+#toast.show { transform: translateX(-50%) translateY(0); }
+#toast.error { background: #dc2626; }
+
+@media (max-width: 640px) {
+  .apply-body { padding: 1.5rem 1rem 3rem; }
+  .card-body { padding: 1.25rem; }
+  .form-row { grid-template-columns: 1fr; }
+  .form-row.triple { grid-template-columns: 1fr; }
+  .category-grid { grid-template-columns: 1fr 1fr; }
+  .form-footer { flex-direction: column-reverse; gap: 0.75rem; }
+  .btn { width: 100%; justify-content: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="apply-header">
+  <a href="dashboard.html">
+    <img src="logo.PNG" alt="ALUM-IL">
+  </a>
+  <div class="header-user">
+    <i class="ph ph-building-office" style="font-size:1.1rem;color:#1a5faa;"></i>
+    <span>הצטרפות כספק | <strong id="headerUserName">טוען...</strong></span>
+    <i class="ph ph-sign-out" style="font-size:1.1rem;cursor:pointer;color:#9baabf;" onclick="handleSignOut()" title="יציאה"></i>
+  </div>
+</header>
+
+<div class="apply-body">
+  <div class="apply-container">
+
+    <!-- STEP INDICATOR -->
+    <div class="step-indicator" id="stepIndicator">
+      <div class="step-node active" data-step="1">
+        <div class="step-circle" id="circle-1">1</div>
+        <div class="step-label">זהות משפטית</div>
+      </div>
+      <div class="step-node" data-step="2">
+        <div class="step-circle" id="circle-2">2</div>
+        <div class="step-label">סלי מוצרים</div>
+      </div>
+      <div class="step-node" data-step="3">
+        <div class="step-circle" id="circle-3">3</div>
+        <div class="step-label">לוגיסטיקה</div>
+      </div>
+      <div class="step-node" data-step="4">
+        <div class="step-circle" id="circle-4">4</div>
+        <div class="step-label">הצעת ערך</div>
+      </div>
+    </div>
+
+    <!-- PROGRESS BAR -->
+    <div class="progress-track" style="margin-bottom:1.5rem;">
+      <div class="progress-fill" id="progressFill" style="width:25%;"></div>
+    </div>
+
+    <!-- SUCCESS STATE -->
+    <div id="success-state">
+      <div class="success-icon"><i class="ph ph-check-circle"></i></div>
+      <h2 class="success-title">הבקשה הוגשה בהצלחה!</h2>
+      <p class="success-sub">צוות ALUM-IL יבדוק את בקשתך ויצור קשר בהקדם.</p>
+      <div class="success-app-num" id="successAppNum">APP-XXXX</div>
+      <p class="success-sub" style="font-size:0.82rem;">שמור את מספר הבקשה לצורכי מעקב</p>
+      <div style="display:flex;gap:1rem;justify-content:center;margin-top:1rem;">
+        <a href="dashboard.html" class="btn btn-ghost"><i class="ph ph-house"></i> חזור לדשבורד</a>
+      </div>
+    </div>
+
+    <!-- FORM CARD -->
+    <div id="formCard" class="form-card">
+
+      <!-- ════ STEP 1: Legal Identity ════ -->
+      <div class="form-step active" id="step-1">
+        <div style="background:linear-gradient(135deg,#eaf2ff 0%,#f0f6ff 100%);border-bottom:1px solid #d4e6fa;padding:1.5rem 2rem;display:flex;align-items:center;gap:1rem;">
+          <div style="width:44px;height:44px;background:#1a5faa;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+            <i class="ph ph-hand-waving" style="font-size:1.4rem;color:#ffffff;"></i>
+          </div>
+          <div>
+            <div style="font-size:1rem;font-weight:800;color:#1a2640;margin-bottom:0.2rem;">ברוכים הבאים לתהליך ההצטרפות כספק ALUM-IL</div>
+            <div style="font-size:0.84rem;color:#6b7a99;line-height:1.5;">מלא את הפרטים בארבעת השלבים הבאים. התהליך נמשך כ-5 דקות ובסיומו הבקשה תועבר לבדיקת צוות ALUM-IL.</div>
+          </div>
+        </div>
+        <div class="card-head">
+          <div class="card-head-icon"><i class="ph ph-identification-card"></i></div>
+          <div>
+            <div class="card-head-title">זהות משפטית ופרטי חברה</div>
+            <div class="card-head-sub">מלא את פרטי הישות המשפטית שבשמה אתה מגיש את הבקשה</div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="form-row single" style="margin-bottom:1.5rem;">
+            <div class="form-group">
+              <div class="form-label">סוג ישות <span class="req">*</span></div>
+              <div class="radio-group" id="entityTypeGroup">
+                <label class="radio-card selected" onclick="selectRadio('entityTypeGroup', this, 'entity_type', 'sole_prop')">
+                  <input type="radio" name="entity_type" value="sole_prop" checked>
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">עוסק מורשה</div>
+                    <div class="radio-card-sub">יחיד / עצמאי</div>
+                  </div>
+                </label>
+                <label class="radio-card" onclick="selectRadio('entityTypeGroup', this, 'entity_type', 'ltd')">
+                  <input type="radio" name="entity_type" value="ltd">
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">חברה בע"מ</div>
+                    <div class="radio-card-sub">ח.פ. רשום</div>
+                  </div>
+                </label>
+                <label class="radio-card" onclick="selectRadio('entityTypeGroup', this, 'entity_type', 'partnership')">
+                  <input type="radio" name="entity_type" value="partnership">
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">שותפות</div>
+                    <div class="radio-card-sub">שותפות רשומה</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">שם העסק / החברה <span class="req">*</span></label>
+              <input class="form-input" type="text" id="businessName" placeholder="לדוגמה: אלום סנדרי בע״מ">
+              <span class="form-error" id="err-businessName">שדה חובה</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label" id="idLabel">מספר עוסק מורשה <span class="req">*</span></label>
+              <input class="form-input" type="text" id="idNumber" placeholder="000000000">
+              <span class="form-error" id="err-idNumber">שדה חובה</span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">שם מגיש הבקשה (נציג) <span class="req">*</span></label>
+              <input class="form-input" type="text" id="representativeName" placeholder="שם פרטי ומשפחה">
+              <span class="form-error" id="err-representativeName">שדה חובה</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">תפקיד בחברה</label>
+              <input class="form-input" type="text" id="jobTitle" placeholder="לדוגמה: מנכ״ל, שותף">
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">טלפון <span class="req">*</span></label>
+              <input class="form-input" type="tel" id="phone" placeholder="05X-XXXXXXX" dir="ltr">
+              <span class="form-error" id="err-phone">שדה חובה</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">דוא״ל לתקשורת <span class="req">*</span></label>
+              <input class="form-input" type="email" id="contactEmail" placeholder="name@company.co.il" dir="ltr">
+              <span class="form-error" id="err-contactEmail">שדה חובה</span>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <div class="info-box">
+            <i class="ph ph-info"></i>
+            <span>המסמכים הבאים נדרשים לאימות הזהות המשפטית. קבצים מותרים: PDF, JPG, PNG (עד 5MB לקובץ).</span>
+          </div>
+
+          <div class="form-row triple">
+            <div class="form-group">
+              <label class="form-label">תעודת עוסק מורשה / תעודת התאגדות <span class="req">*</span></label>
+              <div class="file-upload-area" id="upload-business_cert">
+                <input type="file" id="file-business_cert" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this, 'business_cert')">
+                <div class="file-icon"><i class="ph ph-file-pdf"></i></div>
+                <div class="file-label">לחץ להעלאת קובץ</div>
+                <div class="file-sub">PDF / JPG / PNG עד 5MB</div>
+                <div class="file-name" id="fname-business_cert"></div>
+              </div>
+              <span class="form-error" id="err-business_cert">נדרש להעלות מסמך</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">פרוטוקול מורשי חתימה</label>
+              <div class="file-upload-area" id="upload-sig_protocol">
+                <input type="file" id="file-sig_protocol" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this, 'sig_protocol')">
+                <div class="file-icon"><i class="ph ph-signature"></i></div>
+                <div class="file-label">לחץ להעלאת קובץ</div>
+                <div class="file-sub">רלוונטי לחברות בע״מ</div>
+                <div class="file-name" id="fname-sig_protocol"></div>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">ת.ז של מגיש הבקשה <span class="req">*</span></label>
+              <div class="file-upload-area" id="upload-id_photo">
+                <input type="file" id="file-id_photo" accept=".pdf,.jpg,.jpeg,.png" onchange="handleFileSelect(this, 'id_photo')">
+                <div class="file-icon"><i class="ph ph-identification-badge"></i></div>
+                <div class="file-label">לחץ להעלאת קובץ</div>
+                <div class="file-sub">צילום ת.ז שני צדדים</div>
+                <div class="file-name" id="fname-id_photo"></div>
+              </div>
+              <span class="form-error" id="err-id_photo">נדרש להעלות מסמך</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="form-footer">
+          <span class="step-counter">שלב 1 מתוך 4</span>
+          <button class="btn btn-primary" onclick="goNext(1)">
+            המשך <i class="ph ph-arrow-left"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ════ STEP 2: Product Categories ════ -->
+      <div class="form-step" id="step-2">
+        <div class="card-head">
+          <div class="card-head-icon"><i class="ph ph-package"></i></div>
+          <div>
+            <div class="card-head-title">בחירת סלי מוצרים</div>
+            <div class="card-head-sub">בחר את הקטגוריות שבהן אתה מספק מוצרים ושירותים ברמה הגבוהה ביותר</div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <div class="info-box">
+            <i class="ph ph-info"></i>
+            <span>בחר <strong>רק</strong> את הקטגוריות שבהן אתה יכול לתת את המוצר והשירות הטובים ביותר. בשלב הבא תתבקש לספק פרטי תמחור ומפרט עבור כל קטגוריה שתבחר.</span>
+          </div>
+
+          <div class="category-grid" id="categoryGrid">
+            <!-- populated by JS -->
+          </div>
+          <span class="form-error" id="err-categories" style="display:none;margin-top:0.75rem;">יש לבחור לפחות קטגוריה אחת</span>
+
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-ghost" onclick="goBack(2)">
+            <i class="ph ph-arrow-right"></i> חזור
+          </button>
+          <span class="step-counter">שלב 2 מתוך 4</span>
+          <button class="btn btn-primary" onclick="goNext(2)">
+            המשך <i class="ph ph-arrow-left"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ════ STEP 3: Logistics ════ -->
+      <div class="form-step" id="step-3">
+        <div class="card-head">
+          <div class="card-head-icon"><i class="ph ph-truck"></i></div>
+          <div>
+            <div class="card-head-title">לוגיסטיקה ואזורי שירות</div>
+            <div class="card-head-sub">הגדר באילו אזורים אתה פועל ומה תנאי האספקה שלך</div>
+          </div>
+        </div>
+        <div class="card-body">
+
+          <!-- כתובת עסק — חובה -->
+          <div class="form-row single" style="margin-bottom:1.5rem;">
+            <div class="form-group">
+              <label class="form-label">כתובת בית העסק <span class="req">*</span></label>
+              <input class="form-input" type="text" id="warehouseAddress" placeholder="רחוב, מספר, עיר">
+              <div class="form-hint">כתובת המחסן / המפעל / המשרד הראשי</div>
+              <span class="form-error" id="err-warehouseAddress">שדה חובה</span>
+            </div>
+          </div>
+
+          <!-- אזורי שירות -->
+          <div class="form-group" style="margin-bottom:1.5rem;">
+            <label class="form-label">אזורי שירות <span class="req">*</span> <span style="font-size:0.72rem;color:#9baabf;">(בחר את כל האזורים הרלוונטיים)</span></label>
+            <div class="area-grid" id="areaGrid">
+              <!-- populated by JS -->
+            </div>
+            <span class="form-error" id="err-areas">יש לבחור לפחות אזור שירות אחד</span>
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- שיטת אספקה -->
+          <div class="form-row single" style="margin-bottom:1rem;">
+            <div class="form-group">
+              <div class="form-label">שיטת אספקה <span class="req">*</span></div>
+              <div class="radio-group" id="deliveryGroup">
+                <label class="radio-card selected" onclick="selectDelivery(this, 'self')">
+                  <input type="radio" name="delivery_method" value="self" checked>
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">משלוח עצמי</div>
+                    <div class="radio-card-sub">הספק מוביל בעצמו</div>
+                  </div>
+                </label>
+                <label class="radio-card" onclick="selectDelivery(this, 'third_party')">
+                  <input type="radio" name="delivery_method" value="third_party">
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">חברת שליחויות</div>
+                    <div class="radio-card-sub">צד ג׳ / חברת הפצה</div>
+                  </div>
+                </label>
+                <label class="radio-card" onclick="selectDelivery(this, 'pickup_only')">
+                  <input type="radio" name="delivery_method" value="pickup_only">
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">איסוף עצמי בלבד</div>
+                    <div class="radio-card-sub">לקוח אוסף מהמחסן</div>
+                  </div>
+                </label>
+                <label class="radio-card" onclick="selectDelivery(this, 'other')">
+                  <input type="radio" name="delivery_method" value="other">
+                  <div class="radio-dot"></div>
+                  <div>
+                    <div class="radio-card-label">אחר</div>
+                    <div class="radio-card-sub">שיטה שונה — פרט למטה</div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+          <div id="deliveryOtherWrap" style="display:none;margin-bottom:1.25rem;">
+            <div class="form-group">
+              <label class="form-label">פרט את שיטת האספקה <span class="req">*</span></label>
+              <input class="form-input" type="text" id="deliveryOtherText" placeholder="תאר את שיטת המשלוח שלך...">
+              <span class="form-error" id="err-deliveryOtherText">נדרש לפרט את שיטת האספקה</span>
+            </div>
+          </div>
+
+          <!-- זמן אספקה + מינימום -->
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">זמן אספקה מרגע הזמנה (ימי עסקים) <span class="req">*</span></label>
+              <input class="form-input" type="number" id="leadTime" placeholder="לדוגמה: 5" min="1">
+              <div class="form-hint">זמן ממוצע מאישור הזמנה עד משלוח בימי עסקים</div>
+              <span class="form-error" id="err-leadTime">שדה חובה</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">מינימום להזמנה (₪) <span class="req">*</span></label>
+              <input class="form-input" type="number" id="minOrder" placeholder="לדוגמה: 500" min="0">
+              <div class="form-hint">סכום מינימלי לביצוע הזמנה</div>
+              <span class="form-error" id="err-minOrder">שדה חובה</span>
+            </div>
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- פרופיל עסקי -->
+          <div style="background:#f7f9fd;border:1px solid #dde4f0;border-right:3px solid #1a5faa;border-radius:8px;padding:0.85rem 1rem;margin-bottom:1.25rem;display:flex;align-items:flex-start;gap:0.5rem;">
+            <i class="ph ph-info" style="color:#1a5faa;flex-shrink:0;margin-top:1px;"></i>
+            <span style="font-size:0.82rem;color:#1a2640;line-height:1.6;">אנחנו רוצים להבין <strong>כמה עבודה המערך הקיים שלך יכול לספוג</strong> — מבלי לפגוע באיכות התוצר ובשירות ללקוח. המידע הזה עוזר לנו להתאים את היקף ההזמנות שנפנה אליך.</span>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">כמה שנים העסק קיים ורשום? <span class="req">*</span></label>
+              <select class="form-select" id="businessYears">
+                <option value="">בחר...</option>
+                <option value="less_1">פחות משנה</option>
+                <option value="1_3">1–3 שנים</option>
+                <option value="3_7">3–7 שנים</option>
+                <option value="7_plus">7 שנים ומעלה</option>
+              </select>
+              <span class="form-error" id="err-businessYears">שדה חובה</span>
+            </div>
+            <div class="form-group">
+              <label class="form-label">באיזו יחידה תמדוד את היקף הפעילות? <span class="req">*</span></label>
+              <select class="form-select" id="capacityUnit">
+                <option value="">בחר יחידה...</option>
+                <option value="ils">שווי כספי (₪ לחודש)</option>
+                <option value="sqm">שטח (מ"ר לחודש)</option>
+                <option value="kg">משקל (ק"ג לחודש)</option>
+                <option value="ton">משקל (טון לחודש)</option>
+              </select>
+              <div class="form-hint">בחר את היחידה שהכי טבעית לתיאור הפעילות שלך</div>
+              <span class="form-error" id="err-capacityUnit">שדה חובה</span>
+            </div>
+          </div>
+
+          <div class="form-row single">
+            <div class="form-group">
+              <label class="form-label">מה הכמות המקסימלית שאתה יכול לעמוד בה בחודש — ברמת שירות ואיכות מלאה? <span class="req">*</span></label>
+              <input class="form-input" type="number" id="monthlyCapacity" placeholder="לדוגמה: 50000" min="0">
+              <div class="form-hint">אל תציין את המקסימום התיאורטי — ציין את הכמות שאתה <strong>בטוח</strong> שתוכל לעמוד בה בלי לפשר על איכות או זמנים</div>
+              <span class="form-error" id="err-monthlyCapacity">שדה חובה</span>
+            </div>
+          </div>
+
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-ghost" onclick="goBack(3)">
+            <i class="ph ph-arrow-right"></i> חזור
+          </button>
+          <span class="step-counter">שלב 3 מתוך 4</span>
+          <button class="btn btn-primary" onclick="goNext(3)">
+            המשך <i class="ph ph-arrow-left"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- ════ STEP 4: Value Proposition ════ -->
+      <div class="form-step" id="step-4">
+        <div class="card-head">
+          <div class="card-head-icon"><i class="ph ph-currency-dollar-simple"></i></div>
+          <div>
+            <div class="card-head-title">הצעת ערך ותמחור</div>
+            <div class="card-head-sub">עבור כל קטגוריה שבחרת — הזן מחירון, מפרט טכני, או העלה קובץ מפרט</div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div id="productDataSections">
+            <!-- populated dynamically from selected categories -->
+          </div>
+
+          <hr class="section-divider">
+
+          <!-- PORTFOLIO MEDIA -->
+          <div style="font-size:0.72rem;font-weight:800;text-transform:uppercase;letter-spacing:1px;color:#9baabf;margin-bottom:0.75rem;">
+            <i class="ph ph-images" style="margin-left:0.3rem;"></i> תמונות וסרטונים של עבודות אמיתיות (אופציונלי)
+          </div>
+          <div style="background:#f7f9fd;border:1px solid #dde4f0;border-right:3px solid #1a5faa;border-radius:8px;padding:0.85rem 1rem;margin-bottom:1rem;font-size:0.82rem;color:#1a2640;line-height:1.6;">
+            <i class="ph ph-star" style="color:#c47c00;margin-left:0.3rem;"></i>
+            תמונות וסרטונים של עבודות שביצעת <strong>מגדילים משמעותית</strong> את הסיכוי לאישור הבקשה — הם מראים לנו את רמת הביצוע בפועל. ניתן להעלות עד 10 קבצים.
+          </div>
+
+          <div class="file-upload-area" id="upload-portfolio" style="padding:2rem;text-align:center;cursor:pointer;">
+            <input type="file" id="file-portfolio"
+              accept=".jpg,.jpeg,.png,.webp,.mp4,.mov,.avi"
+              multiple
+              onchange="handlePortfolioSelect(this)"
+              style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%;">
+            <div class="file-icon"><i class="ph ph-upload-simple"></i></div>
+            <div class="file-label">לחץ לבחירת קבצים</div>
+            <div class="file-sub">תמונות (JPG/PNG/WEBP) וסרטונים (MP4/MOV) — עד 20MB לקובץ, עד 10 קבצים</div>
+          </div>
+
+          <div id="portfolioPreview" style="display:none;margin-top:1rem;">
+            <div style="font-size:0.78rem;font-weight:700;color:#6b7a99;margin-bottom:0.6rem;" id="portfolioCount"></div>
+            <div id="portfolioThumbs" style="display:flex;flex-wrap:wrap;gap:0.5rem;"></div>
+          </div>
+        </div>
+        <div class="form-footer">
+          <button class="btn btn-ghost" onclick="goBack(4)">
+            <i class="ph ph-arrow-right"></i> חזור
+          </button>
+          <span class="step-counter">שלב 4 מתוך 4</span>
+          <button class="btn btn-success" id="submitBtn" onclick="submitApplication()">
+            <span class="upload-spinner" id="submitSpinner"></span>
+            <i class="ph ph-paper-plane-tilt" id="submitIcon"></i>
+            שלח בקשה
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /form-card -->
+
+  </div><!-- /apply-container -->
+</div><!-- /apply-body -->
+
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+// ─── State ─────────────────────────────────────────────
+let currentStep = 1;
+let currentUser = null;
+const formData = {
+  entity_type: 'sole_prop',
+  delivery_method: 'self',
+};
+const selectedFiles = {};  // key → File object
+let portfolioFiles = [];   // File[] for portfolio media
+const selectedCategories = new Set();
+const selectedAreas = new Set();
+
+// ─── Categories ────────────────────────────────────────
+const CATEGORIES = [
+  { key: 'kits',            label: 'קיטים — פרגולות וגדרות',        icon: 'ph-package',           desc: 'אספקת קיטים מוכנים למתקינים' },
+  { key: 'electric_perg',   label: 'פרגולות חשמליות',               icon: 'ph-lightning',         desc: 'פרגולות ביוקלימטיות עם מנוע' },
+  { key: 'roller_screens',  label: 'מסכי גלילה',                    icon: 'ph-rows',              desc: 'מסכי הצללה ורוח גלילה' },
+  { key: 'raw_materials',   label: 'מחסן חומרי גלם',                icon: 'ph-warehouse',         desc: 'אספקת פרופילים וחומרי גלם' },
+  { key: 'windows',         label: 'חלונות אלומיניום',              icon: 'ph-browser',           desc: 'חלונות, שקופיות ומגופות' },
+  { key: 'doors_cladding',  label: 'דלתות וחיפויים אלומיניום',      icon: 'ph-door',              desc: 'דלתות כניסה, פנים וחיפויים' },
+  { key: 'fences_gates',    label: 'יצרן גדרות ושערים',             icon: 'ph-path',              desc: 'גדרות, שערים ומעקות' },
+  { key: 'glass_partitions',label: 'מחיצות ומעקות זכוכית',          icon: 'ph-squares-four',      desc: 'מחיצות פנים ומעקות זכוכית' },
+  { key: 'exterior_design', label: 'עיצוב חוץ',                     icon: 'ph-tree',              desc: 'פתרונות עיצוב ואדריכלות חוץ' },
+  { key: 'accessories',     label: 'אביזרים ופרזול',                icon: 'ph-wrench',            desc: 'ידיות, צירים, מנעולים ופרזול' },
+  { key: 'sealants',        label: 'חומרי איטום',                   icon: 'ph-drop-half',         desc: 'סיליקון, קצף ופרופילי איטום' },
+  { key: 'motors',          label: 'מנועים חשמליים',                icon: 'ph-cpu',               desc: 'מנועים, שלטים ומערכות בקרה' },
+  { key: 'training',        label: 'לימוד והדרכה',                  icon: 'ph-graduation-cap',    desc: 'הדרכות מקצועיות ולימוד מעשי' },
+];
+
+const AREAS = ['צפון', 'חיפה והכרמל', 'שרון', 'גוש דן', 'מרכז', 'ירושלים והסביבה', 'שפלה', 'דרום', 'נגב'];
+
+// ─── Init ───────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  // Auth check
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) { window.location.href = 'login.html'; return; }
+  currentUser = user;
+  const nameEl = document.getElementById('headerUserName');
+  if (nameEl) nameEl.textContent = user.user_metadata?.full_name || user.email?.split('@')[0] || 'משתמש';
+
+  // Pre-fill email
+  const emailInput = document.getElementById('contactEmail');
+  if (emailInput && user.email) emailInput.value = user.email;
+
+  renderCategoryGrid();
+  renderAreaGrid();
+});
+
+// ─── Render helpers ────────────────────────────────────
+function renderCategoryGrid() {
+  const grid = document.getElementById('categoryGrid');
+  grid.innerHTML = CATEGORIES.map(c => `
+    <div class="cat-card" id="cat-${c.key}" onclick="toggleCategory('${c.key}')">
+      <input type="checkbox" name="category" value="${c.key}">
+      <div class="cat-checkbox"></div>
+      <i class="ph ${c.icon} cat-icon"></i>
+      <div class="cat-info">
+        <div class="cat-name">${c.label}</div>
+        <div class="cat-desc">${c.desc}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderAreaGrid() {
+  const grid = document.getElementById('areaGrid');
+  grid.innerHTML = AREAS.map(a => `
+    <div class="area-chip" id="area-${a}" onclick="toggleArea('${a}')">${a}</div>
+  `).join('');
+}
+
+function renderProductSections() {
+  const container = document.getElementById('productDataSections');
+  if (selectedCategories.size === 0) {
+    container.innerHTML = '<p style="color:#9baabf;text-align:center;padding:2rem;">לא נבחרו קטגוריות</p>';
+    return;
+  }
+  container.innerHTML = [...selectedCategories].map(key => {
+    const cat = CATEGORIES.find(c => c.key === key);
+    if (!cat) return '';
+    return `
+      <div class="product-section">
+        <div class="product-section-head">
+          <i class="ph ${cat.icon}"></i>
+          ${cat.label}
+        </div>
+        <div class="product-section-body">
+          <div class="form-group">
+            <label class="form-label">מחירון / מפרט טכני</label>
+            <textarea class="form-textarea" id="pd-desc-${key}"
+              placeholder="פרט את המוצרים, גדלים, חומרים, מחירים לדוגמה ותנאים...">${formData[`pd_desc_${key}`] || ''}</textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">העלאת קובץ מחירון (אופציונלי)</label>
+            <div class="file-upload-area" id="upload-pd_${key}">
+              <input type="file" id="file-pd_${key}" accept=".pdf,.xlsx,.xls,.csv,.jpg,.png" onchange="handleFileSelect(this, 'pd_${key}')">
+              <div class="file-icon"><i class="ph ph-upload-simple"></i></div>
+              <div class="file-label">לחץ להעלאת קובץ</div>
+              <div class="file-sub">PDF / Excel / תמונה עד 10MB</div>
+              <div class="file-name" id="fname-pd_${key}"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ─── Toggles ────────────────────────────────────────────
+window.toggleCategory = function(key) {
+  const card = document.getElementById('cat-' + key);
+  if (selectedCategories.has(key)) {
+    selectedCategories.delete(key);
+    card.classList.remove('selected');
+  } else {
+    selectedCategories.add(key);
+    card.classList.add('selected');
+  }
+};
+
+window.toggleArea = function(area) {
+  const chip = document.getElementById('area-' + area);
+  if (selectedAreas.has(area)) {
+    selectedAreas.delete(area);
+    chip.classList.remove('selected');
+  } else {
+    selectedAreas.add(area);
+    chip.classList.add('selected');
+  }
+};
+
+window.selectRadio = function(groupId, el, field, value) {
+  document.querySelectorAll(`#${groupId} .radio-card`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  formData[field] = value;
+};
+
+window.selectDelivery = function(el, value) {
+  document.querySelectorAll('#deliveryGroup .radio-card').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  formData.delivery_method = value;
+  document.getElementById('deliveryOtherWrap').style.display = value === 'other' ? 'block' : 'none';
+};
+
+// ─── File handling ──────────────────────────────────────
+window.triggerFile = function(inputId) {
+  // prevent double-trigger from the area click
+  document.getElementById(inputId)?.click();
+};
+
+window.handleFileSelect = function(input, key) {
+  const file = input.files[0];
+  if (!file) return;
+  const maxMB = key.startsWith('pd_') ? 10 : 5;
+  if (file.size > maxMB * 1024 * 1024) {
+    showToast(`הקובץ גדול מדי (מקסימום ${maxMB}MB)`, true);
+    input.value = '';
+    return;
+  }
+  selectedFiles[key] = file;
+  const area = document.getElementById('upload-' + key);
+  const nameEl = document.getElementById('fname-' + key);
+  if (area) area.classList.add('has-file');
+  if (nameEl) nameEl.textContent = file.name;
+  // Hide error if was shown
+  const err = document.getElementById('err-' + key);
+  if (err) err.classList.remove('show');
+};
+
+window.handlePortfolioSelect = function(input) {
+  const files = Array.from(input.files);
+  const maxMB = 20;
+  const maxFiles = 10;
+  const valid = [];
+
+  for (const file of files) {
+    if (file.size > maxMB * 1024 * 1024) {
+      showToast(`"${file.name}" גדול מדי (מקסימום ${maxMB}MB)`, true);
+      continue;
+    }
+    valid.push(file);
+  }
+  if (portfolioFiles.length + valid.length > maxFiles) {
+    showToast(`ניתן להעלות עד ${maxFiles} קבצים בסך הכל`, true);
+    portfolioFiles = [...portfolioFiles, ...valid].slice(0, maxFiles);
+  } else {
+    portfolioFiles = [...portfolioFiles, ...valid];
+  }
+
+  renderPortfolioPreview();
+  input.value = ''; // reset so same files can be re-added from a fresh pick if needed
+};
+
+function renderPortfolioPreview() {
+  const preview = document.getElementById('portfolioPreview');
+  const thumbs  = document.getElementById('portfolioThumbs');
+  const count   = document.getElementById('portfolioCount');
+
+  if (!portfolioFiles.length) {
+    preview.style.display = 'none';
+    document.getElementById('upload-portfolio').classList.remove('has-file');
+    return;
+  }
+
+  preview.style.display = 'block';
+  document.getElementById('upload-portfolio').classList.add('has-file');
+  count.textContent = `${portfolioFiles.length} קבצים נבחרו`;
+
+  thumbs.innerHTML = portfolioFiles.map((f, i) => {
+    const isVideo = f.type.startsWith('video/');
+    const isImage = f.type.startsWith('image/');
+    const url = isImage ? URL.createObjectURL(f) : null;
+    return `
+      <div style="position:relative;width:90px;height:90px;border-radius:8px;overflow:hidden;border:1.5px solid #dde4f0;background:#f7f9fd;flex-shrink:0;">
+        ${isImage
+          ? `<img src="${url}" style="width:100%;height:100%;object-fit:cover;">`
+          : `<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.2rem;padding:0.3rem;">
+               <i class="ph ph-film-slate" style="font-size:1.8rem;color:#1a5faa;"></i>
+               <div style="font-size:0.6rem;color:#9baabf;text-align:center;word-break:break-all;line-height:1.2;">${f.name.substring(0, 18)}</div>
+             </div>`
+        }
+        <button onclick="removePortfolioFile(${i})" style="position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:rgba(220,38,38,0.85);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:#fff;font-size:0.65rem;line-height:1;">✕</button>
+      </div>
+    `;
+  }).join('');
+}
+
+window.removePortfolioFile = function(idx) {
+  portfolioFiles.splice(idx, 1);
+  renderPortfolioPreview();
+};
+
+// ─── Navigation ─────────────────────────────────────────
+window.goNext = function(from) {
+  if (!validateStep(from)) return;
+  collectStepData(from);
+  if (from === 2) renderProductSections();
+  setStep(from + 1);
+};
+
+window.goBack = function(from) {
+  collectStepData(from);
+  setStep(from - 1);
+};
+
+function setStep(n) {
+  document.querySelectorAll('.form-step').forEach(s => s.classList.remove('active'));
+  document.getElementById('step-' + n).classList.add('active');
+
+  // Update indicator
+  for (let i = 1; i <= 4; i++) {
+    const node = document.querySelector(`.step-node[data-step="${i}"]`);
+    const circle = document.getElementById('circle-' + i);
+    node.classList.remove('active', 'done');
+    if (i < n) { node.classList.add('done'); circle.innerHTML = '<i class="ph ph-check" style="font-size:1rem;"></i>'; }
+    else if (i === n) { node.classList.add('active'); circle.textContent = i; }
+    else { circle.textContent = i; }
+  }
+  document.getElementById('progressFill').style.width = (n / 4 * 100) + '%';
+  currentStep = n;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ─── Validation ─────────────────────────────────────────
+function required(id, errId) {
+  const el = document.getElementById(id);
+  const val = el?.value?.trim();
+  const err = document.getElementById(errId || 'err-' + id);
+  if (!val) {
+    el?.classList.add('error');
+    err?.classList.add('show');
+    return false;
+  }
+  el?.classList.remove('error');
+  err?.classList.remove('show');
+  return true;
+}
+
+function validateStep(step) {
+  if (step === 1) {
+    const ok = [
+      required('businessName'),
+      required('idNumber'),
+      required('representativeName'),
+      required('phone'),
+      required('contactEmail'),
+    ].every(Boolean);
+
+    const hasCert = !!selectedFiles['business_cert'];
+    const hasId   = !!selectedFiles['id_photo'];
+    const certErr = document.getElementById('err-business_cert');
+    const idErr   = document.getElementById('err-id_photo');
+    if (!hasCert) certErr?.classList.add('show'); else certErr?.classList.remove('show');
+    if (!hasId)   idErr?.classList.add('show');   else idErr?.classList.remove('show');
+
+    if (!ok || !hasCert || !hasId) {
+      showToast('אנא מלא את כל שדות החובה', true);
+      return false;
+    }
+    return true;
+  }
+
+  if (step === 2) {
+    if (selectedCategories.size === 0) {
+      document.getElementById('err-categories').style.display = 'block';
+      showToast('יש לבחור לפחות קטגוריה אחת', true);
+      return false;
+    }
+    document.getElementById('err-categories').style.display = 'none';
+    return true;
+  }
+
+  if (step === 3) {
+    const fields = [
+      required('warehouseAddress'),
+      required('leadTime'),
+      required('minOrder'),
+      required('businessYears'),
+      required('capacityUnit'),
+      required('monthlyCapacity'),
+    ];
+    if (selectedAreas.size === 0) {
+      document.getElementById('err-areas').classList.add('show');
+      fields.push(false);
+    } else {
+      document.getElementById('err-areas').classList.remove('show');
+    }
+    if (formData.delivery_method === 'other') {
+      fields.push(required('deliveryOtherText'));
+    }
+    if (!fields.every(Boolean)) {
+      showToast('אנא מלא את כל שדות החובה', true);
+      return false;
+    }
+    return true;
+  }
+
+  return true;
+}
+
+// ─── Collect data ───────────────────────────────────────
+function collectStepData(step) {
+  if (step === 1) {
+    formData.business_name        = document.getElementById('businessName')?.value?.trim();
+    formData.id_number            = document.getElementById('idNumber')?.value?.trim();
+    formData.representative_name  = document.getElementById('representativeName')?.value?.trim();
+    formData.job_title            = document.getElementById('jobTitle')?.value?.trim();
+    formData.phone                = document.getElementById('phone')?.value?.trim();
+    formData.contact_email        = document.getElementById('contactEmail')?.value?.trim();
+  }
+  if (step === 3) {
+    formData.min_order_amount     = parseInt(document.getElementById('minOrder')?.value) || 0;
+    formData.lead_time_days       = parseInt(document.getElementById('leadTime')?.value) || 0;
+    formData.warehouse_address    = document.getElementById('warehouseAddress')?.value?.trim();
+    formData.service_areas        = [...selectedAreas];
+    formData.delivery_other_text  = document.getElementById('deliveryOtherText')?.value?.trim() || '';
+    formData.business_years       = document.getElementById('businessYears')?.value || '';
+    formData.monthly_capacity     = parseInt(document.getElementById('monthlyCapacity')?.value) || 0;
+    formData.capacity_unit        = document.getElementById('capacityUnit')?.value || '';
+  }
+  if (step === 4) {
+    [...selectedCategories].forEach(key => {
+      formData['pd_desc_' + key] = document.getElementById('pd-desc-' + key)?.value?.trim();
+    });
+  }
+}
+
+// ─── Submit ─────────────────────────────────────────────
+window.submitApplication = async function() {
+  if (!validateStep(4)) return;
+  collectStepData(4);
+
+  const btn     = document.getElementById('submitBtn');
+  const spinner = document.getElementById('submitSpinner');
+  const icon    = document.getElementById('submitIcon');
+  btn.disabled  = true;
+  spinner.style.display = 'block';
+  icon.style.display    = 'none';
+
+  try {
+    // 1. Insert application record (status = pending_review)
+    const appPayload = {
+      user_id: currentUser.id,
+      status: 'pending_review',
+      company_details: {
+        entity_type:         formData.entity_type,
+        business_name:       formData.business_name,
+        id_number:           formData.id_number,
+        representative_name: formData.representative_name,
+        job_title:           formData.job_title,
+        phone:               formData.phone,
+        email:               formData.contact_email,
+      },
+      selected_categories: [...selectedCategories],
+      service_details: {
+        service_areas:       formData.service_areas || [],
+        delivery_method:     formData.delivery_method,
+        delivery_other_text: formData.delivery_other_text || '',
+        min_order_amount:    formData.min_order_amount,
+        lead_time_days:      formData.lead_time_days,
+        warehouse_address:   formData.warehouse_address || '',
+        business_years:      formData.business_years || '',
+        monthly_capacity:    formData.monthly_capacity || 0,
+        capacity_unit:       formData.capacity_unit || '',
+      },
+      product_data: Object.fromEntries(
+        [...selectedCategories].map(key => [key, {
+          description:   formData['pd_desc_' + key] || '',
+          pricelist_url: '',
+        }])
+      ),
+      documents: {},
+    };
+
+    const { data: app, error: appErr } = await supabase
+      .from('supplier_applications')
+      .insert(appPayload)
+      .select('id, application_number')
+      .single();
+
+    if (appErr) throw appErr;
+
+    const appId = app.id;
+
+    // 2. Upload files
+    const docUrls = {};
+    const fileMap = {
+      business_cert:  'business_cert_url',
+      sig_protocol:   'signature_protocol_url',
+      id_photo:       'id_photo_url',
+    };
+    const catFileMap = {};
+    [...selectedCategories].forEach(key => {
+      if (selectedFiles['pd_' + key]) catFileMap['pd_' + key] = key;
+    });
+
+    const uploads = [];
+
+    for (const [fileKey, urlKey] of Object.entries(fileMap)) {
+      if (selectedFiles[fileKey]) {
+        uploads.push(
+          uploadFile(currentUser.id, appId, fileKey, selectedFiles[fileKey])
+            .then(url => { if (url) docUrls[urlKey] = url; })
+        );
+      }
+    }
+
+    const productUrls = {};
+    for (const [fileKey, catKey] of Object.entries(catFileMap)) {
+      uploads.push(
+        uploadFile(currentUser.id, appId, fileKey, selectedFiles[fileKey])
+          .then(url => { if (url) productUrls[catKey] = url; })
+      );
+    }
+
+    // Portfolio media uploads
+    const portfolioUrls = [];
+    portfolioFiles.forEach((file, i) => {
+      uploads.push(
+        uploadFile(currentUser.id, appId, `portfolio_${i}_${file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_')}`, file, 'portfolio')
+          .then(url => { if (url) portfolioUrls.push(url); })
+      );
+    });
+
+    await Promise.all(uploads);
+
+    // 3. Update with document URLs
+    const updatedProductData = { ...appPayload.product_data };
+    for (const [catKey, url] of Object.entries(productUrls)) {
+      if (updatedProductData[catKey]) updatedProductData[catKey].pricelist_url = url;
+    }
+
+    await supabase.from('supplier_applications').update({
+      documents: { ...docUrls, portfolio_urls: portfolioUrls },
+      product_data: updatedProductData,
+    }).eq('id', appId);
+
+    // 4. Insert audit log
+    await supabase.from('application_logs').insert({
+      application_id: appId,
+      user_id: currentUser.id,
+      action: 'created',
+      changes: { status: { from: null, to: 'pending_review' } },
+    });
+
+    // 5. Show success
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('stepIndicator').style.display = 'none';
+    document.querySelector('.progress-track').style.display = 'none';
+    document.getElementById('successAppNum').textContent = app.application_number;
+    document.getElementById('success-state').classList.add('show');
+
+  } catch (err) {
+    console.error(err);
+    showToast('שגיאה בשליחת הבקשה — אנא נסה שוב', true);
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    icon.style.display = '';
+  }
+};
+
+async function uploadFile(userId, appId, fileKey, file, subfolder = '') {
+  const ext  = file.name.split('.').pop();
+  const dir  = subfolder ? `${userId}/${appId}/${subfolder}` : `${userId}/${appId}`;
+  const path = `${dir}/${fileKey}${subfolder ? '' : '.' + ext}`;
+  const { error } = await supabase.storage
+    .from('supplier-docs')
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (error) { console.warn('Upload error', fileKey, error.message); return null; }
+  const { data } = supabase.storage.from('supplier-docs').getPublicUrl(path);
+  return data?.publicUrl || path;
+}
+
+// ─── Helpers ────────────────────────────────────────────
+window.handleSignOut = async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+};
+
+function showToast(msg, isError = false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (isError ? ' error' : '');
+  setTimeout(() => t.className = '', 3000);
+}
+
+// Update entity type label
+document.querySelectorAll('[name=entity_type]')?.forEach(r => {
+  r.addEventListener('change', () => {
+    const label = document.getElementById('idLabel');
+    if (r.value === 'sole_prop') label.firstChild.textContent = 'מספר עוסק מורשה ';
+    else label.firstChild.textContent = 'מספר ח״פ ';
+  });
+});
+</script>
+</body>
+</html>

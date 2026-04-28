@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALUM-IL | ניהול בקשות ספקים</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script src="https://unpkg.com/@phosphor-icons/web"></script>
+<style>
+/* ── LAYOUT ── */
+.admin-wrapper { display: flex; flex: 1; min-height: calc(100vh - 64px); }
+
+.admin-sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--surface-dark);
+  border-left: 1px solid var(--border);
+  padding: 1.5rem 1rem;
+}
+.sidebar-label {
+  font-size: 0.72rem; font-weight: 700; color: var(--silver-dark);
+  text-transform: uppercase; letter-spacing: 1px;
+  padding: 0 0.75rem; margin-bottom: 0.75rem;
+}
+.admin-nav { list-style: none; display: flex; flex-direction: column; gap: 0.15rem; }
+.admin-nav a {
+  display: flex; align-items: center; gap: 0.65rem;
+  padding: 0.6rem 0.75rem; border-radius: 8px;
+  font-size: 0.9rem; font-weight: 500; color: var(--silver-dark);
+  cursor: pointer; transition: all 0.18s ease; text-decoration: none;
+}
+.admin-nav a:hover { background: var(--blue-dim); color: var(--electric-blue); }
+.admin-nav a.active { background: var(--blue-dim); color: var(--electric-blue); font-weight: 700; }
+.nav-badge {
+  margin-right: auto; background: #dc2626; color: #fff;
+  font-size: 0.62rem; font-weight: 800; padding: 0.1rem 0.42rem;
+  border-radius: 20px; line-height: 1.5; display: none;
+}
+.nav-badge.show { display: inline-block; }
+.nav-group-hdr {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 0.75rem; border-radius: 8px; font-size: 0.88rem;
+  font-weight: 600; color: var(--silver-dark); cursor: pointer;
+  transition: all 0.18s ease; user-select: none;
+}
+.nav-group-hdr:hover { background: var(--blue-dim); color: var(--electric-blue); }
+.nav-group-hdr.open { color: var(--electric-blue); }
+.nav-grp-left { display: flex; align-items: center; gap: 0.65rem; }
+.nav-caret { font-size: 0.72rem; transition: transform 0.22s ease; }
+.nav-group-hdr.open .nav-caret { transform: rotate(180deg); }
+.nav-sub {
+  list-style: none; flex-direction: column; gap: 0.08rem;
+  padding: 0.1rem 0 0.1rem 0.9rem; margin: 0;
+}
+.nav-sub a { font-size: 0.84rem !important; padding: 0.42rem 0.75rem !important; }
+
+/* ── CONTENT ── */
+.admin-content { flex: 1; padding: 2rem; overflow-y: auto; }
+.page-title { font-size: 1.4rem; font-weight: 800; color: var(--industrial-silver); margin-bottom: 0.25rem; }
+.page-subtitle { color: var(--silver-dark); font-size: 0.88rem; margin-bottom: 1.5rem; }
+
+/* ── STAT CARDS ── */
+.stat-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1rem; margin-bottom: 1.5rem; }
+.stat-card {
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+.stat-card-num { font-size: 1.6rem; font-weight: 800; color: var(--electric-blue); line-height: 1; }
+.stat-card-label { font-size: 0.76rem; color: var(--silver-dark); font-weight: 500; }
+.stat-card.pending-card { border-right: 3px solid #d97706; }
+.stat-card.committee-card { border-right: 3px solid #7c3aed; }
+.stat-card.approved-card { border-right: 3px solid #16a34a; }
+.stat-card.rejected-card { border-right: 3px solid #dc2626; }
+
+/* ── TOOLBAR ── */
+.toolbar { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; flex-wrap: wrap; }
+.search-wrap { position: relative; flex: 1; min-width: 220px; }
+.search-wrap i { position: absolute; right: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--silver-dark); font-size: 1rem; pointer-events: none; }
+.search-input {
+  width: 100%; padding: 0.5rem 2.25rem 0.5rem 1rem;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Heebo', sans-serif; font-size: 0.88rem;
+  color: var(--industrial-silver); background: var(--surface-dark);
+}
+.search-input:focus { outline: none; border-color: var(--electric-blue); }
+
+.filter-select {
+  padding: 0.5rem 0.85rem;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Heebo', sans-serif; font-size: 0.85rem;
+  color: var(--industrial-silver); background: var(--surface-dark);
+  cursor: pointer;
+}
+.filter-select:focus { outline: none; border-color: var(--electric-blue); }
+.count-badge { font-size: 0.82rem; color: var(--silver-dark); white-space: nowrap; }
+
+/* ── TABLE ── */
+.table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+.suppliers-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.suppliers-table th {
+  background: #f7f9fd; padding: 0.75rem 1rem;
+  text-align: right; font-size: 0.76rem; font-weight: 700;
+  color: var(--silver-dark); text-transform: uppercase;
+  letter-spacing: 0.5px; border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+.suppliers-table td {
+  padding: 0.85rem 1rem; border-bottom: 1px solid var(--border-light);
+  color: var(--industrial-silver); vertical-align: middle;
+}
+.suppliers-table tr:last-child td { border-bottom: none; }
+.suppliers-table tbody tr:hover { background: #f7f9fd; }
+.suppliers-table tbody tr { transition: background 0.15s ease; }
+
+/* ── STATUS BADGES ── */
+.status-badge {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.22rem 0.65rem; border-radius: 50px;
+  font-size: 0.72rem; font-weight: 700; white-space: nowrap;
+}
+.status-draft      { background: #f1f5f9; color: #64748b; }
+.status-pending    { background: #fef3c7; color: #d97706; }
+.status-committee  { background: #ede9fe; color: #7c3aed; }
+.status-approved   { background: #dcfce7; color: #16a34a; }
+.status-rejected   { background: #fee2e2; color: #dc2626; }
+
+/* ── ENTITY TYPE ── */
+.entity-badge {
+  font-size: 0.72rem; font-weight: 600; padding: 0.18rem 0.55rem;
+  border-radius: 5px; background: #f0f4fb; color: #6b7a99; white-space: nowrap;
+}
+
+/* ── CATEGORIES PILLS ── */
+.cat-pills { display: flex; flex-wrap: wrap; gap: 0.3rem; max-width: 260px; }
+.cat-pill {
+  font-size: 0.68rem; font-weight: 600; padding: 0.15rem 0.5rem;
+  border-radius: 50px; background: #eaf2ff; color: #1a5faa;
+}
+.cat-pill-more { background: #f0f4fb; color: #9baabf; }
+
+/* ── ACTIONS ── */
+.action-btns { display: flex; gap: 0.4rem; flex-wrap: nowrap; }
+.btn-sm {
+  display: inline-flex; align-items: center; gap: 0.3rem;
+  padding: 0.35rem 0.7rem; border-radius: 6px; border: none;
+  font-family: 'Heebo', sans-serif; font-size: 0.78rem; font-weight: 600;
+  cursor: pointer; transition: all 0.18s ease; white-space: nowrap;
+}
+.btn-view     { background: #eaf2ff; color: #1a5faa; }
+.btn-view:hover { background: #d4e8ff; }
+.btn-approve  { background: #dcfce7; color: #16a34a; }
+.btn-approve:hover { background: #bbf7d0; }
+.btn-reject   { background: #fee2e2; color: #dc2626; }
+.btn-reject:hover { background: #fecaca; }
+.btn-committee { background: #ede9fe; color: #7c3aed; }
+.btn-committee:hover { background: #ddd6fe; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center; padding: 4rem 2rem; color: var(--silver-dark);
+}
+.empty-state i { font-size: 3rem; color: var(--border); margin-bottom: 1rem; display: block; }
+.empty-state h3 { font-size: 1rem; font-weight: 700; margin-bottom: 0.4rem; }
+
+/* ── DRAWER (detail panel) ── */
+.drawer-overlay {
+  position: fixed; inset: 0; background: rgba(26,38,64,0.3);
+  z-index: 200; display: none; backdrop-filter: blur(2px);
+}
+.drawer-overlay.open { display: block; }
+.drawer {
+  position: fixed; top: 0; left: 0; bottom: 0;
+  width: 520px; max-width: 100%;
+  background: #ffffff; z-index: 201;
+  display: flex; flex-direction: column;
+  box-shadow: -4px 0 30px rgba(26,64,120,0.12);
+  transform: translateX(-100%);
+  transition: transform 0.3s ease;
+}
+.drawer.open { transform: translateX(0); }
+.drawer-head {
+  padding: 1.25rem 1.5rem; border-bottom: 1px solid #dde4f0;
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.drawer-title { font-size: 1rem; font-weight: 800; color: #1a2640; }
+.drawer-close {
+  width: 32px; height: 32px; border-radius: 8px; border: none;
+  background: #f0f4fb; cursor: pointer; display: flex;
+  align-items: center; justify-content: center; font-size: 1.1rem;
+  color: #6b7a99; transition: background 0.18s ease;
+}
+.drawer-close:hover { background: #dde4f0; }
+.drawer-body { flex: 1; overflow-y: auto; padding: 1.5rem; }
+.drawer-footer {
+  padding: 1rem 1.5rem; border-top: 1px solid #dde4f0;
+  display: flex; gap: 0.65rem; flex-shrink: 0;
+}
+
+/* ── DRAWER SECTIONS ── */
+.d-section { margin-bottom: 1.5rem; }
+.d-section-title {
+  font-size: 0.72rem; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 1px; color: #9baabf; margin-bottom: 0.75rem;
+  padding-bottom: 0.4rem; border-bottom: 1px solid #f0f4fb;
+}
+.d-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+.d-field {}
+.d-label { font-size: 0.72rem; font-weight: 700; color: #9baabf; margin-bottom: 0.15rem; }
+.d-value { font-size: 0.88rem; font-weight: 600; color: #1a2640; }
+.d-value.mono { font-family: monospace; font-size: 0.85rem; }
+.d-cat-list { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.d-doc-link {
+  display: inline-flex; align-items: center; gap: 0.35rem;
+  font-size: 0.8rem; font-weight: 600; color: #1a5faa;
+  background: #eaf2ff; padding: 0.3rem 0.75rem; border-radius: 6px;
+  text-decoration: none; cursor: pointer;
+}
+.d-doc-link:hover { background: #d4e8ff; }
+.d-desc-box {
+  background: #f7f9fd; border: 1px solid #dde4f0; border-radius: 8px;
+  padding: 0.75rem 1rem; font-size: 0.82rem; color: #6b7a99;
+  line-height: 1.6; white-space: pre-wrap;
+}
+.d-note-box {
+  background: #f7f9fd; border: 1px solid #dde4f0; border-radius: 8px;
+  padding: 0.75rem 1rem; font-size: 0.82rem; margin-bottom: 0.5rem;
+}
+.d-note-date { font-size: 0.72rem; color: #9baabf; }
+
+/* ── STATUS CHANGE BUTTONS ── */
+.btn-full {
+  flex: 1;
+  display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  padding: 0.65rem 1rem; border: none; border-radius: 8px;
+  font-family: 'Heebo', sans-serif; font-size: 0.88rem; font-weight: 700;
+  cursor: pointer; transition: all 0.18s ease;
+}
+.btn-full:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── NOTE INPUT ── */
+.note-input {
+  width: 100%; padding: 0.6rem 0.85rem;
+  border: 1.5px solid var(--border); border-radius: 8px;
+  font-family: 'Heebo', sans-serif; font-size: 0.85rem;
+  color: var(--industrial-silver); background: var(--surface-dark);
+  margin-bottom: 0.5rem; resize: none;
+}
+.note-input:focus { outline: none; border-color: var(--electric-blue); }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed; bottom: 1.5rem; right: 50%; transform: translateX(50%) translateY(80px);
+  background: #1a2640; color: #fff; padding: 0.65rem 1.25rem;
+  border-radius: 50px; font-size: 0.85rem; font-weight: 600;
+  z-index: 9999; transition: transform 0.3s ease; pointer-events: none;
+}
+#toast.show { transform: translateX(50%) translateY(0); }
+#toast.err  { background: #dc2626; }
+#toast.ok   { background: #16a34a; }
+
+/* ── LIGHTBOX ── */
+#lightbox {
+  display:none;position:fixed;inset:0;z-index:9999;
+  background:rgba(0,0,0,0.72);backdrop-filter:blur(4px);
+  align-items:center;justify-content:center;
+}
+#lightbox.open { display:flex; }
+#lightbox-inner {
+  position:relative;width:82vw;max-width:960px;height:84vh;
+  background:#fff;border-radius:14px;overflow:hidden;
+  box-shadow:0 24px 64px rgba(0,0,0,0.45);
+  display:flex;align-items:center;justify-content:center;
+}
+#lightbox-frame {
+  width:100%;height:100%;border:none;border-radius:14px;
+}
+#lightbox-close {
+  position:absolute;top:10px;left:10px;
+  width:32px;height:32px;border-radius:50%;border:none;
+  background:rgba(0,0,0,0.55);color:#fff;font-size:1.1rem;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:background 0.15s;
+}
+#lightbox-close:hover { background:rgba(0,0,0,0.8); }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header" style="position:sticky;top:0;z-index:100;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:1rem 0;">
+  <div class="container header-container" style="max-width:100%;padding:0 2rem;">
+    <a href="admin.html" class="logo">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;display:block;">
+    </a>
+    <div style="display:flex;align-items:center;gap:1rem;">
+      <span style="font-size:0.78rem;font-weight:700;background:#fee2e2;color:#dc2626;padding:0.2rem 0.65rem;border-radius:50px;">
+        <i class="ph ph-shield-check"></i> ממשק ניהול
+      </span>
+      <i class="ph ph-sign-out" style="font-size:1.4rem;color:var(--silver-dark);cursor:pointer;" onclick="handleSignOut()" title="יציאה"></i>
+    </div>
+  </div>
+</header>
+
+<div class="admin-wrapper">
+
+  <!-- SIDEBAR -->
+  <aside class="admin-sidebar">
+    <div class="sidebar-label">ניהול כללי</div>
+    <ul class="admin-nav">
+      <li><a href="admin.html"><i class="ph ph-squares-four"></i> הזמנות</a></li>
+      <li><a href="admin-overview.html"><i class="ph ph-chart-bar"></i> סקירה כללית</a></li>
+      <li><a href="admin-users.html"><i class="ph ph-users"></i> משתמשים</a></li>
+      <li><a href="admin-members.html"><i class="ph ph-identification-card"></i> בקשות חבר</a></li>
+      <li><a href="admin-suppliers.html" class="active"><i class="ph ph-storefront"></i> בקשות ספקים <span class="nav-badge show" id="pendingBadge">0</span></a></li>
+    </ul>
+
+    <div style="border-top:1px solid var(--border);margin:1rem 0;"></div>
+    <div class="sidebar-label">כלים</div>
+    <ul class="admin-nav">
+      <li><a href="admin-college.html"><i class="ph ph-graduation-cap"></i> מכללה</a></li>
+      <li><a href="admin-procurement.html"><i class="ph ph-shopping-cart"></i> רכש</a></li>
+      <li><a href="admin-financial.html"><i class="ph ph-currency-dollar-simple"></i> כספים</a></li>
+      <li><a href="admin-calendar.html"><i class="ph ph-calendar"></i> לוח שנה</a></li>
+      <li><a href="admin-tasks.html"><i class="ph ph-check-square"></i> משימות</a></li>
+      <li><a href="admin-monitor.html"><i class="ph ph-activity"></i> מוניטור</a></li>
+    </ul>
+  </aside>
+
+  <!-- CONTENT -->
+  <main class="admin-content">
+
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+      <div>
+        <h1 class="page-title"><i class="ph ph-storefront" style="color:var(--electric-blue);margin-left:0.4rem;"></i>בקשות הצטרפות ספקים</h1>
+        <p class="page-subtitle">ניהול ומעקב אחר בקשות ספקים חדשים להצטרפות לפלטפורמת ALUM-IL</p>
+      </div>
+    </div>
+
+    <!-- STAT CARDS -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-card-num" id="statTotal">—</div>
+        <div class="stat-card-label">סה״כ בקשות</div>
+      </div>
+      <div class="stat-card pending-card">
+        <div class="stat-card-num" id="statPending">—</div>
+        <div class="stat-card-label">ממתינות לסקירה</div>
+      </div>
+      <div class="stat-card committee-card">
+        <div class="stat-card-num" id="statCommittee">—</div>
+        <div class="stat-card-label">בוועדה</div>
+      </div>
+      <div class="stat-card approved-card">
+        <div class="stat-card-num" id="statApproved">—</div>
+        <div class="stat-card-label">אושרו</div>
+      </div>
+      <div class="stat-card rejected-card">
+        <div class="stat-card-num" id="statRejected">—</div>
+        <div class="stat-card-label">נדחו</div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <i class="ph ph-magnifying-glass"></i>
+        <input class="search-input" type="text" id="searchInput" placeholder="חיפוש לפי שם חברה, מספר בקשה..." oninput="renderTable()">
+      </div>
+      <select class="filter-select" id="statusFilter" onchange="renderTable()">
+        <option value="">כל הסטטוסים</option>
+        <option value="pending_review">ממתין לסקירה</option>
+        <option value="in_committee">בוועדה</option>
+        <option value="approved">אושר</option>
+        <option value="rejected">נדחה</option>
+        <option value="draft">טיוטה</option>
+      </select>
+      <select class="filter-select" id="categoryFilter" onchange="renderTable()">
+        <option value="">כל הקטגוריות</option>
+        <option value="kits">קיטים — פרגולות וגדרות</option>
+        <option value="electric_perg">פרגולות חשמליות</option>
+        <option value="roller_screens">מסכי גלילה</option>
+        <option value="raw_materials">מחסן חומרי גלם</option>
+        <option value="windows">חלונות אלומיניום</option>
+        <option value="doors_cladding">דלתות וחיפויים</option>
+        <option value="fences_gates">גדרות ושערים</option>
+        <option value="glass_partitions">מחיצות ומעקות זכוכית</option>
+        <option value="exterior_design">עיצוב חוץ</option>
+        <option value="accessories">אביזרים ופרזול</option>
+        <option value="sealants">חומרי איטום</option>
+        <option value="motors">מנועים חשמליים</option>
+        <option value="training">לימוד והדרכה</option>
+      </select>
+      <span class="count-badge" id="countBadge">טוען...</span>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-wrap">
+      <table class="suppliers-table">
+        <thead>
+          <tr>
+            <th>מספר בקשה</th>
+            <th>שם החברה</th>
+            <th>סוג ישות</th>
+            <th>קטגוריות מוצרים</th>
+            <th>אזורי שירות</th>
+            <th>תאריך הגשה</th>
+            <th>סטטוס</th>
+            <th>פעולות</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody">
+          <tr><td colspan="8" style="text-align:center;padding:3rem;color:var(--silver-dark);">
+            <i class="ph ph-spinner" style="font-size:1.5rem;display:block;margin-bottom:0.5rem;"></i>
+            טוען נתונים...
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+
+  </main>
+</div>
+
+<!-- DRAWER OVERLAY -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+
+<!-- DETAIL DRAWER -->
+<div class="drawer" id="detailDrawer">
+  <div class="drawer-head">
+    <div>
+      <div class="drawer-title" id="drawerTitle">פרטי בקשה</div>
+      <div style="font-size:0.76rem;color:#9baabf;margin-top:0.15rem;" id="drawerSubtitle"></div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <!-- populated by JS -->
+  </div>
+  <div class="drawer-footer" id="drawerFooter">
+    <!-- action buttons -->
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { requireAdmin } from './js/admin-core.js';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+// ─── Category labels ────────────────────────────────────
+const CAT_LABELS = {
+  kits:             'קיטים — פרגולות וגדרות',
+  electric_perg:    'פרגולות חשמליות',
+  roller_screens:   'מסכי גלילה',
+  raw_materials:    'מחסן חומרי גלם',
+  windows:          'חלונות אלומיניום',
+  doors_cladding:   'דלתות וחיפויים',
+  fences_gates:     'גדרות ושערים',
+  glass_partitions: 'מחיצות ומעקות זכוכית',
+  exterior_design:  'עיצוב חוץ',
+  accessories:      'אביזרים ופרזול',
+  sealants:         'חומרי איטום',
+  motors:           'מנועים חשמליים',
+  training:         'לימוד והדרכה',
+};
+
+const STATUS_LABELS = {
+  draft:          'טיוטה',
+  pending_review: 'ממתין לסקירה',
+  in_committee:   'בוועדה',
+  approved:       'אושר',
+  rejected:       'נדחה',
+};
+const STATUS_CLASS = {
+  draft:          'status-draft',
+  pending_review: 'status-pending',
+  in_committee:   'status-committee',
+  approved:       'status-approved',
+  rejected:       'status-rejected',
+};
+const ENTITY_LABELS = {
+  sole_prop:   'עוסק מורשה',
+  ltd:         'חברה בע"מ',
+  partnership: 'שותפות',
+};
+
+let allApps = [];
+let currentAdmin = null;
+let drawerAppId = null;
+
+// ─── Init ───────────────────────────────────────────────
+window.addEventListener('DOMContentLoaded', async () => {
+  currentAdmin = await requireAdmin(supabase);
+  if (!currentAdmin) return;
+  await loadApplications();
+});
+
+async function loadApplications() {
+  const { data, error } = await supabase
+    .from('supplier_applications')
+    .select('*')
+    .order('created_at', { ascending: false });
+
+  if (error) { showToast('שגיאה בטעינת נתונים', 'err'); return; }
+  allApps = data || [];
+  updateStats();
+  renderTable();
+}
+
+// ─── Stats ──────────────────────────────────────────────
+function updateStats() {
+  document.getElementById('statTotal').textContent     = allApps.length;
+  document.getElementById('statPending').textContent   = allApps.filter(a => a.status === 'pending_review').length;
+  document.getElementById('statCommittee').textContent = allApps.filter(a => a.status === 'in_committee').length;
+  document.getElementById('statApproved').textContent  = allApps.filter(a => a.status === 'approved').length;
+  document.getElementById('statRejected').textContent  = allApps.filter(a => a.status === 'rejected').length;
+
+  const pending = allApps.filter(a => a.status === 'pending_review').length;
+  const badge = document.getElementById('pendingBadge');
+  badge.textContent = pending;
+  badge.classList.toggle('show', pending > 0);
+}
+
+// ─── Table rendering ────────────────────────────────────
+window.renderTable = function() {
+  const query    = document.getElementById('searchInput').value.trim().toLowerCase();
+  const statusF  = document.getElementById('statusFilter').value;
+  const categoryF = document.getElementById('categoryFilter').value;
+
+  let filtered = allApps.filter(a => {
+    const company = (a.company_details?.business_name || '').toLowerCase();
+    const appNum  = (a.application_number || '').toLowerCase();
+    const matchQ  = !query || company.includes(query) || appNum.includes(query);
+    const matchS  = !statusF  || a.status === statusF;
+    const matchC  = !categoryF || (a.selected_categories || []).includes(categoryF);
+    return matchQ && matchS && matchC;
+  });
+
+  document.getElementById('countBadge').textContent = `${filtered.length} בקשות`;
+
+  const tbody = document.getElementById('tableBody');
+  if (!filtered.length) {
+    tbody.innerHTML = `
+      <tr><td colspan="8">
+        <div class="empty-state">
+          <i class="ph ph-file-dashed"></i>
+          <h3>לא נמצאו בקשות</h3>
+          <p>נסה לשנות את הפילטרים</p>
+        </div>
+      </td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(a => {
+    const cats = a.selected_categories || [];
+    const areas = a.service_details?.service_areas || [];
+    const displayCats = cats.slice(0, 3);
+    const extraCats = cats.length - 3;
+    const catHtml = displayCats.map(k => `<span class="cat-pill">${CAT_LABELS[k] || k}</span>`).join('')
+      + (extraCats > 0 ? `<span class="cat-pill cat-pill-more">+${extraCats}</span>` : '');
+
+    const dateStr = a.created_at
+      ? new Date(a.created_at).toLocaleDateString('he-IL', { day:'2-digit', month:'2-digit', year:'numeric' })
+      : '—';
+
+    return `
+      <tr>
+        <td><span style="font-family:monospace;font-size:0.82rem;font-weight:700;color:var(--electric-blue);">${a.application_number || '—'}</span></td>
+        <td>
+          <div style="font-weight:700;">${a.company_details?.business_name || '—'}</div>
+          <div style="font-size:0.76rem;color:var(--silver-dark);">${a.company_details?.representative_name || ''}</div>
+        </td>
+        <td><span class="entity-badge">${ENTITY_LABELS[a.company_details?.entity_type] || '—'}</span></td>
+        <td><div class="cat-pills">${catHtml || '<span style="color:var(--silver-dark);font-size:0.78rem;">—</span>'}</div></td>
+        <td>
+          <div style="font-size:0.78rem;color:var(--silver-dark);">
+            ${areas.slice(0,3).join('، ')}${areas.length > 3 ? ` +${areas.length-3}` : ''}
+          </div>
+        </td>
+        <td style="font-size:0.82rem;color:var(--silver-dark);">${dateStr}</td>
+        <td><span class="status-badge ${STATUS_CLASS[a.status] || ''}">${STATUS_LABELS[a.status] || a.status}</span></td>
+        <td>
+          <div class="action-btns">
+            <button class="btn-sm btn-view" onclick="openDrawer('${a.id}')">
+              <i class="ph ph-eye"></i> צפה
+            </button>
+          </div>
+        </td>
+      </tr>
+    `;
+  }).join('');
+};
+
+// ─── Drawer ─────────────────────────────────────────────
+window.openDrawer = function(appId) {
+  const app = allApps.find(a => a.id === appId);
+  if (!app) return;
+  drawerAppId = appId;
+
+  document.getElementById('drawerTitle').textContent = app.company_details?.business_name || 'פרטי בקשה';
+  document.getElementById('drawerSubtitle').textContent = app.application_number || '';
+
+  const cats = app.selected_categories || [];
+  const docs  = app.documents || {};
+  const pd    = app.product_data || {};
+  const svc   = app.service_details || {};
+  const notes = app.admin_notes || [];
+
+  const docLinks = [
+    { key: 'business_cert_url',         label: 'תעודת עוסק' },
+    { key: 'signature_protocol_url',    label: 'פרוטוקול מורשי חתימה' },
+    { key: 'id_photo_url',              label: 'ת.ז מגיש' },
+  ].filter(d => docs[d.key])
+   .map(d => `<span class="d-doc-link" onclick="window.openLightbox('${docs[d.key]}')" style="cursor:zoom-in;"><i class="ph ph-image"></i>${d.label}</span>`)
+   .join('');
+
+  const catPills = cats.map(k => `<span class="cat-pill">${CAT_LABELS[k] || k}</span>`).join('');
+
+  const productSections = cats.map(k => {
+    const data = pd[k] || {};
+    const hasDesc = data.description;
+    const hasFile = data.pricelist_url;
+    if (!hasDesc && !hasFile) return '';
+    return `
+      <div style="margin-bottom:0.85rem;">
+        <div style="font-size:0.76rem;font-weight:700;color:#6b7a99;margin-bottom:0.3rem;">${CAT_LABELS[k] || k}</div>
+        ${hasDesc ? `<div class="d-desc-box">${data.description}</div>` : ''}
+        ${hasFile ? `<a class="d-doc-link" href="${data.pricelist_url}" target="_blank" style="margin-top:0.3rem;display:inline-flex;"><i class="ph ph-file-arrow-down"></i> מחירון / מפרט</a>` : ''}
+      </div>
+    `;
+  }).filter(Boolean).join('');
+
+  const notesHtml = notes.length
+    ? notes.map(n => `
+        <div class="d-note-box">
+          <div style="font-weight:600;margin-bottom:0.2rem;">${n.text || ''}</div>
+          <div class="d-note-date">${n.author || ''} · ${n.date ? new Date(n.date).toLocaleString('he-IL') : ''}</div>
+        </div>`).join('')
+    : '<div style="color:#9baabf;font-size:0.82rem;">אין הערות עדיין</div>';
+
+  document.getElementById('drawerBody').innerHTML = `
+    <div class="d-section">
+      <div class="d-section-title">פרטי חברה</div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">שם עסק</div><div class="d-value">${app.company_details?.business_name || '—'}</div></div>
+        <div class="d-field"><div class="d-label">סוג ישות</div><div class="d-value">${ENTITY_LABELS[app.company_details?.entity_type] || '—'}</div></div>
+      </div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">מספר ח"פ / עוסק</div><div class="d-value mono">${app.company_details?.id_number || '—'}</div></div>
+        <div class="d-field"><div class="d-label">נציג</div><div class="d-value">${app.company_details?.representative_name || '—'}</div></div>
+      </div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">טלפון</div><div class="d-value mono">${app.company_details?.phone || '—'}</div></div>
+        <div class="d-field"><div class="d-label">דוא"ל</div><div class="d-value">${app.company_details?.email || '—'}</div></div>
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-section-title">מסמכים</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+        ${docLinks || '<span style="color:#9baabf;font-size:0.82rem;">אין מסמכים מועלים</span>'}
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-section-title">קטגוריות מוצרים</div>
+      <div class="d-cat-list">${catPills || '—'}</div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-section-title">לוגיסטיקה</div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">כתובת בית העסק</div><div class="d-value">${svc.warehouse_address || '—'}</div></div>
+        <div class="d-field"><div class="d-label">אזורי שירות</div><div class="d-value" style="font-size:0.82rem;">${(svc.service_areas || []).join('، ') || '—'}</div></div>
+      </div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">שיטת משלוח</div><div class="d-value">${
+          svc.delivery_method === 'self'        ? 'משלוח עצמי' :
+          svc.delivery_method === 'third_party' ? 'חברת שליחויות' :
+          svc.delivery_method === 'pickup_only' ? 'איסוף עצמי' :
+          svc.delivery_method === 'other'       ? `אחר — ${svc.delivery_other_text || ''}` : '—'
+        }</div></div>
+        <div class="d-field"><div class="d-label">זמן אספקה</div><div class="d-value">${svc.lead_time_days || '—'} ימי עסקים</div></div>
+      </div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">מינימום הזמנה</div><div class="d-value">₪${(svc.min_order_amount || 0).toLocaleString()}</div></div>
+      </div>
+    </div>
+
+    <div class="d-section">
+      <div class="d-section-title">פרופיל עסקי — יכולת אופרציונלית</div>
+      <div class="d-row">
+        <div class="d-field"><div class="d-label">ותק העסק</div><div class="d-value">${
+          svc.business_years === 'less_1' ? 'פחות משנה' :
+          svc.business_years === '1_3'   ? '1–3 שנים' :
+          svc.business_years === '3_7'   ? '3–7 שנים' :
+          svc.business_years === '7_plus'? '7 שנים ומעלה' : '—'
+        }</div></div>
+        <div class="d-field"><div class="d-label">היקף חודשי משוער</div><div class="d-value">${
+          svc.monthly_capacity
+            ? `${Number(svc.monthly_capacity).toLocaleString()} ${
+                svc.capacity_unit === 'ils' ? '₪' :
+                svc.capacity_unit === 'sqm' ? 'מ"ר' :
+                svc.capacity_unit === 'kg'  ? 'ק"ג' :
+                svc.capacity_unit === 'ton' ? 'טון' : ''}`
+            : '—'
+        }</div></div>
+      </div>
+    </div>
+
+    ${productSections ? `
+    <div class="d-section">
+      <div class="d-section-title">הצעת ערך לפי קטגוריה</div>
+      ${productSections}
+    </div>` : ''}
+
+    ${(() => {
+      const portfolio = docs.portfolio_urls || [];
+      if (!portfolio.length) return '';
+      const thumbs = portfolio.map(url => {
+        const isVideo = /\.(mp4|mov|avi)/i.test(url);
+        return isVideo
+          ? `<a href="${url}" target="_blank" style="width:80px;height:80px;border-radius:8px;border:1.5px solid #dde4f0;background:#f7f9fd;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.2rem;text-decoration:none;">
+               <i class="ph ph-film-slate" style="font-size:1.6rem;color:#1a5faa;"></i>
+               <span style="font-size:0.6rem;color:#9baabf;">סרטון</span>
+             </a>`
+          : `<div onclick="openLightbox('${url}')" style="width:80px;height:80px;border-radius:8px;overflow:hidden;border:1.5px solid #dde4f0;display:block;cursor:zoom-in;">
+               <img src="${url}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentElement.innerHTML='<i class=\\'ph ph-image\\' style=\\'font-size:2rem;color:#9baabf;\\'></i>'">
+             </div>`;
+      }).join('');
+      return `
+      <div class="d-section">
+        <div class="d-section-title">פורטפוליו — תמונות וסרטונים (${portfolio.length})</div>
+        <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">${thumbs}</div>
+      </div>`;
+    })()}
+
+    <div class="d-section">
+      <div class="d-section-title">הערות ועדה</div>
+      ${notesHtml}
+      <textarea class="note-input" id="noteInput" rows="2" placeholder="הוסף הערה..."></textarea>
+      <button class="btn-sm btn-view" style="margin-top:0.2rem;" onclick="addNote('${app.id}')">
+        <i class="ph ph-plus"></i> הוסף הערה
+      </button>
+    </div>
+  `;
+
+  // Footer action buttons
+  const footer = document.getElementById('drawerFooter');
+  const status = app.status;
+  footer.innerHTML = '';
+
+  if (status === 'pending_review') {
+    footer.innerHTML = `
+      <button class="btn-full btn-committee" style="background:#ede9fe;color:#7c3aed;" onclick="changeStatus('${app.id}','in_committee')">
+        <i class="ph ph-users-three"></i> העבר לוועדה
+      </button>
+      <button class="btn-full btn-approve" style="background:#dcfce7;color:#16a34a;" onclick="changeStatus('${app.id}','approved')">
+        <i class="ph ph-check-circle"></i> אשר
+      </button>
+      <button class="btn-full btn-reject" style="background:#fee2e2;color:#dc2626;" onclick="changeStatus('${app.id}','rejected')">
+        <i class="ph ph-x-circle"></i> דחה
+      </button>
+    `;
+  } else if (status === 'in_committee') {
+    footer.innerHTML = `
+      <button class="btn-full btn-approve" style="background:#dcfce7;color:#16a34a;" onclick="changeStatus('${app.id}','approved')">
+        <i class="ph ph-check-circle"></i> אשר
+      </button>
+      <button class="btn-full btn-reject" style="background:#fee2e2;color:#dc2626;" onclick="changeStatus('${app.id}','rejected')">
+        <i class="ph ph-x-circle"></i> דחה
+      </button>
+    `;
+  } else if (status === 'approved' || status === 'rejected') {
+    footer.innerHTML = `
+      <button class="btn-full" style="background:#f1f5f9;color:#64748b;" onclick="changeStatus('${app.id}','pending_review')">
+        <i class="ph ph-arrow-counter-clockwise"></i> החזר לסקירה
+      </button>
+    `;
+  }
+
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('detailDrawer').classList.add('open');
+};
+
+window.closeDrawer = function() {
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('detailDrawer').classList.remove('open');
+  drawerAppId = null;
+};
+
+// ─── Status change ──────────────────────────────────────
+window.changeStatus = async function(appId, newStatus) {
+  const app = allApps.find(a => a.id === appId);
+  if (!app) return;
+  const oldStatus = app.status;
+
+  const { error } = await supabase
+    .from('supplier_applications')
+    .update({
+      status: newStatus,
+      reviewed_by: currentAdmin.id,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq('id', appId);
+
+  if (error) { showToast('שגיאה בעדכון סטטוס', 'err'); return; }
+
+  // Log
+  await supabase.from('application_logs').insert({
+    application_id: appId,
+    user_id: currentAdmin.id,
+    action: 'status_changed',
+    changes: { from: oldStatus, to: newStatus },
+  });
+
+  showToast(`סטטוס עודכן ל: ${STATUS_LABELS[newStatus]}`, 'ok');
+  closeDrawer();
+  await loadApplications();
+};
+
+// ─── Add note ───────────────────────────────────────────
+window.addNote = async function(appId) {
+  const noteEl = document.getElementById('noteInput');
+  const text = noteEl?.value?.trim();
+  if (!text) return;
+
+  const app = allApps.find(a => a.id === appId);
+  if (!app) return;
+
+  const notes = [...(app.admin_notes || []), {
+    text,
+    author: currentAdmin.email || 'מנהל',
+    date: new Date().toISOString(),
+  }];
+
+  const { error } = await supabase
+    .from('supplier_applications')
+    .update({ admin_notes: notes })
+    .eq('id', appId);
+
+  if (error) { showToast('שגיאה בשמירת הערה', 'err'); return; }
+
+  await supabase.from('application_logs').insert({
+    application_id: appId,
+    user_id: currentAdmin.id,
+    action: 'note_added',
+    changes: { note: text },
+  });
+
+  showToast('ההערה נשמרה', 'ok');
+  // Refresh drawer
+  app.admin_notes = notes;
+  openDrawer(appId);
+};
+
+// ─── Helpers ────────────────────────────────────────────
+window.handleSignOut = async function() {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+};
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = '', 3000);
+}
+
+// ── LIGHTBOX ──
+window.openLightbox = function(url) {
+  document.getElementById('lightbox-frame').src = url;
+  document.getElementById('lightbox').classList.add('open');
+};
+window.closeLightbox = function() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.getElementById('lightbox-frame').src = '';
+};
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') window.closeLightbox();
+});
+</script>
+<!-- LIGHTBOX -->
+<div id="lightbox" onclick="window.closeLightbox()">
+  <div id="lightbox-inner" onclick="event.stopPropagation()">
+    <button id="lightbox-close" onclick="window.closeLightbox()"><i class="ph ph-x"></i></button>
+    <iframe id="lightbox-frame" src="" title="מסמך"></iframe>
+  </div>
+</div>
+
+</body>
+</html>
