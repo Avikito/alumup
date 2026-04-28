@@ -48,6 +48,8 @@
     .dash-section.active { display: block; }
 
     /* ── HOME GRID ── */
+    .home-actions-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; }
+    @media (max-width:768px) { .home-actions-grid { grid-template-columns:repeat(2,1fr); } }
     /* ── DASHBOARD GRID (legacy kept for other sections) ── */
     .dashboard-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.25rem; }
     .dashboard-card { background: var(--surface-dark); border: 1px solid var(--border); border-radius: 14px; padding: 1.75rem 1.25rem; display: flex; flex-direction: column; align-items: center; gap: 0.75rem; text-align: center; transition: all 0.2s ease; cursor: pointer; }
@@ -1744,7 +1746,7 @@ function renderDashboardGrid() {
   const wrap = document.getElementById('dashboard-grid-wrap');
   if (!wrap) return;
   wrap.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+    <div class="home-actions-grid">
       <a href="procurement.html" class="card-secondary">
         <i class="ph ph-shopping-cart" style="font-size:2.2rem;color:#1a5faa;"></i>
         <div style="font-size:0.95rem;font-weight:800;color:#1a2640;text-align:center;">מרכז הרכש</div>
@@ -1840,7 +1842,7 @@ function renderStudentDashboard(student, user) {
         </div>
       </div>`;
     wrap.innerHTML = `
-      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;">
+      <div class="home-actions-grid">
         ${lockCard('ph-shopping-cart', 'מרכז הרכש')}
         ${lockCard('ph-toolbox', 'קיטים למתקינים')}
         ${lockCard('ph-briefcase', 'מכרזים והזדמנויות')}
