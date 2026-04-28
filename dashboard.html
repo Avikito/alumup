@@ -562,7 +562,17 @@
       }
       .dashboard-sidebar.mob-open { transform: translateX(0); }
 
-      .dashboard-content { padding: 1.25rem 1rem; width: 100%; }
+      .dashboard-content { padding: 1.25rem 1rem; width: 100%; box-sizing: border-box; }
+
+      /* Member top card — stack vertically */
+      .member-top-card { flex-direction: column !important; }
+      .member-top-card > * { min-width: 0 !important; width: 100% !important; flex-shrink: 1 !important; }
+
+      /* Simulator sliders grid */
+      .sim-sliders-grid { grid-template-columns: 1fr !important; }
+
+      /* Card secondary grid */
+      .card-secondary { padding: 1rem 0.75rem !important; }
     }
   </style>
 </head>
@@ -1004,7 +1014,7 @@ function renderMemberStatus(profile, userId) {
     // Top cards — between title and grid
     if (topCards) {
       topCards.innerHTML = `
-        <div style="background:#fff;border:1.5px solid #dde4f0;border-top:3px solid #1a5faa;border-radius:14px;display:flex;align-items:stretch;overflow:hidden;box-shadow:0 2px 16px rgba(26,95,170,0.08);flex-wrap:wrap;">
+        <div class="member-top-card" style="background:#fff;border:1.5px solid #dde4f0;border-top:3px solid #1a5faa;border-radius:14px;display:flex;align-items:stretch;overflow:hidden;box-shadow:0 2px 16px rgba(26,95,170,0.08);flex-wrap:wrap;">
           <div style="background:#1a5faa;padding:1rem 1.5rem;display:flex;align-items:center;gap:0.85rem;flex-shrink:0;">
             <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
               <i class="ph ph-medal" style="font-size:1.25rem;color:#c47c00;"></i>
@@ -1037,7 +1047,7 @@ function renderMemberStatus(profile, userId) {
         <div id="sim-body">
         <div style="font-size:0.75rem;color:#9aa3b5;margin-bottom:1.3rem;">הזז את הסליידרים וראה כיצד הצבירה שלך גדלה עם הזמן</div>
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;">
+        <div class="sim-sliders-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;margin-bottom:1.2rem;">
           <div>
             <label style="font-size:0.72rem;font-weight:700;color:#4a5a78;display:block;margin-bottom:0.35rem;">
               רכש חודשי ממוצע: <span id="sim-purchase-val" style="color:#1a5faa;">₪50,000</span>
