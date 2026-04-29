@@ -1100,6 +1100,18 @@ a { text-decoration: none; color: inherit; }
   background:none; border:none; font-size:1.3rem; cursor:pointer; color:var(--silver);
 }
 .modal-close-btn:hover { color:var(--white); }
+
+@media (max-width: 768px) {
+  .header { padding: 0.65rem 1rem; }
+  .sidebar { display: none; }
+  .wrapper { display: block; }
+  .main { padding: 1.25rem 1rem 3rem; max-width: 100%; }
+  .section { padding: 1rem 1rem; }
+  .field-row,
+  .preview-row,
+  .support-grid { grid-template-columns: 1fr !important; }
+  .dims-grid { grid-template-columns: 1fr 1fr !important; }
+}
 </style>
 </head>
 <body>
