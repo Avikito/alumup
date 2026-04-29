@@ -556,8 +556,8 @@
 
       .dashboard-sidebar {
         position: fixed; top: 0; bottom: 0;
-        right: -320px;
-        width: 260px; z-index: 500;
+        right: -300px;
+        width: 280px; z-index: 600;
         transition: right 0.28s ease;
         box-shadow: none;
         overflow-y: auto;
@@ -565,9 +565,14 @@
       }
       .dashboard-sidebar.mob-open {
         right: 0;
-        box-shadow: -4px 0 24px rgba(0,0,0,0.25);
+        box-shadow: -6px 0 32px rgba(0,0,0,0.3);
         visibility: visible;
       }
+      .mob-overlay {
+        display: none; position: fixed; inset: 0;
+        background: rgba(0,0,0,0.45); z-index: 599;
+      }
+      .mob-overlay.open { display: block; }
 
       .dashboard-content { padding: 1.25rem 1rem; width: 100%; box-sizing: border-box; overflow-x: hidden; }
 
