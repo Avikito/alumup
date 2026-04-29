@@ -571,10 +571,20 @@
 
       .dashboard-content { padding: 1.25rem 1rem; width: 100%; box-sizing: border-box; overflow-x: hidden; }
 
-      /* Member top card — stack vertically */
-      .member-top-card { flex-direction: column !important; }
-      .member-top-card * { min-width: 0 !important; max-width: 100% !important; box-sizing: border-box; }
-      #savings-summary-cards { display: flex !important; flex-direction: column !important; }
+      /* Member top card — compact on mobile */
+      .member-top-card { flex-direction: row !important; flex-wrap: wrap !important; }
+      .member-top-card * { min-width: 0 !important; box-sizing: border-box; }
+      .member-top-card > div:first-child { padding: 0.6rem 0.9rem !important; gap: 0.5rem !important; }
+      .member-top-card > div:first-child > div:first-child { width: 28px !important; height: 28px !important; }
+      .member-top-card > div:first-child i { font-size: 0.95rem !important; }
+      .member-top-card > div:first-child div:last-child > div:first-child { font-size: 0.58rem !important; }
+      .member-top-card > div:first-child div:last-child > div:last-child { font-size: 0.82rem !important; }
+      #savings-summary-cards { display: flex !important; flex-direction: row !important; flex-wrap: wrap !important; }
+      #savings-summary-cards > div[style*="padding"] { padding: 0.55rem 0.85rem !important; flex: 1 !important; min-width: 120px !important; }
+      #savings-summary-cards > div[style*="1px"] { display: none !important; }
+      #savings-summary-cards [style*="font-size:1.35rem"] { font-size: 1.05rem !important; }
+      #savings-summary-cards [style*="font-size:0.71rem"] { font-size: 0.65rem !important; }
+      #savings-summary-cards [style*="font-size:0.67rem"] { display: none !important; }
 
       /* Simulator sliders grid */
       .sim-sliders-grid { grid-template-columns: 1fr !important; }
