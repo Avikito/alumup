@@ -548,6 +548,8 @@
       .settings-grid { grid-template-columns: 1fr; }
     }
 
+    @media (max-width: 768px) { .hide-mobile { display: none !important; } }
+
     /* ── MOBILE ── */
     @media (max-width: 768px) {
       .dashboard-wrapper { flex-direction: column; }
@@ -1418,8 +1420,8 @@ async function loadAndRenderSavingsChart(userId) {
           <span>סגירת רבעון: ${(() => { const q = Math.ceil((today.getMonth()+1)/3); const m = q*3; return new Date(today.getFullYear(), m, 0).toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit'}); })()}</span>
         </div>
       </div>
-      <div style="width:1px;background:#dde4f0;flex-shrink:0;align-self:stretch;"></div>
-      <div style="padding:0.9rem 1.5rem;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:150px;gap:0.18rem;background:${eligibleBg};">
+      <div class="hide-mobile" style="width:1px;background:#dde4f0;flex-shrink:0;align-self:stretch;"></div>
+      <div class="hide-mobile" style="padding:0.9rem 1.5rem;display:flex;flex-direction:column;justify-content:center;flex:1;min-width:150px;gap:0.18rem;background:${eligibleBg};">
         <div style="font-size:0.72rem;font-weight:700;color:#4a5a78;letter-spacing:0.5px;">זכאות הפקדה</div>
         <div style="display:flex;align-items:center;gap:0.5rem;margin-top:0.1rem;">
           <i class="ph ${isEligible ? 'ph-check-circle-fill' : 'ph-x-circle-fill'}" style="font-size:1.1rem;color:${isEligible ? '#16a34a' : '#ef4444'};flex-shrink:0;"></i>
