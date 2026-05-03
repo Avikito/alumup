@@ -763,3 +763,29 @@ select.form-control {
   .mob-burger { display: none !important; }
   .mob-overlay { display: none !important; }
 }
+
+/* ─────────── ADMIN PAGES RESPONSIVE ─────────── */
+@media (max-width: 768px) {
+  .admin-wrapper { display: block !important; }
+
+  .admin-sidebar {
+    position: fixed; top: 0; right: -280px; bottom: 0;
+    width: 260px; z-index: 600;
+    transition: right 0.28s ease;
+    box-shadow: none;
+    overflow-y: auto;
+  }
+  .admin-sidebar.mob-open {
+    right: 0;
+    box-shadow: -6px 0 32px rgba(0,0,0,0.28);
+  }
+
+  .admin-content { padding: 1.25rem 1rem !important; }
+
+  /* KPI grids */
+  .ov-kpi-row { grid-template-columns: 1fr 1fr !important; }
+
+  /* Bottom panels — stack */
+  .ov-bottom-row { flex-direction: column !important; }
+}
+

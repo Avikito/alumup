@@ -582,18 +582,24 @@
 </head>
 <body>
   <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
-    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
-      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
-    </a>
     <div style="display:flex;align-items:center;gap:0.75rem;">
-      <span class="college-badge">
+      <button class="mob-burger" id="adminBurger" aria-label="תפריט">
+        <i class="ph ph-list"></i>
+      </button>
+      <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+        <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+      </a>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span class="college-badge hide-mobile">
         <i class="ph ph-graduation-cap"></i> מנהלת מכללה
       </span>
       <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
-        <i class="ph ph-arrow-right"></i> אזור אישי
+        <i class="ph ph-arrow-right"></i>
       </a>
     </div>
   </header>
+  <div class="mob-overlay" id="adminOverlay"></div>
 
   <div class="admin-wrapper">
     <aside class="admin-sidebar">
@@ -650,7 +656,7 @@
         <li><a href="#" id="nav-calendar" onclick="switchView('calendar');return false;">
           <i class="ph ph-calendar-dots"></i> לוח זמנים
         </a></li>
-        <li><a href="admin-tasks.html" target="_blank">
+        <li><a href="admin-tasks.html">
           <i class="ph ph-check-square"></i> ניהול משימות
         </a></li>
         <li><a href="#" id="nav-col-financial" onclick="switchView('col_financial');return false;">
@@ -682,10 +688,10 @@
         </div>
 
         <!-- Calendar + Tasks Panel -->
-        <div style="display:flex;gap:1.25rem;margin-bottom:1.25rem;align-items:flex-start;">
+        <div style="display:flex;flex-direction:column;gap:1.25rem;margin-bottom:1.25rem;">
 
           <!-- Mini Calendar -->
-          <div id="ov-cal-wrap" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px;flex:1;min-width:0;height:582px;display:flex;flex-direction:column;">
+          <div id="ov-cal-wrap" style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:14px 16px;height:520px;display:flex;flex-direction:column;">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
               <div style="font-size:0.8rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:6px;">
                 <i class="ph ph-calendar-blank" style="color:#2563eb;"></i> לוח זמנים
@@ -697,8 +703,8 @@
             <div id="ov-cal-el" style="flex:1;min-height:0;"></div>
           </div>
 
-          <!-- Tasks Panel — single card, same height as calendar -->
-          <div style="flex:1;min-width:0;height:582px;background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:0;">
+          <!-- Tasks Panel -->
+          <div style="background:#fff;border:1px solid #e2e8f0;border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:0;">
 
             <!-- Header -->
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;">
@@ -1019,8 +1025,8 @@
                 <th>שם מלא</th>
                 <th>טלפון / אימייל</th>
                 <th>מסלול קורס</th>
-                <th>מיקום / לוח זמנים</th>
-                <th>מס׳ אישור תשלום</th>
+                <th class="col-hide-mob">מיקום / לוח זמנים</th>
+                <th class="col-hide-mob">מס׳ אישור תשלום</th>
                 <th>סטטוס</th>
                 <th>פעולות</th>
               </tr>
@@ -1658,11 +1664,11 @@ function renderStudents(students) {
         <div style="font-size:0.75rem;color:var(--silver-dark);">${s.email || ''}</div>
       </td>
       <td><span class="spec-tag" style="background:rgba(14,116,144,0.07);color:#0e7490;border-color:rgba(14,116,144,0.2);">${course}</span></td>
-      <td>
+      <td class="col-hide-mob">
         <span class="spec-tag">${loc}</span>
         <span class="spec-tag">${sch}</span>
       </td>
-      <td>
+      <td class="col-hide-mob">
         <div style="font-size:0.76rem;font-weight:700;color:var(--navy);direction:ltr;text-align:right;">${payRef}</div>
         <div style="font-size:0.73rem;color:var(--silver-dark);">דמי רישום: ${payAmt}</div>
       </td>
@@ -3742,5 +3748,58 @@ window.closeTaskPopup = function() {
     </div>
   </div>
 </div>
+<style>
+  @media (max-width: 768px) {
+    .hide-mobile { display: none !important; }
+
+    /* נרשמים חדשים */
+    .ov-kpi-row  { grid-template-columns: 1fr 1fr !important; }
+    .ov-crm-layout { flex-direction: column !important; height: auto !important; }
+    .ov-flyout.open { width: 100% !important; }
+    .col-hide-mob { display: none !important; }
+    .users-table { font-size: 0.78rem !important; }
+    .users-table th, .users-table td { padding: 0.6rem 0.65rem !important; }
+    .tab-bar { gap: 0.4rem !important; }
+    .tab-btn { padding: 0.45rem 0.7rem !important; font-size: 0.75rem !important; }
+
+    /* ניהול מחזורים */
+    #view-batches > div:first-child { flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
+    #view-batches > div:first-child > div:last-child { width: 100%; display: flex; gap: 0.5rem; }
+    #view-batches > div:first-child > div:last-child button { flex: 1; justify-content: center; }
+    .b-stats-row { grid-template-columns: 1fr 1fr !important; gap: 0.65rem !important; }
+    .b-grid { grid-template-columns: 1fr !important; }
+    .b-detail-header { flex-direction: column !important; align-items: flex-start !important; gap: 0.65rem !important; padding: 1rem !important; }
+    .b-detail-meta { gap: 0.5rem !important; }
+    .b-table-wrap { overflow-x: auto !important; }
+    .b-table-wrap table { min-width: 600px; }
+    .b-detail-tabs { gap: 0.4rem !important; overflow-x: auto; }
+    .b-section-header { flex-wrap: wrap !important; gap: 0.5rem !important; }
+
+    /* ניהול תהליכי חבר */
+    #view-pipeline > div:first-child { flex-direction: column !important; align-items: flex-start !important; gap: 0.75rem !important; }
+    .p-stats-row { grid-template-columns: 1fr 1fr !important; gap: 0.65rem !important; }
+    .p-grid { grid-template-columns: 1fr !important; }
+    .p-open-row { flex-wrap: wrap !important; gap: 0.5rem !important; }
+    .p-open-row-info { flex: 1; min-width: 0; }
+    .p-card-footer { flex-wrap: wrap !important; }
+    .p-card-btn { min-width: calc(50% - 3px); }
+  }
+</style>
+<script>
+(function() {
+  const burger  = document.getElementById('adminBurger');
+  const sidebar = document.querySelector('.admin-sidebar');
+  const overlay = document.getElementById('adminOverlay');
+  if (!burger || !sidebar || !overlay) return;
+  burger.addEventListener('click', () => {
+    sidebar.classList.toggle('mob-open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('mob-open');
+    overlay.classList.remove('open');
+  });
+})();
+</script>
 </body>
 </html>
