@@ -1103,6 +1103,8 @@ a { text-decoration: none; color: inherit; }
 
 /* ── MOBILE ── */
 @media (max-width: 768px) {
+  html, body { overflow-x: hidden; max-width: 100vw; }
+
   .wrapper { flex-direction: column; }
 
   .sidebar {
@@ -1129,7 +1131,15 @@ a { text-decoration: none; color: inherit; }
     margin-bottom: 1rem;
   }
 
-  .main { padding: 1rem; }
+  .main {
+    padding: 1rem;
+    max-width: 100% !important;
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  /* כל האלמנטים לא יחרגו מרוחב המסך */
+  .main * { max-width: 100%; box-sizing: border-box; }
 
   .dims-grid { grid-template-columns: 1fr 1fr !important; }
   .field-row { grid-template-columns: 1fr !important; }
@@ -1137,6 +1147,10 @@ a { text-decoration: none; color: inherit; }
   .support-grid { grid-template-columns: 1fr !important; }
   .addons-grid { grid-template-columns: 1fr !important; }
   .quote-inputs-grid { grid-template-columns: 1fr !important; }
+
+  /* כרטיסי מערכת */
+  .system-card { width: 100% !important; min-width: 0 !important; }
+  .system-card-body { padding: 1rem !important; }
 }
 @media (min-width: 769px) {
   .mob-burger-cfg { display: none !important; }
