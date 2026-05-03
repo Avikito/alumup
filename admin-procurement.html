@@ -188,16 +188,20 @@
       <li><a href="#" id="nav-orders"   onclick="setView('orders');return false;"><i class="ph ph-list-bullets"></i> הזמנות נכנסות</a></li>
       <li><a href="#" id="nav-disputes" onclick="setView('disputes');return false;"><i class="ph ph-warning-circle"></i> מחלוקות</a></li>
     </ul>
-    <div class="pr-nav-section">מחירים ומלאי</div>
+    <div class="pr-nav-section">ספקים</div>
     <ul class="pr-nav">
       <li><a href="admin-suppliers.html"><i class="ph ph-storefront"></i> בקשות לפתיחת ספק חדש</a></li>
-      <li><a href="#" id="nav-inventory" onclick="setView('inventory');return false;"><i class="ph ph-package"></i> מלאי</a></li>
     </ul>
     <div class="pr-nav-section">דוחות ולו"ז</div>
     <ul class="pr-nav">
       <li><a href="procurement-calendar.html"><i class="ph ph-calendar-dots"></i> לוח זמנים</a></li>
       <li><a href="admin-tasks.html?dept=procurement"><i class="ph ph-check-square"></i> ניהול משימות</a></li>
     </ul>
+    <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#2a3a4a);">
+      <a href="dashboard.html" class="pr-nav" style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);text-decoration:none;">
+        <i class="ph ph-arrow-right"></i> חזרה לדשבורד
+      </a>
+    </div>
   </aside>
 
   <main class="pr-content">
@@ -1051,6 +1055,24 @@ function toast(msg, dur=3500) {
 const user = await requireProcurementAdmin();
 if (!user) throw new Error('no access');
 currentUser = user;
+
+// ── SESSION LOG ──────────────────────────────────────────
+const _now = new Date().toISOString();
+sb.from('admin_users').update({ last_seen: _now }).eq('user_id', user.id);
+(async () => {
+  let loc = {};
+  try {
+    const r = await fetch('https://get.geojs.io/v1/ip/geo.json');
+    const d = await r.json();
+    loc = { city: d.city||'', country: d.country||'' };
+  } catch {}
+  sb.from('admin_session_logs').insert({
+    user_id: user.id, role: 'procurement', page: location.pathname,
+    logged_in_at: _now,
+    lat: null, lng: null,
+    city: loc.city||null, country: loc.country||null, address: null
+  });
+})();
 
 const dn = user.email.split('@')[0];
 document.getElementById('nav-user-name').textContent = dn;

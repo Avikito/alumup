@@ -775,7 +775,7 @@ function injectTasksSubNav() {
 // ─── Data ─────────────────────────────────────────────────
 async function loadTasks() {
   let q = sb.from('admin_tasks').select('*').order('created_at', { ascending: false });
-  if (currentRole === 'procurement') q = q.eq('department', 'procurement');
+  if (currentRole === 'procurement') q = q.or(`department.eq.procurement,created_by.eq.${currentUser.id}`);
   const { data, error } = await q;
   if (error) { console.error(error); return; }
   allTasks = data || [];

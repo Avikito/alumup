@@ -31,9 +31,13 @@ self.addEventListener('activate', e => {
 
 // Fetch — network first, fallback to cache
 self.addEventListener('fetch', e => {
-  // Skip non-GET and Supabase API calls (always need network)
+  // Skip non-GET and external API calls (always need network)
   if (e.request.method !== 'GET') return;
   if (e.request.url.includes('supabase.co')) return;
+  if (e.request.url.includes('yahoo.com')) return;
+  if (e.request.url.includes('googleapis.com')) return;
+  if (e.request.url.includes('geojs.io') || e.request.url.includes('ipapi.co')) return;
+  if (!e.request.url.startsWith(self.location.origin)) return;
 
   e.respondWith(
     fetch(e.request)

@@ -663,7 +663,11 @@
           <i class="ph ph-currency-circle-dollar"></i> ניהול פיננסי
         </a></li>
       </ul>
-
+      <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#2a3a4a);">
+        <a href="dashboard.html" style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);text-decoration:none;">
+          <i class="ph ph-arrow-right"></i> חזרה לדשבורד
+        </a>
+      </div>
     </aside>
 
     <main class="admin-content">
@@ -1061,7 +1065,7 @@ async function requireCollegeAdmin() {
   if (adminRow.role !== 'college') { window.location.href = 'login.html'; return null; }
   // Update last_seen + log session for monitor
   const now = new Date().toISOString();
-  supabase.rpc('update_admin_last_seen', { p_user_id: user.id });
+  supabase.from('admin_users').update({ last_seen: now }).eq('user_id', user.id);
   (async () => {
     let loc = {};
     try {
@@ -1072,7 +1076,7 @@ async function requireCollegeAdmin() {
     supabase.from('admin_session_logs').insert({
       user_id: user.id, role: 'college', page: location.pathname, logged_in_at: now,
       lat: null, lng: null, city: loc.city||null, country: loc.country||null, address: null
-    });
+    }).then(({ error }) => { if (error) console.error('[monitor] college session_log failed:', error); });
   })();
   return user;
 }
