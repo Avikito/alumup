@@ -96,19 +96,57 @@
     .b-form-row { display:grid;grid-template-columns:1fr 1fr;gap:10px; }
     .btn-primary { background:#2563eb;color:#fff;border:none;border-radius:8px;padding:0.45rem 1rem;font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:6px;transition:background 0.15s; }
     .btn-primary:hover { background:#1d4ed8; }
+
+    @media (max-width:768px) {
+      .hide-mobile { display:none !important; }
+
+      /* admin sidebar drawer */
+      .admin-sidebar {
+        position:fixed; top:0; right:-280px; bottom:0;
+        width:260px; z-index:600;
+        transition:right 0.28s ease; box-shadow:none;
+      }
+      .admin-sidebar.mob-open { right:0; box-shadow:-6px 0 32px rgba(0,0,0,0.28); }
+      .admin-wrapper { display:block !important; }
+      .admin-content { padding:1.25rem 1rem !important; }
+      .mob-overlay { display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:599; }
+      .mob-overlay.open { display:block; }
+
+      /* title + buttons */
+      .admin-content > div:first-child { flex-direction:column !important; align-items:flex-start !important; gap:0.75rem !important; }
+      .admin-content > div:first-child > div:last-child { width:100%; flex-wrap:wrap; gap:0.5rem !important; }
+      .admin-content > div:first-child > div:last-child button { flex:1; min-width:calc(50% - 4px); font-size:0.78rem !important; padding:0.45rem 0.6rem !important; justify-content:center; }
+
+      /* legend */
+      .cal-legend { gap:0.5rem; }
+
+      /* calendar layout — stack */
+      .cal-layout { flex-direction:column !important; height:auto !important; }
+      .cal-sidebar { width:100% !important; max-height:260px; overflow-y:auto; order:2; }
+      .cal-main { height:520px !important; min-width:0; order:1; }
+      #cal-el { height:480px !important; }
+
+      /* fc toolbar */
+      .cal-main .fc-toolbar { flex-wrap:wrap; gap:0.35rem; }
+      .cal-main .fc-toolbar-title { font-size:0.85rem !important; }
+    }
   </style>
 </head>
 <body>
+  <div class="mob-overlay" id="adminOverlay"></div>
   <header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 2rem;display:flex;align-items:center;justify-content:space-between;">
-    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
-      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
-    </a>
     <div style="display:flex;align-items:center;gap:0.75rem;">
-      <span style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+      <button class="mob-burger" id="adminBurger" aria-label="תפריט"><i class="ph ph-list"></i></button>
+      <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+        <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+      </a>
+    </div>
+    <div style="display:flex;align-items:center;gap:0.75rem;">
+      <span class="hide-mobile" style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
         <i class="ph ph-shield-star"></i> פאנל ניהול
       </span>
       <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
-        <i class="ph ph-arrow-right"></i> אזור אישי
+        <i class="ph ph-arrow-right"></i>
       </a>
     </div>
   </header>
@@ -820,6 +858,22 @@ window.calToggleColors = function() {
 };
 
 calInit();
+</script>
+<script>
+(function() {
+  const burger  = document.getElementById('adminBurger');
+  const sidebar = document.querySelector('.admin-sidebar');
+  const overlay = document.getElementById('adminOverlay');
+  if (!burger || !sidebar || !overlay) return;
+  burger.addEventListener('click', () => {
+    sidebar.classList.toggle('mob-open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('mob-open');
+    overlay.classList.remove('open');
+  });
+})();
 </script>
 </body>
 </html>
