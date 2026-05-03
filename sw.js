@@ -1,4 +1,4 @@
-const CACHE = 'alumil-v1';
+const CACHE = 'alumil-v2';
 
 const STATIC_ASSETS = [
   '/',
