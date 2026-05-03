@@ -2,7 +2,7 @@
   "name": "ALUM-IL — מרכז האלומיניום בישראל",
   "short_name": "ALUM-IL",
   "description": "פלטפורמת רכש ואלומיניום מקצועית",
-  "start_url": "/dashboard.html",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
