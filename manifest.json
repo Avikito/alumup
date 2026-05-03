@@ -1,0 +1,29 @@
+{
+  "name": "ALUM-IL — מרכז האלומיניום בישראל",
+  "short_name": "ALUM-IL",
+  "description": "פלטפורמת רכש ואלומיניום מקצועית",
+  "start_url": "/dashboard.html",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f1923",
+  "theme_color": "#1a5faa",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "logo.PNG",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.PNG",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "screenshots": []
+}

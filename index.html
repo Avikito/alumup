@@ -5,6 +5,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ALUM-IL | הפלטפורמה המקצועית של ענף האלומיניום</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#1a5faa">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="ALUM-IL">
+    <link rel="apple-touch-icon" href="/logo.PNG">
     <meta name="description" content="הצטרפו לקהילת המתקינים המובילה בישראל: רכש קבוצתי, מכרזים והכשרות.">
     <!-- Google Fonts: Heebo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -146,6 +152,7 @@ window.handleLogout = async function() {
   window.location.href = 'login.html';
 };
 </script>
+<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
 </body>
 
 </html>
