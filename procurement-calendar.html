@@ -120,7 +120,7 @@
   </aside>
 
   <main class="pr-content">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;">
+    <div class="cal-page-hdr" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.85rem;">
       <div>
         <div style="font-size:1.35rem;font-weight:800;color:#0f172a;display:flex;align-items:center;gap:0.4rem;">
           <i class="ph ph-calendar-dots" style="color:#7c3aed;"></i> לוח זמנים
@@ -337,6 +337,69 @@
     </button>
   </div>
 </div>
+
+<style>
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden; }
+
+  /* nav sidebar — drawer from right */
+  #pr-sidebar {
+    position: fixed; top: 0; right: -280px; bottom: 0;
+    width: 260px; z-index: 600;
+    transition: right 0.28s ease; box-shadow: none;
+  }
+  #pr-sidebar.mob-open { right: 0; box-shadow: -6px 0 32px rgba(0,0,0,0.28); }
+  .pr-wrap    { display: block !important; }
+  .pr-content { padding: 1.25rem 1rem !important; }
+
+  /* overlay */
+  .mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 599; }
+  .mob-overlay.open { display: block; }
+
+  /* header */
+  nav.admin-nav-top { padding: 0 1rem !important; }
+  #nav-user-name { display: none; }
+
+  /* page header row — stack title + buttons */
+  .cal-page-hdr { flex-direction: column !important; align-items: flex-start !important; gap: 0.6rem !important; }
+  #cal-holidays-btn { padding: 0.38rem 0.65rem !important; font-size: 0.76rem !important; }
+
+  /* legend */
+  .cal-legend { gap: 0.5rem 0.9rem !important; }
+
+  /* cal layout — stack: calendar first, form below */
+  .cal-layout  { flex-direction: column !important; height: auto !important; }
+  .cal-main    { order: 1; height: 480px !important; }
+  #cal-el      { height: 440px !important; }
+  .cal-sidebar { order: 2; width: 100% !important; }
+}
+</style>
+
+<script>
+(function() {
+  const nav = document.querySelector('nav.admin-nav-top');
+  if (!nav) return;
+
+  const burger = document.createElement('button');
+  burger.className = 'mob-burger';
+  burger.innerHTML = '<i class="ph ph-list" style="font-size:1.4rem;"></i>';
+  nav.querySelector('div').prepend(burger);
+
+  const overlay = document.createElement('div');
+  overlay.className = 'mob-overlay';
+  document.body.prepend(overlay);
+
+  const sidebar = document.getElementById('pr-sidebar');
+  burger.addEventListener('click', () => {
+    sidebar?.classList.toggle('mob-open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar?.classList.remove('mob-open');
+    overlay.classList.remove('open');
+  });
+})();
+</script>
 
 <script type="module">
 import { requireProcurementAdmin } from './js/admin-core.js';

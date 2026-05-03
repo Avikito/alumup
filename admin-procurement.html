@@ -947,11 +947,26 @@ window.viewOrder = async function(id) {
     <svg id="barcode-${o.id}"></svg>
   </div>`;
 
-  if (o.status === 'technical_review') {
-    html += `<button class="btn-approve-prod" id="approveBtn-${o.id}" onclick="approveToProduction('${o.id}')">
-      <i class="ph ph-check-circle"></i> נבדק — אשר לייצור
-    </button>`;
-  }
+  const statusOptions = [
+    { val:'pending',           label:'ממתין לאישור' },
+    { val:'technical_review',  label:'בבדיקה טכנית' },
+    { val:'in_production',     label:'בתהליך ייצור' },
+    { val:'ready_for_delivery',label:'מוכן למסירה' },
+    { val:'delivered',         label:'נמסר' },
+    { val:'cancelled',         label:'בוטל' },
+    { val:'dispute',           label:'מחלוקת' },
+  ];
+  html += `<div style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:1rem;margin-top:1rem;">
+    <div style="font-size:0.75rem;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:0.6rem;">שינוי סטטוס הזמנה</div>
+    <div style="display:flex;gap:0.6rem;align-items:center;flex-wrap:wrap;">
+      <select id="status-select-${o.id}" style="flex:1;min-width:160px;padding:0.5rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;color:#0f172a;background:#fff;">
+        ${statusOptions.map(s => `<option value="${s.val}"${o.status===s.val?' selected':''}>${s.label}</option>`).join('')}
+      </select>
+      <button onclick="changeOrderStatus('${o.id}')" style="padding:0.5rem 1.1rem;background:#7c3aed;color:#fff;border:none;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:700;cursor:pointer;white-space:nowrap;">
+        <i class="ph ph-check"></i> עדכן סטטוס
+      </button>
+    </div>
+  </div>`;
 
   html += `<button onclick="generatePDF('${o.id}')" style="display:inline-flex;align-items:center;gap:6px;margin-top:0.75rem;padding:0.5rem 1.2rem;background:#2563eb;color:#fff;border:none;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.84rem;font-weight:700;cursor:pointer;">
     <i class="ph ph-file-pdf"></i> הפק PDF
@@ -1006,6 +1021,20 @@ window.approveToProduction = async function(id) {
   toast('הזמנה אושרה לייצור');
   renderSummary(); renderOrdersRecent(); renderOrdersFull();
 };
+window.changeOrderStatus = async function(id) {
+  const sel = document.getElementById(`status-select-${id}`);
+  if (!sel) return;
+  const newStatus = sel.value;
+  const { error } = await sb.from('orders').update({ status: newStatus, status_updated_at: new Date().toISOString() }).eq('id', id);
+  if (error) { toast('שגיאה בעדכון סטטוס'); return; }
+  const o = allOrders.find(x => x.id === id);
+  if (o) o.status = newStatus;
+  document.getElementById('detailOverlay').classList.remove('open');
+  const labels = { pending:'ממתין לאישור', technical_review:'בבדיקה טכנית', in_production:'בתהליך ייצור', ready_for_delivery:'מוכן למסירה', delivered:'נמסר', cancelled:'בוטל', dispute:'מחלוקת' };
+  toast('סטטוס עודכן ל: ' + (labels[newStatus] || newStatus));
+  renderSummary(); renderOrdersRecent(); renderOrdersFull();
+};
+
 window.editPrice = function(id) {
   logActivity('edit_price', 'pricing', id, {});
   toast('עריכת מחיר — בפיתוח');
@@ -1135,6 +1164,95 @@ function handleScanResult(code) {
 document.getElementById('scan-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('scan-overlay')) closeScanModal();
 });
+</script>
+
+<style>
+@media (max-width: 768px) {
+  html, body { overflow-x: hidden; }
+
+  /* sidebar drawer */
+  #pr-sidebar {
+    position: fixed; top: 0; right: -280px; bottom: 0;
+    width: 260px; z-index: 600;
+    transition: right 0.28s ease; box-shadow: none;
+  }
+  #pr-sidebar.mob-open { right: 0; box-shadow: -6px 0 32px rgba(0,0,0,0.28); }
+  .pr-wrap { display: block !important; }
+  .pr-content { padding: 1.25rem 1rem !important; }
+
+  /* overlay */
+  .mob-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 599; }
+  .mob-overlay.open { display: block; }
+
+  /* header */
+  nav.admin-nav-top { padding: 0 1rem !important; }
+  #nav-user-name { display: none; }
+
+  /* KPI */
+  .sum-row { grid-template-columns: 1fr 1fr !important; gap: 0.65rem !important; }
+  .sum-val  { font-size: 1.2rem !important; }
+
+  /* panels */
+  .panel { overflow-x: auto !important; }
+  .pr-table th, .pr-table td { padding: 0.55rem 0.7rem !important; font-size: 0.76rem !important; }
+
+  /* orders table — keep: קוד הזמנה, הרוכש, סוג מוצר, פרטים */
+  .rich-table th:nth-child(4),
+  .rich-table td:nth-child(4),
+  .rich-table th:nth-child(5),
+  .rich-table td:nth-child(5),
+  .rich-table th:nth-child(6),
+  .rich-table td:nth-child(6),
+  .rich-table th:nth-child(7),
+  .rich-table td:nth-child(7),
+  .rich-table th:nth-child(8),
+  .rich-table td:nth-child(8) { display: none !important; }
+
+  .rich-table th, .rich-table td { padding: 0.55rem 0.6rem !important; font-size: 0.78rem !important; }
+
+  /* filter bar */
+  .filter-bar { gap: 0.4rem !important; }
+  .filter-btn  { padding: 0.3rem 0.65rem !important; font-size: 0.73rem !important; }
+  .search-inp  { width: 100% !important; min-width: unset !important; box-sizing: border-box; }
+
+  /* panel header */
+  .panel-hdr { flex-direction: column !important; align-items: flex-start !important; }
+
+  /* overview widgets row — stack vertically */
+  .widgets-row { grid-template-columns: 1fr !important; }
+  .widget-panel { width: 100% !important; }
+}
+</style>
+
+<script>
+(function() {
+  const nav = document.querySelector('nav.admin-nav-top');
+  if (!nav) return;
+
+  // add hamburger button
+  const burger = document.createElement('button');
+  burger.className = 'mob-burger';
+  burger.id = 'prBurger';
+  burger.setAttribute('aria-label', 'תפריט');
+  burger.innerHTML = '<i class="ph ph-list"></i>';
+  nav.querySelector('div').prepend(burger);
+
+  // add overlay
+  const overlay = document.createElement('div');
+  overlay.className = 'mob-overlay';
+  overlay.id = 'prOverlay';
+  document.body.prepend(overlay);
+
+  const sidebar = document.getElementById('pr-sidebar');
+  burger.addEventListener('click', () => {
+    sidebar.classList.toggle('mob-open');
+    overlay.classList.toggle('open');
+  });
+  overlay.addEventListener('click', () => {
+    sidebar.classList.remove('mob-open');
+    overlay.classList.remove('open');
+  });
+})();
 </script>
 </body>
 </html>
