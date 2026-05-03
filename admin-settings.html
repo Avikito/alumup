@@ -27,7 +27,6 @@
     }
     .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
     .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
-    /* ── ACCORDION NAV GROUPS ── */
     .nav-group-hdr { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;user-select:none; }
     .nav-group-hdr:hover { background:var(--blue-dim);color:var(--electric-blue); }
     .nav-group-hdr.open { color:var(--electric-blue); }
@@ -41,54 +40,13 @@
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
     .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.75rem; }
 
-    /* ── TABS ── */
-    .tabs-bar {
-      display:flex;gap:0.25rem;
-      border-bottom:2px solid var(--border);
-      margin-bottom:1.75rem;
-    }
-    .tab-btn {
-      display:inline-flex;align-items:center;gap:0.45rem;
-      padding:0.55rem 1.1rem;
-      border:none;background:none;
-      font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
-      color:var(--silver-dark);cursor:pointer;
-      border-bottom:2.5px solid transparent;margin-bottom:-2px;
-      transition:color 0.18s ease, border-color 0.18s ease;
-    }
-    .tab-btn:hover { color:var(--electric-blue); }
-    .tab-btn.active { color:var(--electric-blue);border-bottom-color:var(--electric-blue);font-weight:700; }
-
-    .tab-panel { display:none; }
-    .tab-panel.active { display:block; }
-
     /* ── SETTINGS CARD ── */
-    .settings-card {
-      background:var(--surface-dark);
-      border:1px solid var(--border);
-      border-radius:14px;
-      padding:2rem 2.25rem;
-      max-width:560px;
-    }
-
-    .section-divider {
-      font-size:0.72rem;font-weight:700;color:var(--silver-dark);
-      text-transform:uppercase;letter-spacing:1px;
-      margin:0 0 1.25rem;
-      padding-bottom:0.5rem;
-      border-bottom:1px solid var(--border);
-      display:flex;align-items:center;gap:0.5rem;
-    }
-    .section-divider i { font-size:1rem;color:var(--electric-blue); }
-
     .fields-grid {
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:1rem 1.5rem;
       margin-bottom:1.5rem;
     }
-    .fields-grid.single { grid-template-columns:1fr; }
-
     .field-group { margin-bottom:0; }
     .field-label {
       display:block;
@@ -167,6 +125,138 @@
 
     @keyframes spin { to { transform:rotate(360deg); } }
     .spin { animation:spin 0.8s linear infinite;display:inline-block; }
+
+    /* ── PRODUCT ACCORDION ── */
+    .products-container { display:flex;flex-direction:column;gap:1rem;max-width:960px; }
+    .product-section { background:var(--surface-dark);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+    .product-section-hdr {
+      display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;
+      cursor:pointer;transition:background 0.18s;user-select:none;
+    }
+    .product-section-hdr:hover { background:rgba(255,255,255,0.03); }
+    .prod-icon {
+      width:44px;height:44px;border-radius:10px;flex-shrink:0;
+      background:var(--blue-dim);display:flex;align-items:center;justify-content:center;
+      color:var(--electric-blue);font-size:1.3rem;
+    }
+    .prod-info { flex:1;min-width:0; }
+    .prod-title { font-size:1rem;font-weight:700;color:var(--industrial-silver); }
+    .prod-meta { font-size:0.78rem;color:var(--silver-dark);margin-top:2px; }
+    .prod-price-badge {
+      font-size:0.82rem;font-weight:700;color:var(--electric-blue);
+      background:var(--blue-dim);padding:0.22rem 0.7rem;border-radius:20px;
+      white-space:nowrap;flex-shrink:0;
+    }
+    .prod-caret { font-size:1rem;color:var(--silver-dark);transition:transform 0.22s ease;flex-shrink:0; }
+    .prod-caret.open { transform:rotate(180deg); }
+    .product-section-body { border-top:1px solid var(--border); }
+    .section-cols { display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:1.5rem; }
+    .col-label {
+      font-size:0.71rem;font-weight:700;color:var(--silver-dark);
+      text-transform:uppercase;letter-spacing:1px;
+      display:flex;align-items:center;gap:0.4rem;
+      margin-bottom:0.85rem;padding-bottom:0.4rem;border-bottom:1px solid var(--border);
+    }
+    .formula-box {
+      background:rgba(255,255,255,0.03);border:1px solid var(--border);border-radius:10px;
+      padding:1rem 1.25rem;display:flex;flex-direction:column;gap:0.55rem;
+    }
+    .formula-line {
+      display:flex;justify-content:space-between;align-items:center;
+      font-size:0.83rem;color:var(--silver-dark);
+    }
+    .formula-val { font-weight:700;color:var(--electric-blue);font-variant-numeric:tabular-nums; }
+    .formula-line.formula-cost {
+      font-weight:700;color:var(--industrial-silver);
+      border-top:1px solid var(--border);padding-top:0.55rem;margin-top:0.15rem;
+    }
+    .formula-line.formula-cost .formula-val { color:var(--industrial-silver); }
+    .formula-line.formula-regular { padding-top:0.45rem; }
+    .formula-line.formula-regular .formula-val { color:var(--electric-blue); }
+    .formula-line.formula-member .formula-val { color:#f59e0b; }
+    .formula-divider {
+      border:none;border-top:1px dashed rgba(255,255,255,0.08);margin:0.2rem 0;
+    }
+    .formula-tier-label {
+      font-size:0.66rem;font-weight:700;letter-spacing:0.4px;
+      padding:0.1rem 0.45rem;border-radius:20px;
+      background:var(--blue-dim);color:var(--electric-blue);
+      margin-left:0.35rem;
+    }
+    .formula-tier-label.member { background:rgba(245,158,11,0.12);color:#f59e0b; }
+
+    /* ── PRODUCT IMAGES ── */
+    .prod-imgs-row {
+      display:flex;gap:0.85rem;padding:1.25rem 1.5rem;
+      border-bottom:1px solid var(--border);
+      background:rgba(255,255,255,0.015);
+    }
+    .img-slot { display:flex;flex-direction:column;gap:0.4rem;flex:1;min-width:0; }
+    .img-preview {
+      width:100%;aspect-ratio:16/9;border-radius:8px;object-fit:cover;
+      background:rgba(255,255,255,0.04);border:1px solid var(--border);
+      display:block;transition:opacity 0.2s;
+    }
+    .img-url-input {
+      width:100%;padding:0.38rem 0.6rem;
+      border:1px solid var(--border);border-radius:7px;
+      background:var(--bg-dark);color:var(--industrial-silver);
+      font-family:'Heebo',sans-serif;font-size:0.76rem;
+      outline:none;box-sizing:border-box;
+    }
+    .img-url-input:focus { border-color:var(--electric-blue); }
+    .img-slot-label { font-size:0.68rem;font-weight:700;color:var(--silver-dark);text-align:center; }
+
+    /* ── TECH SPEC ── */
+    .spec-area {
+      width:100%;min-height:76px;padding:0.6rem 0.75rem;
+      border:1.5px solid var(--border);border-radius:9px;
+      background:var(--bg-dark);color:var(--industrial-silver);
+      font-family:'Heebo',sans-serif;font-size:0.88rem;
+      resize:vertical;outline:none;box-sizing:border-box;line-height:1.5;
+    }
+    .spec-area:focus { border-color:var(--electric-blue); }
+
+    /* ── SUPPLIER ASSIGN ── */
+    .supplier-select-wrap { display:flex;gap:0.65rem;align-items:center; }
+    .supplier-select {
+      flex:1;padding:0.55rem 0.85rem;
+      border:1px solid var(--border);border-radius:9px;
+      background:var(--bg-dark);color:var(--industrial-silver);
+      font-family:'Heebo',sans-serif;font-size:0.88rem;cursor:pointer;
+    }
+    .supplier-select:focus { outline:none;border-color:var(--electric-blue); }
+    .btn-assign {
+      padding:0.55rem 1rem;background:var(--electric-blue);color:#fff;
+      border:none;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;
+      cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:0.4rem;
+      transition:background 0.18s;
+    }
+    .btn-assign:hover { background:#154e8f; }
+    .assigned-supplier-row {
+      margin-top:0.85rem;padding:0.65rem 0.85rem;
+      background:rgba(22,163,74,0.08);border:1px solid rgba(22,163,74,0.2);
+      border-radius:8px;display:flex;align-items:center;justify-content:space-between;
+      font-size:0.83rem;
+    }
+    .assigned-supplier-name { font-weight:700;color:#16a34a; }
+    .btn-unassign {
+      background:none;border:none;cursor:pointer;color:var(--silver-dark);
+      font-size:0.78rem;padding:0.15rem 0.4rem;border-radius:5px;transition:color 0.15s;
+    }
+    .btn-unassign:hover { color:#dc2626; }
+    .assign-status {
+      padding:0.2rem 0.65rem;border-radius:20px;font-size:0.72rem;font-weight:700;
+    }
+    .assign-status.unassigned { background:rgba(148,163,184,0.12);color:var(--silver-dark); }
+    .assign-status.assigned   { background:rgba(22,163,74,0.12);color:#16a34a; }
+
+    @media(max-width:768px) {
+      .section-cols { grid-template-columns:1fr; }
+      .prod-imgs-row { flex-direction:column; }
+      .fields-grid { grid-template-columns:1fr; }
+    }
   </style>
 </head>
 <body>
@@ -191,326 +281,947 @@
 
     <main class="admin-content">
       <div class="page-title">תמחור גלובלי</div>
-      <div class="page-subtitle">הגדרות מחיר בסיס המשפיעות על הצעות מחיר וקיטים — שינויים ישפיעו על הזמנות חדשות בלבד</div>
+      <div class="page-subtitle">הגדרות מחיר בסיס — שינויים ישפיעו על הצעות מחיר וקיטים בהזמנות חדשות בלבד</div>
 
-      <!-- TABS -->
-      <div class="tabs-bar">
-        <button class="tab-btn active" onclick="switchTab('raw')" id="tab-raw">
-          <i class="ph ph-atom"></i> חומרי גלם
-        </button>
-        <button class="tab-btn" onclick="switchTab('kits')" id="tab-kits">
-          <i class="ph ph-package"></i> קיטים
-        </button>
-        <button class="tab-btn" onclick="switchTab('accessories')" id="tab-accessories">
-          <i class="ph ph-wrench"></i> אביזרים
-        </button>
-        <button class="tab-btn" onclick="switchTab('windows')" id="tab-windows">
-          <i class="ph ph-frame-corners"></i> חלונות ויטרינה
-        </button>
-      </div>
+      <div class="products-container">
 
-      <!-- TAB: חומרי גלם -->
-      <div class="tab-panel active" id="panel-raw">
-        <div class="settings-card">
-          <div class="section-divider">
-            <i class="ph ph-atom"></i> מחירי חומרי גלם
+        <!-- ① פרגולה חשמלית PVC -->
+        <div class="product-section" id="sec-pvc">
+          <div class="product-section-hdr" onclick="toggleSection('pvc')">
+            <div class="prod-icon"><i class="ph ph-stack"></i></div>
+            <div class="prod-info">
+              <div class="prod-title">פרגולה חשמלית PVC</div>
+              <div class="prod-meta">תמחור למ"ר · תוספות · הגבלות כמות</div>
+            </div>
+            <div class="prod-price-badge" id="badge-pvc">&#8362; &mdash;</div>
+            <i class="ph ph-caret-down prod-caret" id="caret-pvc"></i>
           </div>
-
-          <div class="fields-grid single">
-            <div class="field-group">
-              <label class="field-label" for="aluminumPrice">מחיר אלומיניום לק"ג</label>
-              <div class="field-desc">בסיס חישוב עלות הפרופילים בכל מערכת ובכל קיט</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="aluminumPrice" type="number" min="0" step="0.5" placeholder="45">
-                <span class="field-suffix">לק"ג</span>
+          <div class="product-section-body" id="body-pvc" style="display:none;">
+            <!-- תמונות -->
+            <div class="prod-imgs-row">
+              <div class="img-slot">
+                <img class="img-preview" id="img-pvc-1" src="" alt="">
+                <input class="img-url-input" id="pvcImg1" type="url" placeholder="כתובת תמונה 1..." oninput="previewImg('pvc',1)">
+                <div class="img-slot-label">תמונה 1</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-pvc-2" src="" alt="">
+                <input class="img-url-input" id="pvcImg2" type="url" placeholder="כתובת תמונה 2..." oninput="previewImg('pvc',2)">
+                <div class="img-slot-label">תמונה 2</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-pvc-3" src="" alt="">
+                <input class="img-url-input" id="pvcImg3" type="url" placeholder="כתובת תמונה 3..." oninput="previewImg('pvc',3)">
+                <div class="img-slot-label">תמונה 3</div>
               </div>
             </div>
 
-            <div class="field-group">
-              <label class="field-label" for="paintPrice">מחיר עיבוד צבע ליחידה</label>
-              <div class="field-desc">עלות אנודיזציה / צביעה באבקה לפרופיל בודד</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="paintPrice" type="number" min="0" step="1" placeholder="120">
-                <span class="field-suffix">ליחידה</span>
+            <div class="section-cols">
+              <!-- LEFT -->
+              <div>
+                <div class="col-label"><i class="ph ph-tag"></i> עלות ספק</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="pvcPerSqmPrice">מחיר בסיס למ"ר</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="pvcPerSqmPrice" type="number" min="0" step="10" placeholder="380" oninput="refreshFormula('pvc')">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="pvcLightingAddon">תוספת תאורה</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="pvcLightingAddon" type="number" min="0" step="5" placeholder="30" oninput="refreshFormula('pvc')">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="pvcPackagingFee">דמי אריזה</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="pvcPackagingFee" type="number" min="0" step="10" placeholder="120" oninput="refreshFormula('pvc')">
+                      <span class="field-suffix">למערכת</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="pvcLevelingBeam">קורת יישור</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="pvcLevelingBeam" type="number" min="0" step="50" placeholder="500" oninput="refreshFormula('pvc')">
+                      <span class="field-suffix">למערכת</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-percent"></i> מרווח תמחור</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="pvcMarkupRegular">משתמש רגיל</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="pvcMarkupRegular" type="number" min="0" step="1" placeholder="30" oninput="refreshFormula('pvc')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="pvcMarkupMember">חבר אלום</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="pvcMarkupMember" type="number" min="0" step="1" placeholder="15" oninput="refreshFormula('pvc')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-sliders"></i> הגבלות וזמנים</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="pvcMinSqm">מינימום מ"ר</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="pvcMinSqm" type="number" min="0" step="1" placeholder="6">
+                      <span class="field-suffix">מ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="pvcMaxSqm">מקסימום מ"ר</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="pvcMaxSqm" type="number" min="0" step="1" placeholder="60">
+                      <span class="field-suffix">מ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="pvcLeadDays">זמן אספקה</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="pvcLeadDays" type="number" min="0" step="1" placeholder="21">
+                      <span class="field-suffix">ימים</span>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
 
-          <div class="save-bar">
-            <div class="info-note">
-              <i class="ph ph-info"></i>
-              <span>שינוי ישפיע על הצעות חדשות בלבד</span>
-            </div>
-            <button class="btn-save" id="saveRawBtn" onclick="saveTab('raw')">
-              <i class="ph ph-floppy-disk"></i> שמור
-            </button>
-          </div>
-        </div>
-      </div>
+              <!-- RIGHT -->
+              <div>
+                <div class="col-label"><i class="ph ph-function"></i> נוסחת מחיר &mdash; דוגמה ל-20 מ"ר</div>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>בסיס (20 &times; <span id="fv-pvcPerSqmPrice">380</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-pvc-base">7,600&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>תאורה (20 &times; <span id="fv-pvcLightingAddon">30</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-pvc-light">600&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>אריזה (קבוע)</span>
+                    <span class="formula-val" id="fc-pvc-pack">120&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>קורת יישור (קבוע)</span>
+                    <span class="formula-val" id="fc-pvc-beam">500&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-cost">
+                    <span>עלות ספק</span>
+                    <span class="formula-val" id="fc-pvc-cost">8,820&#8362;</span>
+                  </div>
+                  <hr class="formula-divider">
+                  <div class="formula-line formula-regular">
+                    <span><span class="formula-tier-label">משתמש</span> + <span id="fv-pvcMarkupRegular">30</span>%</span>
+                    <span class="formula-val" id="fc-pvc-regular">11,466&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-member">
+                    <span><span class="formula-tier-label member">חבר אלום</span> + <span id="fv-pvcMarkupMember">15</span>%</span>
+                    <span class="formula-val" id="fc-pvc-member">10,143&#8362;</span>
+                  </div>
+                </div>
 
-      <!-- TAB: קיטים -->
-      <div class="tab-panel" id="panel-kits">
-        <div class="settings-card">
-          <div class="section-divider">
-            <i class="ph ph-package"></i> מחירי בסיס לקיטים
-          </div>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-note-pencil"></i> מפרט טכני (אופציונלי)</div>
+                <textarea class="spec-area" id="pvcTechSpec" placeholder="מפרט טכני, תיאור חומרים, הערות ספק..."></textarea>
 
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="kitPergolaPrice">קיט פרגולה</label>
-              <div class="field-desc">מחיר בסיס לקיט פרגולה סטנדרטי</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="kitPergolaPrice" type="number" min="0" step="100" placeholder="3500">
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="kitVitrinePrice">קיט חלונות ויטרינה</label>
-              <div class="field-desc">מחיר בסיס לקיט חלון ויטרינה</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="kitVitrinePrice" type="number" min="0" step="100" placeholder="4200">
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="kitFencePrice">קיט גדרות ושערים</label>
-              <div class="field-desc">מחיר בסיס לקיט גדר / שער אלומיניום</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="kitFencePrice" type="number" min="0" step="100" placeholder="2800">
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="kitAlumPergolaPrice">קיט פרגולה אלומיניום</label>
-              <div class="field-desc">מחיר בסיס לפרגולת אלומיניום פרופיל כבד</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="kitAlumPergolaPrice" type="number" min="0" step="100" placeholder="5500">
-              </div>
-            </div>
-          </div>
-
-          <div class="section-divider" style="margin-top:1.5rem;">
-            <i class="ph ph-stack"></i> פרגולה חשמלית PVC — תמחור ספציפי
-          </div>
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="pvcPerSqmPrice">מחיר בסיס קיט PVC למ"ר</label>
-              <div class="field-desc">מחיר לכל מ"ר שטח פרגולה (kit_pvc_pergola_per_sqm)</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="pvcPerSqmPrice" type="number" min="0" step="10" placeholder="380">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="pvcLightingAddon">תוספת תאורה למ"ר</label>
-              <div class="field-desc">תוספת LED מובנה לכל מ"ר (kit_pvc_lighting_addon)</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="pvcLightingAddon" type="number" min="0" step="5" placeholder="30">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="pvcPackagingFee">דמי אריזה למערכת</label>
-              <div class="field-desc">עלות אריזה קבועה לכל מערכת (kit_pvc_packaging_fee)</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="pvcPackagingFee" type="number" min="0" step="10" placeholder="120">
-                <span class="field-suffix">למערכת</span>
-              </div>
-            </div>
-          </div>
-
-          <div class="save-bar">
-            <div class="info-note">
-              <i class="ph ph-info"></i>
-              <span>מחירי בסיס — לא כוללים אביזרים וצבע</span>
-            </div>
-            <button class="btn-save" id="saveKitsBtn" onclick="saveTab('kits')">
-              <i class="ph ph-floppy-disk"></i> שמור
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- TAB: אביזרים -->
-      <div class="tab-panel" id="panel-accessories">
-        <div class="settings-card">
-          <div class="section-divider">
-            <i class="ph ph-wrench"></i> מחירי אביזרים ותוספות
-          </div>
-
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="accMotorPrice">מנוע Somfy</label>
-              <div class="field-desc">מחיר ליחידת מנוע (לא כולל שלט)</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="accMotorPrice" type="number" min="0" step="50" placeholder="980">
-                <span class="field-suffix">ליח'</span>
-              </div>
-            </div>
-
-            <div class="field-group">
-              <label class="field-label" for="accRainSensorPrice">חיישן גשם</label>
-              <div class="field-desc">חיישן גשם אוטומטי לסגירת פרגולה</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="accRainSensorPrice" type="number" min="0" step="10" placeholder="350">
-                <span class="field-suffix">ליח'</span>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-truck"></i> ספק מוקצה</div>
+                <div class="supplier-select-wrap">
+                  <select class="supplier-select" id="select-pvc_pergola">
+                    <option value="">&mdash; בחר ספק &mdash;</option>
+                  </select>
+                  <button class="btn-assign" onclick="saveAssignment('pvc_pergola')"><i class="ph ph-check"></i> הקצה</button>
+                </div>
+                <div class="assigned-supplier-row" id="assigned-pvc_pergola" style="display:none;">
+                  <span class="assigned-supplier-name" id="assigned-name-pvc_pergola"></span>
+                  <button class="btn-unassign" onclick="removeAssignment('pvc_pergola')"><i class="ph ph-x"></i> הסר</button>
+                </div>
+                <span class="assign-status unassigned" id="status-pvc_pergola" style="display:inline-block;margin-top:0.5rem;">לא מוקצה</span>
               </div>
             </div>
 
-            <div class="field-group">
-              <label class="field-label" for="accLedPerMeterPrice">תאורת LED</label>
-              <div class="field-desc">מחיר לפי מטר אורך (פרופיל + הזנה)</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="accLedPerMeterPrice" type="number" min="0" step="5" placeholder="85">
-                <span class="field-suffix">למ'</span>
-              </div>
+            <div class="save-bar" style="margin:0 1.5rem;padding-bottom:1.5rem;">
+              <div class="info-note"><i class="ph ph-info"></i><span>שינויים ישפיעו על הצעות חדשות בלבד</span></div>
+              <button class="btn-save" id="save-btn-pvc" onclick="saveSection('pvc')"><i class="ph ph-floppy-disk"></i> שמור</button>
             </div>
-          </div>
-
-          <div class="save-bar">
-            <div class="info-note">
-              <i class="ph ph-info"></i>
-              <span>מחירים לא כוללים מע"מ — יחושב בהצעה</span>
-            </div>
-            <button class="btn-save" id="saveAccBtn" onclick="saveTab('accessories')">
-              <i class="ph ph-floppy-disk"></i> שמור
-            </button>
           </div>
         </div>
-      </div>
 
-      <!-- TAB: חלונות ויטרינה -->
-      <div class="tab-panel" id="panel-windows">
-        <div class="settings-card">
-          <div class="section-divider">
-            <i class="ph ph-frame-corners"></i> סדרות בסיס — מחיר למ"ר (כולל זכוכית טריפלקס 3+3)
+        <!-- ② פרגולות אלומיניום -->
+        <div class="product-section" id="sec-alum">
+          <div class="product-section-hdr" onclick="toggleSection('alum')">
+            <div class="prod-icon"><i class="ph ph-sun-dim"></i></div>
+            <div class="prod-info">
+              <div class="prod-title">פרגולות אלומיניום</div>
+              <div class="prod-meta">מחיר בסיס + תמחור למ"ר · הגבלות כמות</div>
+            </div>
+            <div class="prod-price-badge" id="badge-alum">&#8362; &mdash;</div>
+            <i class="ph ph-caret-down prod-caret" id="caret-alum"></i>
           </div>
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="windowSeries7000">סדרה 7000</label>
-              <div class="field-desc">מחיר בסיס למ"ר — סדרה 7000</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowSeries7000" type="number" min="0" step="10" placeholder="450">
-                <span class="field-suffix">למ"ר</span>
+          <div class="product-section-body" id="body-alum" style="display:none;">
+            <!-- תמונות -->
+            <div class="prod-imgs-row">
+              <div class="img-slot">
+                <img class="img-preview" id="img-alum-1" src="" alt="">
+                <input class="img-url-input" id="alumImg1" type="url" placeholder="כתובת תמונה 1..." oninput="previewImg('alum',1)">
+                <div class="img-slot-label">תמונה 1</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-alum-2" src="" alt="">
+                <input class="img-url-input" id="alumImg2" type="url" placeholder="כתובת תמונה 2..." oninput="previewImg('alum',2)">
+                <div class="img-slot-label">תמונה 2</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-alum-3" src="" alt="">
+                <input class="img-url-input" id="alumImg3" type="url" placeholder="כתובת תמונה 3..." oninput="previewImg('alum',3)">
+                <div class="img-slot-label">תמונה 3</div>
               </div>
             </div>
-            <div class="field-group">
-              <label class="field-label" for="windowSeries9000">סדרה 9000</label>
-              <div class="field-desc">מחיר בסיס למ"ר — סדרה 9000</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowSeries9000" type="number" min="0" step="10" placeholder="650">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-          </div>
 
-          <div class="section-divider" style="margin-top:1.5rem;">
-            <i class="ph ph-stack"></i> שדרוגי זכוכית — תוספת למ"ר
-          </div>
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="windowGlassMilky">זכוכית חלבית / אנטי-סאן</label>
-              <div class="field-desc">תוספת מעל מחיר הסדרה</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowGlassMilky" type="number" min="0" step="5" placeholder="80">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="windowGlassInsulating">זכוכית בידודית 4-12-4</label>
-              <div class="field-desc">תוספת מעל מחיר הסדרה</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowGlassInsulating" type="number" min="0" step="5" placeholder="120">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-          </div>
+            <div class="section-cols">
+              <!-- LEFT -->
+              <div>
+                <div class="col-label"><i class="ph ph-tag"></i> עלות ספק</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="kitAlumPergolaPrice">מחיר בסיס לקיט</label>
+                    <div class="field-desc">עלות קבועה לכל מערכת (פרופילים + עבודה)</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="kitAlumPergolaPrice" type="number" min="0" step="100" placeholder="5500" oninput="refreshFormula('alum')">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="alumPerSqmPrice">תוספת למ"ר</label>
+                    <div class="field-desc">תוספת מחיר לכל מ"ר מעל הבסיס</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="alumPerSqmPrice" type="number" min="0" step="10" placeholder="150" oninput="refreshFormula('alum')">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="section-divider" style="margin-top:1.5rem;">
-            <i class="ph ph-rows"></i> תריסים ורשתות — תוספת למ"ר
-          </div>
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="windowBlindPull">שלב תריס משוך</label>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowBlindPull" type="number" min="0" step="5" placeholder="90">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="windowBlindFoam">שלב תריס מוקצף</label>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowBlindFoam" type="number" min="0" step="5" placeholder="120">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-            <div class="field-group">
-              <label class="field-label" for="windowScreen">רשת (הזזה / קבועה)</label>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowScreen" type="number" min="0" step="5" placeholder="60">
-                <span class="field-suffix">למ"ר</span>
-              </div>
-            </div>
-          </div>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-percent"></i> מרווח תמחור</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="alumMarkupRegular">משתמש רגיל</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="alumMarkupRegular" type="number" min="0" step="1" placeholder="30" oninput="refreshFormula('alum')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="alumMarkupMember">חבר אלום</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="alumMarkupMember" type="number" min="0" step="1" placeholder="15" oninput="refreshFormula('alum')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="section-divider" style="margin-top:1.5rem;">
-            <i class="ph ph-lightning"></i> תוספות קבועות
-          </div>
-          <div class="fields-grid">
-            <div class="field-group">
-              <label class="field-label" for="windowMotor">מנוע חשמלי לתריס</label>
-              <div class="field-desc">מחיר קבוע ליחידה</div>
-              <div class="field-input-wrap">
-                <span class="field-prefix">₪</span>
-                <input class="field-input" id="windowMotor" type="number" min="0" step="50" placeholder="350">
-                <span class="field-suffix">ליח'</span>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-sliders"></i> הגבלות וזמנים</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="alumMinSqm">מינימום מ"ר</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="alumMinSqm" type="number" min="0" step="1" placeholder="10">
+                      <span class="field-suffix">מ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="alumMaxSqm">מקסימום מ"ר</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="alumMaxSqm" type="number" min="0" step="1" placeholder="100">
+                      <span class="field-suffix">מ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="alumLeadDays">זמן אספקה</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="alumLeadDays" type="number" min="0" step="1" placeholder="30">
+                      <span class="field-suffix">ימים</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT -->
+              <div>
+                <div class="col-label"><i class="ph ph-function"></i> נוסחת מחיר &mdash; דוגמה ל-20 מ"ר</div>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>בסיס (קבוע)</span>
+                    <span class="formula-val" id="fc-alum-base">5,500&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>שטח (20 &times; <span id="fv-alumPerSqmPrice">150</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-alum-sqm">3,000&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-cost">
+                    <span>עלות ספק</span>
+                    <span class="formula-val" id="fc-alum-cost">8,500&#8362;</span>
+                  </div>
+                  <hr class="formula-divider">
+                  <div class="formula-line formula-regular">
+                    <span><span class="formula-tier-label">משתמש</span> + <span id="fv-alumMarkupRegular">30</span>%</span>
+                    <span class="formula-val" id="fc-alum-regular">11,050&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-member">
+                    <span><span class="formula-tier-label member">חבר אלום</span> + <span id="fv-alumMarkupMember">15</span>%</span>
+                    <span class="formula-val" id="fc-alum-member">9,775&#8362;</span>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-note-pencil"></i> מפרט טכני (אופציונלי)</div>
+                <textarea class="spec-area" id="alumTechSpec" placeholder="מפרט טכני, תיאור חומרים, הערות ספק..."></textarea>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-truck"></i> ספק מוקצה</div>
+                <div class="supplier-select-wrap">
+                  <select class="supplier-select" id="select-alum_pergola">
+                    <option value="">&mdash; בחר ספק &mdash;</option>
+                  </select>
+                  <button class="btn-assign" onclick="saveAssignment('alum_pergola')"><i class="ph ph-check"></i> הקצה</button>
+                </div>
+                <div class="assigned-supplier-row" id="assigned-alum_pergola" style="display:none;">
+                  <span class="assigned-supplier-name" id="assigned-name-alum_pergola"></span>
+                  <button class="btn-unassign" onclick="removeAssignment('alum_pergola')"><i class="ph ph-x"></i> הסר</button>
+                </div>
+                <span class="assign-status unassigned" id="status-alum_pergola" style="display:inline-block;margin-top:0.5rem;">לא מוקצה</span>
               </div>
             </div>
-          </div>
 
-          <div class="save-bar">
-            <div class="info-note">
-              <i class="ph ph-info"></i>
-              <span>מחירים לא כוללים מע"מ — יחושב בהצעה</span>
+            <div class="save-bar" style="margin:0 1.5rem;padding-bottom:1.5rem;">
+              <div class="info-note"><i class="ph ph-info"></i><span>שינויים ישפיעו על הצעות חדשות בלבד</span></div>
+              <button class="btn-save" id="save-btn-alum" onclick="saveSection('alum')"><i class="ph ph-floppy-disk"></i> שמור</button>
             </div>
-            <button class="btn-save" id="saveWindowsBtn" onclick="saveTab('windows')">
-              <i class="ph ph-floppy-disk"></i> שמור
-            </button>
           </div>
         </div>
-      </div>
 
+        <!-- ③ חלונות ויטרינה -->
+        <div class="product-section" id="sec-win">
+          <div class="product-section-hdr" onclick="toggleSection('win')">
+            <div class="prod-icon"><i class="ph ph-frame-corners"></i></div>
+            <div class="prod-info">
+              <div class="prod-title">חלונות ויטרינה</div>
+              <div class="prod-meta">סדרות · שדרוגי זכוכית · תריסים · הגבלות</div>
+            </div>
+            <div class="prod-price-badge" id="badge-win">&#8362; &mdash;</div>
+            <i class="ph ph-caret-down prod-caret" id="caret-win"></i>
+          </div>
+          <div class="product-section-body" id="body-win" style="display:none;">
+            <!-- תמונות -->
+            <div class="prod-imgs-row">
+              <div class="img-slot">
+                <img class="img-preview" id="img-win-1" src="" alt="">
+                <input class="img-url-input" id="winImg1" type="url" placeholder="כתובת תמונה 1..." oninput="previewImg('win',1)">
+                <div class="img-slot-label">תמונה 1</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-win-2" src="" alt="">
+                <input class="img-url-input" id="winImg2" type="url" placeholder="כתובת תמונה 2..." oninput="previewImg('win',2)">
+                <div class="img-slot-label">תמונה 2</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-win-3" src="" alt="">
+                <input class="img-url-input" id="winImg3" type="url" placeholder="כתובת תמונה 3..." oninput="previewImg('win',3)">
+                <div class="img-slot-label">תמונה 3</div>
+              </div>
+            </div>
+
+            <div class="section-cols">
+              <!-- LEFT -->
+              <div>
+                <div class="col-label"><i class="ph ph-tag"></i> סדרות בסיס (כולל זכוכית טריפלקס)</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="windowSeries7000">סדרה 7000</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="windowSeries7000" type="number" min="0" step="10" placeholder="450" oninput="refreshFormula('win')">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowSeries9000">סדרה 9000</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="windowSeries9000" type="number" min="0" step="10" placeholder="650">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-stack"></i> שדרוגי זכוכית &mdash; תוספת למ"ר</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="windowGlassMilky">חלבית / אנטי-סאן</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">+&#8362;</span>
+                      <input class="field-input" id="windowGlassMilky" type="number" min="0" step="5" placeholder="80" oninput="refreshFormula('win')">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowGlassInsulating">בידודית 4-12-4</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">+&#8362;</span>
+                      <input class="field-input" id="windowGlassInsulating" type="number" min="0" step="5" placeholder="120">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-rows"></i> תריסים ורשתות &mdash; תוספת למ"ר</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="windowBlindPull">תריס משוך</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">+&#8362;</span>
+                      <input class="field-input" id="windowBlindPull" type="number" min="0" step="5" placeholder="90" oninput="refreshFormula('win')">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowBlindFoam">תריס מוקצף</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">+&#8362;</span>
+                      <input class="field-input" id="windowBlindFoam" type="number" min="0" step="5" placeholder="120">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowScreen">רשת</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">+&#8362;</span>
+                      <input class="field-input" id="windowScreen" type="number" min="0" step="5" placeholder="60">
+                      <span class="field-suffix">למ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowMotor">מנוע חשמלי לתריס</label>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="windowMotor" type="number" min="0" step="50" placeholder="350" oninput="refreshFormula('win')">
+                      <span class="field-suffix">ליח'</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-percent"></i> מרווח תמחור</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="winMarkupRegular">משתמש רגיל</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="winMarkupRegular" type="number" min="0" step="1" placeholder="30" oninput="refreshFormula('win')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="winMarkupMember">חבר אלום</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="winMarkupMember" type="number" min="0" step="1" placeholder="15" oninput="refreshFormula('win')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-sliders"></i> הגבלות וזמנים</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="windowMinSqm">מינימום מ"ר</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="windowMinSqm" type="number" min="0" step="0.5" placeholder="2">
+                      <span class="field-suffix">מ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowMaxSqm">מקסימום מ"ר</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="windowMaxSqm" type="number" min="0" step="1" placeholder="50">
+                      <span class="field-suffix">מ"ר</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="windowLeadDays">זמן אספקה</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="windowLeadDays" type="number" min="0" step="1" placeholder="14">
+                      <span class="field-suffix">ימים</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT -->
+              <div>
+                <div class="col-label"><i class="ph ph-function"></i> נוסחת מחיר &mdash; דוגמה ל-10 מ"ר סדרה 7000</div>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>סדרה 7000 (10 &times; <span id="fv-windowSeries7000">450</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-win-base">4,500&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>זכוכית חלבית (10 &times; <span id="fv-windowGlassMilky">80</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-win-glass">800&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>תריס משוך (10 &times; <span id="fv-windowBlindPull">90</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-win-blind">900&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>מנוע (1 יח')</span>
+                    <span class="formula-val" id="fc-win-motor">350&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-cost">
+                    <span>עלות ספק</span>
+                    <span class="formula-val" id="fc-win-cost">6,550&#8362;</span>
+                  </div>
+                  <hr class="formula-divider">
+                  <div class="formula-line formula-regular">
+                    <span><span class="formula-tier-label">משתמש</span> + <span id="fv-winMarkupRegular">30</span>%</span>
+                    <span class="formula-val" id="fc-win-regular">8,515&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-member">
+                    <span><span class="formula-tier-label member">חבר אלום</span> + <span id="fv-winMarkupMember">15</span>%</span>
+                    <span class="formula-val" id="fc-win-member">7,533&#8362;</span>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-note-pencil"></i> מפרט טכני (אופציונלי)</div>
+                <textarea class="spec-area" id="winTechSpec" placeholder="מפרט טכני, תיאור חומרים, הערות ספק..."></textarea>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-truck"></i> ספק מוקצה</div>
+                <div class="supplier-select-wrap">
+                  <select class="supplier-select" id="select-windows">
+                    <option value="">&mdash; בחר ספק &mdash;</option>
+                  </select>
+                  <button class="btn-assign" onclick="saveAssignment('windows')"><i class="ph ph-check"></i> הקצה</button>
+                </div>
+                <div class="assigned-supplier-row" id="assigned-windows" style="display:none;">
+                  <span class="assigned-supplier-name" id="assigned-name-windows"></span>
+                  <button class="btn-unassign" onclick="removeAssignment('windows')"><i class="ph ph-x"></i> הסר</button>
+                </div>
+                <span class="assign-status unassigned" id="status-windows" style="display:inline-block;margin-top:0.5rem;">לא מוקצה</span>
+              </div>
+            </div>
+
+            <div class="save-bar" style="margin:0 1.5rem;padding-bottom:1.5rem;">
+              <div class="info-note"><i class="ph ph-info"></i><span>שינויים ישפיעו על הצעות חדשות בלבד</span></div>
+              <button class="btn-save" id="save-btn-win" onclick="saveSection('win')"><i class="ph ph-floppy-disk"></i> שמור</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ④ גדרות ושערים -->
+        <div class="product-section" id="sec-fence">
+          <div class="product-section-hdr" onclick="toggleSection('fence')">
+            <div class="prod-icon"><i class="ph ph-git-fork"></i></div>
+            <div class="prod-info">
+              <div class="prod-title">גדרות ושערים</div>
+              <div class="prod-meta">מחיר בסיס + תמחור למטר רץ · הגבלות</div>
+            </div>
+            <div class="prod-price-badge" id="badge-fence">&#8362; &mdash;</div>
+            <i class="ph ph-caret-down prod-caret" id="caret-fence"></i>
+          </div>
+          <div class="product-section-body" id="body-fence" style="display:none;">
+            <!-- תמונות -->
+            <div class="prod-imgs-row">
+              <div class="img-slot">
+                <img class="img-preview" id="img-fence-1" src="" alt="">
+                <input class="img-url-input" id="fenceImg1" type="url" placeholder="כתובת תמונה 1..." oninput="previewImg('fence',1)">
+                <div class="img-slot-label">תמונה 1</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-fence-2" src="" alt="">
+                <input class="img-url-input" id="fenceImg2" type="url" placeholder="כתובת תמונה 2..." oninput="previewImg('fence',2)">
+                <div class="img-slot-label">תמונה 2</div>
+              </div>
+              <div class="img-slot">
+                <img class="img-preview" id="img-fence-3" src="" alt="">
+                <input class="img-url-input" id="fenceImg3" type="url" placeholder="כתובת תמונה 3..." oninput="previewImg('fence',3)">
+                <div class="img-slot-label">תמונה 3</div>
+              </div>
+            </div>
+
+            <div class="section-cols">
+              <!-- LEFT -->
+              <div>
+                <div class="col-label"><i class="ph ph-tag"></i> עלות ספק</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="kitFencePrice">מחיר בסיס לקיט</label>
+                    <div class="field-desc">עלות קבועה לכל פרויקט גדרות</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="kitFencePrice" type="number" min="0" step="100" placeholder="2800" oninput="refreshFormula('fence')">
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="fencePerMeterPrice">מחיר למטר רץ</label>
+                    <div class="field-desc">תוספת לכל מטר גדר / שער</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="fencePerMeterPrice" type="number" min="0" step="10" placeholder="250" oninput="refreshFormula('fence')">
+                      <span class="field-suffix">למ'</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-percent"></i> מרווח תמחור</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="fenceMarkupRegular">משתמש רגיל</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="fenceMarkupRegular" type="number" min="0" step="1" placeholder="30" oninput="refreshFormula('fence')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="fenceMarkupMember">חבר אלום</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="fenceMarkupMember" type="number" min="0" step="1" placeholder="15" oninput="refreshFormula('fence')">
+                      <span class="field-suffix">%</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-sliders"></i> הגבלות וזמנים</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="fenceMinMeters">מינימום מטרים</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="fenceMinMeters" type="number" min="0" step="1" placeholder="5">
+                      <span class="field-suffix">מ'</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="fenceMaxMeters">מקסימום מטרים</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="fenceMaxMeters" type="number" min="0" step="5" placeholder="200">
+                      <span class="field-suffix">מ'</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="fenceLeadDays">זמן אספקה</label>
+                    <div class="field-input-wrap">
+                      <input class="field-input" id="fenceLeadDays" type="number" min="0" step="1" placeholder="21">
+                      <span class="field-suffix">ימים</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- RIGHT -->
+              <div>
+                <div class="col-label"><i class="ph ph-function"></i> נוסחת מחיר &mdash; דוגמה ל-20 מ'</div>
+                <div class="formula-box">
+                  <div class="formula-line">
+                    <span>בסיס (קבוע)</span>
+                    <span class="formula-val" id="fc-fence-base">2,800&#8362;</span>
+                  </div>
+                  <div class="formula-line">
+                    <span>מטרים (20 &times; <span id="fv-fencePerMeterPrice">250</span>&#8362;)</span>
+                    <span class="formula-val" id="fc-fence-meters">5,000&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-cost">
+                    <span>עלות ספק</span>
+                    <span class="formula-val" id="fc-fence-cost">7,800&#8362;</span>
+                  </div>
+                  <hr class="formula-divider">
+                  <div class="formula-line formula-regular">
+                    <span><span class="formula-tier-label">משתמש</span> + <span id="fv-fenceMarkupRegular">30</span>%</span>
+                    <span class="formula-val" id="fc-fence-regular">10,140&#8362;</span>
+                  </div>
+                  <div class="formula-line formula-member">
+                    <span><span class="formula-tier-label member">חבר אלום</span> + <span id="fv-fenceMarkupMember">15</span>%</span>
+                    <span class="formula-val" id="fc-fence-member">8,970&#8362;</span>
+                  </div>
+                </div>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-note-pencil"></i> מפרט טכני (אופציונלי)</div>
+                <textarea class="spec-area" id="fenceTechSpec" placeholder="מפרט טכני, תיאור חומרים, הערות ספק..."></textarea>
+
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-truck"></i> ספק מוקצה</div>
+                <div class="supplier-select-wrap">
+                  <select class="supplier-select" id="select-fences">
+                    <option value="">&mdash; בחר ספק &mdash;</option>
+                  </select>
+                  <button class="btn-assign" onclick="saveAssignment('fences')"><i class="ph ph-check"></i> הקצה</button>
+                </div>
+                <div class="assigned-supplier-row" id="assigned-fences" style="display:none;">
+                  <span class="assigned-supplier-name" id="assigned-name-fences"></span>
+                  <button class="btn-unassign" onclick="removeAssignment('fences')"><i class="ph ph-x"></i> הסר</button>
+                </div>
+                <span class="assign-status unassigned" id="status-fences" style="display:inline-block;margin-top:0.5rem;">לא מוקצה</span>
+              </div>
+            </div>
+
+            <div class="save-bar" style="margin:0 1.5rem;padding-bottom:1.5rem;">
+              <div class="info-note"><i class="ph ph-info"></i><span>שינויים ישפיעו על הצעות חדשות בלבד</span></div>
+              <button class="btn-save" id="save-btn-fence" onclick="saveSection('fence')"><i class="ph ph-floppy-disk"></i> שמור</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ⑤ חומרי גלם ואביזרים -->
+        <div class="product-section" id="sec-raw">
+          <div class="product-section-hdr" onclick="toggleSection('raw')">
+            <div class="prod-icon"><i class="ph ph-atom"></i></div>
+            <div class="prod-info">
+              <div class="prod-title">חומרי גלם ואביזרים</div>
+              <div class="prod-meta">אלומיניום · צבע · מנועים · חיישנים · תאורה</div>
+            </div>
+            <div class="prod-price-badge" id="badge-raw">מרכיבים</div>
+            <i class="ph ph-caret-down prod-caret" id="caret-raw"></i>
+          </div>
+          <div class="product-section-body" id="body-raw" style="display:none;">
+            <div class="section-cols">
+              <div>
+                <div class="col-label"><i class="ph ph-factory"></i> חומרי גלם</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="aluminumPrice">אלומיניום לק"ג</label>
+                    <div class="field-desc">בסיס חישוב עלות הפרופילים</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="aluminumPrice" type="number" min="0" step="0.5" placeholder="45">
+                      <span class="field-suffix">לק"ג</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="paintPrice">עיבוד צבע ליחידה</label>
+                    <div class="field-desc">עלות אנודיזציה / צביעה באבקה</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="paintPrice" type="number" min="0" step="1" placeholder="120">
+                      <span class="field-suffix">ליח'</span>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-wrench"></i> אביזרים</div>
+                <div class="fields-grid">
+                  <div class="field-group">
+                    <label class="field-label" for="accMotorPrice">מנוע Somfy</label>
+                    <div class="field-desc">מחיר ליחידת מנוע (ללא שלט)</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="accMotorPrice" type="number" min="0" step="50" placeholder="980">
+                      <span class="field-suffix">ליח'</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="accRainSensorPrice">חיישן גשם</label>
+                    <div class="field-desc">חיישן לסגירה אוטומטית</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="accRainSensorPrice" type="number" min="0" step="10" placeholder="350">
+                      <span class="field-suffix">ליח'</span>
+                    </div>
+                  </div>
+                  <div class="field-group">
+                    <label class="field-label" for="accLedPerMeterPrice">תאורת LED</label>
+                    <div class="field-desc">מחיר לפי מטר אורך</div>
+                    <div class="field-input-wrap">
+                      <span class="field-prefix">&#8362;</span>
+                      <input class="field-input" id="accLedPerMeterPrice" type="number" min="0" step="5" placeholder="85">
+                      <span class="field-suffix">למ'</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="col-label"><i class="ph ph-info"></i> הערות</div>
+                <div class="formula-box">
+                  <div class="formula-line" style="flex-direction:column;align-items:flex-start;gap:0.35rem;">
+                    <span style="color:var(--industrial-silver);font-weight:600;">חומרי גלם</span>
+                    <span style="font-size:0.8rem;line-height:1.5;">מחירים אלו משמשים לחישוב עלות ייצור פנימי. שינוי ישפיע על עלויות ייצור בכל הקיטים.</span>
+                  </div>
+                  <div class="formula-line" style="flex-direction:column;align-items:flex-start;gap:0.35rem;border-top:1px solid var(--border);padding-top:0.75rem;margin-top:0.15rem;">
+                    <span style="color:var(--industrial-silver);font-weight:600;">אביזרים</span>
+                    <span style="font-size:0.8rem;line-height:1.5;">מחירי האביזרים מוצגים ללקוח כתוספת נפרדת בקונפיגרטור ובהצעת המחיר.</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="save-bar" style="margin:0 1.5rem;padding-bottom:1.5rem;">
+              <div class="info-note"><i class="ph ph-info"></i><span>שינויים ישפיעו על הצעות חדשות בלבד</span></div>
+              <button class="btn-save" id="save-btn-raw" onclick="saveSection('raw')"><i class="ph ph-floppy-disk"></i> שמור</button>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /products-container -->
     </main>
   </div>
 
   <div class="toast" id="toast"></div>
 
 <script>
-/* ── TAB SWITCHING (plain script — not module, runs immediately) ── */
-function switchTab(tab) {
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  document.getElementById('panel-' + tab).classList.add('active');
+/* ── ACCORDION ── */
+function toggleSection(id) {
+  var body  = document.getElementById('body-'  + id);
+  var caret = document.getElementById('caret-' + id);
+  var isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  caret.classList.toggle('open', !isOpen);
+}
+
+/* ── IMAGE PREVIEW ── */
+function previewImg(sec, idx) {
+  var input = document.getElementById(sec + 'Img' + idx) ||
+              document.getElementById((sec === 'win' ? 'win' : sec) + 'Img' + idx);
+  var img   = document.getElementById('img-' + sec + '-' + idx);
+  if (!img || !input) return;
+  var url = input.value.trim();
+  img.src = url;
+  img.style.opacity = url ? '1' : '0.15';
+}
+
+/* ── FORMULA REFRESH ── */
+function fmt(n) { return Math.round(n).toLocaleString('he-IL') + '\u20AA'; }
+
+function refreshFormula(sec) {
+  if (sec === 'pvc') {
+    var sqm   = 20;
+    var base  = +(document.getElementById('pvcPerSqmPrice').value   || 380);
+    var light = +(document.getElementById('pvcLightingAddon').value  || 30);
+    var pack  = +(document.getElementById('pvcPackagingFee').value   || 120);
+    var beam  = +(document.getElementById('pvcLevelingBeam').value   || 500);
+    var mr    = +(document.getElementById('pvcMarkupRegular').value  || 30);
+    var mm    = +(document.getElementById('pvcMarkupMember').value   || 15);
+    var cost  = sqm * base + sqm * light + pack + beam;
+    var reg   = cost * (1 + mr / 100);
+    var mem   = cost * (1 + mm / 100);
+    document.getElementById('fv-pvcPerSqmPrice').textContent    = base;
+    document.getElementById('fv-pvcLightingAddon').textContent  = light;
+    document.getElementById('fc-pvc-base').textContent   = fmt(sqm * base);
+    document.getElementById('fc-pvc-light').textContent  = fmt(sqm * light);
+    document.getElementById('fc-pvc-pack').textContent   = fmt(pack);
+    document.getElementById('fc-pvc-beam').textContent   = fmt(beam);
+    document.getElementById('fc-pvc-cost').textContent   = fmt(cost);
+    document.getElementById('fv-pvcMarkupRegular').textContent = mr;
+    document.getElementById('fv-pvcMarkupMember').textContent  = mm;
+    document.getElementById('fc-pvc-regular').textContent = fmt(reg);
+    document.getElementById('fc-pvc-member').textContent  = fmt(mem);
+    document.getElementById('badge-pvc').textContent = '\u20AA' + Math.round(reg).toLocaleString('he-IL') + ' / 20\u05DE"\u05E8';
+
+  } else if (sec === 'alum') {
+    var sqm       = 20;
+    var basePrice = +(document.getElementById('kitAlumPergolaPrice').value  || 5500);
+    var perSqm    = +(document.getElementById('alumPerSqmPrice').value       || 150);
+    var mr        = +(document.getElementById('alumMarkupRegular').value     || 30);
+    var mm        = +(document.getElementById('alumMarkupMember').value      || 15);
+    var cost      = basePrice + sqm * perSqm;
+    var reg       = cost * (1 + mr / 100);
+    var mem       = cost * (1 + mm / 100);
+    document.getElementById('fv-alumPerSqmPrice').textContent   = perSqm;
+    document.getElementById('fc-alum-base').textContent   = fmt(basePrice);
+    document.getElementById('fc-alum-sqm').textContent    = fmt(sqm * perSqm);
+    document.getElementById('fc-alum-cost').textContent   = fmt(cost);
+    document.getElementById('fv-alumMarkupRegular').textContent = mr;
+    document.getElementById('fv-alumMarkupMember').textContent  = mm;
+    document.getElementById('fc-alum-regular').textContent = fmt(reg);
+    document.getElementById('fc-alum-member').textContent  = fmt(mem);
+    document.getElementById('badge-alum').textContent = '\u20AA' + Math.round(reg).toLocaleString('he-IL') + ' / 20\u05DE"\u05E8';
+
+  } else if (sec === 'win') {
+    var sqm   = 10;
+    var s7    = +(document.getElementById('windowSeries7000').value   || 450);
+    var glass = +(document.getElementById('windowGlassMilky').value   || 80);
+    var blind = +(document.getElementById('windowBlindPull').value    || 90);
+    var motor = +(document.getElementById('windowMotor').value        || 350);
+    var mr    = +(document.getElementById('winMarkupRegular').value   || 30);
+    var mm    = +(document.getElementById('winMarkupMember').value    || 15);
+    var cost  = sqm * s7 + sqm * glass + sqm * blind + motor;
+    var reg   = cost * (1 + mr / 100);
+    var mem   = cost * (1 + mm / 100);
+    document.getElementById('fv-windowSeries7000').textContent = s7;
+    document.getElementById('fv-windowGlassMilky').textContent = glass;
+    document.getElementById('fv-windowBlindPull').textContent  = blind;
+    document.getElementById('fc-win-base').textContent   = fmt(sqm * s7);
+    document.getElementById('fc-win-glass').textContent  = fmt(sqm * glass);
+    document.getElementById('fc-win-blind').textContent  = fmt(sqm * blind);
+    document.getElementById('fc-win-motor').textContent  = fmt(motor);
+    document.getElementById('fc-win-cost').textContent   = fmt(cost);
+    document.getElementById('fv-winMarkupRegular').textContent = mr;
+    document.getElementById('fv-winMarkupMember').textContent  = mm;
+    document.getElementById('fc-win-regular').textContent = fmt(reg);
+    document.getElementById('fc-win-member').textContent  = fmt(mem);
+    document.getElementById('badge-win').textContent = '\u20AA' + Math.round(reg / sqm).toLocaleString('he-IL') + ' / \u05DE"\u05E8';
+
+  } else if (sec === 'fence') {
+    var meters    = 20;
+    var basePrice = +(document.getElementById('kitFencePrice').value         || 2800);
+    var perMeter  = +(document.getElementById('fencePerMeterPrice').value    || 250);
+    var mr        = +(document.getElementById('fenceMarkupRegular').value    || 30);
+    var mm        = +(document.getElementById('fenceMarkupMember').value     || 15);
+    var cost      = basePrice + meters * perMeter;
+    var reg       = cost * (1 + mr / 100);
+    var mem       = cost * (1 + mm / 100);
+    document.getElementById('fv-fencePerMeterPrice').textContent   = perMeter;
+    document.getElementById('fc-fence-base').textContent   = fmt(basePrice);
+    document.getElementById('fc-fence-meters').textContent = fmt(meters * perMeter);
+    document.getElementById('fc-fence-cost').textContent   = fmt(cost);
+    document.getElementById('fv-fenceMarkupRegular').textContent = mr;
+    document.getElementById('fv-fenceMarkupMember').textContent  = mm;
+    document.getElementById('fc-fence-regular').textContent = fmt(reg);
+    document.getElementById('fc-fence-member').textContent  = fmt(mem);
+    document.getElementById('badge-fence').textContent = '\u20AA' + Math.round(reg).toLocaleString('he-IL') + " / 20\u05DE'";
+  }
+}
+
+/* ── SUPPLIER ASSIGNMENT (UI only) ── */
+var assignments = {};
+
+function saveAssignment(productKey) {
+  var sel = document.getElementById('select-' + productKey);
+  if (!sel.value) { showToast('\u05D1\u05D7\u05E8 \u05E1\u05E4\u05E7 \u05DC\u05E4\u05E0\u05D9 \u05D4\u05D4\u05E7\u05E6\u05D0\u05D4', true); return; }
+  var name = sel.options[sel.selectedIndex].text;
+  assignments[productKey] = { id: sel.value, name: name };
+  updateAssignmentUI(productKey);
+  showToast('\u05E1\u05E4\u05E7 \u05D4\u05D5\u05E7\u05E6\u05D4 \u05D1\u05D4\u05E6\u05DC\u05D7\u05D4');
+}
+
+function removeAssignment(productKey) {
+  delete assignments[productKey];
+  updateAssignmentUI(productKey);
+  showToast('\u05D4\u05D4\u05E7\u05E6\u05D0\u05D4 \u05D4\u05D5\u05E1\u05E8\u05D4');
+}
+
+function updateAssignmentUI(productKey) {
+  var a          = assignments[productKey];
+  var statusEl   = document.getElementById('status-'        + productKey);
+  var assignedEl = document.getElementById('assigned-'      + productKey);
+  var nameEl     = document.getElementById('assigned-name-' + productKey);
+  if (!statusEl) return;
+  if (a) {
+    statusEl.textContent = '\u05DE\u05D5\u05E7\u05E6\u05D4';
+    statusEl.className   = 'assign-status assigned';
+    if (assignedEl) assignedEl.style.display = 'flex';
+    if (nameEl)     nameEl.textContent = a.name;
+  } else {
+    statusEl.textContent = '\u05DC\u05D0 \u05DE\u05D5\u05E7\u05E6\u05D4';
+    statusEl.className   = 'assign-status unassigned';
+    if (assignedEl) assignedEl.style.display = 'none';
+  }
+}
+
+function showToast(msg, isError) {
+  var t = document.getElementById('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.className = 'toast show' + (isError ? ' error' : '');
+  setTimeout(function(){ t.className = 'toast'; }, 2500);
 }
 </script>
 
@@ -535,26 +1246,26 @@ async function requireAdmin() {
 (function() {
   const ACTIVE = 'settings';
   const groups = [
-    { single:true, id:'overview', icon:'ph-squares-four', label:'מבט על', href:'admin-overview.html' },
-    { id:'users-g', icon:'ph-users-three', label:'משתמשים', items:[
-      { id:'users',   icon:'ph-users',       label:'אישור משתמשים', href:'admin-users.html' },
-      { id:'members', icon:'ph-medal',        label:'חבר אלום',      href:'admin-members.html' },
-      { id:'crm',     icon:'ph-address-book', label:'קהילה ו-CRM',  href:'approved-users.html' },
+    { single:true, id:'overview', icon:'ph-squares-four', label:'\u05DE\u05D1\u05D8 \u05E2\u05DC', href:'admin-overview.html' },
+    { id:'users-g', icon:'ph-users-three', label:'\u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD', items:[
+      { id:'users',   icon:'ph-users',       label:'\u05D0\u05D9\u05E9\u05D5\u05E8 \u05DE\u05E9\u05EA\u05DE\u05E9\u05D9\u05DD', href:'admin-users.html' },
+      { id:'members', icon:'ph-medal',        label:'\u05D7\u05D1\u05E8 \u05D0\u05DC\u05D5\u05DD',      href:'admin-members.html' },
+      { id:'crm',     icon:'ph-address-book', label:'\u05E7\u05D4\u05D9\u05DC\u05D4 \u05D5-CRM',  href:'approved-users.html' },
     ]},
-    { id:'sales-g', icon:'ph-chart-line-up', label:'מכירות וכספים', items:[
-      { id:'orders',    icon:'ph-list-bullets',           label:'הזמנות',        href:'admin.html' },
-      { id:'quotes',    icon:'ph-file-text',              label:'הצעות מחיר',    href:'admin-quotes.html' },
-      { id:'financial', icon:'ph-currency-circle-dollar', label:'ניהול פיננסי',  href:'admin-financial.html' },
-      { id:'settings',  icon:'ph-gear-six',               label:'תמחור גלובלי', href:'admin-settings.html' },
+    { id:'sales-g', icon:'ph-chart-line-up', label:'\u05DE\u05DB\u05D9\u05E8\u05D5\u05EA \u05D5\u05DB\u05E1\u05E4\u05D9\u05DD', items:[
+      { id:'orders',    icon:'ph-list-bullets',           label:'\u05D4\u05D6\u05DE\u05E0\u05D5\u05EA',        href:'admin.html' },
+      { id:'quotes',    icon:'ph-file-text',              label:'\u05D4\u05E6\u05E2\u05D5\u05EA \u05DE\u05D7\u05D9\u05E8',    href:'admin-quotes.html' },
+      { id:'financial', icon:'ph-currency-circle-dollar', label:'\u05E0\u05D9\u05D4\u05D5\u05DC \u05E4\u05D9\u05E0\u05E0\u05E1\u05D9',  href:'admin-financial.html' },
+      { id:'settings',  icon:'ph-gear-six',               label:'\u05EA\u05DE\u05D7\u05D5\u05E8 \u05D2\u05DC\u05D5\u05D1\u05DC\u05D9', href:'admin-settings.html' },
     ]},
-    { id:'ops-g', icon:'ph-wrench', label:'תפעול ולו"ז', items:[
-      { id:'calendar', icon:'ph-calendar-dots', label:'לוח זמנים',    href:'admin-calendar.html' },
-      { id:'tasks',    icon:'ph-check-square',  label:'ניהול משימות',    href:'admin-tasks.html' },
-      { id:'monitor',  icon:'ph-monitor',       label:'מוניטור אדמינים', href:'admin-monitor.html' },
+    { id:'ops-g', icon:'ph-wrench', label:'\u05EA\u05E4\u05E2\u05D5\u05DC \u05D5\u05DC\u05D5"\u05D6', items:[
+      { id:'calendar', icon:'ph-calendar-dots', label:'\u05DC\u05D5\u05D7 \u05D6\u05DE\u05E0\u05D9\u05DD',    href:'admin-calendar.html' },
+      { id:'tasks',    icon:'ph-check-square',  label:'\u05E0\u05D9\u05D4\u05D5\u05DC \u05DE\u05E9\u05D9\u05DE\u05D5\u05EA',    href:'admin-tasks.html' },
+      { id:'monitor',  icon:'ph-monitor',       label:'\u05DE\u05D5\u05E0\u05D9\u05D8\u05D5\u05E8 \u05D0\u05D3\u05DE\u05D9\u05E0\u05D9\u05DD', href:'admin-monitor.html' },
     ]},
   ];
   const activeGroup = groups.find(g => !g.single && g.items && g.items.some(i => i.id === ACTIVE));
-  let html = '<div class="sidebar-label">ניהול</div><ul class="admin-nav">';
+  let html = '<div class="sidebar-label">\u05E0\u05D9\u05D4\u05D5\u05DC</div><ul class="admin-nav">';
   for (const g of groups) {
     if (g.single) {
       html += `<li><a href="${g.href}" class="${g.id===ACTIVE?'active':''}"><i class="ph ${g.icon}"></i> ${g.label}</a></li>`;
@@ -564,44 +1275,77 @@ async function requireAdmin() {
     }
   }
   html += '</ul>';
-  html += `<div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#2a3a4a);"><a href="dashboard.html" style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);text-decoration:none;transition:all 0.18s;" onmouseover="this.style.background='var(--blue-dim)';this.style.color='var(--electric-blue)'" onmouseout="this.style.background='';this.style.color='var(--silver-dark)'"><i class="ph ph-arrow-right"></i> חזרה לדשבורד</a></div>`;
+  html += `<div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#2a3a4a);"><a href="dashboard.html" style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);text-decoration:none;transition:all 0.18s;" onmouseover="this.style.background='var(--blue-dim)';this.style.color='var(--electric-blue)'" onmouseout="this.style.background='';this.style.color='var(--silver-dark)'"><i class="ph ph-arrow-right"></i> \u05D7\u05D6\u05E8\u05D4 \u05DC\u05D3\u05E9\u05D1\u05D5\u05E8\u05D3</a></div>`;
   const el = document.getElementById('admin-sidebar-placeholder');
   if (el) el.innerHTML = html;
 })();
 
-// Map: input element id → global_settings key
 const FIELD_MAP = {
-  aluminumPrice:        'aluminum_price_per_kg',
-  paintPrice:           'paint_price_per_unit',
-  kitPergolaPrice:      'kit_pergola_base_price',
-  kitVitrinePrice:      'kit_vitrine_base_price',
-  kitFencePrice:        'kit_fence_base_price',
-  kitAlumPergolaPrice:  'kit_alum_pergola_base_price',
-  pvcPerSqmPrice:       'kit_pvc_pergola_per_sqm',
-  pvcLightingAddon:     'kit_pvc_lighting_addon',
-  pvcPackagingFee:      'kit_pvc_packaging_fee',
-  accMotorPrice:        'acc_motor_somfy_price',
-  accRainSensorPrice:   'acc_rain_sensor_price',
-  accLedPerMeterPrice:  'acc_led_per_meter_price',
-  windowSeries7000:      'window_series_7000',
-  windowSeries9000:      'window_series_9000',
-  windowGlassMilky:      'window_glass_milky',
-  windowGlassInsulating: 'window_glass_insulating',
-  windowBlindPull:       'window_blind_pull',
-  windowBlindFoam:       'window_blind_foam',
-  windowScreen:          'window_screen',
-  windowMotor:           'window_motor',
+  aluminumPrice:          'aluminum_price_per_kg',
+  paintPrice:             'paint_price_per_unit',
+  kitAlumPergolaPrice:    'kit_alum_pergola_base_price',
+  alumPerSqmPrice:        'alum_pergola_per_sqm',
+  alumMinSqm:             'alum_pergola_min_sqm',
+  alumMaxSqm:             'alum_pergola_max_sqm',
+  alumLeadDays:           'alum_pergola_lead_days',
+  alumMarkupRegular:      'alum_markup_regular',
+  alumMarkupMember:       'alum_markup_member',
+  alumImg1:               'alum_img_1',
+  alumImg2:               'alum_img_2',
+  alumImg3:               'alum_img_3',
+  alumTechSpec:           'alum_tech_spec',
+  kitFencePrice:          'kit_fence_base_price',
+  fencePerMeterPrice:     'fence_per_meter_price',
+  fenceMinMeters:         'fence_min_meters',
+  fenceMaxMeters:         'fence_max_meters',
+  fenceLeadDays:          'fence_lead_days',
+  fenceMarkupRegular:     'fence_markup_regular',
+  fenceMarkupMember:      'fence_markup_member',
+  fenceImg1:              'fence_img_1',
+  fenceImg2:              'fence_img_2',
+  fenceImg3:              'fence_img_3',
+  fenceTechSpec:          'fence_tech_spec',
+  pvcPerSqmPrice:         'kit_pvc_pergola_per_sqm',
+  pvcLightingAddon:       'kit_pvc_lighting_addon',
+  pvcPackagingFee:        'kit_pvc_packaging_fee',
+  pvcLevelingBeam:        'kit_pvc_leveling_beam',
+  pvcMinSqm:              'pvc_pergola_min_sqm',
+  pvcMaxSqm:              'pvc_pergola_max_sqm',
+  pvcLeadDays:            'pvc_pergola_lead_days',
+  pvcMarkupRegular:       'pvc_markup_regular',
+  pvcMarkupMember:        'pvc_markup_member',
+  pvcImg1:                'pvc_img_1',
+  pvcImg2:                'pvc_img_2',
+  pvcImg3:                'pvc_img_3',
+  pvcTechSpec:            'pvc_tech_spec',
+  accMotorPrice:          'acc_motor_somfy_price',
+  accRainSensorPrice:     'acc_rain_sensor_price',
+  accLedPerMeterPrice:    'acc_led_per_meter_price',
+  windowSeries7000:       'window_series_7000',
+  windowSeries9000:       'window_series_9000',
+  windowGlassMilky:       'window_glass_milky',
+  windowGlassInsulating:  'window_glass_insulating',
+  windowBlindPull:        'window_blind_pull',
+  windowBlindFoam:        'window_blind_foam',
+  windowScreen:           'window_screen',
+  windowMotor:            'window_motor',
+  windowMinSqm:           'window_min_sqm',
+  windowMaxSqm:           'window_max_sqm',
+  windowLeadDays:         'window_lead_days',
+  winMarkupRegular:       'win_markup_regular',
+  winMarkupMember:        'win_markup_member',
+  winImg1:                'win_img_1',
+  winImg2:                'win_img_2',
+  winImg3:                'win_img_3',
+  winTechSpec:            'win_tech_spec',
 };
 
-const TAB_FIELDS = {
-  raw:         ['aluminumPrice', 'paintPrice'],
-  kits:        ['kitPergolaPrice', 'kitVitrinePrice', 'kitFencePrice', 'kitAlumPergolaPrice', 'pvcPerSqmPrice', 'pvcLightingAddon', 'pvcPackagingFee'],
-  accessories: ['accMotorPrice', 'accRainSensorPrice', 'accLedPerMeterPrice'],
-  windows: ['windowSeries7000','windowSeries9000','windowGlassMilky','windowGlassInsulating','windowBlindPull','windowBlindFoam','windowScreen','windowMotor'],
-};
-
-const SAVE_BTNS = {
-  raw: 'saveRawBtn', kits: 'saveKitsBtn', accessories: 'saveAccBtn', windows: 'saveWindowsBtn'
+const SECTION_FIELDS = {
+  pvc:   ['pvcPerSqmPrice','pvcLightingAddon','pvcPackagingFee','pvcLevelingBeam','pvcMinSqm','pvcMaxSqm','pvcLeadDays','pvcMarkupRegular','pvcMarkupMember','pvcImg1','pvcImg2','pvcImg3','pvcTechSpec'],
+  alum:  ['kitAlumPergolaPrice','alumPerSqmPrice','alumMinSqm','alumMaxSqm','alumLeadDays','alumMarkupRegular','alumMarkupMember','alumImg1','alumImg2','alumImg3','alumTechSpec'],
+  win:   ['windowSeries7000','windowSeries9000','windowGlassMilky','windowGlassInsulating','windowBlindPull','windowBlindFoam','windowScreen','windowMotor','windowMinSqm','windowMaxSqm','windowLeadDays','winMarkupRegular','winMarkupMember','winImg1','winImg2','winImg3','winTechSpec'],
+  fence: ['kitFencePrice','fencePerMeterPrice','fenceMinMeters','fenceMaxMeters','fenceLeadDays','fenceMarkupRegular','fenceMarkupMember','fenceImg1','fenceImg2','fenceImg3','fenceTechSpec'],
+  raw:   ['aluminumPrice','paintPrice','accMotorPrice','accRainSensorPrice','accLedPerMeterPrice'],
 };
 
 async function init() {
@@ -616,31 +1360,39 @@ async function loadSettings() {
   const map = Object.fromEntries(data.map(r => [r.key, r.value]));
   Object.entries(FIELD_MAP).forEach(([inputId, settingsKey]) => {
     const el = document.getElementById(inputId);
-    if (el && map[settingsKey] !== undefined) el.value = map[settingsKey];
+    if (el && map[settingsKey] !== undefined) {
+      el.value = map[settingsKey];
+      /* refresh image previews after load */
+      if (inputId.endsWith('Img1') || inputId.endsWith('Img2') || inputId.endsWith('Img3')) {
+        const sec = inputId.replace(/Img\d$/, '').replace('window', 'win');
+        const idx = inputId.slice(-1);
+        previewImg(sec, +idx);
+      }
+    }
   });
+  ['pvc','alum','win','fence'].forEach(sec => refreshFormula(sec));
 }
 
-window.saveTab = async function(tab) {
-  const btnId = SAVE_BTNS[tab];
-  const btn = document.getElementById(btnId);
+window.saveSection = async function(sec) {
+  const btn = document.getElementById('save-btn-' + sec);
   btn.disabled = true;
-  btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> שומר...';
+  btn.innerHTML = '<i class="ph ph-circle-notch spin"></i> \u05E9\u05D5\u05DE\u05E8...';
 
-  const now = new Date().toISOString();
-  const rows = TAB_FIELDS[tab].map(inputId => ({
-    key: FIELD_MAP[inputId],
-    value: document.getElementById(inputId).value || '0',
+  const now  = new Date().toISOString();
+  const rows = SECTION_FIELDS[sec].map(inputId => ({
+    key:        FIELD_MAP[inputId],
+    value:      (document.getElementById(inputId) || {}).value || '0',
     updated_at: now
   }));
 
   const { error } = await supabase.from('global_settings').upsert(rows);
 
   btn.disabled = false;
-  btn.innerHTML = '<i class="ph ph-floppy-disk"></i> שמור';
-  showToast(error ? 'שגיאה בשמירה: ' + error.message : 'ההגדרות נשמרו בהצלחה', !!error);
+  btn.innerHTML = '<i class="ph ph-floppy-disk"></i> \u05E9\u05DE\u05D5\u05E8';
+  showToast(error ? '\u05E9\u05D2\u05D9\u05D0\u05D4 \u05D1\u05E9\u05DE\u05D9\u05E8\u05D4: ' + error.message : '\u05D4\u05D4\u05D2\u05D3\u05E8\u05D5\u05EA \u05E0\u05E9\u05DE\u05E8\u05D5 \u05D1\u05D4\u05E6\u05DC\u05D7\u05D4', !!error);
 };
 
-function showToast(msg, isError = false) {
+function showToast(msg, isError) {
   const t = document.getElementById('toast');
   t.innerHTML = `<i class="ph ${isError ? 'ph-warning' : 'ph-check-circle'}"></i> ${msg}`;
   t.className = 'toast' + (isError ? ' error' : '');

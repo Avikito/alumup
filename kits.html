@@ -59,7 +59,9 @@
         .kits-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-auto-rows: 1fr;
             gap: 2rem;
+            align-items: stretch;
         }
 
         /* Product Card */
@@ -81,19 +83,101 @@
 
         .kit-card-image {
             width: 100%;
-            height: 220px;
-            background: linear-gradient(135deg, #e8f0f9 0%, #c8d8ec 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            height: 260px;
             position: relative;
             overflow: hidden;
+            cursor: pointer;
         }
 
-        .kit-card-image svg {
-            width: 100%;
-            height: 100%;
+        .kit-card-image svg { display: none; }
+
+        .kit-main-img {
+            width: 100%; height: 100%;
+            object-fit: cover; display: block;
         }
+
+        .kit-img-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(8,18,38,0.78));
+            padding: 2.5rem 1.25rem 1rem;
+        }
+        .kit-img-overlay .kit-category-tag {
+            color: rgba(255,255,255,0.72);
+            margin-bottom: 0.15rem;
+        }
+        .kit-img-overlay .kit-name {
+            color: #fff;
+            font-size: 1.2rem;
+            margin-bottom: 0;
+            text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+        }
+
+        .kit-gallery-btn {
+            position: absolute;
+            top: 1rem; left: 1rem;
+            background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(6px);
+            color: #fff;
+            font-size: 0.8rem; font-weight: 600;
+            padding: 0.28rem 0.75rem;
+            border-radius: 20px; border: none;
+            cursor: pointer;
+            display: flex; align-items: center; gap: 0.35rem;
+            z-index: 2; transition: background 0.2s;
+        }
+        .kit-gallery-btn:hover { background: rgba(26,95,170,0.7); }
+
+        /* ── Gallery Modal ── */
+        #kit-gallery {
+            display: none; position: fixed; inset: 0; z-index: 9999;
+            background: rgba(0,0,0,0.93);
+            flex-direction: column; align-items: center; justify-content: center;
+            gap: 1rem;
+        }
+        .gal-close {
+            position: absolute; top: 1.2rem; left: 1.2rem;
+            background: rgba(255,255,255,0.12); border: none; color: #fff;
+            width: 40px; height: 40px; border-radius: 50%; font-size: 1.3rem;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .gal-close:hover { background: rgba(255,255,255,0.25); }
+        .gal-img-wrap {
+            display: flex; align-items: center; justify-content: center;
+            max-width: 90vw; max-height: 78vh;
+        }
+        #gal-img {
+            max-width: 90vw; max-height: 78vh;
+            object-fit: contain; border-radius: 8px;
+            box-shadow: 0 8px 48px rgba(0,0,0,0.6);
+        }
+        .gal-nav {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.12); border: none; color: #fff;
+            width: 48px; height: 48px; border-radius: 50%;
+            font-size: 1.8rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s;
+        }
+        .gal-nav:hover { background: rgba(26,95,170,0.6); }
+        .gal-prev { right: 1.5rem; }
+        .gal-next { left: 1.5rem; }
+        .gal-counter {
+            color: rgba(255,255,255,0.65);
+            font-size: 0.9rem; letter-spacing: 0.5px;
+        }
+        .gal-thumbs {
+            display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center;
+            max-width: 90vw; padding: 0 1rem;
+        }
+        .gal-thumb {
+            width: 60px; height: 45px; object-fit: cover; border-radius: 5px;
+            cursor: pointer; opacity: 0.55; border: 2px solid transparent;
+            transition: opacity 0.2s, border-color 0.2s;
+        }
+        .gal-thumb:hover { opacity: 0.85; }
+        .gal-thumb.active { opacity: 1; border-color: var(--electric-blue); }
 
         .kit-badge {
             position: absolute;
@@ -109,7 +193,7 @@
         }
 
         .kit-card-body {
-            padding: 1.75rem;
+            padding: 1.25rem 1.75rem 1.75rem;
             display: flex;
             flex-direction: column;
             flex: 1;
@@ -137,7 +221,11 @@
             color: var(--silver-dark);
             line-height: 1.6;
             margin-bottom: 1.5rem;
-            flex: 1;
+            height: 4.8rem;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
         }
 
         .kit-specs {
@@ -262,15 +350,6 @@
                 <li><a href="dashboard.html?section=settings"><i class="ph ph-gear"></i> הגדרות פרופיל</a></li>
             </ul>
 
-            <div class="sidebar-section-divider"></div>
-            <div class="sidebar-section-label">כלים</div>
-            <ul class="dashboard-nav">
-                <li><a href="configurator.html"><i class="ph ph-sliders"></i> קונפיגורטור פרגולות</a></li>
-                <li><a href="window-configurator.html"><i class="ph ph-browser"></i> קונפיגורטור חלונות</a></li>
-                <li><a href="kits.html" class="active"><i class="ph ph-package"></i> קיטים</a></li>
-                <li><a href="tenders.html"><i class="ph ph-briefcase"></i> מכרזים</a></li>
-            </ul>
-
             <div class="sidebar-user-footer">
                 <div class="sidebar-user-name" id="sidebarUserName"></div>
                 <div class="sidebar-user-email" id="sidebarUserEmail"></div>
@@ -300,8 +379,13 @@
 
                 <!-- Product: פרגולה חשמלית PVC -->
                 <div class="kit-card">
-                    <div class="kit-card-image">
-                        <img src="pergola-pvc-electric.jpg" alt="פרגולה חשמלית PVC" style="width:100%;height:100%;object-fit:cover;">
+                    <div class="kit-card-image" data-images='["pergola-pvc-electric.jpg"]' onclick="openGallery(this)">
+                        <img class="kit-main-img" src="pergola-pvc-electric.jpg" alt="פרגולה חשמלית PVC">
+                        <div class="kit-img-overlay">
+                            <div class="kit-category-tag">פרגולה והצללה</div>
+                            <h2 class="kit-name">פרגולה חשמלית PVC</h2>
+                        </div>
+                        <button class="kit-gallery-btn"><i class="ph ph-images"></i> תמונות</button>
                         <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" style="display:none;">
                           <defs>
                             <linearGradient id="p2sky" x1="0" y1="0" x2="0" y2="1">
@@ -382,8 +466,6 @@
                     </div>
 
                     <div class="kit-card-body">
-                        <div class="kit-category-tag">פרגולה והצללה</div>
-                        <h2 class="kit-name">פרגולה חשמלית PVC</h2>
                         <p class="kit-desc">
                             פרגולה עם קירוי PVC נפתח ונסגר באמצעות שלט רחוק, המאפשר שליטה מלאה על הצללה ואטימות לגשם.
                             מתאימה למרפסות, גינות וגגות. עמידה בפני שמש, מים ורוחות, כוללת מנוע Somfy, מערכת ניקוז נסתרת ומגוון אפשרויות גימור לבחירה.
@@ -428,8 +510,13 @@
 
                 <!-- Product: גדרות ושערים -->
                 <div class="kit-card">
-                    <div class="kit-card-image">
-                        <img src="fence-gate.jpg" alt="גדרות ושערים אלומיניום" style="width:100%;height:100%;object-fit:cover;">
+                    <div class="kit-card-image" data-images='["fence-gate.jpg"]' onclick="openGallery(this)">
+                        <img class="kit-main-img" src="fence-gate.jpg" alt="גדרות ושערים אלומיניום">
+                        <div class="kit-img-overlay">
+                            <div class="kit-category-tag">גדרות ושערים</div>
+                            <h2 class="kit-name">גדרות ושערים אלומיניום</h2>
+                        </div>
+                        <button class="kit-gallery-btn"><i class="ph ph-images"></i> תמונות</button>
                         <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" style="display:none;">
                           <rect width="320" height="220" fill="#eef3f9"/>
                           <!-- Ground -->
@@ -465,8 +552,6 @@
                         <div class="kit-badge">פופולרי</div>
                     </div>
                     <div class="kit-card-body">
-                        <div class="kit-category-tag">גדרות ושערים</div>
-                        <h2 class="kit-name">גדרות ושערים אלומיניום</h2>
                         <p class="kit-desc">
                             מערכת גדר ושער אלומיניום מלוחות אנכיות או אופקיות. עמיד בפני חלודה, קל לתחזוקה.
                             מתאים לגבולות נחלות, חצרות פרטיות ומתחמי תעשייה. גוון לפי בחירה.
@@ -512,8 +597,13 @@
 
                 <!-- Product: חלונות ויטרינה -->
                 <div class="kit-card">
-                    <div class="kit-card-image">
-                        <img src="window-vitrina.jpg" alt="חלונות ויטרינה אלומיניום" style="width:100%;height:100%;object-fit:cover;">
+                    <div class="kit-card-image" data-images='["window-vitrina.jpg"]' onclick="openGallery(this)">
+                        <img class="kit-main-img" src="window-vitrina.jpg" alt="חלונות ויטרינה אלומיניום">
+                        <div class="kit-img-overlay">
+                            <div class="kit-category-tag">חלונות ויטרינה</div>
+                            <h2 class="kit-name">חלונות ויטרינה אלומיניום</h2>
+                        </div>
+                        <button class="kit-gallery-btn"><i class="ph ph-images"></i> תמונות</button>
                         <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" style="display:none;">
                           <rect width="320" height="220" fill="#eef3f9"/>
                           <!-- Wall background -->
@@ -540,8 +630,6 @@
                         <div class="kit-badge">מומלץ</div>
                     </div>
                     <div class="kit-card-body">
-                        <div class="kit-category-tag">חלונות ויטרינה</div>
-                        <h2 class="kit-name" id="__windows_kit__">חלונות ויטרינה אלומיניום</h2>
                         <p class="kit-desc">
                             מערכות חלונות וויטרינות מאלומיניום פרופיל דק ועמיד. זיגוג כפול או בודד לפי צורך.
                             מתאים לחנויות, משרדים ובתי מגורים. איטום מלא ובידוד תרמי.
@@ -587,8 +675,13 @@
 
                 <!-- Product: פרגולות אלומיניום -->
                 <div class="kit-card">
-                    <div class="kit-card-image">
-                        <img src="pergola-aluminum.jpg" alt="פרגולות אלומיניום" style="width:100%;height:100%;object-fit:cover;">
+                    <div class="kit-card-image" data-images='["pergola-aluminum.jpg"]' onclick="openGallery(this)">
+                        <img class="kit-main-img" src="pergola-aluminum.jpg" alt="פרגולות אלומיניום">
+                        <div class="kit-img-overlay">
+                            <div class="kit-category-tag">פרגולות</div>
+                            <h2 class="kit-name">פרגולות אלומיניום</h2>
+                        </div>
+                        <button class="kit-gallery-btn"><i class="ph ph-images"></i> תמונות</button>
                         <svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg" style="display:none;">
                           <rect width="320" height="220" fill="#eef3f9"/>
                           <!-- Ground -->
@@ -618,8 +711,6 @@
                         <div class="kit-badge">פרימיום</div>
                     </div>
                     <div class="kit-card-body">
-                        <div class="kit-category-tag">פרגולות</div>
-                        <h2 class="kit-name">פרגולות אלומיניום</h2>
                         <p class="kit-desc">
                             פרגולה חשמלית מאלומיניום עם לוחות אופקיים מסתובבים. שליטה מלאה על כמות האור והאוורור.
                             עיצוב נקי ומודרני, מתאים לגגות שטוחים ומרפסות. כולל מנוע Somfy ושלט רחוק.
@@ -687,6 +778,60 @@ const supabase = createClient(
 document.getElementById('sidebarLogoutBtn')?.addEventListener('click', async () => {
   await supabase.auth.signOut();
   window.location.href = 'login.html';
+});
+</script>
+
+<!-- Gallery Modal -->
+<div id="kit-gallery" role="dialog" aria-modal="true">
+    <button class="gal-close" id="gal-close" aria-label="סגור">✕</button>
+    <button class="gal-nav gal-prev" id="gal-prev" aria-label="הקודם">‹</button>
+    <div class="gal-img-wrap"><img id="gal-img" src="" alt=""></div>
+    <button class="gal-nav gal-next" id="gal-next" aria-label="הבא">›</button>
+    <div id="gal-counter" class="gal-counter"></div>
+    <div id="gal-thumbs" class="gal-thumbs"></div>
+</div>
+
+<script>
+let galImages = [], galIndex = 0;
+
+function openGallery(el) {
+    const raw = el.dataset.images;
+    if (!raw) return;
+    galImages = JSON.parse(raw);
+    galIndex = 0;
+    updateGallery();
+    const modal = document.getElementById('kit-gallery');
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
+
+function closeGallery() {
+    document.getElementById('kit-gallery').style.display = 'none';
+    document.body.style.overflow = '';
+}
+
+function updateGallery() {
+    document.getElementById('gal-img').src = galImages[galIndex];
+    const total = galImages.length;
+    document.getElementById('gal-counter').textContent = total > 1 ? `${galIndex + 1} / ${total}` : '';
+    document.getElementById('gal-prev').style.display = total > 1 ? 'flex' : 'none';
+    document.getElementById('gal-next').style.display = total > 1 ? 'flex' : 'none';
+    document.getElementById('gal-thumbs').innerHTML = total > 1
+        ? galImages.map((src, i) =>
+            `<img class="gal-thumb${i === galIndex ? ' active' : ''}" src="${src}" onclick="galIndex=${i};updateGallery()">`
+          ).join('')
+        : '';
+}
+
+document.getElementById('gal-close').onclick = closeGallery;
+document.getElementById('gal-prev').onclick = () => { galIndex = (galIndex - 1 + galImages.length) % galImages.length; updateGallery(); };
+document.getElementById('gal-next').onclick = () => { galIndex = (galIndex + 1) % galImages.length; updateGallery(); };
+document.getElementById('kit-gallery').addEventListener('click', e => { if (e.target === e.currentTarget) closeGallery(); });
+document.addEventListener('keydown', e => {
+    if (document.getElementById('kit-gallery').style.display !== 'flex') return;
+    if (e.key === 'Escape') closeGallery();
+    if (e.key === 'ArrowRight') { galIndex = (galIndex - 1 + galImages.length) % galImages.length; updateGallery(); }
+    if (e.key === 'ArrowLeft')  { galIndex = (galIndex + 1) % galImages.length; updateGallery(); }
 });
 </script>
 </body>

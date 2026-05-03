@@ -498,7 +498,7 @@ window.handleRegistration = async function() {
     };
     console.log('[REGISTER] profile payload:', JSON.stringify(profilePayload));
 
-    const { error: profileError } = await supabase.from('profiles').insert([profilePayload]);
+    const { error: profileError } = await supabase.from('profiles').upsert([profilePayload], { onConflict: 'id' });
     if (profileError) {
       console.error('[REGISTER] profile insert error:', profileError.code, profileError.message, profileError.details);
       throw new Error(`שגיאת DB (${profileError.code}): ${profileError.message}`);
