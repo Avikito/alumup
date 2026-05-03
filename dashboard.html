@@ -1816,7 +1816,7 @@ window.switchDocTab = function(tab) {
   if (tab === 'history') loadAll();
 };
 
-window.showSection = function(id) {
+window.showSection = function(id, pushState = true) {
   document.querySelectorAll('.dash-section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.dashboard-nav a').forEach(a => a.classList.remove('active'));
   document.getElementById('sec-' + id).classList.add('active');
@@ -1824,7 +1824,14 @@ window.showSection = function(id) {
   if (navEl) navEl.classList.add('active');
   if (['saved-quotes', 'in-progress', 'history', 'documents'].includes(id)) loadAll();
   if (id === 'settings') initSettingsSection();
+  if (pushState) history.pushState({ section: id }, '', '?section=' + id);
 };
+
+// Back button support for PWA standalone mode
+window.addEventListener('popstate', e => {
+  const id = e.state?.section || 'home';
+  window.showSection(id, false);
+});
 
 /* ── LOAD BOTH TABLES ── */
 function renderDashboardGrid() {
