@@ -1638,7 +1638,7 @@ const PROFILE_PRICES = { '20/20': 50, '30/30': 65, '20/40': 55, '100/100': 310, 
 const PROFILE_NAMES  = { '20/20': 'זווית 20×20', '30/30': 'זווית 30×30', '20/40': 'זווית 20×40', '100/100': 'פרופיל 100×100', '100/40': 'פרופיל 100×40', '120/80': 'פרופיל 120×80 (זכוכית)' };
 
 /* Addon prices — defaults overridden by global_settings */
-const ADDON_PRICES = { perSqm: 380, packaging: 120, led: 30, remote: 400, tahoma: 600, dimmer: 100, levelingBeam: 450 };
+const ADDON_PRICES = { perSqm: 380, packaging: 120, led: 30, remote: 400, tahoma: 600, dimmer: 100, levelingBeam: 450, markupRegular: 30, markupMember: 15 };
 window.prices = ADDON_PRICES; // expose for debugging + external access
 
 let nextId = 2;
@@ -1695,13 +1695,11 @@ function calcKitPrice(area) {
   return Math.round(Math.max(area, 12) * ADDON_PRICES.perSqm);
 }
 function applyMemberDiscount(price) {
-  if (currentUserProfile?.user_tier === 'member')
-    return Math.round(price * 0.90);
-  return price;
+  const markup = isMember() ? ADDON_PRICES.markupMember : ADDON_PRICES.markupRegular;
+  return Math.round(price * (1 + markup / 100));
 }
 const isMember = () => currentUserProfile?.user_tier === 'member';
-function renderMemberPriceBox(regularSubtotal) {
-  const memberSubtotal = Math.round(regularSubtotal * 0.90);
+function renderMemberPriceBox(regularSubtotal, memberSubtotal) {
   const saving = regularSubtotal - memberSubtotal;
   const memberGrand = memberSubtotal + Math.round(memberSubtotal * 0.18);
   const regularGrand = regularSubtotal + Math.round(regularSubtotal * 0.18);
@@ -1825,7 +1823,7 @@ function buildSystemCard(s) {
   div.id = `sys-${s.id}`;
 
   const area = calcArea(s.width, s.depth);
-  const price = calcKitPrice(area);
+  const price = applyMemberDiscount(calcKitPrice(area));
   const alColor = RAL_COLORS.find(r => r.code === s.aluminumColor);
   const alLabel = s.aluminumColorCustom ? `RAL ${s.aluminumColorCustom}` : (alColor ? `RAL ${alColor.code} – ${alColor.name}` : '—');
   const pvcColor = PVC_COLORS.find(p => p.id === s.pvcColor);
@@ -2446,7 +2444,7 @@ function renderSummary() {
 
   for(const s of state.systems) {
     const area = calcArea(s.width, s.depth);
-    const kit = calcKitPrice(area);
+    const kit = applyMemberDiscount(calcKitPrice(area));
     const led = state.addons.led ? Math.round(area * ADDON_PRICES.led) : 0;
     const tot = kit + led;
     grand += tot;
@@ -2507,10 +2505,14 @@ function renderSummary() {
   rows += `<div class="total-row subtotal-row"><span class="label">סה"כ לפני מע"מ</span><span class="val">₪${subtotal.toLocaleString()}</span></div>`;
   rows += `<div class="total-row vat-row"><span class="label">מע"מ (18%)</span><span class="val">₪${vat.toLocaleString()}</span></div>`;
   rows += `<div class="total-row grand"><span class="label">סה"כ כולל מע"מ</span><span class="val">₪${grandTotal.toLocaleString()}</span></div>`;
-  const regularSubtotal = isMember()
-    ? subtotal + state.systems.reduce((s, sys) => { const k = calcKitPrice(calcArea(sys.width, sys.depth)); return s + k - applyMemberDiscount(k); }, 0)
-    : subtotal;
-  rows += renderMemberPriceBox(regularSubtotal);
+  const kitDiff = state.systems.reduce((acc, sys) => {
+    const cost = calcKitPrice(calcArea(sys.width, sys.depth));
+    return acc + Math.round(cost * (1 + ADDON_PRICES.markupRegular / 100))
+               - Math.round(cost * (1 + ADDON_PRICES.markupMember  / 100));
+  }, 0);
+  const regularSubtotal = isMember() ? (subtotal + kitDiff) : subtotal;
+  const memberSubtotal  = isMember() ? subtotal : (subtotal - kitDiff);
+  rows += renderMemberPriceBox(regularSubtotal, memberSubtotal);
   totalsDiv.innerHTML = rows;
   renderQuoteCard();
 }
@@ -3115,9 +3117,12 @@ async function loadGlobalPrices() {
     if (!data) return;
     const map = {};
     data.forEach(r => { map[r.key] = parseFloat(r.value) || 0; });
-    if (map['kit_pvc_pergola_per_sqm'] > 0) ADDON_PRICES.perSqm    = map['kit_pvc_pergola_per_sqm'];
-    if (map['kit_pvc_lighting_addon']  > 0) ADDON_PRICES.led       = map['kit_pvc_lighting_addon'];
-    if (map['kit_pvc_packaging_fee']   > 0) ADDON_PRICES.packaging = map['kit_pvc_packaging_fee'];
+    if (map['kit_pvc_pergola_per_sqm'] > 0) ADDON_PRICES.perSqm        = map['kit_pvc_pergola_per_sqm'];
+    if (map['kit_pvc_lighting_addon']  > 0) ADDON_PRICES.led           = map['kit_pvc_lighting_addon'];
+    if (map['kit_pvc_packaging_fee']   > 0) ADDON_PRICES.packaging     = map['kit_pvc_packaging_fee'];
+    if (map['kit_pvc_leveling_beam']   > 0) ADDON_PRICES.levelingBeam  = map['kit_pvc_leveling_beam'];
+    if (map['pvc_markup_regular']      > 0) ADDON_PRICES.markupRegular = map['pvc_markup_regular'];
+    if (map['pvc_markup_member']       > 0) ADDON_PRICES.markupMember  = map['pvc_markup_member'];
     if (map['led_price_per_sqm'] > 0) ADDON_PRICES.led    = map['led_price_per_sqm'];
     if (map['remote_price']      > 0) ADDON_PRICES.remote  = map['remote_price'];
     if (map['tahoma_price']      > 0) ADDON_PRICES.tahoma  = map['tahoma_price'];

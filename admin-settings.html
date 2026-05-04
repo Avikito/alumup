@@ -142,11 +142,29 @@
     .prod-info { flex:1;min-width:0; }
     .prod-title { font-size:1rem;font-weight:700;color:var(--industrial-silver); }
     .prod-meta { font-size:0.78rem;color:var(--silver-dark);margin-top:2px; }
-    .prod-price-badge {
-      font-size:0.82rem;font-weight:700;color:var(--electric-blue);
-      background:var(--blue-dim);padding:0.22rem 0.7rem;border-radius:20px;
-      white-space:nowrap;flex-shrink:0;
+    .prod-price-badge { display:none; } /* legacy — replaced by .price-badge-dual */
+
+    .price-badge-dual {
+      display:flex;flex-direction:column;gap:0.18rem;align-items:flex-end;flex-shrink:0;
     }
+    .badge-row {
+      display:flex;align-items:center;gap:0.4rem;
+    }
+    .badge-tier {
+      font-size:0.67rem;font-weight:700;padding:0.07rem 0.4rem;border-radius:20px;
+      white-space:nowrap;
+    }
+    .badge-tier.regular { background:var(--blue-dim);color:var(--electric-blue); }
+    .badge-tier.member  { background:rgba(245,158,11,0.12);color:#f59e0b; }
+    .badge-price {
+      font-size:0.9rem;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;
+    }
+    .badge-price.regular { color:var(--electric-blue); }
+    .badge-price.member  { color:#f59e0b; }
+    .badge-note {
+      font-size:0.6rem;color:var(--silver-dark);text-align:left;
+    }
+    @media(max-width:768px) { .price-badge-dual { display:none; } }
     .prod-caret { font-size:1rem;color:var(--silver-dark);transition:transform 0.22s ease;flex-shrink:0; }
     .prod-caret.open { transform:rotate(180deg); }
     .product-section-body { border-top:1px solid var(--border); }
@@ -334,7 +352,17 @@
               <div class="prod-title">פרגולה חשמלית PVC</div>
               <div class="prod-meta">תמחור למ"ר · תוספות · הגבלות כמות</div>
             </div>
-            <div class="prod-price-badge" id="badge-pvc">&#8362; &mdash;</div>
+            <div class="price-badge-dual">
+              <div class="badge-row">
+                <span class="badge-tier regular">משתמש</span>
+                <span class="badge-price regular" id="badge-pvc-reg">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-row">
+                <span class="badge-tier member"><i class="ph ph-medal"></i> חבר</span>
+                <span class="badge-price member" id="badge-pvc-mem">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-note">למ"ר</div>
+            </div>
             <i class="ph ph-caret-down prod-caret" id="caret-pvc"></i>
           </div>
           <div class="product-section-body" id="body-pvc" style="display:none;">
@@ -508,7 +536,17 @@
               <div class="prod-title">פרגולות אלומיניום</div>
               <div class="prod-meta">מחיר בסיס + תמחור למ"ר · הגבלות כמות</div>
             </div>
-            <div class="prod-price-badge" id="badge-alum">&#8362; &mdash;</div>
+            <div class="price-badge-dual">
+              <div class="badge-row">
+                <span class="badge-tier regular">משתמש</span>
+                <span class="badge-price regular" id="badge-alum-reg">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-row">
+                <span class="badge-tier member"><i class="ph ph-medal"></i> חבר</span>
+                <span class="badge-price member" id="badge-alum-mem">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-note">למ"ר</div>
+            </div>
             <i class="ph ph-caret-down prod-caret" id="caret-alum"></i>
           </div>
           <div class="product-section-body" id="body-alum" style="display:none;">
@@ -659,7 +697,17 @@
               <div class="prod-title">חלונות ויטרינה</div>
               <div class="prod-meta">סדרות · שדרוגי זכוכית · תריסים · הגבלות</div>
             </div>
-            <div class="prod-price-badge" id="badge-win">&#8362; &mdash;</div>
+            <div class="price-badge-dual">
+              <div class="badge-row">
+                <span class="badge-tier regular">משתמש</span>
+                <span class="badge-price regular" id="badge-win-reg">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-row">
+                <span class="badge-tier member"><i class="ph ph-medal"></i> חבר</span>
+                <span class="badge-price member" id="badge-win-mem">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-note">למ"ר</div>
+            </div>
             <i class="ph ph-caret-down prod-caret" id="caret-win"></i>
           </div>
           <div class="product-section-body" id="body-win" style="display:none;">
@@ -871,7 +919,17 @@
               <div class="prod-title">גדרות ושערים</div>
               <div class="prod-meta">מחיר בסיס + תמחור למטר רץ · הגבלות</div>
             </div>
-            <div class="prod-price-badge" id="badge-fence">&#8362; &mdash;</div>
+            <div class="price-badge-dual">
+              <div class="badge-row">
+                <span class="badge-tier regular">משתמש</span>
+                <span class="badge-price regular" id="badge-fence-reg">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-row">
+                <span class="badge-tier member"><i class="ph ph-medal"></i> חבר</span>
+                <span class="badge-price member" id="badge-fence-mem">&#8362; &mdash;</span>
+              </div>
+              <div class="badge-note">למטר רץ</div>
+            </div>
             <i class="ph ph-caret-down prod-caret" id="caret-fence"></i>
           </div>
           <div class="product-section-body" id="body-fence" style="display:none;">
@@ -1155,7 +1213,8 @@ function refreshFormula(sec) {
     document.getElementById('fv-pvcMarkupMember').textContent  = mm;
     document.getElementById('fc-pvc-regular').textContent = fmt(reg);
     document.getElementById('fc-pvc-member').textContent  = fmt(mem);
-    document.getElementById('badge-pvc').textContent = '\u20AA' + Math.round(reg).toLocaleString('he-IL') + ' / 20\u05DE"\u05E8';
+    document.getElementById('badge-pvc-reg').textContent = '\u20AA' + Math.round(reg / sqm).toLocaleString('he-IL');
+    document.getElementById('badge-pvc-mem').textContent = '\u20AA' + Math.round(mem / sqm).toLocaleString('he-IL');
 
   } else if (sec === 'alum') {
     var sqm       = 20;
@@ -1174,7 +1233,8 @@ function refreshFormula(sec) {
     document.getElementById('fv-alumMarkupMember').textContent  = mm;
     document.getElementById('fc-alum-regular').textContent = fmt(reg);
     document.getElementById('fc-alum-member').textContent  = fmt(mem);
-    document.getElementById('badge-alum').textContent = '\u20AA' + Math.round(reg).toLocaleString('he-IL') + ' / 20\u05DE"\u05E8';
+    document.getElementById('badge-alum-reg').textContent = '\u20AA' + Math.round(reg / sqm).toLocaleString('he-IL');
+    document.getElementById('badge-alum-mem').textContent = '\u20AA' + Math.round(mem / sqm).toLocaleString('he-IL');
 
   } else if (sec === 'win') {
     var sqm   = 10;
@@ -1199,7 +1259,8 @@ function refreshFormula(sec) {
     document.getElementById('fv-winMarkupMember').textContent  = mm;
     document.getElementById('fc-win-regular').textContent = fmt(reg);
     document.getElementById('fc-win-member').textContent  = fmt(mem);
-    document.getElementById('badge-win').textContent = '\u20AA' + Math.round(reg / sqm).toLocaleString('he-IL') + ' / \u05DE"\u05E8';
+    document.getElementById('badge-win-reg').textContent = '\u20AA' + Math.round(reg / sqm).toLocaleString('he-IL');
+    document.getElementById('badge-win-mem').textContent = '\u20AA' + Math.round(mem / sqm).toLocaleString('he-IL');
 
   } else if (sec === 'fence') {
     var meters    = 20;
@@ -1218,7 +1279,8 @@ function refreshFormula(sec) {
     document.getElementById('fv-fenceMarkupMember').textContent  = mm;
     document.getElementById('fc-fence-regular').textContent = fmt(reg);
     document.getElementById('fc-fence-member').textContent  = fmt(mem);
-    document.getElementById('badge-fence').textContent = '\u20AA' + Math.round(reg).toLocaleString('he-IL') + " / 20\u05DE'";
+    document.getElementById('badge-fence-reg').textContent = '\u20AA' + Math.round(reg / meters).toLocaleString('he-IL');
+    document.getElementById('badge-fence-mem').textContent = '\u20AA' + Math.round(mem / meters).toLocaleString('he-IL');
   }
 }
 
