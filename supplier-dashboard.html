@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | פאנל ספק</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    body { background:#f0f5fc; }
+
+    /* ── HEADER ── */
+    .sup-header {
+      position:sticky;top:0;z-index:200;
+      background:#fff;border-bottom:1px solid #e2e8f0;
+      padding:0 1.5rem;height:62px;
+      display:flex;align-items:center;justify-content:space-between;gap:1rem;
+    }
+    .sup-header-left  { display:flex;align-items:center;gap:0.85rem; }
+    .sup-header-right { display:flex;align-items:center;gap:0.75rem; }
+    .sup-badge {
+      display:inline-flex;align-items:center;gap:0.4rem;
+      background:rgba(26,95,170,0.08);color:#1a5faa;
+      border:1px solid rgba(26,95,170,0.18);
+      border-radius:20px;padding:0.2rem 0.75rem;
+      font-size:0.78rem;font-weight:700;
+    }
+    .sup-name {
+      font-size:0.88rem;font-weight:700;color:#1a2640;
+    }
+    .btn-logout {
+      display:flex;align-items:center;gap:0.4rem;
+      padding:0.4rem 1rem;background:transparent;
+      border:1.5px solid #e2e8f0;border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.85rem;font-weight:600;
+      color:#6b7a99;cursor:pointer;transition:all 0.18s;
+    }
+    .btn-logout:hover { border-color:#cbd5e1;color:#334155; }
+
+    /* ── LAYOUT ── */
+    .sup-wrap { max-width:1100px;margin:0 auto;padding:2rem 1.5rem; }
+
+    /* ── WELCOME ── */
+    .welcome-row {
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:1.75rem;flex-wrap:wrap;gap:0.75rem;
+    }
+    .welcome-title { font-size:1.4rem;font-weight:800;color:#1a2640; }
+    .welcome-sub   { font-size:0.85rem;color:#6b7a99;margin-top:0.2rem; }
+
+    /* ── STATS ── */
+    .stats-row {
+      display:grid;grid-template-columns:repeat(4,1fr);
+      gap:1rem;margin-bottom:1.75rem;
+    }
+    .stat-card {
+      background:#fff;border:1px solid #e2e8f0;border-radius:14px;
+      padding:1.1rem 1.25rem;display:flex;align-items:center;gap:0.9rem;
+    }
+    .stat-icon {
+      width:44px;height:44px;border-radius:11px;
+      display:flex;align-items:center;justify-content:center;font-size:1.2rem;flex-shrink:0;
+    }
+    .stat-val  { font-size:1.7rem;font-weight:800;color:#0f172a;line-height:1; }
+    .stat-lbl  { font-size:0.76rem;color:#6b7a99;margin-top:0.2rem; }
+
+    /* ── FILTER BAR ── */
+    .filter-bar {
+      display:flex;align-items:center;justify-content:space-between;
+      margin-bottom:1rem;flex-wrap:wrap;gap:0.75rem;
+    }
+    .filter-tabs { display:flex;gap:0.4rem;flex-wrap:wrap; }
+    .tab-btn {
+      padding:0.38rem 0.9rem;border-radius:20px;
+      border:1.5px solid #e2e8f0;background:#fff;
+      font-family:'Heebo',sans-serif;font-size:0.82rem;font-weight:600;
+      color:#6b7a99;cursor:pointer;transition:all 0.18s;
+    }
+    .tab-btn:hover { border-color:#1a5faa;color:#1a5faa; }
+    .tab-btn.active { background:#1a5faa;border-color:#1a5faa;color:#fff; }
+    .search-input {
+      padding:0.42rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.85rem;color:#1a2640;
+      outline:none;width:200px;background:#fff;transition:border-color 0.18s;
+    }
+    .search-input:focus { border-color:#1a5faa; }
+
+    /* ── ORDERS TABLE ── */
+    .orders-panel {
+      background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;
+    }
+    .panel-hdr {
+      padding:1rem 1.5rem;border-bottom:1px solid #f0f4f8;
+      display:flex;align-items:center;justify-content:space-between;
+    }
+    .panel-title { font-size:1rem;font-weight:700;color:#1a2640; }
+    table { width:100%;border-collapse:collapse; }
+    thead tr { background:#f8fafc; }
+    th {
+      padding:0.7rem 1rem;text-align:right;
+      font-size:0.75rem;font-weight:700;color:#64748b;
+      text-transform:uppercase;letter-spacing:0.5px;
+      border-bottom:1px solid #f0f4f8;white-space:nowrap;
+    }
+    td {
+      padding:0.85rem 1rem;font-size:0.88rem;color:#334155;
+      border-bottom:1px solid #f7f9fc;
+    }
+    tbody tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:#fafcff; }
+    .order-code { font-weight:700;color:#1a5faa;font-size:0.85rem; }
+    .product-tag {
+      display:inline-flex;align-items:center;gap:0.35rem;
+      background:rgba(26,95,170,0.08);color:#1a5faa;
+      border-radius:20px;padding:0.2rem 0.65rem;
+      font-size:0.78rem;font-weight:700;
+    }
+    .status-badge {
+      display:inline-flex;align-items:center;gap:0.3rem;
+      border-radius:20px;padding:0.22rem 0.7rem;
+      font-size:0.77rem;font-weight:700;white-space:nowrap;
+    }
+    .status-new      { background:#eff6ff;color:#1a5faa; }
+    .status-progress { background:#fff7ed;color:#ea580c; }
+    .status-done     { background:#f0fdf4;color:#16a34a; }
+    .status-canceled { background:#fef2f2;color:#dc2626; }
+    .btn-details {
+      display:inline-flex;align-items:center;gap:0.35rem;
+      padding:0.35rem 0.85rem;background:#f8fafc;
+      border:1.5px solid #e2e8f0;border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:600;
+      color:#475569;cursor:pointer;transition:all 0.18s;
+      white-space:nowrap;
+    }
+    .btn-details:hover { background:#eff6ff;border-color:#1a5faa;color:#1a5faa; }
+    .empty-state {
+      text-align:center;padding:3rem 1rem;color:#94a3b8;
+    }
+    .empty-state i { font-size:2.5rem;display:block;margin-bottom:0.75rem; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display:none;position:fixed;inset:0;
+      background:rgba(15,23,42,0.5);z-index:500;
+      align-items:center;justify-content:center;
+      backdrop-filter:blur(3px);padding:1rem;
+    }
+    .modal-overlay.open { display:flex; }
+    .modal-box {
+      background:#fff;border-radius:18px;
+      width:100%;max-width:560px;max-height:90vh;overflow-y:auto;
+      box-shadow:0 20px 60px rgba(15,23,42,0.18);
+      animation:modalIn 0.22s ease;
+    }
+    @keyframes modalIn { from{opacity:0;transform:scale(0.96)} to{opacity:1;transform:scale(1)} }
+    .modal-hdr {
+      padding:1.25rem 1.5rem;border-bottom:1px solid #f0f4f8;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;background:#fff;border-radius:18px 18px 0 0;z-index:1;
+    }
+    .modal-title  { font-size:1rem;font-weight:800;color:#1a2640; }
+    .modal-close  {
+      width:32px;height:32px;border-radius:8px;border:none;
+      background:#f1f5f9;color:#64748b;font-size:1rem;
+      cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.15s;
+    }
+    .modal-close:hover { background:#e2e8f0; }
+    .modal-body { padding:1.5rem; }
+    .detail-row {
+      display:flex;justify-content:space-between;align-items:flex-start;
+      padding:0.6rem 0;border-bottom:1px solid #f7f9fc;font-size:0.88rem;
+    }
+    .detail-row:last-child { border-bottom:none; }
+    .detail-lbl { color:#6b7a99;font-weight:600;min-width:120px; }
+    .detail-val { color:#1a2640;font-weight:700;text-align:left; }
+    .detail-section-title {
+      font-size:0.72rem;font-weight:700;color:#6b7a99;
+      text-transform:uppercase;letter-spacing:0.8px;
+      margin:1.25rem 0 0.6rem;padding-bottom:0.4rem;
+      border-bottom:1px solid #f0f4f8;
+    }
+    .modal-actions {
+      padding:1rem 1.5rem;border-top:1px solid #f0f4f8;
+      display:flex;gap:0.75rem;justify-content:flex-end;
+      position:sticky;bottom:0;background:#fff;border-radius:0 0 18px 18px;
+    }
+    .btn-confirm {
+      display:flex;align-items:center;gap:0.4rem;
+      padding:0.6rem 1.4rem;background:#1a5faa;color:#fff;
+      border:none;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;
+      cursor:pointer;transition:background 0.18s;
+    }
+    .btn-confirm:hover { background:#0d4d96; }
+    .btn-secondary {
+      display:flex;align-items:center;gap:0.4rem;
+      padding:0.6rem 1.4rem;background:#f1f5f9;color:#475569;
+      border:none;border-radius:9px;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;
+      cursor:pointer;transition:background 0.18s;
+    }
+    .btn-secondary:hover { background:#e2e8f0; }
+
+    /* status select in modal */
+    .status-select {
+      padding:0.45rem 0.75rem;border:1.5px solid #e2e8f0;border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.85rem;color:#1a2640;
+      background:#fff;cursor:pointer;outline:none;transition:border-color 0.18s;
+    }
+    .status-select:focus { border-color:#1a5faa; }
+
+    /* ── RESPONSIVE ── */
+    @media(max-width:768px) {
+      .stats-row { grid-template-columns:1fr 1fr; }
+      .sup-wrap  { padding:1.25rem 1rem; }
+      .welcome-title { font-size:1.15rem; }
+      th:nth-child(3),
+      td:nth-child(3) { display:none; }
+      .search-input { width:100%; }
+      .filter-bar { flex-direction:column;align-items:stretch; }
+    }
+    @media(max-width:480px) {
+      .stats-row { grid-template-columns:1fr 1fr; }
+      th:nth-child(4),
+      td:nth-child(4) { display:none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="sup-header">
+    <div class="sup-header-left">
+      <a href="index.html">
+        <img src="logo.PNG" alt="ALUM-IL" style="height:36px;display:block;">
+      </a>
+      <span class="sup-badge"><i class="ph ph-truck"></i> פאנל ספק</span>
+    </div>
+    <div class="sup-header-right">
+      <span class="sup-name" id="sup-name">חברת אלומיניום הדרום</span>
+      <button class="btn-logout" onclick="handleLogout()">
+        <i class="ph ph-sign-out"></i> יציאה
+      </button>
+    </div>
+  </header>
+
+  <div class="sup-wrap">
+
+    <!-- WELCOME -->
+    <div class="welcome-row">
+      <div>
+        <div class="welcome-title">שלום, <span id="sup-name-2">חברת אלומיניום הדרום</span> 👋</div>
+        <div class="welcome-sub">מוצרים מוקצים: <strong id="assigned-products">פרגולה אלומיניום, גדרות ושערים</strong></div>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#eff6ff;color:#1a5faa;"><i class="ph ph-list-bullets"></i></div>
+        <div>
+          <div class="stat-val" id="stat-total">6</div>
+          <div class="stat-lbl">סה"כ הזמנות</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#fff7ed;color:#ea580c;"><i class="ph ph-clock"></i></div>
+        <div>
+          <div class="stat-val" id="stat-new">3</div>
+          <div class="stat-lbl">ממתינות לטיפול</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#fef9c3;color:#ca8a04;"><i class="ph ph-spinner-gap"></i></div>
+        <div>
+          <div class="stat-val" id="stat-progress">2</div>
+          <div class="stat-lbl">בביצוע</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-check-circle"></i></div>
+        <div>
+          <div class="stat-val" id="stat-done">1</div>
+          <div class="stat-lbl">הושלמו</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FILTER BAR -->
+    <div class="filter-bar">
+      <div class="filter-tabs">
+        <button class="tab-btn active" onclick="filterOrders('all',this)">הכל</button>
+        <button class="tab-btn" onclick="filterOrders('new',this)">ממתינות</button>
+        <button class="tab-btn" onclick="filterOrders('progress',this)">בביצוע</button>
+        <button class="tab-btn" onclick="filterOrders('done',this)">הושלמו</button>
+      </div>
+      <input class="search-input" type="text" placeholder="חיפוש לפי קוד / לקוח..." oninput="searchOrders(this.value)">
+    </div>
+
+    <!-- ORDERS TABLE -->
+    <div class="orders-panel">
+      <div class="panel-hdr">
+        <span class="panel-title"><i class="ph ph-package" style="margin-left:0.4rem;"></i>הזמנות שלי</span>
+        <span style="font-size:0.8rem;color:#94a3b8;" id="orders-count">6 הזמנות</span>
+      </div>
+      <div style="overflow-x:auto;">
+        <table>
+          <thead>
+            <tr>
+              <th>קוד הזמנה</th>
+              <th>שם הלקוח</th>
+              <th>מוצר</th>
+              <th>תאריך</th>
+              <th>סטטוס</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="orders-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div><!-- /sup-wrap -->
+
+  <!-- ORDER DETAIL MODAL -->
+  <div class="modal-overlay" id="order-modal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+      <div class="modal-hdr">
+        <span class="modal-title" id="modal-order-title">פרטי הזמנה</span>
+        <button class="modal-close" onclick="closeModal()"><i class="ph ph-x"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+      <div class="modal-actions">
+        <button class="btn-secondary" onclick="closeModal()">סגור</button>
+        <button class="btn-confirm" onclick="confirmSupply()">
+          <i class="ph ph-check"></i> אשר אספקה
+        </button>
+      </div>
+    </div>
+  </div>
+
+<script>
+/* ── MOCK DATA ── */
+const MOCK_ORDERS = [
+  {
+    id: 'ORD-2025-001',
+    customer: 'יוסי כהן',
+    phone: '050-1234567',
+    product: 'פרגולה אלומיניום',
+    category: 'alum_pergola',
+    size: '4×6 מ׳',
+    color: 'לבן RAL 9010',
+    date: '2025-05-01',
+    address: 'רחוב הרצל 12, תל אביב',
+    notes: 'מרפסת קומה 3, גישה מצומצמת',
+    status: 'new',
+    total: '14,800'
+  },
+  {
+    id: 'ORD-2025-002',
+    customer: 'רחל לוי',
+    phone: '052-9876543',
+    product: 'גדרות ושערים',
+    category: 'fences',
+    size: '18 מ׳',
+    color: 'אנתרציט RAL 7016',
+    date: '2025-05-02',
+    address: 'שדרות בן גוריון 45, חיפה',
+    notes: '',
+    status: 'progress',
+    total: '9,200'
+  },
+  {
+    id: 'ORD-2025-003',
+    customer: 'דוד אברהם',
+    phone: '054-5551234',
+    product: 'פרגולה אלומיניום',
+    category: 'alum_pergola',
+    size: '5×5 מ׳',
+    color: 'אפור כסוף',
+    date: '2025-05-03',
+    address: 'רחוב ויצמן 8, רמת גן',
+    notes: 'כולל תאורת LED',
+    status: 'new',
+    total: '18,500'
+  },
+  {
+    id: 'ORD-2025-004',
+    customer: 'מרים שפירא',
+    phone: '053-7778899',
+    product: 'גדרות ושערים',
+    category: 'fences',
+    size: '24 מ׳',
+    color: 'שחור מאט',
+    date: '2025-04-28',
+    address: 'רחוב אחד העם 3, ירושלים',
+    notes: 'שער כניסה רחב 4 מטר',
+    status: 'done',
+    total: '11,600'
+  },
+  {
+    id: 'ORD-2025-005',
+    customer: 'אבי גולן',
+    phone: '058-4443322',
+    product: 'פרגולה אלומיניום',
+    category: 'alum_pergola',
+    size: '3×4 מ׳',
+    color: 'לבן RAL 9010',
+    date: '2025-05-04',
+    address: 'רחוב נורדאו 22, נתניה',
+    notes: '',
+    status: 'new',
+    total: '10,200'
+  },
+  {
+    id: 'ORD-2025-006',
+    customer: 'שרה מזרחי',
+    phone: '050-6665544',
+    product: 'גדרות ושערים',
+    category: 'fences',
+    size: '30 מ׳',
+    color: 'אנתרציט RAL 7016',
+    date: '2025-05-05',
+    address: 'רחוב הגפן 7, באר שבע',
+    notes: 'גדר כפולה',
+    status: 'progress',
+    total: '15,400'
+  }
+];
+
+const STATUS_MAP = {
+  new:      { label: 'ממתינה לטיפול', cls: 'status-new',      icon: 'ph-clock' },
+  progress: { label: 'בביצוע',        cls: 'status-progress',  icon: 'ph-spinner-gap' },
+  done:     { label: 'הושלם',         cls: 'status-done',      icon: 'ph-check-circle' },
+  canceled: { label: 'בוטל',          cls: 'status-canceled',  icon: 'ph-x-circle' }
+};
+
+let _activeFilter = 'all';
+let _searchTerm   = '';
+
+/* ── RENDER ── */
+function renderOrders() {
+  const tbody = document.getElementById('orders-tbody');
+  let list = MOCK_ORDERS.filter(o => {
+    if (_activeFilter !== 'all' && o.status !== _activeFilter) return false;
+    if (_searchTerm) {
+      const q = _searchTerm.toLowerCase();
+      if (!o.id.toLowerCase().includes(q) && !o.customer.toLowerCase().includes(q)) return false;
+    }
+    return true;
+  });
+
+  document.getElementById('orders-count').textContent = list.length + ' הזמנות';
+
+  if (!list.length) {
+    tbody.innerHTML = `<tr><td colspan="6"><div class="empty-state"><i class="ph ph-tray"></i>אין הזמנות להצגה</div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = list.map(o => {
+    const s = STATUS_MAP[o.status] || STATUS_MAP.new;
+    return `
+    <tr>
+      <td><span class="order-code">${o.id}</span></td>
+      <td style="font-weight:600;">${o.customer}</td>
+      <td><span class="product-tag"><i class="ph ph-package"></i>${o.product}</span></td>
+      <td style="color:#94a3b8;">${formatDate(o.date)}</td>
+      <td><span class="status-badge ${s.cls}"><i class="ph ${s.icon}"></i>${s.label}</span></td>
+      <td><button class="btn-details" onclick="openOrder('${o.id}')"><i class="ph ph-eye"></i> פרטים</button></td>
+    </tr>`;
+  }).join('');
+}
+
+function formatDate(d) {
+  const dt = new Date(d);
+  return dt.toLocaleDateString('he-IL',{day:'2-digit',month:'2-digit',year:'numeric'});
+}
+
+/* ── FILTER & SEARCH ── */
+window.filterOrders = function(filter, btn) {
+  _activeFilter = filter;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderOrders();
+};
+
+window.searchOrders = function(val) {
+  _searchTerm = val;
+  renderOrders();
+};
+
+/* ── MODAL ── */
+let _currentOrderId = null;
+
+window.openOrder = function(id) {
+  const o = MOCK_ORDERS.find(x => x.id === id);
+  if (!o) return;
+  _currentOrderId = id;
+  const s = STATUS_MAP[o.status] || STATUS_MAP.new;
+
+  document.getElementById('modal-order-title').textContent = 'הזמנה ' + o.id;
+
+  document.getElementById('modal-body').innerHTML = `
+    <div class="detail-section-title">פרטי הזמנה</div>
+    <div class="detail-row">
+      <span class="detail-lbl">קוד הזמנה</span>
+      <span class="detail-val">${o.id}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">תאריך הזמנה</span>
+      <span class="detail-val">${formatDate(o.date)}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">מוצר</span>
+      <span class="detail-val">${o.product}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">מידות</span>
+      <span class="detail-val">${o.size}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">צבע / גימור</span>
+      <span class="detail-val">${o.color}</span>
+    </div>
+    ${o.notes ? `<div class="detail-row">
+      <span class="detail-lbl">הערות</span>
+      <span class="detail-val" style="max-width:260px;text-align:right;">${o.notes}</span>
+    </div>` : ''}
+
+    <div class="detail-section-title">פרטי לקוח</div>
+    <div class="detail-row">
+      <span class="detail-lbl">שם לקוח</span>
+      <span class="detail-val">${o.customer}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">טלפון</span>
+      <span class="detail-val" style="direction:ltr;">${o.phone}</span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">כתובת אספקה</span>
+      <span class="detail-val" style="max-width:260px;text-align:right;">${o.address}</span>
+    </div>
+
+    <div class="detail-section-title">סטטוס ותמחור</div>
+    <div class="detail-row">
+      <span class="detail-lbl">סטטוס נוכחי</span>
+      <span class="detail-val">
+        <span class="status-badge ${s.cls}"><i class="ph ${s.icon}"></i>${s.label}</span>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">עדכון סטטוס</span>
+      <span class="detail-val">
+        <select class="status-select" id="modal-status-sel">
+          <option value="new"      ${o.status==='new'?'selected':''}>ממתינה לטיפול</option>
+          <option value="progress" ${o.status==='progress'?'selected':''}>בביצוע</option>
+          <option value="done"     ${o.status==='done'?'selected':''}>הושלם</option>
+          <option value="canceled" ${o.status==='canceled'?'selected':''}>בוטל</option>
+        </select>
+      </span>
+    </div>
+    <div class="detail-row">
+      <span class="detail-lbl">סכום הזמנה</span>
+      <span class="detail-val" style="color:#1a5faa;font-size:1.05rem;">₪${o.total}</span>
+    </div>
+  `;
+
+  document.getElementById('order-modal').classList.add('open');
+};
+
+window.closeModal = function() {
+  document.getElementById('order-modal').classList.remove('open');
+  _currentOrderId = null;
+};
+
+window.confirmSupply = function() {
+  if (!_currentOrderId) return;
+  const sel = document.getElementById('modal-status-sel');
+  const newStatus = sel?.value || 'progress';
+  const o = MOCK_ORDERS.find(x => x.id === _currentOrderId);
+  if (o) o.status = newStatus;
+  closeModal();
+  renderOrders();
+  updateStats();
+  showToast('סטטוס עודכן בהצלחה');
+};
+
+/* ── STATS ── */
+function updateStats() {
+  document.getElementById('stat-total').textContent    = MOCK_ORDERS.length;
+  document.getElementById('stat-new').textContent      = MOCK_ORDERS.filter(o=>o.status==='new').length;
+  document.getElementById('stat-progress').textContent = MOCK_ORDERS.filter(o=>o.status==='progress').length;
+  document.getElementById('stat-done').textContent     = MOCK_ORDERS.filter(o=>o.status==='done').length;
+}
+
+/* ── TOAST ── */
+function showToast(msg, isError) {
+  let t = document.getElementById('sup-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'sup-toast';
+    t.style.cssText = 'position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:#16a34a;color:#fff;padding:0.7rem 1.4rem;border-radius:10px;font-family:Heebo,sans-serif;font-size:0.9rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;opacity:0;transition:all 0.25s;z-index:9999;box-shadow:0 4px 20px rgba(22,163,74,0.35);';
+    document.body.appendChild(t);
+  }
+  t.innerHTML = `<i class="ph ${isError?'ph-warning':'ph-check-circle'}"></i> ${msg}`;
+  t.style.background = isError ? '#dc2626' : '#16a34a';
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)'; }, 3000);
+}
+
+window.handleLogout = function() {
+  window.location.href = 'login.html';
+};
+
+/* ── INIT ── */
+renderOrders();
+updateStats();
+</script>
+</body>
+</html>

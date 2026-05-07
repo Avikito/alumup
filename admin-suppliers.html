@@ -254,6 +254,73 @@
 }
 .note-input:focus { outline: none; border-color: var(--electric-blue); }
 
+/* ── APPROVE MODAL ── */
+.approve-modal-overlay {
+  display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(15,23,42,0.55);backdrop-filter:blur(3px);
+  align-items:center;justify-content:center;padding:1rem;
+}
+.approve-modal-overlay.open { display:flex; }
+.approve-modal {
+  background:#fff;border-radius:18px;width:100%;max-width:500px;
+  box-shadow:0 20px 60px rgba(15,23,42,0.2);
+  animation:amIn 0.22s ease;
+}
+@keyframes amIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+.approve-modal-hdr {
+  padding:1.25rem 1.5rem;border-bottom:1px solid #f0f4f8;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.approve-modal-title { font-size:1rem;font-weight:800;color:#1a2640; }
+.approve-modal-close {
+  width:32px;height:32px;border-radius:8px;border:none;
+  background:#f1f5f9;color:#64748b;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.approve-modal-close:hover { background:#e2e8f0; }
+.approve-modal-body { padding:1.25rem 1.5rem; }
+.approve-modal-sub {
+  font-size:0.83rem;color:#6b7a99;margin-bottom:1.1rem;line-height:1.5;
+}
+.cat-check-list { display:flex;flex-direction:column;gap:0.55rem; }
+.cat-check-item {
+  display:flex;align-items:center;gap:0.75rem;
+  padding:0.7rem 1rem;border-radius:10px;
+  border:1.5px solid #e2e8f0;background:#f8fafc;
+  cursor:pointer;transition:all 0.15s;
+}
+.cat-check-item:hover { border-color:#1a5faa;background:#eff6ff; }
+.cat-check-item.checked { border-color:#1a5faa;background:#eff6ff; }
+.cat-checkbox {
+  width:18px;height:18px;border-radius:5px;border:2px solid #cbd5e1;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  transition:all 0.15s;
+}
+.cat-check-item.checked .cat-checkbox {
+  background:#1a5faa;border-color:#1a5faa;color:#fff;
+}
+.cat-check-label { font-size:0.88rem;font-weight:600;color:#334155; }
+.approve-modal-footer {
+  padding:1rem 1.5rem;border-top:1px solid #f0f4f8;
+  display:flex;gap:0.75rem;justify-content:flex-end;
+}
+.btn-approve-confirm {
+  display:flex;align-items:center;gap:0.4rem;
+  padding:0.65rem 1.5rem;background:#16a34a;color:#fff;
+  border:none;border-radius:9px;
+  font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;
+  cursor:pointer;transition:background 0.18s;
+}
+.btn-approve-confirm:hover { background:#15803d; }
+.btn-approve-cancel {
+  display:flex;align-items:center;gap:0.4rem;
+  padding:0.65rem 1.25rem;background:#f1f5f9;color:#475569;
+  border:none;border-radius:9px;
+  font-family:'Heebo',sans-serif;font-size:0.9rem;font-weight:700;
+  cursor:pointer;transition:background 0.18s;
+}
+.btn-approve-cancel:hover { background:#e2e8f0; }
+
 /* ── TOAST ── */
 #toast {
   position: fixed; bottom: 1.5rem; right: 50%; transform: translateX(50%) translateY(80px);
@@ -312,30 +379,7 @@
 
   <!-- SIDEBAR -->
   <aside class="admin-sidebar">
-    <div class="sidebar-label">ניהול כללי</div>
-    <ul class="admin-nav">
-      <li><a href="admin.html"><i class="ph ph-squares-four"></i> הזמנות</a></li>
-      <li><a href="admin-overview.html"><i class="ph ph-chart-bar"></i> סקירה כללית</a></li>
-      <li><a href="admin-users.html"><i class="ph ph-users"></i> משתמשים</a></li>
-      <li><a href="admin-members.html"><i class="ph ph-identification-card"></i> בקשות חבר</a></li>
-      <li><a href="admin-suppliers.html" class="active"><i class="ph ph-storefront"></i> בקשות ספקים <span class="nav-badge show" id="pendingBadge">0</span></a></li>
-    </ul>
-
-    <div style="border-top:1px solid var(--border);margin:1rem 0;"></div>
-    <div class="sidebar-label">כלים</div>
-    <ul class="admin-nav">
-      <li><a href="admin-college.html"><i class="ph ph-graduation-cap"></i> מכללה</a></li>
-      <li><a href="admin-procurement.html"><i class="ph ph-shopping-cart"></i> רכש</a></li>
-      <li><a href="admin-financial.html"><i class="ph ph-currency-dollar-simple"></i> כספים</a></li>
-      <li><a href="admin-calendar.html"><i class="ph ph-calendar"></i> לוח שנה</a></li>
-      <li><a href="admin-tasks.html"><i class="ph ph-check-square"></i> משימות</a></li>
-      <li><a href="admin-monitor.html"><i class="ph ph-activity"></i> מוניטור</a></li>
-    </ul>
-    <div style="margin-top:1.5rem;padding-top:1rem;border-top:1px solid var(--border,#2a3a4a);">
-      <a href="dashboard.html" style="display:flex;align-items:center;gap:0.65rem;padding:0.6rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);text-decoration:none;">
-        <i class="ph ph-arrow-right"></i> חזרה לדשבורד
-      </a>
-    </div>
+    <div id="admin-sidebar-placeholder"></div>
   </aside>
 
   <!-- CONTENT -->
@@ -432,6 +476,28 @@
   </main>
 </div>
 
+<!-- APPROVE CATEGORIES MODAL -->
+<div class="approve-modal-overlay" id="approveCatsOverlay" onclick="if(event.target===this)closeApproveCats()">
+  <div class="approve-modal">
+    <div class="approve-modal-hdr">
+      <span class="approve-modal-title"><i class="ph ph-check-circle" style="color:#16a34a;margin-left:0.4rem;"></i>אישור ספק — שיוך קטגוריות</span>
+      <button class="approve-modal-close" onclick="closeApproveCats()"><i class="ph ph-x"></i></button>
+    </div>
+    <div class="approve-modal-body">
+      <div class="approve-modal-sub" id="approve-cats-sub">
+        בחר את הקטגוריות שהספק מאושר לספק. ניתן לבטל סימון לקטגוריות שלא אושרו.
+      </div>
+      <div class="cat-check-list" id="cat-check-list"></div>
+    </div>
+    <div class="approve-modal-footer">
+      <button class="btn-approve-cancel" onclick="closeApproveCats()">ביטול</button>
+      <button class="btn-approve-confirm" onclick="confirmApproval()">
+        <i class="ph ph-check-circle"></i> אשר ושייך
+      </button>
+    </div>
+  </div>
+</div>
+
 <!-- DRAWER OVERLAY -->
 <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
 
@@ -456,7 +522,7 @@
 
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-import { requireAdmin } from './js/admin-core.js';
+import { requireAdmin, renderSidebar } from './js/admin-core.js';
 
 const supabase = createClient(
   'https://exfdjelwyrspfspcevvm.supabase.co',
@@ -506,6 +572,7 @@ let drawerAppId = null;
 
 // ─── Init ───────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
+  renderSidebar('suppliers');
   currentAdmin = await requireAdmin(supabase);
   if (!currentAdmin) return;
   await loadApplications();
@@ -533,8 +600,10 @@ function updateStats() {
 
   const pending = allApps.filter(a => a.status === 'pending_review').length;
   const badge = document.getElementById('pendingBadge');
-  badge.textContent = pending;
-  badge.classList.toggle('show', pending > 0);
+  if (badge) {
+    badge.textContent = pending;
+    badge.classList.toggle('show', pending > 0);
+  }
 }
 
 // ─── Table rendering ────────────────────────────────────
@@ -771,8 +840,8 @@ window.openDrawer = function(appId) {
       <button class="btn-full btn-committee" style="background:#ede9fe;color:#7c3aed;" onclick="changeStatus('${app.id}','in_committee')">
         <i class="ph ph-users-three"></i> העבר לוועדה
       </button>
-      <button class="btn-full btn-approve" style="background:#dcfce7;color:#16a34a;" onclick="changeStatus('${app.id}','approved')">
-        <i class="ph ph-check-circle"></i> אשר
+      <button class="btn-full btn-approve" style="background:#dcfce7;color:#16a34a;" onclick="openApproveCats('${app.id}')">
+        <i class="ph ph-check-circle"></i> אשר ושייך
       </button>
       <button class="btn-full btn-reject" style="background:#fee2e2;color:#dc2626;" onclick="changeStatus('${app.id}','rejected')">
         <i class="ph ph-x-circle"></i> דחה
@@ -780,8 +849,8 @@ window.openDrawer = function(appId) {
     `;
   } else if (status === 'in_committee') {
     footer.innerHTML = `
-      <button class="btn-full btn-approve" style="background:#dcfce7;color:#16a34a;" onclick="changeStatus('${app.id}','approved')">
-        <i class="ph ph-check-circle"></i> אשר
+      <button class="btn-full btn-approve" style="background:#dcfce7;color:#16a34a;" onclick="openApproveCats('${app.id}')">
+        <i class="ph ph-check-circle"></i> אשר ושייך
       </button>
       <button class="btn-full btn-reject" style="background:#fee2e2;color:#dc2626;" onclick="changeStatus('${app.id}','rejected')">
         <i class="ph ph-x-circle"></i> דחה
@@ -803,6 +872,80 @@ window.closeDrawer = function() {
   document.getElementById('drawerOverlay').classList.remove('open');
   document.getElementById('detailDrawer').classList.remove('open');
   drawerAppId = null;
+};
+
+// ─── Approve + assign categories modal ─────────────────
+let _approveAppId = null;
+
+window.openApproveCats = function(appId) {
+  const app = allApps.find(a => a.id === appId);
+  if (!app) return;
+  _approveAppId = appId;
+
+  const name = app.company_details?.business_name || app.company_details?.representative_name || 'ספק';
+  document.getElementById('approve-cats-sub').innerHTML =
+    `<strong>${name}</strong> — בחר את הקטגוריות המאושרות לספק זה:`;
+
+  const requested = app.selected_categories || [];
+  const alreadyApproved = app.approved_categories || requested;
+
+  const list = document.getElementById('cat-check-list');
+  list.innerHTML = requested.map(key => {
+    const label = CAT_LABELS[key] || key;
+    const checked = alreadyApproved.includes(key);
+    return `
+      <div class="cat-check-item ${checked?'checked':''}" data-cat="${key}" onclick="toggleCat(this)">
+        <div class="cat-checkbox">${checked?'<i class="ph ph-check" style="font-size:0.8rem;"></i>':''}</div>
+        <span class="cat-check-label"><i class="ph ph-tag" style="margin-left:0.35rem;color:#1a5faa;"></i>${label}</span>
+      </div>`;
+  }).join('') || '<p style="color:#94a3b8;font-size:0.85rem;">לא נבחרו קטגוריות בבקשה</p>';
+
+  document.getElementById('approveCatsOverlay').classList.add('open');
+};
+
+window.toggleCat = function(el) {
+  el.classList.toggle('checked');
+  const cb = el.querySelector('.cat-checkbox');
+  if (el.classList.contains('checked')) {
+    cb.innerHTML = '<i class="ph ph-check" style="font-size:0.8rem;"></i>';
+  } else {
+    cb.innerHTML = '';
+  }
+};
+
+window.closeApproveCats = function() {
+  document.getElementById('approveCatsOverlay').classList.remove('open');
+  _approveAppId = null;
+};
+
+window.confirmApproval = async function() {
+  if (!_approveAppId) return;
+  const checkedItems = document.querySelectorAll('#cat-check-list .cat-check-item.checked');
+  const approvedCats = Array.from(checkedItems).map(el => el.dataset.cat).filter(Boolean);
+
+  const { error } = await supabase
+    .from('supplier_applications')
+    .update({
+      status: 'approved',
+      approved_categories: approvedCats,
+      reviewed_by: currentAdmin.id,
+      reviewed_at: new Date().toISOString(),
+    })
+    .eq('id', _approveAppId);
+
+  if (error) { showToast('שגיאה בשמירה', 'err'); return; }
+
+  await supabase.from('application_logs').insert({
+    application_id: _approveAppId,
+    user_id: currentAdmin.id,
+    action: 'approved_with_categories',
+    changes: { approved_categories: approvedCats },
+  });
+
+  showToast(`ספק אושר עם ${approvedCats.length} קטגוריות`, 'ok');
+  closeApproveCats();
+  closeDrawer();
+  await loadApplications();
 };
 
 // ─── Status change ──────────────────────────────────────

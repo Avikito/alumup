@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALUM-IL | ספקים פעילים</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .admin-wrapper { display:flex;flex:1;min-height:calc(100vh - 64px); }
+    .admin-sidebar { width:220px;flex-shrink:0;background:var(--surface-dark);border-left:1px solid var(--border);padding:1.5rem 1rem; }
+    .admin-content { flex:1;padding:2rem;overflow-y:auto;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 100%); }
+
+    /* ── SIDEBAR NAV ── */
+    .sidebar-label { font-size:0.7rem;font-weight:700;color:var(--silver-dark);text-transform:uppercase;letter-spacing:1px;margin-bottom:0.5rem;padding:0 0.75rem; }
+    .admin-nav { list-style:none;display:flex;flex-direction:column;gap:0.15rem; }
+    .admin-nav a { display:flex;align-items:center;gap:0.6rem;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:500;color:var(--silver-dark);text-decoration:none;transition:all 0.18s ease; }
+    .admin-nav a:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .admin-nav a.active { background:var(--blue-dim);color:var(--electric-blue);font-weight:700; }
+    .nav-caret { transition:transform 0.22s; }
+    .nav-group-hdr { display:flex;align-items:center;justify-content:space-between;padding:0.55rem 0.75rem;border-radius:8px;font-size:0.88rem;font-weight:600;color:var(--silver-dark);cursor:pointer;transition:all 0.18s ease;user-select:none; }
+    .nav-group-hdr:hover { background:var(--blue-dim);color:var(--electric-blue); }
+    .nav-group-hdr.open { color:var(--electric-blue); }
+    .nav-grp-left { display:flex;align-items:center;gap:0.6rem; }
+    .nav-group-hdr.open .nav-caret { transform:rotate(180deg); }
+    .nav-sub { list-style:none;flex-direction:column;gap:0.08rem;padding:0.1rem 0 0.1rem 0.9rem;margin:0; }
+    .nav-sub a { font-size:0.84rem !important;padding:0.42rem 0.75rem !important; }
+
+    .page-title    { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.25rem; }
+    .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.75rem; }
+
+    /* ── STAT ROW ── */
+    .stat-row { display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.75rem; }
+    .stat-card {
+      background:#fff;border:1px solid #e2e8f0;border-radius:12px;
+      padding:1rem 1.25rem;display:flex;align-items:center;gap:0.85rem;
+    }
+    .stat-icon { width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0; }
+    .stat-val  { font-size:1.55rem;font-weight:800;color:#0f172a;line-height:1; }
+    .stat-lbl  { font-size:0.76rem;color:#6b7a99;margin-top:0.15rem; }
+
+    /* ── TOOLBAR ── */
+    .toolbar { display:flex;align-items:center;gap:0.75rem;margin-bottom:1.25rem;flex-wrap:wrap; }
+    .search-wrap { display:flex;align-items:center;gap:0.5rem;background:#fff;border:1.5px solid #e2e8f0;border-radius:9px;padding:0 0.85rem;flex:1;min-width:200px; }
+    .search-wrap input { border:none;outline:none;font-family:'Heebo',sans-serif;font-size:0.88rem;padding:0.55rem 0;width:100%;background:transparent; }
+    .filter-sel { padding:0.55rem 0.85rem;border:1.5px solid #e2e8f0;border-radius:9px;font-family:'Heebo',sans-serif;font-size:0.85rem;background:#fff;cursor:pointer;outline:none; }
+    .filter-sel:focus { border-color:#1a5faa; }
+
+    /* ── GRID ── */
+    .suppliers-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:1.25rem; }
+
+    /* ── SUPPLIER CARD ── */
+    .sup-card {
+      background:#fff;border:1px solid #e2e8f0;border-radius:16px;
+      overflow:hidden;transition:box-shadow 0.18s,transform 0.18s;
+    }
+    .sup-card:hover { box-shadow:0 8px 32px rgba(26,95,170,0.1);transform:translateY(-2px); }
+
+    .sup-card-hdr {
+      padding:1.25rem 1.25rem 1rem;
+      display:flex;align-items:flex-start;justify-content:space-between;gap:0.75rem;
+    }
+    .sup-avatar {
+      width:46px;height:46px;border-radius:12px;flex-shrink:0;
+      background:linear-gradient(135deg,#1a5faa,#3b82f6);
+      display:flex;align-items:center;justify-content:center;
+      font-size:1.2rem;font-weight:800;color:#fff;
+    }
+    .sup-info { flex:1;min-width:0; }
+    .sup-name { font-size:0.95rem;font-weight:800;color:#1a2640;margin-bottom:0.2rem; }
+    .sup-contact { font-size:0.78rem;color:#6b7a99;display:flex;align-items:center;gap:0.3rem; }
+
+    .active-toggle {
+      display:flex;align-items:center;gap:0.5rem;
+      padding:0.3rem 0.75rem;border-radius:20px;
+      border:none;cursor:pointer;font-family:'Heebo',sans-serif;
+      font-size:0.75rem;font-weight:700;transition:all 0.18s;
+    }
+    .active-toggle.active   { background:#dcfce7;color:#16a34a; }
+    .active-toggle.inactive { background:#f1f5f9;color:#64748b; }
+
+    .sup-card-body { padding:0 1.25rem 1.25rem; }
+
+    .cats-label { font-size:0.7rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:0.5rem; }
+    .cats-list  { display:flex;flex-wrap:wrap;gap:0.4rem; }
+    .cat-pill {
+      display:inline-flex;align-items:center;gap:0.3rem;
+      padding:0.22rem 0.65rem;border-radius:20px;
+      font-size:0.75rem;font-weight:700;
+      background:rgba(26,95,170,0.08);color:#1a5faa;
+    }
+
+    .sup-card-footer {
+      padding:0.85rem 1.25rem;border-top:1px solid #f0f4f8;
+      display:flex;align-items:center;justify-content:space-between;gap:0.5rem;
+    }
+    .sup-date { font-size:0.75rem;color:#94a3b8; }
+    .btn-view-sup {
+      display:flex;align-items:center;gap:0.35rem;
+      padding:0.35rem 0.85rem;background:#f8fafc;
+      border:1.5px solid #e2e8f0;border-radius:8px;
+      font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:600;
+      color:#475569;cursor:pointer;transition:all 0.18s;
+    }
+    .btn-view-sup:hover { background:#eff6ff;border-color:#1a5faa;color:#1a5faa; }
+
+    /* ── EMPTY ── */
+    .empty-state { text-align:center;padding:4rem 1rem;color:#94a3b8; }
+    .empty-state i { font-size:2.5rem;display:block;margin-bottom:0.75rem;color:#cbd5e1; }
+    .empty-state h3 { font-size:1rem;font-weight:700;color:#475569;margin-bottom:0.4rem; }
+
+    /* ── DETAIL PANEL (slide-in) ── */
+    .detail-overlay { display:none;position:fixed;inset:0;background:rgba(15,23,42,0.45);z-index:400;backdrop-filter:blur(2px); }
+    .detail-overlay.open { display:block; }
+    .detail-panel {
+      position:fixed;top:0;left:-480px;bottom:0;width:460px;
+      background:#fff;box-shadow:4px 0 40px rgba(15,23,42,0.15);
+      z-index:401;transition:left 0.28s ease;overflow-y:auto;
+    }
+    .detail-panel.open { left:0; }
+    .detail-panel-hdr {
+      padding:1.25rem 1.5rem;border-bottom:1px solid #f0f4f8;
+      display:flex;align-items:center;justify-content:space-between;
+      position:sticky;top:0;background:#fff;z-index:1;
+    }
+    .detail-panel-title { font-size:1rem;font-weight:800;color:#1a2640; }
+    .detail-close { width:32px;height:32px;border-radius:8px;border:none;background:#f1f5f9;color:#64748b;font-size:1rem;cursor:pointer;display:flex;align-items:center;justify-content:center; }
+    .detail-close:hover { background:#e2e8f0; }
+    .detail-body { padding:1.5rem; }
+    .d-section { margin-bottom:1.5rem; }
+    .d-section-title { font-size:0.72rem;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:0.75rem;padding-bottom:0.4rem;border-bottom:1px solid #f0f4f8; }
+    .d-row { display:flex;justify-content:space-between;align-items:center;padding:0.5rem 0;border-bottom:1px solid #f8fafc;font-size:0.85rem; }
+    .d-row:last-child { border-bottom:none; }
+    .d-lbl { color:#6b7a99;font-weight:600; }
+    .d-val { color:#1a2640;font-weight:700;text-align:left; }
+
+    /* ── TOAST ── */
+    #toast { position:fixed;bottom:2rem;left:50%;transform:translateX(-50%) translateY(20px);background:#16a34a;color:#fff;padding:0.7rem 1.4rem;border-radius:10px;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;display:flex;align-items:center;gap:0.5rem;opacity:0;pointer-events:none;transition:all 0.25s;z-index:9999; }
+    #toast.show { opacity:1;transform:translateX(-50%) translateY(0); }
+    #toast.err  { background:#dc2626; }
+
+    @media(max-width:768px) {
+      .admin-content { padding:1.25rem 1rem; }
+      .stat-row { grid-template-columns:1fr 1fr; }
+      .suppliers-grid { grid-template-columns:1fr; }
+      .detail-panel { width:100%;left:-100%; }
+    }
+  </style>
+</head>
+<body>
+
+<header style="position:relative;border-bottom:1px solid var(--border);background:var(--surface-dark);padding:0.85rem 1.25rem;display:flex;align-items:center;justify-content:space-between;gap:0.75rem;">
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <a href="index.html" style="display:flex;align-items:center;gap:0.6rem;">
+      <img src="logo.PNG" alt="ALUM-IL" style="height:36px;">
+    </a>
+  </div>
+  <div style="display:flex;align-items:center;gap:0.75rem;">
+    <span style="font-size:0.78rem;background:rgba(220,38,38,0.1);color:#dc2626;border:1px solid rgba(220,38,38,0.25);padding:0.2rem 0.65rem;border-radius:20px;font-weight:700;">
+      <i class="ph ph-shield-star"></i> פאנל ניהול
+    </span>
+    <a href="dashboard.html" style="font-size:0.85rem;color:var(--silver-dark);display:flex;align-items:center;gap:0.3rem;">
+      <i class="ph ph-arrow-right"></i> אזור אישי
+    </a>
+  </div>
+</header>
+
+<div class="admin-wrapper">
+  <aside class="admin-sidebar">
+    <div id="admin-sidebar-placeholder"></div>
+  </aside>
+
+  <main class="admin-content">
+    <div class="page-title"><i class="ph ph-users-three" style="color:#1a5faa;margin-left:0.4rem;"></i>ספקים מאושרים ופעילים</div>
+    <div class="page-subtitle">כל הספקים שאושרו על ידי הוועדה — ניהול פעילות ושיוך קטגוריות</div>
+
+    <!-- STATS -->
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#eff6ff;color:#1a5faa;"><i class="ph ph-storefront"></i></div>
+        <div><div class="stat-val" id="stat-total">—</div><div class="stat-lbl">סה"כ ספקים מאושרים</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#f0fdf4;color:#16a34a;"><i class="ph ph-check-circle"></i></div>
+        <div><div class="stat-val" id="stat-active">—</div><div class="stat-lbl">פעילים</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#f8fafc;color:#64748b;"><i class="ph ph-pause-circle"></i></div>
+        <div><div class="stat-val" id="stat-inactive">—</div><div class="stat-lbl">מושהים</div></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:#fff7ed;color:#ea580c;"><i class="ph ph-tag"></i></div>
+        <div><div class="stat-val" id="stat-cats">—</div><div class="stat-lbl">קטגוריות מכוסות</div></div>
+      </div>
+    </div>
+
+    <!-- TOOLBAR -->
+    <div class="toolbar">
+      <div class="search-wrap">
+        <i class="ph ph-magnifying-glass" style="color:#94a3b8;"></i>
+        <input type="text" id="searchInput" placeholder="חיפוש לפי שם חברה..." oninput="renderGrid()">
+      </div>
+      <select class="filter-sel" id="catFilter" onchange="renderGrid()">
+        <option value="">כל הקטגוריות</option>
+      </select>
+      <select class="filter-sel" id="activeFilter" onchange="renderGrid()">
+        <option value="">כל הסטטוסים</option>
+        <option value="active">פעילים בלבד</option>
+        <option value="inactive">מושהים בלבד</option>
+      </select>
+    </div>
+
+    <!-- GRID -->
+    <div class="suppliers-grid" id="suppliers-grid"></div>
+
+  </main>
+</div>
+
+<!-- DETAIL OVERLAY + PANEL -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail()"></div>
+<div class="detail-panel" id="detail-panel">
+  <div class="detail-panel-hdr">
+    <span class="detail-panel-title" id="detail-title">פרטי ספק</span>
+    <button class="detail-close" onclick="closeDetail()"><i class="ph ph-x"></i></button>
+  </div>
+  <div class="detail-body" id="detail-body"></div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+import { requireAdmin, renderSidebar } from './js/admin-core.js';
+
+const supabase = createClient(
+  'https://exfdjelwyrspfspcevvm.supabase.co',
+  'sb_publishable_6Yb2QjjK9jkDpvAeIZuOxA_g1KEA4ED'
+);
+
+const CAT_LABELS = {
+  kits:'קיטים — פרגולות וגדרות', electric_perg:'פרגולות חשמליות',
+  roller_screens:'מסכי גלילה', raw_materials:'חומרי גלם',
+  windows:'חלונות אלומיניום', doors_cladding:'דלתות וחיפויים',
+  fences_gates:'גדרות ושערים', glass_partitions:'מחיצות זכוכית',
+  exterior_design:'עיצוב חוץ', accessories:'אביזרים ופרזול',
+  sealants:'חומרי איטום', motors:'מנועים חשמליים', training:'הדרכה',
+};
+
+let allSuppliers = [];
+
+window.addEventListener('DOMContentLoaded', async () => {
+  renderSidebar('active-suppliers');
+  const admin = await requireAdmin(supabase);
+  if (!admin) return;
+  await loadSuppliers();
+});
+
+async function loadSuppliers() {
+  const { data, error } = await supabase
+    .from('supplier_applications')
+    .select('id, application_number, company_details, selected_categories, approved_categories, service_details, is_active, reviewed_at, created_at')
+    .eq('status', 'approved')
+    .order('reviewed_at', { ascending: false });
+
+  if (error) { showToast('שגיאה בטעינה', true); return; }
+  allSuppliers = (data || []).map(s => ({ ...s, is_active: s.is_active !== false }));
+  populateCatFilter();
+  renderGrid();
+  updateStats();
+}
+
+function populateCatFilter() {
+  const cats = new Set();
+  allSuppliers.forEach(s => (s.approved_categories || []).forEach(c => cats.add(c)));
+  const sel = document.getElementById('catFilter');
+  cats.forEach(c => {
+    const opt = document.createElement('option');
+    opt.value = c; opt.textContent = CAT_LABELS[c] || c;
+    sel.appendChild(opt);
+  });
+}
+
+window.renderGrid = function() {
+  const q      = document.getElementById('searchInput').value.trim().toLowerCase();
+  const catF   = document.getElementById('catFilter').value;
+  const activeF = document.getElementById('activeFilter').value;
+
+  let list = allSuppliers.filter(s => {
+    const name = (s.company_details?.business_name || '').toLowerCase();
+    if (q && !name.includes(q)) return false;
+    if (catF && !(s.approved_categories || []).includes(catF)) return false;
+    if (activeF === 'active'   && !s.is_active) return false;
+    if (activeF === 'inactive' &&  s.is_active) return false;
+    return true;
+  });
+
+  const grid = document.getElementById('suppliers-grid');
+  if (!list.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1">
+      <i class="ph ph-storefront"></i>
+      <h3>לא נמצאו ספקים</h3>
+      <p>נסה לשנות את הפילטרים</p>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML = list.map(s => {
+    const name  = s.company_details?.business_name || 'ספק';
+    const email = s.company_details?.email || '—';
+    const phone = s.company_details?.phone || '—';
+    const initials = name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase() || 'S';
+    const cats  = s.approved_categories || [];
+    const date  = s.reviewed_at ? new Date(s.reviewed_at).toLocaleDateString('he-IL') : '—';
+
+    return `
+    <div class="sup-card">
+      <div class="sup-card-hdr">
+        <div style="display:flex;align-items:flex-start;gap:0.85rem;flex:1;min-width:0;">
+          <div class="sup-avatar">${initials}</div>
+          <div class="sup-info">
+            <div class="sup-name">${name}</div>
+            <div class="sup-contact"><i class="ph ph-envelope"></i> ${email}</div>
+            <div class="sup-contact" style="margin-top:0.15rem;"><i class="ph ph-phone"></i> ${phone}</div>
+          </div>
+        </div>
+        <button class="active-toggle ${s.is_active?'active':'inactive'}" onclick="toggleActive('${s.id}')">
+          <i class="ph ${s.is_active?'ph-check-circle':'ph-pause-circle'}"></i>
+          ${s.is_active ? 'פעיל' : 'מושהה'}
+        </button>
+      </div>
+      <div class="sup-card-body">
+        <div class="cats-label">קטגוריות מאושרות (${cats.length})</div>
+        <div class="cats-list">
+          ${cats.length
+            ? cats.map(c=>`<span class="cat-pill"><i class="ph ph-tag"></i>${CAT_LABELS[c]||c}</span>`).join('')
+            : '<span style="font-size:0.8rem;color:#94a3b8;">לא הוגדרו קטגוריות</span>'
+          }
+        </div>
+      </div>
+      <div class="sup-card-footer">
+        <span class="sup-date"><i class="ph ph-calendar-check" style="margin-left:0.25rem;"></i>אושר: ${date}</span>
+        <button class="btn-view-sup" onclick="openDetail('${s.id}')">
+          <i class="ph ph-eye"></i> פרטים
+        </button>
+      </div>
+    </div>`;
+  }).join('');
+};
+
+function updateStats() {
+  const active   = allSuppliers.filter(s => s.is_active).length;
+  const inactive = allSuppliers.filter(s => !s.is_active).length;
+  const cats     = new Set(allSuppliers.flatMap(s => s.approved_categories || [])).size;
+  document.getElementById('stat-total').textContent   = allSuppliers.length;
+  document.getElementById('stat-active').textContent  = active;
+  document.getElementById('stat-inactive').textContent = inactive;
+  document.getElementById('stat-cats').textContent    = cats;
+}
+
+window.toggleActive = async function(id) {
+  const s = allSuppliers.find(x => x.id === id);
+  if (!s) return;
+  const newVal = !s.is_active;
+  const { error } = await supabase
+    .from('supplier_applications')
+    .update({ is_active: newVal })
+    .eq('id', id);
+  if (error) { showToast('שגיאה בעדכון', true); return; }
+  s.is_active = newVal;
+  renderGrid();
+  updateStats();
+  showToast(newVal ? 'ספק הופעל' : 'ספק הושהה');
+};
+
+window.openDetail = function(id) {
+  const s = allSuppliers.find(x => x.id === id);
+  if (!s) return;
+  const name  = s.company_details?.business_name || 'ספק';
+  const email = s.company_details?.email || '—';
+  const phone = s.company_details?.phone || '—';
+  const rep   = s.company_details?.representative_name || '—';
+  const cats  = s.approved_categories || [];
+  const reqCats = s.selected_categories || [];
+  const areas = (s.service_details?.service_areas || []).join(', ') || '—';
+
+  document.getElementById('detail-title').textContent = name;
+  document.getElementById('detail-body').innerHTML = `
+    <div class="d-section">
+      <div class="d-section-title">פרטי חברה</div>
+      <div class="d-row"><span class="d-lbl">שם החברה</span><span class="d-val">${name}</span></div>
+      <div class="d-row"><span class="d-lbl">נציג</span><span class="d-val">${rep}</span></div>
+      <div class="d-row"><span class="d-lbl">אימייל</span><span class="d-val" style="direction:ltr;">${email}</span></div>
+      <div class="d-row"><span class="d-lbl">טלפון</span><span class="d-val" style="direction:ltr;">${phone}</span></div>
+      <div class="d-row"><span class="d-lbl">אזורי שירות</span><span class="d-val">${areas}</span></div>
+    </div>
+    <div class="d-section">
+      <div class="d-section-title">קטגוריות מאושרות</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.25rem 0;">
+        ${cats.length
+          ? cats.map(c=>`<span class="cat-pill"><i class="ph ph-check-circle" style="color:#16a34a;"></i>${CAT_LABELS[c]||c}</span>`).join('')
+          : '<span style="font-size:0.82rem;color:#94a3b8;">לא הוגדרו</span>'}
+      </div>
+    </div>
+    <div class="d-section">
+      <div class="d-section-title">קטגוריות שביקש (${reqCats.length})</div>
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;padding:0.25rem 0;">
+        ${reqCats.map(c=>{
+          const approved = cats.includes(c);
+          return `<span class="cat-pill" style="${approved?'':'background:#f1f5f9;color:#94a3b8;'}">
+            <i class="ph ${approved?'ph-check':'ph-minus'}" style="color:${approved?'#16a34a':'#94a3b8'};"></i>
+            ${CAT_LABELS[c]||c}
+          </span>`;
+        }).join('')}
+      </div>
+    </div>
+    <div class="d-section">
+      <div class="d-section-title">פעולות</div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap;">
+        <button onclick="toggleActive('${s.id}');closeDetail()" style="flex:1;padding:0.65rem;border-radius:9px;border:none;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;background:${s.is_active?'#fee2e2':'#dcfce7'};color:${s.is_active?'#dc2626':'#16a34a'};">
+          <i class="ph ${s.is_active?'ph-pause-circle':'ph-check-circle'}"></i>
+          ${s.is_active ? 'השהה ספק' : 'הפעל ספק'}
+        </button>
+        <a href="admin-suppliers.html" style="flex:1;padding:0.65rem;border-radius:9px;border:1.5px solid #e2e8f0;font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:700;cursor:pointer;background:#f8fafc;color:#475569;text-decoration:none;display:flex;align-items:center;justify-content:center;gap:0.4rem;">
+          <i class="ph ph-arrow-left"></i> לבקשה המקורית
+        </a>
+      </div>
+    </div>
+  `;
+  document.getElementById('detail-overlay').classList.add('open');
+  document.getElementById('detail-panel').classList.add('open');
+};
+
+window.closeDetail = function() {
+  document.getElementById('detail-overlay').classList.remove('open');
+  document.getElementById('detail-panel').classList.remove('open');
+};
+
+function showToast(msg, isErr) {
+  const t = document.getElementById('toast');
+  t.innerHTML = `<i class="ph ${isErr?'ph-warning':'ph-check-circle'}"></i> ${msg}`;
+  t.className = 'toast show' + (isErr?' err':'');
+  setTimeout(() => t.className = 'toast', 3000);
+}
+</script>
+</body>
+</html>

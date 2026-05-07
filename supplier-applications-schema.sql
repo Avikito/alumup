@@ -28,7 +28,10 @@ CREATE TABLE IF NOT EXISTS supplier_applications (
   company_details     JSONB       NOT NULL DEFAULT '{}',
 
   -- Step 2: Selected product categories (array of category keys)
-  selected_categories TEXT[]      NOT NULL DEFAULT '{}',
+  selected_categories  TEXT[]      NOT NULL DEFAULT '{}',
+
+  -- Categories approved by committee (subset of selected_categories)
+  approved_categories  TEXT[]      NOT NULL DEFAULT '{}',
 
   -- Step 3: Logistics & service
   -- { service_areas: [], delivery_method, min_order_amount, lead_time_days }

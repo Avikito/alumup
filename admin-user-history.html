@@ -259,7 +259,10 @@ const supabase = createClient(
       { id:'orders',    icon:'ph-list-bullets',           label:'הזמנות',        href:'admin.html' },
       { id:'quotes',    icon:'ph-file-text',              label:'הצעות מחיר',    href:'admin-quotes.html' },
       { id:'financial', icon:'ph-currency-circle-dollar', label:'ניהול פיננסי',  href:'admin-financial.html' },
-      { id:'settings',  icon:'ph-gear-six',               label:'תמחור גלובלי', href:'admin-settings.html' },
+          ]},
+    { id:'suppliers-g', icon:'ph-storefront', label:'ספקים', items:[
+      { id:'suppliers', icon:'ph-storefront', label:'בקשות ספקים',  href:'admin-suppliers.html' },
+      { id:'settings',  icon:'ph-gear-six',   label:'תמחור גלובלי', href:'admin-settings.html' },
     ]},
     { id:'ops-g', icon:'ph-wrench', label:'תפעול ולו"ז', items:[
       { id:'calendar', icon:'ph-calendar-dots', label:'לוח זמנים',    href:'admin-calendar.html' },

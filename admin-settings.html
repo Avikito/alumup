@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <style>
     .admin-wrapper { display:flex; flex:1; min-height:calc(100vh - 64px); }
 
@@ -36,7 +37,8 @@
     .nav-sub { list-style:none;flex-direction:column;gap:0.08rem;padding:0.1rem 0 0.1rem 0.9rem;margin:0; }
     .nav-sub a { font-size:0.84rem !important;padding:0.42rem 0.75rem !important; }
 
-    .admin-content { flex:1;padding:2rem;overflow-y:auto; }
+    .admin-content { flex:1;padding:2rem;overflow-y:auto;background:linear-gradient(135deg,#dbeafe 0%,#eff6ff 100%); }
+    body { background:#dbeafe; }
     .page-title { font-size:1.4rem;font-weight:800;color:var(--industrial-silver);margin-bottom:0.4rem; }
     .page-subtitle { color:var(--silver-dark);font-size:0.88rem;margin-bottom:1.75rem; }
 
@@ -126,14 +128,31 @@
     @keyframes spin { to { transform:rotate(360deg); } }
     .spin { animation:spin 0.8s linear infinite;display:inline-block; }
 
-    /* ── PRODUCT ACCORDION ── */
-    .products-container { display:flex;flex-direction:column;gap:1rem;max-width:960px; }
-    .product-section { background:var(--surface-dark);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+    /* ── PRODUCT TABS ── */
+    .tabs-bar {
+      display:flex;gap:0;margin-bottom:1.5rem;
+      border-bottom:2px solid var(--border);
+      overflow-x:auto;flex-wrap:nowrap;
+    }
+    .tab-btn-prod {
+      display:flex;align-items:center;gap:0.45rem;
+      padding:0.7rem 1.35rem;border:none;background:none;
+      font-family:'Heebo',sans-serif;font-size:0.88rem;font-weight:600;
+      color:var(--silver-dark);cursor:pointer;white-space:nowrap;
+      border-bottom:2.5px solid transparent;margin-bottom:-2px;
+      border-radius:8px 8px 0 0;transition:all 0.18s;
+    }
+    .tab-btn-prod:hover { color:var(--electric-blue);background:var(--blue-dim); }
+    .tab-btn-prod.active { color:var(--electric-blue);border-bottom-color:var(--electric-blue);background:var(--blue-dim);font-weight:700; }
+
+    .products-container { max-width:960px; }
+    .product-section { display:none;background:var(--surface-dark);border:1px solid var(--border);border-radius:14px;overflow:hidden; }
+    .product-section.tab-active { display:block; }
     .product-section-hdr {
       display:flex;align-items:center;gap:1rem;padding:1.25rem 1.5rem;
-      cursor:pointer;transition:background 0.18s;user-select:none;
+      cursor:default;pointer-events:none;user-select:none;
     }
-    .product-section-hdr:hover { background:rgba(255,255,255,0.03); }
+    .product-section-hdr:hover { background:transparent; }
     .prod-icon {
       width:44px;height:44px;border-radius:10px;flex-shrink:0;
       background:var(--blue-dim);display:flex;align-items:center;justify-content:center;
@@ -165,9 +184,8 @@
       font-size:0.6rem;color:var(--silver-dark);text-align:left;
     }
     @media(max-width:768px) { .price-badge-dual { display:none; } }
-    .prod-caret { font-size:1rem;color:var(--silver-dark);transition:transform 0.22s ease;flex-shrink:0; }
-    .prod-caret.open { transform:rotate(180deg); }
-    .product-section-body { border-top:1px solid var(--border); }
+    .prod-caret { display:none; }
+    .product-section-body { border-top:1px solid var(--border);display:block !important; }
     .section-cols { display:grid;grid-template-columns:1fr 1fr;gap:2rem;padding:1.5rem; }
     .col-label {
       font-size:0.71rem;font-weight:700;color:var(--silver-dark);
@@ -204,7 +222,8 @@
     .formula-tier-label.member { background:rgba(245,158,11,0.12);color:#f59e0b; }
 
     /* ── PRODUCT IMAGES ── */
-    .prod-imgs-row {
+    .prod-imgs-row { display:none !important; }
+    .prod-imgs-row-legacy {
       display:flex;gap:0.85rem;padding:1.25rem 1.5rem;
       border-bottom:1px solid var(--border);
       background:rgba(255,255,255,0.015);
@@ -341,6 +360,15 @@
     <main class="admin-content">
       <div class="page-title">תמחור גלובלי</div>
       <div class="page-subtitle">הגדרות מחיר בסיס — שינויים ישפיעו על הצעות מחיר וקיטים בהזמנות חדשות בלבד</div>
+
+      <!-- TABS BAR -->
+      <div class="tabs-bar">
+        <button class="tab-btn-prod active" data-tab="pvc"   onclick="switchTab('pvc')"><i class="ph ph-stack"></i> פרגולה PVC</button>
+        <button class="tab-btn-prod"        data-tab="alum"  onclick="switchTab('alum')"><i class="ph ph-frame-corners"></i> פרגולה אלומיניום</button>
+        <button class="tab-btn-prod"        data-tab="win"   onclick="switchTab('win')"><i class="ph ph-browser"></i> חלונות</button>
+        <button class="tab-btn-prod"        data-tab="fence" onclick="switchTab('fence')"><i class="ph ph-git-fork"></i> גדרות</button>
+        <button class="tab-btn-prod"        data-tab="raw"   onclick="switchTab('raw')"><i class="ph ph-cube"></i> חומרי גלם</button>
+      </div>
 
       <div class="products-container">
 
@@ -1107,6 +1135,37 @@
                     </div>
                   </div>
                 </div>
+                <!-- רשימת פרופילים -->
+                <div style="margin-top:1.5rem;display:flex;align-items:center;justify-content:space-between;">
+                  <div class="col-label" style="margin:0;"><i class="ph ph-list-bullets"></i> פרופילי אלומיניום — משקלים</div>
+                  <button id="profiles-toggle-btn" onclick="toggleProfilesList()" style="display:flex;align-items:center;gap:0.35rem;padding:0.3rem 0.8rem;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;">
+                    <i class="ph ph-caret-down" id="profiles-caret"></i> הצג רשימה
+                  </button>
+                </div>
+                <div id="profiles-list-wrap" style="display:none;margin-top:0.6rem;border:1.5px solid #bfdbfe;border-radius:10px;overflow:hidden;">
+                  <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+                    <thead>
+                      <tr style="background:#1e40af;">
+                        <th style="padding:0.55rem 0.75rem;text-align:right;font-size:0.7rem;font-weight:700;color:#fff;border-bottom:1px solid #1e3a8a;">מק"ט</th>
+                        <th style="padding:0.55rem 0.75rem;text-align:right;font-size:0.7rem;font-weight:700;color:#fff;border-bottom:1px solid #1e3a8a;">שם פרופיל</th>
+                        <th style="padding:0.55rem 0.75rem;text-align:right;font-size:0.7rem;font-weight:700;color:#fff;border-bottom:1px solid #1e3a8a;">קטגוריה</th>
+                        <th style="padding:0.55rem 0.75rem;text-align:center;font-size:0.7rem;font-weight:700;color:#fff;border-bottom:1px solid #1e3a8a;">ק"ג למ'</th>
+                        <th style="padding:0.55rem 0.75rem;text-align:center;font-size:0.7rem;font-weight:700;color:#fff;border-bottom:1px solid #1e3a8a;">מחיר (₪)</th>
+                        <th style="padding:0.55rem 0.75rem;border-bottom:1px solid #1e3a8a;"></th>
+                      </tr>
+                    </thead>
+                    <tbody id="profiles-tbody">
+                      <tr><td colspan="4" style="text-align:center;padding:1.5rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>
+                    </tbody>
+                  </table>
+                  <div style="padding:0.6rem 0.75rem;border-top:1px solid #f1f5f9;display:flex;gap:0.5rem;flex-wrap:wrap;">
+                    <button onclick="saveProfiles().then(()=>showToast('הפרופילים נשמרו'))" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.8rem;background:#15803d;color:#fff;border:none;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="ph ph-floppy-disk"></i> שמור הכל</button>
+                    <button onclick="exportProfilesExcel()" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.8rem;background:#0369a1;color:#fff;border:none;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="ph ph-file-xls"></i> ייצא לאקסל</button>
+                    <button onclick="addProfile()" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.8rem;background:#7c3aed;color:#fff;border:none;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="ph ph-plus"></i> פרופיל חדש</button>
+                    <button onclick="importProfiles()" style="display:flex;align-items:center;gap:0.35rem;padding:0.35rem 0.8rem;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:7px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="ph ph-download-simple"></i> טען רשימה מלאה</button>
+                  </div>
+                </div><!-- /profiles-list-wrap -->
+
                 <div class="col-label" style="margin-top:1.25rem;"><i class="ph ph-wrench"></i> אביזרים</div>
                 <div class="fields-grid">
                   <div class="field-group">
@@ -1287,6 +1346,18 @@ function refreshFormula(sec) {
 /* ── SUPPLIER ASSIGNMENT (UI only) ── */
 var assignments = {};
 
+/* -- TABS -- */
+window.switchTab = function(key) {
+  document.querySelectorAll('.product-section').forEach(function(s){s.classList.remove('tab-active');});
+  document.querySelectorAll('.tab-btn-prod').forEach(function(b){b.classList.remove('active');});
+  var sec = document.getElementById('sec-' + key);
+  if (sec) sec.classList.add('tab-active');
+  var btn = document.querySelector('.tab-btn-prod[data-tab="' + key + '"]');
+  if (btn) btn.classList.add('active');
+};
+switchTab('pvc');
+
+
 function saveAssignment(productKey) {
   var sel = document.getElementById('select-' + productKey);
   if (!sel.value) { showToast('\u05D1\u05D7\u05E8 \u05E1\u05E4\u05E7 \u05DC\u05E4\u05E0\u05D9 \u05D4\u05D4\u05E7\u05E6\u05D0\u05D4', true); return; }
@@ -1327,6 +1398,29 @@ function showToast(msg, isError) {
   t.className = 'toast show' + (isError ? ' error' : '');
   setTimeout(function(){ t.className = 'toast'; }, 2500);
 }
+
+/* ── MOCK SUPPLIERS (יוחלף בטעינה מסופאבייס) ── */
+var MOCK_SUPPLIERS = [
+  { id: 'sup-1', name: 'חברת אלומיניום הדרום',   email: 'south@alum.co.il',   cats: ['alum_pergola','fences'] },
+  { id: 'sup-2', name: 'פרופיל צפון בע"מ',        email: 'north@profil.co.il', cats: ['pvc_pergola','alum_pergola'] },
+  { id: 'sup-3', name: 'מרכז גדרות ישראל',        email: 'info@fences-il.com', cats: ['fences'] },
+  { id: 'sup-4', name: 'וינדו טק',                email: 'sales@windotek.com', cats: ['windows'] },
+  { id: 'sup-5', name: 'אלום פלוס',               email: 'info@alumplus.co.il',cats: ['pvc_pergola','alum_pergola','fences'] },
+];
+
+(function populateMockSuppliers() {
+  ['pvc_pergola','alum_pergola','windows','fences'].forEach(function(key) {
+    var sel = document.getElementById('select-' + key);
+    if (!sel) return;
+    MOCK_SUPPLIERS.forEach(function(s) {
+      var opt = document.createElement('option');
+      opt.value = s.id;
+      opt.textContent = s.name;
+      opt.dataset.email = s.email;
+      sel.appendChild(opt);
+    });
+  });
+})();
 
 /* ── MOBILE SIDEBAR ── */
 (function() {
@@ -1371,7 +1465,10 @@ async function requireAdmin() {
       { id:'orders',    icon:'ph-list-bullets',           label:'\u05D4\u05D6\u05DE\u05E0\u05D5\u05EA',        href:'admin.html' },
       { id:'quotes',    icon:'ph-file-text',              label:'\u05D4\u05E6\u05E2\u05D5\u05EA \u05DE\u05D7\u05D9\u05E8',    href:'admin-quotes.html' },
       { id:'financial', icon:'ph-currency-circle-dollar', label:'\u05E0\u05D9\u05D4\u05D5\u05DC \u05E4\u05D9\u05E0\u05E0\u05E1\u05D9',  href:'admin-financial.html' },
-      { id:'settings',  icon:'ph-gear-six',               label:'\u05EA\u05DE\u05D7\u05D5\u05E8 \u05D2\u05DC\u05D5\u05D1\u05DC\u05D9', href:'admin-settings.html' },
+    ]},
+    { id:'suppliers-g', icon:'ph-storefront', label:'\u05E1\u05E4\u05E7\u05D9\u05DD', items:[
+      { id:'suppliers', icon:'ph-storefront', label:'\u05D1\u05E7\u05E9\u05D5\u05EA \u05E1\u05E4\u05E7\u05D9\u05DD',  href:'admin-suppliers.html' },
+      { id:'settings',  icon:'ph-gear-six',   label:'\u05EA\u05DE\u05D7\u05D5\u05E8 \u05D2\u05DC\u05D5\u05D1\u05DC\u05D9', href:'admin-settings.html' },
     ]},
     { id:'ops-g', icon:'ph-wrench', label:'\u05EA\u05E4\u05E2\u05D5\u05DC \u05D5\u05DC\u05D5"\u05D6', items:[
       { id:'calendar', icon:'ph-calendar-dots', label:'\u05DC\u05D5\u05D7 \u05D6\u05DE\u05E0\u05D9\u05DD',    href:'admin-calendar.html' },
@@ -1515,7 +1612,156 @@ function showToast(msg, isError) {
   setTimeout(() => t.classList.remove('show'), 3500);
 }
 
-init();
+init().then(() => loadProfiles());
+
+// ── פרופילי אלומיניום — שמירה ב-global_settings ────────────
+let _profiles = [];
+
+async function loadProfiles() {
+  const tbody = document.getElementById('profiles-tbody');
+  if (!tbody) return;
+
+  // שלוף פרופילים מ-global_settings (key = 'profiles_catalog')
+  const { data: setting } = await supabase
+    .from('global_settings').select('value')
+    .eq('key','profiles_catalog').maybeSingle();
+
+  if (setting?.value) {
+    try { _profiles = JSON.parse(setting.value); } catch(e) { _profiles = []; }
+  }
+
+  // אם אין בכלל — ייבא אוטומטית מהזמנות
+  if (!_profiles.length) await _importFromOrders(false);
+  else renderProfiles();
+}
+
+async function saveProfiles() {
+  await supabase.from('global_settings').upsert(
+    { key:'profiles_catalog', value: JSON.stringify(_profiles), updated_at: new Date().toISOString() },
+    { onConflict:'key' }
+  );
+}
+
+function renderProfiles() {
+  const tbody = document.getElementById('profiles-tbody');
+  if (!_profiles.length) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:1.25rem;color:#94a3b8;">אין פרופילים — לחץ "ייבא מהזמנות" או "פרופיל חדש"</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = _profiles.map((p, i) => `
+    <tr style="border-top:1px solid #dbeafe;background:${i%2===0?'#eff6ff':'#fff'};">
+      <td style="padding:0.45rem 0.6rem;">
+        <input value="${p.sku||''}" data-i="${i}" data-f="sku" onchange="updateProfileField(this)"
+          style="width:65px;padding:0.28rem 0.4rem;border:1.5px solid #bfdbfe;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.8rem;background:#fff;">
+      </td>
+      <td style="padding:0.45rem 0.6rem;">
+        <input value="${p.name||''}" data-i="${i}" data-f="name" onchange="updateProfileField(this)"
+          style="width:140px;padding:0.28rem 0.4rem;border:1.5px solid #bfdbfe;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.8rem;background:#fff;">
+      </td>
+      <td style="padding:0.45rem 0.6rem;">
+        <input value="${p.cat||''}" data-i="${i}" data-f="cat" onchange="updateProfileField(this)"
+          style="width:130px;padding:0.28rem 0.4rem;border:1.5px solid #bfdbfe;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.8rem;background:#fff;">
+      </td>
+      <td style="padding:0.45rem 0.6rem;text-align:center;">
+        <input type="number" step="0.001" value="${p.wpm||0}" data-i="${i}" data-f="wpm" onchange="updateProfileField(this)"
+          style="width:70px;padding:0.28rem 0.4rem;border:1.5px solid #bfdbfe;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.8rem;text-align:center;background:#fff;">
+      </td>
+      <td style="padding:0.45rem 0.6rem;text-align:center;">
+        <input type="number" step="0.5" value="${p.price||''}" placeholder="—" data-i="${i}" data-f="price" onchange="updateProfileField(this)"
+          style="width:70px;padding:0.28rem 0.4rem;border:1.5px solid #bfdbfe;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.8rem;text-align:center;background:#fff;">
+      </td>
+      <td style="padding:0.45rem 0.6rem;">
+        <button onclick="deleteProfile(${i})" style="padding:0.28rem 0.55rem;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.75rem;cursor:pointer;"><i class="ph ph-trash"></i></button>
+      </td>
+    </tr>`).join('');
+}
+
+window.updateProfileField = function(el) {
+  const i = +el.dataset.i;
+  const f = el.dataset.f;
+  _profiles[i][f] = f === 'wpm' || f === 'price' ? parseFloat(el.value)||0 : el.value;
+};
+
+window.addProfile = async function() {
+  _profiles.push({ sku:'', name:'פרופיל חדש', wpm: 0, price: 0 });
+  renderProfiles();
+  await saveProfiles();
+};
+
+window.deleteProfile = async function(i) {
+  if (!confirm('למחוק פרופיל זה?')) return;
+  _profiles.splice(i, 1);
+  renderProfiles();
+  await saveProfiles();
+  showToast('פרופיל נמחק');
+};
+
+const MASTER_PROFILES = [
+  {sku:"ALUM1000",name:"20/70/0.8 ZD1",wpm:0.4,cat:"מילוי פרגולה/גדר/שער"},{sku:"ALUM1001",name:"20/70/0.8 ZD2",wpm:0.4,cat:"מילוי פרגולה/גדר/שער"},{sku:"ALUM1002",name:"20/70/0.8 ZD3",wpm:0.4,cat:"מילוי פרגולה/גדר/שער"},{sku:"ALUM1003",name:"20/70/0.8 ZD4",wpm:0.4,cat:"מילוי פרגולה/גדר/שער"},
+  {sku:"ALUM1004",name:"ZD 1 זד הצללה גוון עץ",wpm:0.33,cat:"הצללה עבור פרגולה"},{sku:"ALUM1005",name:"ZD 3 זד הצללה גוון עץ",wpm:0.33,cat:"הצללה עבור פרגולה"},{sku:"ALUM1006",name:"ZD 4 זד הצללה גוון עץ",wpm:0.33,cat:"הצללה עבור פרגולה"},
+  {sku:"ALUM1007",name:"גדר 20/40",wpm:0.626,cat:"פרופיל עבור גדר בריתוך"},{sku:"ALUM1008",name:"גדר 40/40",wpm:0.761,cat:"פרופיל עבור גדר/שער בריתוך"},{sku:"ALUM1009",name:"גדר 40/60",wpm:0.987,cat:"פרופיל עבור גדר/שער בריתוך"},{sku:"ALUM1010",name:"גדר 50/40",wpm:0.89,cat:""},
+  {sku:"ALUM1011",name:"דאבל טי 120",wpm:2.314,cat:""},{sku:"ALUM1012",name:"דאבל טי 142/1.6",wpm:2.529,cat:"מסגרת לפרגולה"},{sku:"ALUM1013",name:"דאבל טי 165",wpm:3.12,cat:"מסגרת לפרגולה"},{sku:"ALUM1014",name:"דאבל טי מעוצב (הייטק) 120",wpm:2.704,cat:"מסגרת לפרגולה"},
+  {sku:"ALUM1015",name:"הצללה חצי ירח",wpm:0.28,cat:""},{sku:"ALUM1016",name:"הצללה/רפפה זד",wpm:0.413,cat:"מילוי עבור פרגולה"},{sku:"ALUM1017",name:"וואל לסוככים",wpm:1.29,cat:"צינור עבור בד לסוככים"},
+  {sku:"ALUM1018",name:"זוית 10/10",wpm:0.731,cat:""},{sku:"ALUM1019",name:"זוית 14/120",wpm:0.865,cat:""},{sku:"ALUM1020",name:"זוית 15/20/1.5",wpm:1.141,cat:""},{sku:"ALUM1021",name:"זוית 18/100/1.5",wpm:0.507,cat:""},{sku:"ALUM1022",name:"זוית 18/30/1.5",wpm:0.202,cat:""},{sku:"ALUM1023",name:"זוית 18/40/1.5",wpm:0.238,cat:""},{sku:"ALUM1024",name:"זוית 18/50/1.5",wpm:0.292,cat:""},{sku:"ALUM1025",name:"זוית 18/60/1.5",wpm:0.334,cat:""},{sku:"ALUM1026",name:"זוית 18/70/1.5",wpm:0.378,cat:""},{sku:"ALUM1027",name:"זוית 18/80/1.5",wpm:0.421,cat:""},{sku:"ALUM1028",name:"זוית 20/20/1.5",wpm:0.162,cat:""},{sku:"ALUM1029",name:"זוית 30/30",wpm:0.353,cat:""},{sku:"ALUM1030",name:"זוית 4/4/3",wpm:0.679,cat:""},{sku:"ALUM1031",name:"זוית 40/40/2",wpm:0.463,cat:""},{sku:"ALUM1032",name:"זוית 40/40/4",wpm:0.913,cat:""},{sku:"ALUM1033",name:"זוית 40/50/2.5",wpm:0.638,cat:""},{sku:"ALUM1034",name:"זוית 50/50/2.5",wpm:0.716,cat:""},{sku:"ALUM1035",name:"זוית 50/50/5",wpm:1.426,cat:""},{sku:"ALUM1036",name:"זוית 80/40",wpm:1.751,cat:""},
+  {sku:"ALUM1037",name:"חיפוי בורג נסתר 15 ס\"מ",wpm:1.04,cat:""},{sku:"ALUM1038",name:"טי 100 (חוצץ לפרגולה)",wpm:1.73,cat:""},{sku:"ALUM1039",name:"טי 120 (חוצץ לפרגולה)",wpm:2.249,cat:"חוצץ/אגד לפרגולה"},{sku:"ALUM1040",name:"טי 80 חוצץ לפרגולה",wpm:1.297,cat:"חוצץ/אגד לפרגולה"},{sku:"ALUM1041",name:"טי תאורה 120/40",wpm:1.892,cat:"חוצץ/אגד לפרגולה עם מקום לתאורה"},{sku:"ALUM1042",name:"טי תאורה 40/100",wpm:1.862,cat:""},
+  {sku:"ALUM1043",name:"יו + מכסה 20/40",wpm:0.634,cat:""},{sku:"ALUM1044",name:"יו 10/10",wpm:0.09,cat:""},{sku:"ALUM1045",name:"יו 20/20/1",wpm:0.167,cat:""},{sku:"ALUM1046",name:"יו 25/25/2",wpm:0.398,cat:""},{sku:"ALUM1047",name:"יו 30/36/2.2",wpm:0.558,cat:""},{sku:"ALUM1048",name:"יו 36/30/2.5",wpm:0.64,cat:""},{sku:"ALUM1049",name:"יו 95/50/3",wpm:1.632,cat:""},{sku:"ALUM1050",name:"יו הגבה למעקה",wpm:0.404,cat:""},{sku:"ALUM1051",name:"יו הצללה 25/50",wpm:0.404,cat:""},{sku:"ALUM1052",name:"יו הצללה 44.5/14.5",wpm:0.235,cat:""},{sku:"ALUM1053",name:"יו לסורג שקוף",wpm:0.562,cat:""},{sku:"ALUM1054",name:"יו סוככים 120/35",wpm:1.206,cat:""},{sku:"ALUM1055",name:"יו סוככים 120/45.4",wpm:1.778,cat:""},{sku:"ALUM1056",name:"יו תחתון למעקה",wpm:0.47,cat:""},{sku:"ALUM1057",name:"יו תחתון למעקה 26/25",wpm:0.424,cat:""},
+  {sku:"ALUM1058",name:"מאחז יד מלבני",wpm:2.123,cat:""},{sku:"ALUM1059",name:"מאחז מעוגל",wpm:1.878,cat:"פרופיל למעקה"},{sku:"ALUM1060",name:"מגש 130",wpm:0.69,cat:""},{sku:"ALUM1061",name:"מגש 18/150/1.5",wpm:0.838,cat:""},{sku:"ALUM1062",name:"מגש 200",wpm:1.059,cat:""},{sku:"ALUM1063",name:"מכסה לעמוד ALUM משולב",wpm:0.32,cat:""},{sku:"ALUM1064",name:"מכסה שטוח 2000",wpm:0.28,cat:""},
+  {sku:"ALUM1065",name:"מלבן 10/40",wpm:0.334,cat:""},{sku:"ALUM1066",name:"מלבן 120/40 עובי 4 ממ",wpm:3.42,cat:""},{sku:"ALUM1067",name:"מלבן 135/53",wpm:1.93,cat:""},{sku:"ALUM1068",name:"מלבן 20/10",wpm:0.185,cat:""},{sku:"ALUM1069",name:"מלבן 20/100/0.9",wpm:0.608,cat:""},{sku:"ALUM1070",name:"מלבן 20/120",wpm:0.926,cat:""},{sku:"ALUM1071",name:"מלבן 20/130/1.2",wpm:1.102,cat:""},{sku:"ALUM1072",name:"מלבן 20/150/1.2",wpm:1.31,cat:""},{sku:"ALUM1073",name:"מלבן 20/200/1.8",wpm:2.4,cat:""},{sku:"ALUM1074",name:"מלבן 20/26 (הייטק)",wpm:0.357,cat:""},{sku:"ALUM1075",name:"מלבן 20/40 עובי דופן 1.3",wpm:0.496,cat:""},{sku:"ALUM1076",name:"מלבן 20/40/0.9",wpm:0.305,cat:""},{sku:"ALUM1077",name:"מלבן 20/40/1.15",wpm:0.383,cat:""},{sku:"ALUM1078",name:"מלבן 20/40/2",wpm:0.73,cat:""},{sku:"ALUM1079",name:"מלבן 20/50/1.1",wpm:0.499,cat:""},{sku:"ALUM1080",name:"מלבן 20/50/2",wpm:0.851,cat:""},{sku:"ALUM1081",name:"מלבן 20/70/0.8",wpm:0.411,cat:""},{sku:"ALUM1082",name:"מלבן 20/70/1.6",wpm:0.89,cat:""},{sku:"ALUM1083",name:"מלבן 20/90/1",wpm:0.62,cat:""},{sku:"ALUM1084",name:"מלבן 300/100 צבע לבן",wpm:7.176,cat:""},{sku:"ALUM1085",name:"מלבן 300/100 צבע שחור",wpm:7.176,cat:""},{sku:"ALUM1086",name:"מלבן 40/100/1.8",wpm:1.372,cat:""},{sku:"ALUM1087",name:"מלבן 40/120/1.8",wpm:1.632,cat:""},{sku:"ALUM1088",name:"מלבן 40/60/1.2",wpm:0.709,cat:""},{sku:"ALUM1089",name:"מלבן 40/60/2",wpm:1.098,cat:""},{sku:"ALUM1090",name:"מלבן 40/80/1.4",wpm:0.99,cat:""},{sku:"ALUM1091",name:"מלבן 40/80/2",wpm:1.29,cat:""},{sku:"ALUM1092",name:"מלבן 50/100/2",wpm:1.64,cat:""},{sku:"ALUM1093",name:"מלבן 50/150 עובי דופן 4 ממ",wpm:4.326,cat:""},{sku:"ALUM1094",name:"מלבן 50/200/3",wpm:4.248,cat:""},{sku:"ALUM1095",name:"מלבן 50/40/3",wpm:1.415,cat:""},{sku:"ALUM1096",name:"מלבן 60/30",wpm:0.811,cat:""},
+  {sku:"ALUM1097",name:"מסגרת גדר עם קליפס",wpm:1.08,cat:""},{sku:"ALUM1098",name:"מסתור כביסה 5800",wpm:0.454,cat:""},{sku:"ALUM1099",name:"מעצור שער",wpm:0.197,cat:""},{sku:"ALUM1100",name:"מקבילית גדולה 78.5/20",wpm:0.387,cat:""},{sku:"ALUM1101",name:"מקבילית קטנה 58.5/20",wpm:0.297,cat:""},
+  {sku:"ALUM1102",name:"מרובע 100/100/2",wpm:2.242,cat:""},{sku:"ALUM1103",name:"מרובע 130/130/2",wpm:2.932,cat:""},{sku:"ALUM1104",name:"מרובע 15/15",wpm:0.208,cat:""},{sku:"ALUM1105",name:"מרובע 150/150",wpm:4.256,cat:""},{sku:"ALUM1106",name:"מרובע 20/20/1",wpm:0.301,cat:""},{sku:"ALUM1107",name:"מרובע 200/200 ללא ציפוי",wpm:6.032,cat:""},{sku:"ALUM1108",name:"מרובע 200/200 צבע לבן",wpm:6.032,cat:""},{sku:"ALUM1109",name:"מרובע 200/200 צבע שחור",wpm:6.032,cat:""},{sku:"ALUM1110",name:"מרובע 27.5/27.5/1.2",wpm:0.36,cat:""},{sku:"ALUM1111",name:"מרובע 30/30/1.4",wpm:0.649,cat:""},{sku:"ALUM1112",name:"מרובע 30/30/2",wpm:0.829,cat:""},{sku:"ALUM1113",name:"מרובע 40/40/1.2",wpm:0.727,cat:""},{sku:"ALUM1114",name:"מרובע 40/40/2",wpm:1.088,cat:""},{sku:"ALUM1115",name:"מרובע 50/50/1.8",wpm:0.954,cat:""},{sku:"ALUM1116",name:"מרובע 80/80",wpm:1.912,cat:""},
+  {sku:"ALUM1117",name:"מרזב 120",wpm:2.6,cat:"מלבן עם מרזב נסתר"},{sku:"ALUM1118",name:"עכביש 120",wpm:2.39,cat:""},{sku:"ALUM1119",name:"עכביש 150",wpm:2.726,cat:""},{sku:"ALUM1120",name:"עכביש 40.8",wpm:2.256,cat:""},
+  {sku:"ALUM1121",name:"עמוד 45/45 ALUM",wpm:1.139,cat:""},{sku:"ALUM1122",name:"עמוד 60/60 פלוס מכסה",wpm:1.726,cat:""},{sku:"ALUM1123",name:"עמוד ALUM משולב",wpm:1.664,cat:""},{sku:"ALUM1124",name:"עמוד ALUM קנט 1",wpm:1.545,cat:"זוויות, פרגולות"},{sku:"ALUM1125",name:"עמוד גדר 70/70",wpm:1.726,cat:""},{sku:"ALUM1126",name:"עמוד לגדר 40/70",wpm:1.82,cat:""},
+  {sku:"ALUM1127",name:"ערבי קנט 1",wpm:0.462,cat:""},{sku:"ALUM1128",name:"פלח 30/3",wpm:0.26,cat:""},{sku:"ALUM1129",name:"פלח 40/1.5",wpm:0.172,cat:""},{sku:"ALUM1130",name:"פלח 40/5",wpm:0.686,cat:""},{sku:"ALUM1131",name:"פלח 50/2",wpm:0.27,cat:""},{sku:"ALUM1132",name:"פלח שטוח 20/1.5",wpm:0.863,cat:""},
+  {sku:"ALUM1133",name:"פרופיל 2000 66/100",wpm:1.326,cat:""},{sku:"ALUM1134",name:"פרופיל 2000 66/40",wpm:1.102,cat:""},{sku:"ALUM1135",name:"פרופיל 2000 66/66",wpm:1.307,cat:""},{sku:"ALUM1136",name:"פרופיל 2000 קליפס בידודי",wpm:1.476,cat:""},{sku:"ALUM1137",name:"פרופיל 2000 קליפס משופע",wpm:0.27,cat:""},{sku:"ALUM1138",name:"פרופיל 2000 רבע עגול",wpm:1.17,cat:""},{sku:"ALUM1139",name:"פרופיל גדר 2 קנטים",wpm:0.799,cat:""},{sku:"ALUM1140",name:"פרופיל גדר קנט אחד",wpm:0.785,cat:""},{sku:"ALUM1141",name:"פרופיל יו 40/40 עם מכסה",wpm:0.915,cat:""},{sku:"ALUM1142",name:"פרופיל לכרסום",wpm:0.832,cat:""},{sku:"ALUM1143",name:"פרופיל מדרגה דק (זיגזג)",wpm:0.712,cat:""},{sku:"ALUM1144",name:"פרופיל מדרגה עבה (זיגזג)",wpm:0.953,cat:""},{sku:"ALUM1145",name:"פרופיל מקור",wpm:0.421,cat:""},{sku:"ALUM1146",name:"פרופיל עוגן",wpm:1.399,cat:""},{sku:"ALUM1147",name:"פרופיל תריס 43.5/27.5/1",wpm:0.427,cat:""},
+  {sku:"ALUM1148",name:"צינור 30/2",wpm:0.498,cat:""},{sku:"ALUM1149",name:"צינור 35/2",wpm:0.586,cat:""},{sku:"ALUM1150",name:"צינור 40/2",wpm:0.669,cat:""},
+  {sku:"ALUM1151",name:"קונסטרוקציה למסתור כביסה",wpm:0.693,cat:""},{sku:"ALUM1152",name:"קליפס למכורסם",wpm:0.176,cat:""},{sku:"ALUM1153",name:"קליק 20/25",wpm:0.28,cat:""},{sku:"ALUM1154",name:"קליק 20/45",wpm:0.469,cat:""},{sku:"ALUM1155",name:"קליק חיפוי בקליק",wpm:0.469,cat:"סדרת קליק"},{sku:"ALUM1156",name:"קליק מחבר משופע",wpm:1.04,cat:""},{sku:"ALUM1157",name:"קליק מכסה אחורי",wpm:0.062,cat:""},
+  {sku:"ALUM1158",name:"קנט 1 100/40",wpm:1.516,cat:""},{sku:"ALUM1159",name:"קנט 1 120/40",wpm:1.76,cat:""},{sku:"ALUM1160",name:"רבע עגול למסתור",wpm:1.0,cat:""},{sku:"ALUM1161",name:"שער - פרופיל עם מעצור",wpm:0.845,cat:"עבור שער בריתוך"}
+];
+
+window.importProfiles = async function() {
+  const seen = new Set(_profiles.map(p => p.sku || p.name));
+  let added = 0;
+  MASTER_PROFILES.forEach(p => {
+    if (!seen.has(p.sku)) {
+      seen.add(p.sku);
+      _profiles.push({ sku: p.sku, name: p.name, wpm: p.wpm, price: 0, cat: p.cat });
+      added++;
+    }
+  });
+  renderProfiles();
+  await saveProfiles();
+  showToast(added ? `נטענו ${added} פרופילים` : 'כל הפרופילים כבר קיימים');
+};
+
+window.toggleProfilesList = function() {
+  const wrap   = document.getElementById('profiles-list-wrap');
+  const caret  = document.getElementById('profiles-caret');
+  const btn    = document.getElementById('profiles-toggle-btn');
+  const open   = wrap.style.display === 'none';
+  wrap.style.display  = open ? 'block' : 'none';
+  caret.className     = open ? 'ph ph-caret-up' : 'ph ph-caret-down';
+  btn.childNodes[1].textContent = open ? ' הסתר רשימה' : ' הצג רשימה';
+};
+
+window.exportProfilesExcel = function() {
+  if (!_profiles.length) { showToast('אין פרופילים לייצוא', true); return; }
+  const rows = _profiles.map(p => ({
+    'מק"ט':       p.sku   || '',
+    'שם פרופיל':  p.name  || '',
+    'קטגוריה':    p.cat   || '',
+    'ק"ג למטר':   p.wpm   || 0,
+    'מחיר (₪)':   p.price || 0,
+  }));
+  const ws = XLSX.utils.json_to_sheet(rows, { skipHeader: false });
+  ws['!cols'] = [{ wch:14 },{ wch:36 },{ wch:28 },{ wch:12 },{ wch:12 }];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'פרופילי אלומיניום');
+  XLSX.writeFile(wb, 'profiles_catalog.xlsx');
+};
+
+async function _importFromOrders(showFeedback) {
+  await importProfiles();
+};
 </script>
 </body>
 </html>

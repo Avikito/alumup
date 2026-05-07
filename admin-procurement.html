@@ -192,6 +192,10 @@
     <ul class="pr-nav">
       <li><a href="admin-suppliers.html"><i class="ph ph-storefront"></i> בקשות לפתיחת ספק חדש</a></li>
     </ul>
+    <div class="pr-nav-section">תמחור</div>
+    <ul class="pr-nav">
+      <li><a href="#" id="nav-global-pricing" onclick="setView('global-pricing');return false;"><i class="ph ph-currency-circle-dollar"></i> תמחור גלובלי</a></li>
+    </ul>
     <div class="pr-nav-section">דוחות ולו"ז</div>
     <ul class="pr-nav">
       <li><a href="procurement-calendar.html"><i class="ph ph-calendar-dots"></i> לוח זמנים</a></li>
@@ -381,6 +385,60 @@
       </div>
     </div>
 
+    <!-- ── תמחור גלובלי ── -->
+    <div id="view-global-pricing" class="view-section">
+      <div style="font-size:1.2rem;font-weight:800;color:#0f172a;margin-bottom:1.25rem;display:flex;align-items:center;gap:0.4rem;">
+        <i class="ph ph-currency-circle-dollar" style="color:#7c3aed;"></i> תמחור גלובלי
+      </div>
+
+      <!-- מחיר אלומיניום לק"ג -->
+      <div class="panel" style="margin-bottom:1.25rem;">
+        <div class="panel-hdr">
+          <div class="panel-title">מחיר אלומיניום לק"ג</div>
+        </div>
+        <div style="padding:1.25rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:0.5rem;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:10px;padding:0.5rem 0.75rem;">
+            <span style="font-size:0.85rem;color:#64748b;font-weight:600;">₪</span>
+            <input id="gp-alum-kg" type="number" step="0.01" min="0" placeholder="0.00"
+              style="width:100px;border:none;background:transparent;font-family:'Heebo',sans-serif;font-size:1.1rem;font-weight:800;color:#0f172a;outline:none;">
+            <span style="font-size:0.8rem;color:#94a3b8;">לק"ג</span>
+          </div>
+          <button onclick="saveAlumPerKg()" class="btn-primary">
+            <i class="ph ph-floppy-disk"></i> שמור
+          </button>
+          <span id="gp-alum-saved" style="font-size:0.78rem;color:#15803d;display:none;"><i class="ph ph-check-circle"></i> נשמר</span>
+        </div>
+      </div>
+
+      <!-- טבלת פרופילים -->
+      <div class="panel">
+        <div class="panel-hdr">
+          <div class="panel-title">פרופילי אלומיניום — משקלים</div>
+          <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+            <button onclick="importProfilesFromOrders()" style="display:flex;align-items:center;gap:0.4rem;padding:0.4rem 0.85rem;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:8px;font-family:'Heebo',sans-serif;font-size:0.8rem;font-weight:700;cursor:pointer;">
+              <i class="ph ph-download-simple"></i> ייבא מהזמנות
+            </button>
+            <button onclick="addProfileRow()" class="btn-primary">
+              <i class="ph ph-plus"></i> פרופיל חדש
+            </button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="rich-table" id="gp-profiles-table">
+            <thead><tr>
+              <th>מק"ט</th>
+              <th>שם פרופיל</th>
+              <th>משקל לק"מ (ק"ג)</th>
+              <th>עודכן</th>
+              <th>פעולות</th>
+            </tr></thead>
+            <tbody id="gp-profiles-tbody">
+              <tr><td colspan="5" style="text-align:center;padding:2.5rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
 
   </main>
 </div>
@@ -500,16 +558,17 @@ window.logActivity = async function(action, entityType, entityId, details={}) {
 };
 
 // ── VIEWS ─────────────────────────────────────────────────
-const VIEWS = ['overview','orders','disputes','pricing','inventory'];
+const VIEWS = ['overview','orders','disputes','pricing','inventory','global-pricing'];
 window.setView = function(v) {
   VIEWS.forEach(id => {
     document.getElementById('view-'+id)?.classList.toggle('active', id===v);
     document.getElementById('nav-'+id)?.classList.toggle('active', id===v);
   });
-  if (v === 'activity') loadActivityLog();
-  if (v === 'pricing')  renderPricing();
-  if (v === 'inventory') renderInventory();
-  if (v === 'orders')   renderOrdersFull();
+  if (v === 'activity')        loadActivityLog();
+  if (v === 'pricing')         renderPricing();
+  if (v === 'inventory')       renderInventory();
+  if (v === 'orders')          renderOrdersFull();
+  if (v === 'global-pricing')  loadGlobalPricing();
 };
 
 // ── LOAD ──────────────────────────────────────────────────
@@ -1186,6 +1245,112 @@ function handleScanResult(code) {
 document.getElementById('scan-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('scan-overlay')) closeScanModal();
 });
+
+// ── תמחור גלובלי ──────────────────────────────────────────
+let _gpProfiles = [];
+
+window.loadGlobalPricing = async function() {
+  // טען מחיר לק"ג
+  const { data: setting } = await sb.from('global_settings')
+    .select('value').eq('key','aluminum_per_kg').maybeSingle();
+  if (setting) {
+    document.getElementById('gp-alum-kg').value = setting.value;
+  }
+  // טען פרופילים
+  await renderProfilesCatalog();
+};
+
+async function renderProfilesCatalog() {
+  const tbody = document.getElementById('gp-profiles-tbody');
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8;"><i class="ph ph-circle-notch spin"></i> טוען...</td></tr>`;
+  const { data, error } = await sb.from('profiles_catalog')
+    .select('*').order('name', { ascending: true });
+  if (error) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#dc2626;">שגיאה בטעינה</td></tr>`;
+    return;
+  }
+  _gpProfiles = data || [];
+  if (_gpProfiles.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:#94a3b8;">אין פרופילים — לחץ "ייבא מהזמנות" או "פרופיל חדש"</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = _gpProfiles.map(p => gpProfileRow(p)).join('');
+}
+
+function gpProfileRow(p) {
+  const dt = p.updated_at ? new Date(p.updated_at).toLocaleDateString('he-IL') : '—';
+  return `<tr id="gp-row-${p.id}">
+    <td><input value="${p.sku||''}" id="gp-sku-${p.id}" style="width:80px;padding:0.3rem 0.5rem;border:1.5px solid #e2e8f0;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.82rem;"></td>
+    <td><input value="${p.name||''}" id="gp-name-${p.id}" style="width:180px;padding:0.3rem 0.5rem;border:1.5px solid #e2e8f0;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.82rem;"></td>
+    <td><input type="number" step="0.001" value="${p.weight_per_m||0}" id="gp-wpm-${p.id}" style="width:90px;padding:0.3rem 0.5rem;border:1.5px solid #e2e8f0;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.82rem;text-align:center;"></td>
+    <td style="font-size:0.78rem;color:#94a3b8;">${dt}</td>
+    <td style="display:flex;gap:0.4rem;">
+      <button onclick="saveProfileRow('${p.id}')" style="padding:0.3rem 0.7rem;background:#7c3aed;color:#fff;border:none;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="ph ph-floppy-disk"></i> שמור</button>
+      <button onclick="deleteProfileRow('${p.id}')" style="padding:0.3rem 0.7rem;background:#fee2e2;color:#dc2626;border:none;border-radius:6px;font-family:'Heebo',sans-serif;font-size:0.78rem;font-weight:700;cursor:pointer;"><i class="ph ph-trash"></i></button>
+    </td>
+  </tr>`;
+}
+
+window.saveAlumPerKg = async function() {
+  const val = document.getElementById('gp-alum-kg').value;
+  await sb.from('global_settings').upsert({ key:'aluminum_per_kg', value: String(val), updated_at: new Date().toISOString() }, { onConflict:'key' });
+  const saved = document.getElementById('gp-alum-saved');
+  saved.style.display = 'inline';
+  setTimeout(() => { saved.style.display = 'none'; }, 2500);
+};
+
+window.saveProfileRow = async function(id) {
+  const sku  = document.getElementById(`gp-sku-${id}`)?.value?.trim() || '';
+  const name = document.getElementById(`gp-name-${id}`)?.value?.trim() || '';
+  const wpm  = parseFloat(document.getElementById(`gp-wpm-${id}`)?.value) || 0;
+  const { error } = await sb.from('profiles_catalog')
+    .update({ sku, name, weight_per_m: wpm, updated_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) { toast('שגיאה בשמירה'); return; }
+  toast('פרופיל נשמר');
+  await renderProfilesCatalog();
+};
+
+window.deleteProfileRow = async function(id) {
+  if (!confirm('למחוק פרופיל זה?')) return;
+  await sb.from('profiles_catalog').delete().eq('id', id);
+  await renderProfilesCatalog();
+};
+
+window.addProfileRow = async function() {
+  const { data, error } = await sb.from('profiles_catalog')
+    .insert({ sku:'', name:'פרופיל חדש', weight_per_m: 0 })
+    .select().single();
+  if (error) { toast('שגיאה'); return; }
+  await renderProfilesCatalog();
+  document.getElementById(`gp-name-${data.id}`)?.focus();
+};
+
+window.importProfilesFromOrders = async function() {
+  toast('מייבא פרופילים...');
+  const { data: orders } = await sb.from('orders')
+    .select('config')
+    .eq('config->>type','procurement');
+  if (!orders?.length) { toast('לא נמצאו הזמנות רכש'); return; }
+
+  const seen = new Set(_gpProfiles.map(p => p.sku || p.name));
+  const toInsert = [];
+  orders.forEach(o => {
+    (o.config?.profiles || []).forEach(p => {
+      const key = p.sku || p.name;
+      if (key && !seen.has(key)) {
+        seen.add(key);
+        toInsert.push({ sku: p.sku || '', name: p.name || '', weight_per_m: p.wpm || 0 });
+      }
+    });
+  });
+
+  if (!toInsert.length) { toast('כל הפרופילים כבר קיימים'); return; }
+  const { error } = await sb.from('profiles_catalog').insert(toInsert);
+  if (error) { toast('שגיאה בייבוא: ' + error.message); return; }
+  toast(`יובאו ${toInsert.length} פרופילים`);
+  await renderProfilesCatalog();
+};
 </script>
 
 <style>
